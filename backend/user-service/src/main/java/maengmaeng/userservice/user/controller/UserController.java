@@ -1,20 +1,19 @@
-package maengmaeng.userservice.myinfo.controller;
+package maengmaeng.userservice.user.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import maengmaeng.userservice.myinfo.service.UserService;
+import maengmaeng.userservice.user.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/myInfo")
 @RequiredArgsConstructor
 @Slf4j
-public class MyInfoController {
+public class UserController {
 
     private UserService userService;
     private final Logger logger = LoggerFactory.getLogger(getClass());

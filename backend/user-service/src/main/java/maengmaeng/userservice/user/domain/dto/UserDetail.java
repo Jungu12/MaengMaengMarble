@@ -1,4 +1,4 @@
-package maengmaeng.userservice.myinfo.domain.dto;
+package maengmaeng.userservice.user.domain.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

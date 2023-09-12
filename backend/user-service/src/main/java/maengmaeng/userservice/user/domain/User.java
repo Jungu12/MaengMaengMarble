@@ -1,4 +1,4 @@
-package maengmaeng.userservice.myinfo.domain;
+package maengmaeng.userservice.user.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

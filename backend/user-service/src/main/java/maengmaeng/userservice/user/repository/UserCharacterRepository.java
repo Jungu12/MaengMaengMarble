@@ -1,6 +1,6 @@
-package maengmaeng.userservice.myinfo.repository;
+package maengmaeng.userservice.user.repository;
 
-import maengmaeng.userservice.myinfo.domain.UserCharacter;
+import maengmaeng.userservice.user.domain.UserCharacter;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

@@ -1,6 +1,6 @@
-package maengmaeng.userservice.myinfo.repository;
+package maengmaeng.userservice.user.repository;
 
-import maengmaeng.userservice.myinfo.domain.Character;
+import maengmaeng.userservice.user.domain.Character;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface CharacterRepository extends JpaRepository<Character, Integer> {

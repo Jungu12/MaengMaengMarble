@@ -1,10 +1,10 @@
-package maengmaeng.userservice.myinfo.service;
+package maengmaeng.userservice.user.service;
 
 import lombok.RequiredArgsConstructor;
 import maengmaeng.userservice.exception.ExceptionCode;
 import maengmaeng.userservice.exception.UserException;
-import maengmaeng.userservice.myinfo.domain.User;
-import maengmaeng.userservice.myinfo.repository.UserRepository;
+import maengmaeng.userservice.user.domain.User;
+import maengmaeng.userservice.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 @Service
