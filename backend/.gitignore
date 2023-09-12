@@ -7,6 +7,7 @@
 
 # Secured info
 **/src/main/resources/application.properties
+**/src/main/resources/application.yml
 
 
 # User-specific stuff
