@@ -20,4 +20,13 @@ public class ExceptionAdvice {
         return ResponseEntity.status(exception.getHttpStatus()).body(new ExceptionResponse(exception.getMessage()));
     }
 
+
+    @ExceptionHandler(RelationException.class)
+    public ResponseEntity<ExceptionResponse> handleRelationException(RelationException exception) {
+        logger.debug("handleRelationException(), exception status : {}, exception message: {}",
+                exception.getHttpStatus(),
+                exception.getMessage());
+        return ResponseEntity.status(exception.getHttpStatus()).body(new ExceptionResponse(exception.getMessage()));
+    }
+
 }
