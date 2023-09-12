@@ -36,6 +36,9 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-websocket'
 	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
 	implementation 'org.springframework.boot:spring-boot-devtools'
+//	implementation 'mysql:mysql-connector-java:8.0.27'
+	// HTTP 응답 상태 코드 정의하고 관리하기 위한 라이브러리
+    implementation 'net.thauvin.erik.httpstatus:httpstatus:1.0.5'
 
 	compileOnly 'org.projectlombok:lombok'
 	runtimeOnly 'com.mysql:mysql-connector-j'
