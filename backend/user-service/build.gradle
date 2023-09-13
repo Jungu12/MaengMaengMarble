@@ -34,7 +34,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 	implementation 'org.springframework.boot:spring-boot-starter-websocket'
-	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+//	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
 	implementation 'org.springframework.boot:spring-boot-devtools'
 //	implementation 'mysql:mysql-connector-java:8.0.27'
 	// HTTP 응답 상태 코드 정의하고 관리하기 위한 라이브러리
@@ -57,6 +57,10 @@ dependencies {
 
 	// @ConfigurationProperties 사용을 위함
 	annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
+
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+	//embedded-redis 사용을 위함
+	implementation group: 'it.ozimov', name: 'embedded-redis', version: '0.7.1'
 }
 
 dependencyManagement {

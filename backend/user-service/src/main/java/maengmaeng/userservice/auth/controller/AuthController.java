@@ -14,8 +14,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.nimbusds.oauth2.sdk.AccessTokenResponse;
-
 import lombok.RequiredArgsConstructor;
 import maengmaeng.userservice.auth.dto.AuthAccessTokenResponse;
 import maengmaeng.userservice.auth.dto.CodeDto;

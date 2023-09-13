@@ -54,18 +54,14 @@ public class SecurityConfig {
 			// JWT, OAuth 2.0을 사용하는 REST API의 경우는 CSRF에 대한 보호가 불필요
 			.csrf().disable()
 			.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-
 			.and()
-
 			.authorizeHttpRequests()
 			// 허용된 요청은 모두 허용
 			.antMatchers(PERMIT_URLS).permitAll()
 			// 그 외의 요청은 "USER" 권한이 있으면 가능
 			// .anyRequest().hasRole("USER")
 			.anyRequest().permitAll()
-
 			.and()
-
 			.addFilterBefore(new JwtAuthenticationFilter(jwtProvider),
 				UsernamePasswordAuthenticationFilter.class)
 			// 로그아웃은 모두 허용
