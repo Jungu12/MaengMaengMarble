@@ -9,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/myInfo")
 @RequiredArgsConstructor
@@ -55,5 +57,17 @@ public class UserController {
         userService.changeNickname(userId, newNickname);
 
         return ResponseEntity.ok().build();
+    }
+
+    /**
+     * 내가 보유한 캐릭터 조회
+     * @param userId
+     * @return
+     */
+    @GetMapping("/characters")
+    public ResponseEntity<?> characterList(@AuthenticationPrincipal String userId) {
+        logger.debug("characterList(), userId = {}", userId);
+
+        return ResponseEntity.ok().body(userService.getMyCharacters(userId));
     }
 }

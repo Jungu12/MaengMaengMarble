@@ -10,4 +10,5 @@ import lombok.Getter;
 public class UserDetail {
     private String id;
     private String nickname;
+    private int characterId;
 }
