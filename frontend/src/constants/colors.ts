@@ -9,12 +9,13 @@ export const colors = {
     dark200: '#68634F',
   },
   text: {
+    50: '#9A978F',
     100: '#5F594B',
     hint: 'rgba(95, 89, 75, 0.7)',
   },
   secondary: {
     100: '#0BC7B9',
-    200: '#096059',
+    200: '#28B1A6',
   },
   greyScale: {
     white: '#ffffff',
