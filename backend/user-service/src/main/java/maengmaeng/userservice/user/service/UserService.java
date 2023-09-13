@@ -1,17 +1,26 @@
-package maengmaeng.userservice.myinfo.service;
+package maengmaeng.userservice.user.service;
 
 import lombok.RequiredArgsConstructor;
 import maengmaeng.userservice.exception.ExceptionCode;
 import maengmaeng.userservice.exception.UserException;
-import maengmaeng.userservice.myinfo.domain.User;
-import maengmaeng.userservice.myinfo.repository.UserRepository;
+import maengmaeng.userservice.user.domain.Character;
+import maengmaeng.userservice.user.domain.User;
+import maengmaeng.userservice.user.domain.UserCharacter;
+import maengmaeng.userservice.user.repository.CharacterRepository;
+import maengmaeng.userservice.user.repository.UserCharacterRepository;
+import maengmaeng.userservice.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
+    private final UserCharacterRepository userCharacterRepository;
+    private final CharacterRepository characterRepository;
 
     // 내 정보 조회(get)
     public User findUser(String userId) {
@@ -39,5 +48,18 @@ public class UserService {
         // 닉네임 변경
         user.setNickname(newNickname);
         userRepository.save(user);
+    }
+
+    // 내가 보유한 캐릭터 조회
+    public List<Character> getMyCharacters(String userId) {
+        List<Integer> userCharacterIds = userCharacterRepository.findUserCharactersByUserId(userId);
+
+        List<Character> allCharacters = characterRepository.findAll();
+
+        List<Character> userCharacters = allCharacters.stream()
+                .filter(character -> userCharacterIds.contains(character.getCharacterId()))
+                .collect(Collectors.toList());
+
+        return userCharacters;
     }
 }

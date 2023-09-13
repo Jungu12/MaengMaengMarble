@@ -1,13 +1,10 @@
-package maengmaeng.userservice.myinfo.domain;
+package maengmaeng.userservice.user.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import java.util.List;
 
 @Entity
@@ -30,6 +27,10 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     private List<UserCharacter> userCharacters;
+
+    @ManyToOne
+    @JoinColumn(name = "character_id")
+    private Character characterID; // 현재 프로필로 설정된 캐릭터
 
     public void setNickname(String nickname) {
         this.nickname = nickname;

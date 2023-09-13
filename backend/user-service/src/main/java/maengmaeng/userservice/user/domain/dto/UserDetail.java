@@ -1,4 +1,4 @@
-package maengmaeng.userservice.myinfo.domain.dto;
+package maengmaeng.userservice.user.domain.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -10,4 +10,5 @@ import lombok.Getter;
 public class UserDetail {
     private String id;
     private String nickname;
+    private int characterId;
 }
