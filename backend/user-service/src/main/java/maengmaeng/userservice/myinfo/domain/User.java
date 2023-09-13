@@ -10,6 +10,8 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import java.util.List;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 @Entity
 @Getter
 @NoArgsConstructor
@@ -30,6 +32,10 @@ public class User {
 
     @OneToMany(mappedBy = "user")
     private List<UserCharacter> userCharacters;
+
+    public User(String userId) {
+        this.userId = userId;
+    }
 
     public void setNickname(String nickname) {
         this.nickname = nickname;
