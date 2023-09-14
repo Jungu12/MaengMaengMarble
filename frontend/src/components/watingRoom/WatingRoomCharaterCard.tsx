@@ -1,4 +1,5 @@
 import { images } from '@constants/images';
+import { motion } from 'framer-motion';
 
 type Props = {
   name: string;
@@ -20,7 +21,17 @@ const WatingRoomCharaterCard = ({
     : 'linear-gradient(180deg, rgba(255, 255, 255, 0.70) 25.52%, rgba(255, 255, 255, 0.43) 82.73%, rgba(255, 255, 255, 0.00) 100%)';
 
   return (
-    <div className='flex flex-col '>
+    <motion.div
+      className='flex flex-col'
+      // animate={{ x: 100 }}
+      // transition={{ type: 'spring', duration: 0.8 }}
+      drag
+      dragTransition={{
+        power: 0,
+        // Snap calculated target to nearest 50 pixels
+        modifyTarget: (target) => Math.round(target / 50) * 50,
+      }}
+    >
       <div
         className='w-[320px] flex flex-col items-center relative'
         style={{
@@ -136,7 +147,7 @@ const WatingRoomCharaterCard = ({
           </defs>
         </svg>
       )}
-    </div>
+    </motion.div>
   );
 };
 

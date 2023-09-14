@@ -1,6 +1,7 @@
 import WatingRoomCharaterCard from '@components/watingRoom/WatingRoomCharaterCard';
 import WatingRoomChatting from '@components/watingRoom/WatingRoomChatting';
 import { images } from '@constants/images';
+import { motion } from 'framer-motion';
 
 const WaitingRoom = () => {
   const isReady = true;
@@ -19,17 +20,19 @@ const WaitingRoom = () => {
         </p>
         <div className='flex items-center'>
           <img
-            className='w-[28px] h-[28px] ml-[80px] cursor-pointer'
+            className='w-[28px] h-[28px] ml-[80px]'
             src={images.waitingRoom.mail}
             alt='초대코드'
           />
           <span className='ml-[20px] text-white font-extrabold text-[20px]'>
             12345
           </span>
-          <img
+          <motion.img
             className='ml-[12px] w-[32px] h-[32px] cursor-pointer'
             src={images.waitingRoom.copy}
             alt='복사'
+            whileHover={{ scale: 1.2 }}
+            whileTap={{ scale: 0.9 }}
           />
         </div>
         <img
@@ -71,7 +74,12 @@ const WaitingRoom = () => {
       <div className='absolute bottom-[8px] left-[12px]'>
         <WatingRoomChatting />
       </div>
-      <div className='z-10 cursor-pointer absolute bottom-[8px] left-[50%] translate-x-[-50%]'>
+      <motion.div
+        className='z-10 cursor-pointer absolute bottom-[8px] left-[40%]'
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.9 }}
+        transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+      >
         <img
           className='h-[100px]'
           src={
@@ -81,7 +89,7 @@ const WaitingRoom = () => {
           }
           alt='button'
         />
-      </div>
+      </motion.div>
     </div>
   );
 };
