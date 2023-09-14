@@ -8,4 +8,5 @@ import lombok.Getter;
 public class CodeDto {
 	@NotBlank
 	private String code;
+	private String state;
 }

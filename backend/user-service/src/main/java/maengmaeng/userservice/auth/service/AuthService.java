@@ -13,6 +13,7 @@ import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import maengmaeng.userservice.auth.dto.CodeDto;
 import maengmaeng.userservice.auth.dto.OAuthToken;
 import maengmaeng.userservice.auth.dto.TokenInfoResponse;
 import maengmaeng.userservice.auth.util.JwtProvider;
@@ -43,8 +44,8 @@ public class AuthService {
 	public AuthService(RestTemplate restTemplate,
 		@Value("${spring.security.oauth2.client.registration.naver.client-id}") String clientId,
 		@Value("${spring.security.oauth2.client.registration.naver.client-secret}") String clientSecret,
-		@Value("${naver.accesstoken-url}") String accessTokenUrl,
-		@Value("${naver.userinfo-url}") String userInfoUrl, UserRepository userRepository, JwtProvider jwtProvider,
+		@Value("${spring.security.oauth2.client.provider.naver.token-uri}") String accessTokenUrl,
+		@Value("${spring.security.oauth2.client.provider.naver.user-info-uri}") String userInfoUrl, UserRepository userRepository, JwtProvider jwtProvider,
 		JwtRedisManager jwtRedisManager) {
 		this.restTemplate = restTemplate;
 		this.clientId = clientId;
@@ -61,8 +62,8 @@ public class AuthService {
 	 * @param code 인가 코드
 	 * @return Map Access Token, Refresh Token
 	 * */
-	public OAuthToken createTokens(String code) {
-		String accessToken = getAccessToken(code);
+	public OAuthToken createTokens(CodeDto codeDto) {
+		String accessToken = getAccessToken(codeDto);
 
 		HttpHeaders headers = new HttpHeaders();
 		headers.set("Authorization", "Bearer " + accessToken);
@@ -116,12 +117,12 @@ public class AuthService {
 	}
 
 	/**
-	 * 인가 코드를 통해 Github로부터 액세스 토큰을 발급받아 반환
-	 * @param code 인가 코드
+	 * 인가 코드를 통해 Naver로부터 액세스 토큰을 발급받아 반환
+	 * @param codeDto 인가 코드, state
 	 * @return String 액세스 토큰
 	 * */
-	private String getAccessToken(String code) {
-		return extractAccessToken(requestAccessToken(code).getBody());
+	private String getAccessToken(CodeDto codeDto) {
+		return extractAccessToken(requestAccessToken(codeDto).getBody());
 	}
 
 	/**
@@ -134,7 +135,7 @@ public class AuthService {
 			ObjectMapper objectMapper = new ObjectMapper();
 			JsonNode jsonNode = objectMapper.readTree(data);
 
-			return new User(jsonNode.get("email").asText());
+			return new User(jsonNode.get("response").get("email").asText().split("@")[0]);
 		} catch (Exception e) {
 			throw new AuthException(ExceptionCode.USER_CREATED_FAILED);
 		}
@@ -156,15 +157,14 @@ public class AuthService {
 		}
 	}
 
-	private ResponseEntity<String> requestAccessToken(String code) {
+	private ResponseEntity<String> requestAccessToken(CodeDto codeDto) {
 		try {
 			HttpHeaders headers = new HttpHeaders();
 			headers.set("Accept", "application/json");
 
 			HttpEntity<String> requestEntity = new HttpEntity<>(headers);
-
 			return restTemplate.exchange(
-				accessTokenUrl + "?client_id=" + clientId + "&client_secret=" + clientSecret + "&code=" + code,
+				accessTokenUrl + "?grant_type=authorization_code" +"&client_id=" + clientId + "&client_secret=" + clientSecret + "&code=" + codeDto.getCode() + "&state=" + codeDto.getState(),
 				HttpMethod.POST,
 				requestEntity,
 				String.class

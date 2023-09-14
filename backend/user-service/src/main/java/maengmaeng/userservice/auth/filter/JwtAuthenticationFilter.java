@@ -33,8 +33,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		String requestURI = request.getRequestURI();
 
 		// oauth, swagger ui에 대한 URL은 필터 처리 X
-		if (requestURI.startsWith("/api/oauth") || requestURI.startsWith("/v3/api-docs") || requestURI.startsWith(
-			"/swagger-ui") || requestURI.startsWith("/favicon.ico") || requestURI.startsWith("/swagger-resources")) {
+		if (requestURI.startsWith("/api/user-service/auth") || requestURI.startsWith("/favicon.ico")) {
 			filterChain.doFilter(request, response);
 			return;
 		}
