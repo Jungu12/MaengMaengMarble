@@ -3,8 +3,9 @@ import { useCallback } from 'react';
 
 const LoginButton = () => {
   const handleLoginButton = useCallback(() => {
-    window.location.href =
-      'https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=Kecej_d0LIleRy3N3wSL&state=3&redirect_uri=http://localhost:3000/login/oauth/naver/callback';
+    window.location.href = `https://nid.naver.com/oauth2.0/authorize?response_type=code&client_id=${
+      import.meta.env.VITE_CLIENT_ID
+    }&state=3&redirect_uri=${import.meta.env.VITE_NAVER_REDIRECT_URL}`;
   }, []);
 
   return (
