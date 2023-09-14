@@ -10,17 +10,17 @@ import javax.persistence.*;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserCharacter {
+public class UserAvatar {
 
     @Id
-    @Column(name = "user_character_id")
-    private int userCharacterId;
+    @Column(name = "user_avatar_id")
+    private int userAvatarId;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
 
     @ManyToOne
-    @JoinColumn(name = "character_id")
-    private Character character;
+    @JoinColumn(name = "avatar_id")
+    private Avatar avatar;
 }
