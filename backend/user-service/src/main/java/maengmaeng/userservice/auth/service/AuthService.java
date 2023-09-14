@@ -153,6 +153,7 @@ public class AuthService {
 
 			return jsonNode.get("access_token").asText();
 		} catch (Exception e) {
+			e.printStackTrace();
 			throw new AuthException(ExceptionCode.NAVER_TOKEN_RESPONSE_FAILED);
 		}
 	}

@@ -23,7 +23,7 @@ public class SecurityConfig {
 	private final JwtProvider jwtProvider;
 	private static final String[] PERMIT_URLS = {
 		/* OAuth */
-		"/oauth/**",
+		"/auth/**",
 		/* SockJS */
 		"/maeng/**"
 	};
