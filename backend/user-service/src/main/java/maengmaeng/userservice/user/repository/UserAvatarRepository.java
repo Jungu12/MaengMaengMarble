@@ -9,6 +9,7 @@ import java.util.List;
 
 public interface UserAvatarRepository extends JpaRepository<UserAvatar, Integer> {
 
-    @Query(value = "SELECT uc.character FROM user_character uc WHERE uc.user_id = :userId", nativeQuery = true)
+    @Query("SELECT ua.avatar.avatarId FROM UserAvatar ua WHERE ua.user.userId = :userId")
     List<Integer> findUserAvatarsByUserId(@Param("userId") String userId);
+
 }
