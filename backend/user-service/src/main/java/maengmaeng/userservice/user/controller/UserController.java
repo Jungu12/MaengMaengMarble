@@ -6,68 +6,74 @@ import maengmaeng.userservice.user.service.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
+//import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 
 @RestController
-@RequestMapping("/api/myInfo")
+@RequestMapping("/api/users")
 @RequiredArgsConstructor
 @Slf4j
 public class UserController {
 
-    private UserService userService;
+    private final UserService userService;
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     /**
      * 내 정보를 반환한다.
-     * @param userId
      * @return
      */
-    @GetMapping("/users")
-    public ResponseEntity<?> users(@AuthenticationPrincipal String userId) {
+    @GetMapping("/{userId}")
+    public ResponseEntity<?> users(@PathVariable String userId) {
         // 제대로 user_id를 가져오느냐 확인하기 위한 로그
         logger.debug("users(), userId = {}", userId);
 
         return ResponseEntity.ok().body(userService.findUser(userId));
     }
-
-    /**
-     * 닉네임 중복 확인
-     * @param nickname
-     * @return
-     */
-    @GetMapping("/nicknames/duplication")
-    public ResponseEntity<?> checkNicknameDuplication(@RequestParam("nickname") String nickname) {
-        logger.debug("NicknameDuplicationCheck(), nickname = {}", nickname);
-
-        return ResponseEntity.ok().body(userService.isNicknameDuplicated(nickname));
-    }
-
-    /**
-     * 닉네임 변경
-     * @param userId
-     * @param newNickname
-     * @return
-     */
-    @PatchMapping("/nicknames")
-    public ResponseEntity<?> changeNickname(@AuthenticationPrincipal String userId, String newNickname) {
-        logger.debug("NicknameChange(), userId = {}, newnickname = {}", userId, newNickname);
-        userService.changeNickname(userId, newNickname);
-
-        return ResponseEntity.ok().build();
-    }
-
-    /**
-     * 내가 보유한 캐릭터 조회
-     * @param userId
-     * @return
-     */
-    @GetMapping("/characters")
-    public ResponseEntity<?> characterList(@AuthenticationPrincipal String userId) {
-        logger.debug("characterList(), userId = {}", userId);
-
-        return ResponseEntity.ok().body(userService.getMyCharacters(userId));
-    }
+//
+//    /**
+//     * 닉네임 중복 확인
+//     * @param nickname
+//     * @return
+//     */
+//    @GetMapping("/nicknames/duplication")
+//    public ResponseEntity<?> checkNicknameDuplication(@RequestParam("nickname") String nickname) {
+//        logger.debug("NicknameDuplicationCheck(), nickname = {}", nickname);
+//
+//        return ResponseEntity.ok().body(userService.isNicknameDuplicated(nickname));
+//    }
+//
+//    /**
+//     * 닉네임 변경
+//     * @param userId
+//     * @param newNickname
+//     * @return
+//     */
+//    @PatchMapping("/nicknames")
+//    public ResponseEntity<?> changeNickname(@AuthenticationPrincipal String userId, String newNickname) {
+//        logger.debug("NicknameChange(), userId = {}, newnickname = {}", userId, newNickname);
+//        userService.changeNickname(userId, newNickname);
+//
+//        return ResponseEntity.ok().build();
+//    }
+//
+//    /**
+//     * 내가 보유한 캐릭터 조회
+//     * @param userId
+//     * @return
+//     */
+//    @GetMapping("/avatars")
+//    public ResponseEntity<?> avatarList(@AuthenticationPrincipal String userId) {
+//        logger.debug("avatarList(), userId = {}", userId);
+//
+//        return ResponseEntity.ok().body(userService.getMyAvatars(userId));
+//    }
+//
+//    @PatchMapping("/avatars/{newAvatarId}")
+//    public ResponseEntity<?> changeAvatar(@AuthenticationPrincipal String userId, @PathVariable int newAvatarId) {
+//        logger.debug("changeAvatar(), userId = {}, newAvatarId = {}", userId, newAvatarId);
+//        userService.changeProfileAvatar(userId, newAvatarId);
+//
+//        return ResponseEntity.ok().build();
+//    }
 }
