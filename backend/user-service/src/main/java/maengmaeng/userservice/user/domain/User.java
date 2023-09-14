@@ -26,13 +26,17 @@ public class User {
     private int lose;
 
     @OneToMany(mappedBy = "user")
-    private List<UserCharacter> userCharacters;
+    private List<UserAvatar> userAvatars;
 
     @ManyToOne
-    @JoinColumn(name = "character_id")
-    private Character characterID; // 현재 프로필로 설정된 캐릭터
+    @JoinColumn(name = "avatar_id")
+    private Avatar avatar; // 현재 프로필로 설정된 캐릭터
 
     public void setNickname(String nickname) {
         this.nickname = nickname;
+    }
+
+    public void changeAvatar(Avatar newProfileAvatar) {
+        this.avatar = newProfileAvatar;
     }
 }

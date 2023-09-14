@@ -8,7 +8,10 @@ import lombok.Getter;
 @Builder
 @AllArgsConstructor
 public class UserDetail {
-    private String id;
+    private String userId;
     private String nickname;
-    private int characterId;
+    private int point;
+    private int win;
+    private int lose;
+    private int avatarId;
 }
