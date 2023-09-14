@@ -18,10 +18,11 @@ const WatingRoomCharaterCard = ({
   const backgroundImageStyle = isClose
     ? 'linear-gradient(180deg, rgba(0, 0, 0, 0.70) 25.52%, rgba(0, 0, 0, 0.43) 82.73%, rgba(0, 0, 0, 0.00) 100%)'
     : 'linear-gradient(180deg, rgba(255, 255, 255, 0.70) 25.52%, rgba(255, 255, 255, 0.43) 82.73%, rgba(255, 255, 255, 0.00) 100%)';
+
   return (
     <div className='flex flex-col '>
       <div
-        className='w-[320px] min-h-max flex flex-col items-center relative'
+        className='w-[320px] flex flex-col items-center relative'
         style={{
           height: 'calc(100% - 100px)',
           backgroundImage: backgroundImageStyle,
@@ -39,12 +40,12 @@ const WatingRoomCharaterCard = ({
           <>
             <div className='flex justify-between w-full px-[16px] pt-[12px]'>
               <img
-                className='w-8 h-8'
+                className='w-8 h-8 cursor-pointer'
                 src={images.waitingRoom.info}
                 alt='info'
               />
               <img
-                className='w-8 h-8'
+                className='w-8 h-8 cursor-pointer'
                 src={images.waitingRoom.emit}
                 alt='강퇴'
               />
@@ -66,7 +67,7 @@ const WatingRoomCharaterCard = ({
             )}
             {isReady && (
               <div
-                className='flex items-center pl-[70px] text-white text-[40px] font-bold top absolute z-10 
+                className='flex items-center pl-[66px] text-white text-[40px] font-bold top absolute z-10 
           rounded-br-[50px] rounded-tr-[50px] w-[260px] h-[64px]
           bg-primary-300 left-0 bottom-[80px] shadow-100'
               >
@@ -75,7 +76,7 @@ const WatingRoomCharaterCard = ({
                     textShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
                   }}
                 >
-                  READY
+                  준비완료
                 </span>
               </div>
             )}
