@@ -54,7 +54,7 @@ public class RelationService {
     }
 
     public User getUserInfo(String id){
-        User user = userRepository.findUserByUserId(id) .orElseThrow(() -> new UserException(ExceptionCode.USER_NOT_FOUND));
+        User user = userRepository.findByUserId(id) .orElseThrow(() -> new UserException(ExceptionCode.USER_NOT_FOUND));
         return user;
     }
 

@@ -9,6 +9,9 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import java.util.List;
+import java.util.Objects;
+
+import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
 
 @Entity
 @Getter
@@ -31,4 +34,11 @@ public class Avatar {
 
     @OneToMany(mappedBy = "avatar")
     private List<UserAvatar> userAvatars;
+
+    public void setUserAvatars(List<UserAvatar> userAvatars){
+        this.userAvatars = userAvatars;
+    }
+
+
+
 }

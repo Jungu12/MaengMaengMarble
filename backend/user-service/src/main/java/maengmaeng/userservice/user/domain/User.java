@@ -39,4 +39,12 @@ public class User {
     public void changeAvatar(Avatar newProfileAvatar) {
         this.avatar = newProfileAvatar;
     }
+
+    public void setUserAvatarsForTest(List<UserAvatar> userAvatars){
+        this.userAvatars = userAvatars;
+    }
+
+    public void setAvatarForTest(Avatar avatar){
+        this.avatar = avatar;
+    }
 }

@@ -3,6 +3,9 @@ package maengmaeng.userservice.relation.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import maengmaeng.userservice.relation.domain.Relation;
 import maengmaeng.userservice.relation.service.RelationService;
+import maengmaeng.userservice.user.domain.Avatar;
+import maengmaeng.userservice.user.domain.User;
+import maengmaeng.userservice.user.domain.UserAvatar;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -86,4 +89,24 @@ public class RelationControllerTest {
 
     }
 
+    @Test
+    @DisplayName("회원 상세정보 조회")
+    void userInfo() throws Exception {
+        // given
+        Avatar avatar = new Avatar(1,"아바타","이미지","30000",null);
+        User user = new User("user@naver.com","유저1",50000,3,1,null,null);
+        UserAvatar userAvatar = new UserAvatar(1,user,avatar);
+
+        avatar.setUserAvatars(List.of(userAvatar));
+        user.setUserAvatarsForTest(List.of(userAvatar));
+        user.setAvatarForTest(avatar);
+
+        given(relationService.getUserInfo("user@naver.com")).willReturn(user);
+
+
+        // when & then
+        mockMvc.perform(get("/user-service/relation/api/relations/detail/{id}", user)
+                        .contentType("application/json"))
+                .andExpect(status().isOk());
+    }
 }

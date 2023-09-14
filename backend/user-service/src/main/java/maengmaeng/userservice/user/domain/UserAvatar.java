@@ -3,6 +3,7 @@ package maengmaeng.userservice.user.domain;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import maengmaeng.userservice.user.repository.AvatarRepository;
 
 import javax.persistence.*;
 
@@ -23,4 +24,8 @@ public class UserAvatar {
     @ManyToOne
     @JoinColumn(name = "avatar_id")
     private Avatar avatar;
+
+    public void setAvatarForTest(Avatar avatar){
+        this.avatar =avatar;
+    }
 }
