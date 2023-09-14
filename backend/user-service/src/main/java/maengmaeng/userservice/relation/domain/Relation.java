@@ -21,12 +21,7 @@ public class Relation {
     private Long relationId;
     private String fromId;
     private String toId;
-    private Boolean status;
 
-
-    public void setStatus(boolean status){
-        this.status = status;
-    }
 
 
 

@@ -16,7 +16,7 @@ public enum ExceptionCode {
 
 
     FOLLOW_CANCEL_FAILED("친구삭제를 실행할 수 없습니다.", HttpStatus.BAD_REQUEST),
-    ALREADY_REQUESTED("이미 팔로우 관계입니다.", HttpStatus.CONFLICT),
+    ALREADY_REQUESTED("이미 친구 관계입니다.", HttpStatus.CONFLICT),
     RELATION_NOT_FOUND("친구 신청 내역이 없습니다.", HttpStatus.BAD_REQUEST);
 
     private final String message;
