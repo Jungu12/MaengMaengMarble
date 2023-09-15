@@ -14,8 +14,8 @@ const LoginButton = () => {
       className='w-[340px] h-[64px] relative bg-[#03C75A] rounded-md flex items-center justify-center'
     >
       <img className='w-[64px] h-[64px]' src={images.logo.naver} alt='logo' />
-      <p className='ml-[67px] mr-[90px] text-2xl font-bold text-white'>
-        로그인
+      <p className='ml-[17px] mr-[20px] text-2xl font-bold text-white'>
+        네이버로 로그인하기
       </p>
     </button>
   );
