@@ -7,6 +7,16 @@ type Props = {
   isReady: boolean;
   isManager: boolean;
   isClose: boolean;
+  animation: {
+    start: {
+      opacity: number;
+      y: number;
+    };
+    end: {
+      opacity: number;
+      y: number;
+    };
+  };
 };
 
 const WatingRoomCharaterCard = ({
@@ -15,6 +25,7 @@ const WatingRoomCharaterCard = ({
   isReady,
   isManager,
   isClose,
+  animation,
 }: Props) => {
   const backgroundImageStyle = isClose
     ? 'linear-gradient(180deg, rgba(0, 0, 0, 0.70) 25.52%, rgba(0, 0, 0, 0.43) 82.73%, rgba(0, 0, 0, 0.00) 100%)'
@@ -23,14 +34,13 @@ const WatingRoomCharaterCard = ({
   return (
     <motion.div
       className='flex flex-col'
-      // animate={{ x: 100 }}
-      // transition={{ type: 'spring', duration: 0.8 }}
-      drag
-      dragTransition={{
-        power: 0,
-        // Snap calculated target to nearest 50 pixels
-        modifyTarget: (target) => Math.round(target / 50) * 50,
-      }}
+      variants={animation}
+      // drag
+      // dragTransition={{
+      //   power: 0,
+      //   // Snap calculated target to nearest 50 pixels
+      //   modifyTarget: (target) => Math.round(target / 50) * 50,
+      // }}
     >
       <div
         className='w-[320px] flex flex-col items-center relative'

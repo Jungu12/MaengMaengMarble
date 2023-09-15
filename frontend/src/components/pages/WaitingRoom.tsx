@@ -3,16 +3,39 @@ import WatingRoomChatting from '@components/watingRoom/WatingRoomChatting';
 import { images } from '@constants/images';
 import { motion } from 'framer-motion';
 
+const BoxAnimation = {
+  start: { scale: 0, opacity: 0.5 },
+  end: {
+    scale: 1,
+    opacity: 1,
+    transition: {
+      duration: 0.5,
+      type: 'spring',
+      stiffness: 110,
+      delayChildren: 1,
+      staggerChildren: 0.5,
+    },
+  },
+};
+
+const InnerAnimation = {
+  start: { opacity: 0, y: 10 },
+  end: { opacity: 1, y: 0 },
+};
+
 const WaitingRoom = () => {
   const isReady = true;
 
   return (
-    <div
+    <motion.div
       className='flex flex-col w-full h-full min-h-[700px] overflow-hidden relative'
       style={{
         backgroundImage: `url(${images.waitingRoom.background})`,
         backgroundSize: 'cover',
       }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
     >
       <div className='flex items-center w-full h-[80px] border-b-2 border-white/80 bg-blue-400/40 shadow-2xl'>
         <p className='font-extrabold text-[36px] text-white ml-[24px]'>
@@ -41,13 +64,19 @@ const WaitingRoom = () => {
           alt='나가기'
         />
       </div>
-      <div className='flex justify-around h-full'>
+      <motion.div
+        initial='start'
+        animate='end'
+        variants={BoxAnimation}
+        className='flex justify-around h-full'
+      >
         <WatingRoomCharaterCard
           name={'상근시치'}
           avaterUrl={images.dummy.dummy1}
           isReady={false}
           isManager={true}
           isClose={false}
+          animation={InnerAnimation}
         />
         <WatingRoomCharaterCard
           name={'215'}
@@ -55,6 +84,7 @@ const WaitingRoom = () => {
           isReady={true}
           isManager={false}
           isClose={false}
+          animation={InnerAnimation}
         />
         <WatingRoomCharaterCard
           name={''}
@@ -62,6 +92,7 @@ const WaitingRoom = () => {
           isReady={false}
           isManager={false}
           isClose={true}
+          animation={InnerAnimation}
         />
         <WatingRoomCharaterCard
           name={'기므나'}
@@ -69,8 +100,9 @@ const WaitingRoom = () => {
           isReady={false}
           isManager={false}
           isClose={false}
+          animation={InnerAnimation}
         />
-      </div>
+      </motion.div>
       <div className='absolute bottom-[8px] left-[12px]'>
         <WatingRoomChatting />
       </div>
@@ -90,7 +122,7 @@ const WaitingRoom = () => {
           alt='button'
         />
       </motion.div>
-    </div>
+    </motion.div>
   );
 };
 
