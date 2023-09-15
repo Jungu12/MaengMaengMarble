@@ -4,7 +4,9 @@ import lombok.RequiredArgsConstructor;
 import maengmaeng.userservice.exception.ExceptionCode;
 import maengmaeng.userservice.exception.RelationException;
 import maengmaeng.userservice.exception.UserException;
+import maengmaeng.userservice.relation.domain.dto.RelationResponseDto;
 import maengmaeng.userservice.user.domain.User;
+import maengmaeng.userservice.user.domain.dto.UserDetail;
 import maengmaeng.userservice.user.repository.UserRepository;
 import maengmaeng.userservice.relation.repository.RelationRepository;
 import org.springframework.stereotype.Service;
@@ -13,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import maengmaeng.userservice.relation.domain.Relation;
 
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -48,14 +51,31 @@ public class RelationService {
         }
     }
 
-    public List<Relation> relationLists(String from){
+    public List<RelationResponseDto> relationLists(String from){
         List<Relation> relationList = relationRepository.findAllByFromId(from);
-        return relationList;
+
+        List<RelationResponseDto> lst = new ArrayList<>();
+        for(Relation relation : relationList){
+            RelationResponseDto responseDto = RelationResponseDto.builder()
+                    .relationId(relation.getRelationId())
+                    .fromId(relation.getFromId())
+                    .toId(relation.getToId())
+                    .build();
+            lst.add(responseDto);
+        }
+        return lst;
     }
 
-    public User getUserInfo(String id){
+    public UserDetail getUserInfo(String id){
         User user = userRepository.findByUserId(id) .orElseThrow(() -> new UserException(ExceptionCode.USER_NOT_FOUND));
-        return user;
+        UserDetail userDetail = UserDetail.builder()
+                .userId(user.getUserId())
+                .nickname(user.getNickname())
+                .point(user.getPoint())
+                .win(user.getWin())
+                .lose(user.getLose())
+                .build();
+        return userDetail;
     }
 
 

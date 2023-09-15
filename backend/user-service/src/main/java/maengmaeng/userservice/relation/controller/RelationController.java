@@ -3,9 +3,11 @@ package maengmaeng.userservice.relation.controller;
 import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import maengmaeng.userservice.relation.domain.dto.RelationResponseDto;
 import maengmaeng.userservice.user.domain.User;
 import maengmaeng.userservice.relation.domain.Relation;
 import maengmaeng.userservice.relation.service.RelationService;
+import maengmaeng.userservice.user.domain.dto.UserDetail;
 import org.apache.coyote.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,14 +48,14 @@ public class RelationController {
     }
 
     @GetMapping("/api/relations/{loginUser}")
-    public ResponseEntity<List<Relation>> relationLists(@PathVariable String loginUser){
-        List<Relation> lists = relationService.relationLists(loginUser);
+    public ResponseEntity<List<RelationResponseDto>> relationLists(@PathVariable String loginUser){
+        List<RelationResponseDto> lists = relationService.relationLists(loginUser);
         return ResponseEntity.ok(lists);
     }
 
     @GetMapping("/api/relations/detail/{id}")
-    public ResponseEntity<User> getUserInfo(@PathVariable String id){
-        User user = relationService.getUserInfo(id);
+    public ResponseEntity<UserDetail> getUserInfo(@PathVariable String id){
+        UserDetail user = relationService.getUserInfo(id);
         return ResponseEntity.ok(user);
     }
 

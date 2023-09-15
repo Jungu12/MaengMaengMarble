@@ -2,10 +2,12 @@ package maengmaeng.userservice.relation.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import maengmaeng.userservice.relation.domain.Relation;
+import maengmaeng.userservice.relation.domain.dto.RelationResponseDto;
 import maengmaeng.userservice.relation.service.RelationService;
 import maengmaeng.userservice.user.domain.Avatar;
 import maengmaeng.userservice.user.domain.User;
 import maengmaeng.userservice.user.domain.UserAvatar;
+import maengmaeng.userservice.user.domain.dto.UserDetail;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -74,7 +76,7 @@ public class RelationControllerTest {
     @DisplayName("친구 리스트")
     void relationLists() throws Exception {
         // given
-        Relation relation = Relation.builder()
+        RelationResponseDto relation = RelationResponseDto.builder()
                 .relationId(1L)
                 .fromId("user1@naver.com")
                 .toId("user2@naver.com")
@@ -101,7 +103,16 @@ public class RelationControllerTest {
         user.setUserAvatarsForTest(List.of(userAvatar));
         user.setAvatarForTest(avatar);
 
-        given(relationService.getUserInfo("user@naver.com")).willReturn(user);
+        UserDetail userDetail = UserDetail.builder()
+                .userId(user.getUserId())
+                .nickname(user.getNickname())
+                .point(user.getPoint())
+                .win(user.getWin())
+                .lose(user.getLose())
+                .avatarId(user.getAvatar().getAvatarId())
+                .build();
+
+        given(relationService.getUserInfo("user@naver.com")).willReturn(userDetail);
 
 
         // when & then

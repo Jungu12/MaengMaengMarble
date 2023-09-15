@@ -2,11 +2,13 @@ package maengmaeng.userservice.relation.service;
 
 import maengmaeng.userservice.exception.RelationException;
 import maengmaeng.userservice.relation.domain.Relation;
+import maengmaeng.userservice.relation.domain.dto.RelationResponseDto;
 import maengmaeng.userservice.relation.repository.RelationRepository;
 import maengmaeng.userservice.relation.service.RelationService;
 import maengmaeng.userservice.user.domain.Avatar;
 import maengmaeng.userservice.user.domain.User;
 import maengmaeng.userservice.user.domain.UserAvatar;
+import maengmaeng.userservice.user.domain.dto.UserDetail;
 import maengmaeng.userservice.user.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -123,7 +125,7 @@ public class RelationServiceTest {
         given(relationRepository.findAllByFromId(from)).willReturn(relationList);
 
         // when
-        List<Relation> result = relationService.relationLists(from);
+        List<RelationResponseDto> result = relationService.relationLists(from);
 
         // then
         assertThat(result.get(0).getRelationId()).isEqualTo(1L);
@@ -145,7 +147,7 @@ public class RelationServiceTest {
 
 
         // when
-        User user = relationService.getUserInfo("user@naver.com");
+        UserDetail user = relationService.getUserInfo("user@naver.com");
 
         // then
         assertThat(user.getUserId()).isEqualTo("user@naver.com");
@@ -153,7 +155,5 @@ public class RelationServiceTest {
         assertThat(user.getWin()).isEqualTo(3);
         assertThat(user.getLose()).isEqualTo(1);
         assertThat(user.getPoint()).isEqualTo(50000);
-        assertThat(user.getAvatar()) .usingRecursiveComparison().isEqualTo(compAvatar);
-        assertThat(user.getUserAvatars()).usingRecursiveComparison().isEqualTo(List.of(compUserAvatar));
     }
 }
