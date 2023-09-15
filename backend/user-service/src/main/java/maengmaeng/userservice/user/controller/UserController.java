@@ -30,6 +30,55 @@ public class UserController {
 
         return ResponseEntity.ok().body(userService.findUser(userId));
     }
+    /**
+     * 닉네임 중복 확인
+     * @param nickname
+     * @return
+     */
+    @GetMapping("/nicknames/duplication")
+    public ResponseEntity<?> checkNicknameDuplication(@RequestParam("nickname") String nickname) {
+        logger.debug("NicknameDuplicationCheck(), nickname = {}", nickname);
+
+        return ResponseEntity.ok().body(userService.isNicknameDuplicated(nickname));
+    }
+
+    /**
+     * 닉네임 변경
+     * @param newNickname
+     * @return
+     */
+    @PatchMapping("/{userId}/nicknames")
+    public ResponseEntity<?> changeNickname(@PathVariable String userId, @RequestParam String newNickname) {
+        logger.debug("NicknameChange(), userId = {}, newnickname = {}", userId, newNickname);
+        userService.changeNickname(userId, newNickname);
+        return ResponseEntity.ok().build();
+    }
+
+    /**
+     * 내가 보유한 캐릭터 조회
+     * @param userId
+     * @return
+     */
+    @GetMapping("/{userId}/avatars")
+    public ResponseEntity<?> avatarList(@PathVariable String userId) {
+        logger.debug("avatarList(), userId = {}", userId);
+
+        return ResponseEntity.ok().body(userService.getMyAvatars(userId));
+    }
+
+    /**
+     * 캐릭터 변경
+     * @param userId
+     * @param newAvatarId
+     * @return
+     */
+    @PatchMapping("/{userId}/avatars/{newAvatarId}")
+    public ResponseEntity<?> changeAvatar(@PathVariable String userId, @PathVariable int newAvatarId) {
+        logger.debug("changeAvatar(), userId = {}, newAvatarId = {}", userId, newAvatarId);
+        userService.changeProfileAvatar(userId, newAvatarId);
+
+        return ResponseEntity.ok().build();
+    }
 //
 //    /**
 //     * 닉네임 중복 확인
@@ -69,6 +118,12 @@ public class UserController {
 //        return ResponseEntity.ok().body(userService.getMyAvatars(userId));
 //    }
 //
+//    /**
+//     * 캐릭터 변경
+//     * @param userId
+//     * @param newAvatarId
+//     * @return
+//     */
 //    @PatchMapping("/avatars/{newAvatarId}")
 //    public ResponseEntity<?> changeAvatar(@AuthenticationPrincipal String userId, @PathVariable int newAvatarId) {
 //        logger.debug("changeAvatar(), userId = {}, newAvatarId = {}", userId, newAvatarId);
