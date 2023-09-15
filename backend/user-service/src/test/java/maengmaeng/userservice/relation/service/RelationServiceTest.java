@@ -1,4 +1,4 @@
-package maengmaeng.userservice.service;
+package maengmaeng.userservice.relation.service;
 
 import maengmaeng.userservice.exception.RelationException;
 import maengmaeng.userservice.relation.domain.Relation;
