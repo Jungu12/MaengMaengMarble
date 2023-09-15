@@ -12,4 +12,8 @@ public interface UserAvatarRepository extends JpaRepository<UserAvatar, Integer>
     @Query("SELECT ua.avatar.avatarId FROM UserAvatar ua WHERE ua.user.userId = :userId")
     List<Integer> findUserAvatarsByUserId(@Param("userId") String userId);
 
+
+    Boolean existsByUserUserIdAndAvatarAvatarId(String userId, int avatarId);
+
+
 }

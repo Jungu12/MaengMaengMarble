@@ -1,6 +1,7 @@
 package maengmaeng.userservice.user.domain;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import maengmaeng.userservice.user.repository.AvatarRepository;
@@ -27,5 +28,11 @@ public class UserAvatar {
 
     public void setAvatarForTest(Avatar avatar){
         this.avatar =avatar;
+    }
+
+    @Builder
+    public UserAvatar(User user, Avatar avatar){
+        this.user = user;
+        this. avatar = avatar;
     }
 }
