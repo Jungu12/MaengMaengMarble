@@ -4,7 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="0390720e-9d1a-42c1-9a5e-223356fde3f0" name="변경" comment="변경" />
+    <list default="true" id="0390720e-9d1a-42c1-9a5e-223356fde3f0" name="변경" comment="변경">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/apigateway-service/src/main/java/maengmaeng/apigatewayservice/ApigatewayServiceApplication.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/apigateway-service/src/main/java/maengmaeng/apigatewayservice/ApigatewayServiceApplication.java" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -57,7 +60,7 @@
       <option name="presentableId" value="Default" />
       <updated>1694416843769</updated>
       <workItem from="1694416849929" duration="2082000" />
-      <workItem from="1694680472131" duration="2352000" />
+      <workItem from="1694680472131" duration="2375000" />
     </task>
     <servers />
   </component>
