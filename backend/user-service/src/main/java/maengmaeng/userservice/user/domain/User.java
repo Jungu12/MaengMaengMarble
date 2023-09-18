@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.util.List;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 @Entity
 @Getter
 @NoArgsConstructor
@@ -31,6 +33,10 @@ public class User {
     @ManyToOne
     @JoinColumn(name = "avatar_id")
     private Avatar avatar; // 현재 프로필로 설정된 캐릭터
+
+    public User(String userId) {
+        this.userId = userId;
+    }
 
     public void setNickname(String nickname) {
         this.nickname = nickname;

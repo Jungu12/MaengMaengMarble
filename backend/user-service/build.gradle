@@ -57,6 +57,10 @@ dependencies {
 
 	// @ConfigurationProperties 사용을 위함
 	annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
+
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+	//embedded-redis 사용을 위함
+	implementation group: 'it.ozimov', name: 'embedded-redis', version: '0.7.1'
 }
 
 dependencyManagement {
