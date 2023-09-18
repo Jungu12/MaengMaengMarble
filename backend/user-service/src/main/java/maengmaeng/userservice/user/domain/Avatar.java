@@ -31,4 +31,8 @@ public class Avatar {
 
     @OneToMany(mappedBy = "avatar")
     private List<UserAvatar> userAvatars;
+
+    public void setAvatarId(int avatarId) {
+        this.avatarId = avatarId;
+    }
 }

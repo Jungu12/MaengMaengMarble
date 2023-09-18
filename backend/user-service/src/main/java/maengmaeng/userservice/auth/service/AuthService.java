@@ -2,8 +2,12 @@ package maengmaeng.userservice.auth.service;
 
 import javax.servlet.http.HttpServletRequest;
 
+import maengmaeng.userservice.user.domain.Avatar;
 import maengmaeng.userservice.user.domain.User;
+import maengmaeng.userservice.user.domain.UserAvatar;
+import maengmaeng.userservice.user.repository.AvatarRepository;
 import maengmaeng.userservice.user.repository.UserRepository;
+import maengmaeng.userservice.user.repository.UserAvatarRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -37,6 +41,10 @@ public class AuthService {
 
 	private final UserRepository userRepository;
 
+	private final UserAvatarRepository userAvatarRepository;
+
+	private final AvatarRepository avatarRepository;
+
 	private final JwtRedisManager jwtRedisManager;
 
 	private final JwtProvider jwtProvider;
@@ -45,7 +53,8 @@ public class AuthService {
 		@Value("${spring.security.oauth2.client.registration.naver.client-id}") String clientId,
 		@Value("${spring.security.oauth2.client.registration.naver.client-secret}") String clientSecret,
 		@Value("${spring.security.oauth2.client.provider.naver.token-uri}") String accessTokenUrl,
-		@Value("${spring.security.oauth2.client.provider.naver.user-info-uri}") String userInfoUrl, UserRepository userRepository, JwtProvider jwtProvider,
+		@Value("${spring.security.oauth2.client.provider.naver.user-info-uri}") String userInfoUrl, UserRepository userRepository,
+					   UserAvatarRepository userAvatarRepository, AvatarRepository avatarRepository, JwtProvider jwtProvider,
 		JwtRedisManager jwtRedisManager) {
 		this.restTemplate = restTemplate;
 		this.clientId = clientId;
@@ -53,6 +62,8 @@ public class AuthService {
 		this.accessTokenUrl = accessTokenUrl;
 		this.userInfoUrl = userInfoUrl;
 		this.userRepository = userRepository;
+		this.userAvatarRepository = userAvatarRepository;
+		this.avatarRepository = avatarRepository;
 		this.jwtProvider = jwtProvider;
 		this.jwtRedisManager = jwtRedisManager;
 	}
@@ -85,6 +96,8 @@ public class AuthService {
 		if (userRepository.findUserByUserId(userId).isEmpty()) {
 			userRepository.save(user);
 		}
+
+		addUserAvatar(userId);
 
 		//JWT 생성 하고, Redis 저장소에 Token 저장하는 로직 추가 필요 (확인 필요!)
 		OAuthToken oAuthToken = new OAuthToken(jwtProvider.generateAccessToken(userId),
@@ -135,9 +148,24 @@ public class AuthService {
 			ObjectMapper objectMapper = new ObjectMapper();
 			JsonNode jsonNode = objectMapper.readTree(data);
 
-			return new User(jsonNode.get("response").get("email").asText().split("@")[0]);
+			String username = jsonNode.get("response").get("email").asText().split("@")[0];
+
+			User user = new User(username, username);
+
+			return user;
 		} catch (Exception e) {
 			throw new AuthException(ExceptionCode.USER_CREATED_FAILED);
+		}
+	}
+
+	private void addUserAvatar(String userId) {
+		try {
+			User user = userRepository.findById(userId).orElseGet(() -> new User());
+			Avatar avatar = avatarRepository.findById(1).orElseGet(() -> new Avatar());
+			UserAvatar userAvatar = new UserAvatar(user, avatar, true);
+			userAvatarRepository.save(userAvatar);
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 
@@ -150,7 +178,6 @@ public class AuthService {
 		try {
 			ObjectMapper objectMapper = new ObjectMapper();
 			JsonNode jsonNode = objectMapper.readTree(response);
-
 			return jsonNode.get("access_token").asText();
 		} catch (Exception e) {
 			e.printStackTrace();

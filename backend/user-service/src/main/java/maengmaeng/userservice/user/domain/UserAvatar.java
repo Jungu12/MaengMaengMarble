@@ -23,4 +23,24 @@ public class UserAvatar {
     @ManyToOne
     @JoinColumn(name = "avatar_id")
     private Avatar avatar;
+
+    private boolean mounting;
+
+    public UserAvatar(User user, Avatar avatar, boolean mounting) {
+        this.user = user;
+        this.avatar = avatar;
+        this.mounting = mounting;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public void setAvatar(Avatar avatar) {
+        this.avatar = avatar;
+    }
+
+    public void setMounting(boolean mounting) {
+        this.mounting = mounting;
+    }
 }
