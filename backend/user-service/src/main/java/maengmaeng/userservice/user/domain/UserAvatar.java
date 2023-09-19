@@ -20,7 +20,7 @@ public class UserAvatar {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "avatar_id")
     private Avatar avatar;
 
@@ -44,7 +44,5 @@ public class UserAvatar {
         this.mounting = mounting;
     }
 
-    public void setAvatarForTest(Avatar avatar){
-        this.avatar =avatar;
-    }
+
 }

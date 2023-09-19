@@ -55,13 +55,9 @@ public class RelationServiceTest {
                 .toId("user2@naver.com")
                 .build();
         avatar = new Avatar(1, "아바타", "이미지", "30000", null);
-        user = new User("user@naver.com", "유저1", 50000, 3, 1, null, null);
-        userAvatar = new UserAvatar(1, user, avatar);
+        user = new User("user@naver.com", "유저1");
+        userAvatar = new UserAvatar(user,avatar,false);
 
-
-        avatar.setUserAvatars(List.of(userAvatar));
-        user.setUserAvatarsForTest(List.of(userAvatar));
-        user.setAvatarForTest(avatar);
 
     }
 
@@ -141,9 +137,6 @@ public class RelationServiceTest {
 
 
         Avatar compAvatar = new Avatar(1, "아바타", "이미지", "30000", null);
-        UserAvatar compUserAvatar = new UserAvatar(1, user, compAvatar);
-        compAvatar.setUserAvatars(List.of(compUserAvatar));
-        compUserAvatar.setAvatarForTest(compAvatar);
 
 
         // when
@@ -152,8 +145,6 @@ public class RelationServiceTest {
         // then
         assertThat(user.getUserId()).isEqualTo("user@naver.com");
         assertThat(user.getNickname()).isEqualTo("유저1");
-        assertThat(user.getWin()).isEqualTo(3);
-        assertThat(user.getLose()).isEqualTo(1);
-        assertThat(user.getPoint()).isEqualTo(50000);
+
     }
 }

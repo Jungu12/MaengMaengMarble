@@ -40,15 +40,9 @@ public class User {
         this.nickname = nickname;
     }
 
-    public void changeAvatar(Avatar newProfileAvatar) {
-        this.avatar = newProfileAvatar;
-    }
 
     public void setUserAvatarsForTest(List<UserAvatar> userAvatars){
         this.userAvatars = userAvatars;
     }
 
-    public void setAvatarForTest(Avatar avatar){
-        this.avatar = avatar;
-    }
 }
