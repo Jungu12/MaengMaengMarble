@@ -41,8 +41,8 @@ public class User {
     }
 
 
-    public void setUserAvatarsForTest(List<UserAvatar> userAvatars){
-        this.userAvatars = userAvatars;
+    public void setPointSub(int point){
+        this.point -= point;
     }
 
 }

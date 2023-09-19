@@ -1,9 +1,11 @@
 package maengmaeng.userservice.shop.controller;
 
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import maengmaeng.userservice.shop.domain.dto.AvatarResponseDto;
 import maengmaeng.userservice.shop.service.ShopService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -15,14 +17,14 @@ public class ShopController {
 
     private final ShopService shopService;
 
-    @GetMapping("/list/{loginUser}")
-    public ResponseEntity<List<AvatarResponseDto>> getAvatars(@PathVariable String loginUser){
+    @GetMapping("/list")
+    public ResponseEntity<List<AvatarResponseDto>> getAvatars(@AuthenticationPrincipal String loginUser){
         List<AvatarResponseDto> avatarList = shopService.getAvatars(loginUser);
         return ResponseEntity.ok(avatarList);
     }
 
-    @PostMapping("/characters/{id}/{loginUser}")
-    public ResponseEntity<Void> buyAvatar(@PathVariable String loginUser, @PathVariable int id){
+    @PostMapping("/characters/{id}")
+    public ResponseEntity<Void> buyAvatar(@AuthenticationPrincipal String loginUser, @PathVariable int id){
         shopService.buyAvatar(loginUser, id);
         return ResponseEntity.ok().build();
     }

@@ -28,9 +28,7 @@ public class ShopService {
     private final UserAvatarRepository userAvatarRepository;
 
 
-    /*
-    나중에 내가 가지고있는 캐릭터 리스트를 반환해야할 듯
-     */
+
     public List<AvatarResponseDto> getAvatars(String loginUser){
         List<Avatar> avatars = avatarRepository.findAll();
         List<AvatarResponseDto> avatarResponseDtoList = new ArrayList<>();
@@ -55,7 +53,7 @@ public class ShopService {
         
         // 포인트 부족 시
         if(point < Integer.parseInt(avatar.getAvatarPrice())){
-            new UserException(ExceptionCode.POINT_NOT_SUFFICIENT);
+            throw new UserException(ExceptionCode.POINT_NOT_SUFFICIENT);
         }
 
         // 이미 보유한 캐릭터를 사려고하는 경우
@@ -64,10 +62,8 @@ public class ShopService {
             throw new UserException(ExceptionCode.AVATAR_EXISTED);
         }
 
-        UserAvatar userAvatar = UserAvatar.builder()
-                .avatar(avatar)
-                .user(user)
-                .build();
+        UserAvatar userAvatar = new UserAvatar(user,avatar,false);
+        user.setPointSub(Integer.parseInt(avatar.getAvatarPrice()));
         userAvatarRepository.save(userAvatar);
     }
 }
