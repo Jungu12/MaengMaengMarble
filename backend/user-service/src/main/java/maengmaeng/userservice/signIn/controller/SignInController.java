@@ -10,11 +10,13 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/user-service/singin")
+@RequiredArgsConstructor
+@RequestMapping("/api/signIn")
 public class SignInController {
-    private static SignInService signInService;
+    private final SignInService signInService;
     @PostMapping("/nicknames")
     ResponseEntity<Void> changeNickname(@AuthenticationPrincipal String loginUser, @RequestBody Map<String,String> nickname){
+        System.out.println(loginUser);
         signInService.changeNickname(loginUser, nickname.get("nickname"));
         return ResponseEntity.ok().build();
     }
