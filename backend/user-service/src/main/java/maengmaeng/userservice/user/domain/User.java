@@ -19,6 +19,7 @@ public class User {
     @Column(name = "user_id", nullable = false)
     private String userId;
 
+    @Column(nullable = false)
     private String nickname;
 
     private int point;
@@ -30,19 +31,18 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<UserAvatar> userAvatars;
 
-    @ManyToOne
-    @JoinColumn(name = "avatar_id")
-    private Avatar avatar; // 현재 프로필로 설정된 캐릭터
-
-    public User(String userId) {
+    public User(String userId, String nickname) {
         this.userId = userId;
+        this.nickname = nickname;
     }
 
     public void setNickname(String nickname) {
         this.nickname = nickname;
     }
 
-    public void changeAvatar(Avatar newProfileAvatar) {
-        this.avatar = newProfileAvatar;
+
+    public void setPointSub(int point){
+        this.point -= point;
     }
+
 }

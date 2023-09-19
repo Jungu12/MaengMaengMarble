@@ -5,6 +5,7 @@ import maengmaeng.userservice.exception.ExceptionCode;
 import maengmaeng.userservice.exception.UserException;
 import maengmaeng.userservice.user.domain.Avatar;
 import maengmaeng.userservice.user.domain.User;
+import maengmaeng.userservice.user.domain.UserAvatar;
 import maengmaeng.userservice.user.domain.dto.UserDetail;
 import maengmaeng.userservice.user.domain.dto.UserPossessionAvatar;
 import maengmaeng.userservice.user.repository.AvatarRepository;
@@ -13,6 +14,7 @@ import maengmaeng.userservice.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.OptionalInt;
 import java.util.stream.Collectors;
 
 @Service
@@ -28,6 +30,10 @@ public class UserService {
         // 유저 존재 확인
         User user = userRepository.findUserByUserId(userId)
                 .orElseThrow(() -> new UserException(ExceptionCode.USER_NOT_FOUND));
+        // "avatarId" 가져오기
+        Avatar avatarIdOptional = userRepository.findMountedAvatarIdByUserId(userId);
+
+        int avatarId = avatarIdOptional.getAvatarId(); // 만약 마운트된 아바타가 없으면 기본값으로 0을 사용하거나 다른 방법으로 처리할 수 있습니다.
         // 내 정보를 DTO 형태로 보기 위해서 user의 값들과 avatar_id를 가져와서 만든다.
         UserDetail userDetail = UserDetail.builder()
                 .userId(user.getUserId())
@@ -35,7 +41,7 @@ public class UserService {
                 .point(user.getPoint())
                 .win(user.getWin())
                 .lose(user.getLose())
-                .avatarId(user.getAvatar().getAvatarId()) // 엔티티에서 avatarID 필드 가져오기
+                .avatarId(avatarId)
                 .build();
 
         return userDetail;
@@ -87,15 +93,10 @@ public class UserService {
 
     // 캐릭터 변경
     public void changeProfileAvatar(String userId, int newAvatarId) {
-        // 유저 존재 확인
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserException(ExceptionCode.USER_NOT_FOUND));
-        // 아바타 존재 확인
-        Avatar newAvatar = avatarRepository.findById(newAvatarId)
-                .orElseThrow(() -> new UserException(ExceptionCode.AVATAR_NOT_FOUND));
+        // 현재 마운트된 아바타 중에서 `mounting` 컬럼을 `true`에서 `false`로 변경
+        userAvatarRepository.unmountAvatarByUserId(userId);
 
-        // 유저의 적용된 아바타 변경
-        user.changeAvatar(newAvatar);
-        userRepository.save(user);
+        // 선택한 새로운 아바타의 `mounting` 컬럼을 `false`에서 `true`로 변경
+        userAvatarRepository.mountAvatarByUserIdAndAvatarId(userId, newAvatarId);
     }
 }
