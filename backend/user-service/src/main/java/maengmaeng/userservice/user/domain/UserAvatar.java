@@ -1,10 +1,8 @@
 package maengmaeng.userservice.user.domain;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import maengmaeng.userservice.user.repository.AvatarRepository;
 
 import javax.persistence.*;
 
@@ -22,17 +20,29 @@ public class UserAvatar {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "avatar_id")
     private Avatar avatar;
 
-    public void setAvatarForTest(Avatar avatar){
-        this.avatar =avatar;
+    private boolean mounting;
+
+    public UserAvatar(User user, Avatar avatar, boolean mounting) {
+        this.user = user;
+        this.avatar = avatar;
+        this.mounting = mounting;
     }
 
-    @Builder
-    public UserAvatar(User user, Avatar avatar){
+    public void setUser(User user) {
         this.user = user;
-        this. avatar = avatar;
     }
+
+    public void setAvatar(Avatar avatar) {
+        this.avatar = avatar;
+    }
+
+    public void setMounting(boolean mounting) {
+        this.mounting = mounting;
+    }
+
+
 }
