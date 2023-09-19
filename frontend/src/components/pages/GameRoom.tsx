@@ -54,7 +54,7 @@ const GameRoom = () => {
               x: m[1],
               marginBottom: '0px',
             },
-            { duration: 0.4 }
+            { duration: 0.2 }
           );
         } else if (m[0] === 'up' || m[0] === 'down') {
           await new Promise((resolve) => setTimeout(resolve, 200)); // 딜레이 시간 (i * 400ms)
@@ -63,11 +63,10 @@ const GameRoom = () => {
               y: m[1],
               marginBottom: '0px',
             },
-            { duration: 0.4 }
+            { duration: 0.2 }
           );
         }
       }
-
       return cur;
     },
     [controls]
