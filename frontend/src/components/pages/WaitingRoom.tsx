@@ -1,7 +1,11 @@
 import WatingRoomCharaterCard from '@components/watingRoom/WatingRoomCharaterCard';
 import WatingRoomChatting from '@components/watingRoom/WatingRoomChatting';
+import WatingRoomHeader from '@components/watingRoom/WatingRoomHeader';
 import { images } from '@constants/images';
+import { CompatClient, Stomp } from '@stomp/stompjs';
 import { motion } from 'framer-motion';
+import SockJS from 'sockjs-client';
+import { useEffect, useRef } from 'react';
 
 const BoxAnimation = {
   start: { scale: 0, opacity: 0.5 },
@@ -24,7 +28,11 @@ const InnerAnimation = {
 };
 
 const WaitingRoom = () => {
+  const client = useRef<CompatClient>();
   const isReady = true;
+
+  // 입장 시 소켓 연결
+  useEffect(() => {}, []);
 
   return (
     <motion.div
@@ -37,33 +45,7 @@ const WaitingRoom = () => {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
     >
-      <div className='flex items-center w-full h-[80px] border-b-2 border-white/80 bg-blue-400/40 shadow-2xl'>
-        <p className='font-extrabold text-[36px] text-white ml-[24px]'>
-          맹맹 시치 모여라~~
-        </p>
-        <div className='flex items-center'>
-          <img
-            className='w-[28px] h-[28px] ml-[80px]'
-            src={images.waitingRoom.mail}
-            alt='초대코드'
-          />
-          <span className='ml-[20px] text-white font-extrabold text-[20px]'>
-            12345
-          </span>
-          <motion.img
-            className='ml-[12px] w-[32px] h-[32px] cursor-pointer'
-            src={images.waitingRoom.copy}
-            alt='복사'
-            whileHover={{ scale: 1.2 }}
-            whileTap={{ scale: 0.9 }}
-          />
-        </div>
-        <img
-          className='ml-auto mr-[12px] w-[56px] h-[56px] cursor-pointer'
-          src={images.waitingRoom.exit}
-          alt='나가기'
-        />
-      </div>
+      <WatingRoomHeader />
       <motion.div
         initial='start'
         animate='end'
