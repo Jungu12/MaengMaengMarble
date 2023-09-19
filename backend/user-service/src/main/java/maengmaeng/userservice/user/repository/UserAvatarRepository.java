@@ -23,4 +23,7 @@ public interface UserAvatarRepository extends JpaRepository<UserAvatar, Integer>
     @Query("UPDATE UserAvatar ua SET ua.mounting = true WHERE ua.user = :userId AND ua.avatar = :avatarId")
     void mountAvatarByUserIdAndAvatarId(@Param("userId") String userId, @Param("avatarId") int avatarId);
 
+
+    boolean existsByUserUserIdAndAvatarAvatarId(String userId, int avatarId);
+
 }

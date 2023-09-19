@@ -1,9 +1,11 @@
 import GameRoom from '@pages/GameRoom';
 import HomePage from '@pages/HomePage';
 import Lobby from '@pages/Lobby';
+import LoginCallBackPage from '@pages/LoginCallBackPage';
 import LoginPage from '@pages/LoginPage';
 import NotFound from '@pages/NotFound';
 import WaitingRoom from '@pages/WaitingRoom';
+import { AnimatePresence } from 'framer-motion';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
 const RootRouter = () => {
@@ -12,6 +14,10 @@ const RootRouter = () => {
       <Routes>
         <Route path='/' element={<HomePage />}></Route>
         <Route path='/login' element={<LoginPage />}></Route>
+        <Route
+          path='/login/oauth/naver/callback'
+          element={<LoginCallBackPage />}
+        ></Route>
         <Route path='/lobby' element={<Lobby />}></Route>
         <Route path='/waiting-room'>
           <Route index element={<NotFound />}></Route>
