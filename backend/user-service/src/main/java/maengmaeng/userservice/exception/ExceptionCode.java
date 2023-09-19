@@ -13,6 +13,14 @@ public enum ExceptionCode {
     REPOSITORY_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 사용자의 레포지토리가 존재하지 않습니다."),
     NICKNAME_ALREADY_IN_USE(HttpStatus.BAD_REQUEST, "해당 닉네임은 이미 사용 중입니다"),
     AVATAR_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 캐릭터를 찾을 수 없습니다."),
+    AVATAR_EXISTED(HttpStatus.BAD_REQUEST, "이미 보유한 캐릭터입니다."),
+    POINT_NOT_SUFFICIENT(HttpStatus.BAD_REQUEST, "포인트가 부족합니다."),
+
+
+
+    FOLLOW_CANCEL_FAILED(HttpStatus.BAD_REQUEST, "친구삭제를 실행할 수 없습니다."),
+    ALREADY_REQUESTED(HttpStatus.CONFLICT, "이미 친구 관계입니다."),
+    RELATION_NOT_FOUND(HttpStatus.BAD_REQUEST, "친구 신청 내역이 없습니다."),
 
     /* Auth */
     USER_CREATED_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "사용자 객체 생성에 실패했습니다."),

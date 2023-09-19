@@ -35,4 +35,7 @@ public class Avatar {
     public void setAvatarId(int avatarId) {
         this.avatarId = avatarId;
     }
+
+
+
 }
