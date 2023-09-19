@@ -4,7 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="15a5c682-7643-483f-ba60-e130629fcfe4" name="Changes" comment="" />
+    <list default="true" id="15a5c682-7643-483f-ba60-e130629fcfe4" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/../apigateway-service/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/../apigateway-service/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -14,6 +18,18 @@
     <projectState path="$PROJECT_DIR$">
       <ProjectState />
     </projectState>
+  </component>
+  <component name="ExternalProjectsManager">
+    <system id="GRADLE">
+      <state>
+        <projects_view>
+          <tree_state>
+            <expand />
+            <select />
+          </tree_state>
+        </projects_view>
+      </state>
+    </system>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../.." />
@@ -57,6 +73,7 @@
       <option name="presentableId" value="Default" />
       <updated>1694760640714</updated>
       <workItem from="1694760644687" duration="4990000" />
+      <workItem from="1695108392125" duration="1221000" />
     </task>
     <servers />
   </component>
