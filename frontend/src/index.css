@@ -2,6 +2,12 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  html {
+    font-family: 'pretendard', system-ui, sans-serif;
+  }
+}
+
 @font-face {
   font-family: 'pretendard';
   src: url('/src/assets/fonts/Pretendard-ExtraBold.woff') format('woff');
@@ -41,5 +47,11 @@
   font-family: 'pretendard';
   src: url('/src/assets/fonts/Pretendard-Light.woff') format('woff');
   font-weight: 300;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'inooariduri';
+  src: url('/src/assets/fonts/RixInooAriDuri-Pro-Regular.woff') format('woff');
   font-style: normal;
 }

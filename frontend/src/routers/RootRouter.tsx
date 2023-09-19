@@ -5,6 +5,7 @@ import LoginCallBackPage from '@pages/LoginCallBackPage';
 import LoginPage from '@pages/LoginPage';
 import NotFound from '@pages/NotFound';
 import WaitingRoom from '@pages/WaitingRoom';
+import { AnimatePresence } from 'framer-motion';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
 const RootRouter = () => {
