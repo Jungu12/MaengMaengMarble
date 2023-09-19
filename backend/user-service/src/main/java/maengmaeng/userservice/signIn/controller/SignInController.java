@@ -11,7 +11,7 @@ import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/signIn")
+@RequestMapping("/api/user-service/signIn")
 public class SignInController {
     private final SignInService signInService;
     @PostMapping("/nicknames")
