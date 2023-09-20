@@ -46,6 +46,21 @@ export const images = {
   lobby: {
     background: '/src/assets/images/lobby-background.png',
   },
+  store: {
+    background: '/src/assets/images/store-background.png',
+    owner: '/src/assets/images/character-store-owner.png',
+    bubble: '/src/assets/images/img-speech-bubble.png',
+    gradation: '/src/assets/images/img-character-effect.png',
+    dog1: '/src/assets/images/character-dog.png',
+    dog2: '/src/assets/images/character-dog2.png',
+    rabbit: '/src/assets/images/character-rabbit.png',
+    hedgehog: '/src/assets/images/character-hedgehog.png',
+    panda: '/src/assets/images/character-panda.png',
+    whale: '/src/assets/images/character-whale.png',
+    phoenix: '/src/assets/images/character-phoenix.png',
+    squirrel: '/src/assets/images/character-squirrel.png',
+    unicorn: '/src/assets/images/character-unicorn.png',
+  },
   default: {
     character: '/src/assets/images/default-character.png',
   },
