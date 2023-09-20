@@ -17,6 +17,7 @@
       "@apis/*": ["src/apis/*"],
       "@pages/*": ["src/components/pages/*"],
       "@components/*": ["src/components/*"],
+      "@hooks/*": ["src/hooks/*"],
       "@/*": ["src/*"]
     },
 
