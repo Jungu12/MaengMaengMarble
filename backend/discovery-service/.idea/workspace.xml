@@ -5,8 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="15a5c682-7643-483f-ba60-e130629fcfe4" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.idea/jarRepositories.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../apigateway-service/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/../apigateway-service/build.gradle" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../apigateway-service/src/main/java/maengmaeng/apigatewayservice/filter/JwtAuthenticationFilter.java" beforeDir="false" afterPath="$PROJECT_DIR$/../apigateway-service/src/main/java/maengmaeng/apigatewayservice/filter/JwtAuthenticationFilter.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
