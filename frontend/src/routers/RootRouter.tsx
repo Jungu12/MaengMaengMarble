@@ -1,6 +1,7 @@
 import GameRoom from '@pages/GameRoom';
 import HomePage from '@pages/HomePage';
 import Lobby from '@pages/Lobby';
+import Store from '@pages/Store';
 import LoginCallBackPage from '@pages/LoginCallBackPage';
 import LoginPage from '@pages/LoginPage';
 import NotFound from '@pages/NotFound';
@@ -20,6 +21,7 @@ const RootRouter = () => {
             element={<LoginCallBackPage />}
           ></Route>
           <Route path='/lobby' element={<Lobby />}></Route>
+          <Route path='/store' element={<Store />}></Route>
           <Route path='/waiting-room'>
             <Route index element={<NotFound />}></Route>
             <Route path=':roomId' element={<WaitingRoom />}></Route>
