@@ -1,6 +1,7 @@
 package maengmaeng.gamelogicservice.config;
 
 import org.springframework.context.annotation.Configuration;
+import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
@@ -26,6 +27,6 @@ public class WebSockConfig implements WebSocketMessageBrokerConfigurer {
 	@Override
 	public void registerStompEndpoints(StompEndpointRegistry registry) {
 		//sockJs 클라이언트가 WebSocket hand-shake를 하기 위한 endpoint를 지정함
-		registry.addEndpoint("/api/maeng").setAllowedOriginPatterns("*").withSockJS();
+		registry.addEndpoint("/api/maeng").setAllowedOriginPatterns("*");
 	}
 }

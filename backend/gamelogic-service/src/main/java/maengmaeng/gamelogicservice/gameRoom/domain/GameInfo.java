@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -13,5 +14,12 @@ import lombok.NoArgsConstructor;
 @Getter
 public class GameInfo implements Serializable {
 	@Builder.Default
-	private static final long serialVersionUID = 207207207207L;;
+	private static final long serialVersionUID = 207207207207L;
+	private String roomCode;
+	private Player[] players;
+	private Land[] lands;
+	private Info info;
+	private GoldenKeys goldenKeys;
+	private NewsInfo newsInfo;
+	private Stock[] stocks;
 }
