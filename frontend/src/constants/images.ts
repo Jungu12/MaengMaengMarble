@@ -42,6 +42,8 @@ export const images = {
     create: '/src/assets/images/btn-create.png',
     checked: '/src/assets/images/btn-checked.png',
     unchecked: '/src/assets/images/btn-unchecked.png',
+    bought: '/src/assets/images/btn-bg-already-buy.png',
+    buy: '/src/assets/images/btn-bg-buy.png',
   },
   lobby: {
     background: '/src/assets/images/lobby-background.png',
@@ -50,7 +52,8 @@ export const images = {
     background: '/src/assets/images/store-background.png',
     owner: '/src/assets/images/character-store-owner.png',
     bubble: '/src/assets/images/img-speech-bubble.png',
-    gradation: '/src/assets/images/img-character-effect.png',
+    buygra: '/src/assets/images/img-character-buy-effect.png',
+    boughtgra: '/src/assets/images/img-character-already-buy-effect.png',
     dog1: '/src/assets/images/character-dog.png',
     dog2: '/src/assets/images/character-dog2.png',
     rabbit: '/src/assets/images/character-rabbit.png',
