@@ -72,4 +72,9 @@ public class AuthController {
 		logger.debug("getUserId()");
 		return ResponseEntity.ok().body(authService.getUserId(token));
 	}
+	@GetMapping("/test")
+	public ResponseEntity<?> filterTest(){
+		logger.debug("test");
+		return ResponseEntity.ok().build();
+	}
 }

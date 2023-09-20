@@ -1,0 +1,31 @@
+server:
+  port: 8000
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+
+jwt:
+  secret-key : rkdwnsrnrlatkdrmsrladmsgkrnjsalswodldlfghdlgywls207xladkwkdkwkghkdlxldekemfwkfajrrhwkftkfwk
+spring:
+  application:
+    name: apigateway-service
+  cloud:
+    gateway:
+      routes:
+        - id: user-service
+          uri: lb://USER-SERVICE/
+          predicates:
+            - Path=/api/user-service/oauth/**
+
+        - id: user-service
+          uri: lb://USER-SERVICE/
+          predicates:
+            - Path=/api/user-service/**
+          filters:
+            - JwtAuthenticationFilter
+logging:
+  level:
+    root: debug
