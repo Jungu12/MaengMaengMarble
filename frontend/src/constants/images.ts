@@ -40,6 +40,8 @@ export const images = {
     plus: '/src/assets/images/icon-plus.png',
     room: '/src/assets/images/icon-room.png',
     people: '/src/assets/images/icon-people.png',
+    error: '/src/assets/images/icon-error.png',
+    edit: '/src/assets/images/icon-edit.png',
   },
   button: {
     close: '/src/assets/images/btn-close.png',
@@ -56,5 +58,6 @@ export const images = {
   mypage: {
     lock: '/src/assets/images/ic-lock.png',
     choice: '/src/assets/images/ic-choice.png',
+    buttonGreen: '/src/assets/images/button-green.png',
   },
 };
