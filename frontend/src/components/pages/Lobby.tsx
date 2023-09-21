@@ -1,12 +1,21 @@
 import { images } from '@constants/images';
 import NewRoomModal from '@components/lobby/NewRoomModal';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import LobbyHeader from '@components/lobby/LobbyHeader';
 import LobbyCharacterView from '@components/lobby/LobbyCharacterView';
 import LobbyRoomListView from '@components/lobby/LobbyRoomListView';
+import * as StompJs from '@stomp/stompjs';
+import { activateClient, getClient } from '@utils/socket';
 
 const Lobby = () => {
+  const clientRef = useRef<StompJs.Client>();
   const [isOpenNewRoomModal, setIsOpenNewRoomModal] = useState(false);
+
+  // 소켓 연결
+  useEffect(() => {
+    clientRef.current = getClient();
+    activateClient(clientRef.current);
+  }, []);
 
   return (
     <>
