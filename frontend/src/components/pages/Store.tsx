@@ -1,4 +1,3 @@
-import React from 'react';
 import { images } from '@constants/images';
 import StoreCharacterCard from '@components/store/StoreCharacterCard';
 import StoreOwnerView from '@components/store/StoreOwnerView';

@@ -1,7 +1,9 @@
-import WatingRoomCharaterCard from '@components/watingRoom/WatingRoomCharaterCard';
-import WatingRoomChatting from '@components/watingRoom/WatingRoomChatting';
+import WaitingRoomCharaterCard from '@components/watingRoom/WaitingRoomCharaterCard';
+import WaitingRoomChatting from '@components/watingRoom/WaitingRoomChatting';
 import { images } from '@constants/images';
+import * as StompJs from '@stomp/stompjs';
 import { motion } from 'framer-motion';
+import { useCallback, useEffect, useRef } from 'react';
 
 const BoxAnimation = {
   start: { scale: 0, opacity: 0.5 },
@@ -25,6 +27,32 @@ const InnerAnimation = {
 
 const WaitingRoom = () => {
   const isReady = true;
+  const client = useRef<StompJs.Client>();
+
+  const connect = useCallback(() => {
+    client.current = new StompJs.Client({
+      brokerURL: 'ws://192.168.100.64:8080/api/maeng',
+      connectHeaders: {
+        login: '',
+        passcode: 'password',
+      },
+      onConnect: () => {
+        console.log('연결 됬습니다~');
+      },
+      debug: function (str) {
+        console.log(str);
+      },
+      reconnectDelay: 5000, // 자동 재 연결
+      heartbeatIncoming: 4000,
+      heartbeatOutgoing: 4000,
+    });
+
+    client.current.activate();
+  }, []);
+
+  useEffect(() => {
+    connect();
+  }, []);
 
   return (
     <motion.div
@@ -70,7 +98,7 @@ const WaitingRoom = () => {
         variants={BoxAnimation}
         className='flex justify-around h-full'
       >
-        <WatingRoomCharaterCard
+        <WaitingRoomCharaterCard
           name={'상근시치'}
           avaterUrl={images.dummy.dummy1}
           isReady={false}
@@ -78,7 +106,7 @@ const WaitingRoom = () => {
           isClose={false}
           animation={InnerAnimation}
         />
-        <WatingRoomCharaterCard
+        <WaitingRoomCharaterCard
           name={'215'}
           avaterUrl={images.dummy.dummy2}
           isReady={true}
@@ -86,7 +114,7 @@ const WaitingRoom = () => {
           isClose={false}
           animation={InnerAnimation}
         />
-        <WatingRoomCharaterCard
+        <WaitingRoomCharaterCard
           name={''}
           avaterUrl={''}
           isReady={false}
@@ -94,7 +122,7 @@ const WaitingRoom = () => {
           isClose={true}
           animation={InnerAnimation}
         />
-        <WatingRoomCharaterCard
+        <WaitingRoomCharaterCard
           name={'기므나'}
           avaterUrl={images.dummy.dummy3}
           isReady={false}
@@ -104,7 +132,7 @@ const WaitingRoom = () => {
         />
       </motion.div>
       <div className='absolute bottom-[8px] left-[12px]'>
-        <WatingRoomChatting />
+        <WaitingRoomChatting />
       </div>
       <motion.div
         className='z-10 cursor-pointer absolute bottom-[8px] left-[40%]'
