@@ -21,6 +21,10 @@ export const images = {
     dummy1: '/src/assets/images/dummy1.png',
     dummy2: '/src/assets/images/dummy2.png',
     dummy3: '/src/assets/images/dummy3.png',
+    dummyCharacter1: '/src/assets/images/dummyCharacter1.png',
+    dummyCharacter2: '/src/assets/images/dummyCharacter2.png',
+    dummyCharacter3: '/src/assets/images/dummyCharacter3.png',
+    dummyCharacter4: '/src/assets/images/dummyCharacter4.png',
   },
   icon: {
     volume_on: '/src/assets/images/icon-volume-on.png',
@@ -48,5 +52,9 @@ export const images = {
   },
   default: {
     character: '/src/assets/images/default-character.png',
+  },
+  mypage: {
+    lock: '/src/assets/images/ic-lock.png',
+    choice: '/src/assets/images/ic-choice.png',
   },
 };

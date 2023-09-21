@@ -55,3 +55,25 @@
   src: url('/src/assets/fonts/RixInooAriDuri-Pro-Regular.woff') format('woff');
   font-style: normal;
 }
+
+.scrollbar {
+  overflow-y: scroll;
+}
+
+.scrollbar::-webkit-scrollbar {
+  width: 20px; /* 스크롤바의 너비 */
+}
+
+.scrollbar::-webkit-scrollbar-thumb {
+  height: 30%; /* 스크롤바의 길이 */
+  background: #3d2907; /* 스크롤바의 색상 */
+  border-radius: 10px;
+  background-clip: padding-box;
+  border: 5px solid transparent;
+}
+
+.scrollbar::-webkit-scrollbar-track {
+  height: 20px;
+  background: #dfc89cc9; /*스크롤바 뒷 배경 색상*/
+  border-radius: 10px;
+}
