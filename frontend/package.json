@@ -21,7 +21,8 @@
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.15.0",
     "recoil": "^0.7.7",
-    "sockjs-client": "^1.6.1"
+    "sockjs-client": "^1.6.1",
+    "websocket": "^1.0.34"
   },
   "devDependencies": {
     "@types/node": "^20.6.0",

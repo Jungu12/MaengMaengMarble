@@ -1,7 +1,7 @@
 import { images } from '@constants/images';
 import { motion } from 'framer-motion';
 
-const WatingRoomHeader = () => {
+const WaitingRoomHeader = () => {
   return (
     <div className='flex items-center w-full h-[80px] border-b-2 border-white/80 bg-blue-400/40 shadow-2xl'>
       <p className='font-extrabold text-[36px] text-white ml-[24px]'>
@@ -33,4 +33,4 @@ const WatingRoomHeader = () => {
   );
 };
 
-export default WatingRoomHeader;
+export default WaitingRoomHeader;
