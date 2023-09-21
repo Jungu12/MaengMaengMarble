@@ -2,8 +2,9 @@ import WaitingRoomCharaterCard from '@components/watingRoom/WaitingRoomCharaterC
 import WaitingRoomChatting from '@components/watingRoom/WaitingRoomChatting';
 import { images } from '@constants/images';
 import * as StompJs from '@stomp/stompjs';
+import { activateClient, getClient } from '@utils/socket';
 import { motion } from 'framer-motion';
-import { useCallback, useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 
 const BoxAnimation = {
   start: { scale: 0, opacity: 0.5 },
@@ -29,29 +30,9 @@ const WaitingRoom = () => {
   const isReady = true;
   const client = useRef<StompJs.Client>();
 
-  const connect = useCallback(() => {
-    client.current = new StompJs.Client({
-      brokerURL: 'ws://192.168.100.64:8080/api/maeng',
-      connectHeaders: {
-        login: '',
-        passcode: 'password',
-      },
-      onConnect: () => {
-        console.log('연결 됬습니다~');
-      },
-      debug: function (str) {
-        console.log(str);
-      },
-      reconnectDelay: 5000, // 자동 재 연결
-      heartbeatIncoming: 4000,
-      heartbeatOutgoing: 4000,
-    });
-
-    client.current.activate();
-  }, []);
-
   useEffect(() => {
-    connect();
+    client.current = getClient();
+    activateClient(client.current);
   }, []);
 
   return (
