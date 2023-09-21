@@ -1,5 +1,5 @@
-import React from 'react';
 import { images } from '@constants/images';
+import { motion } from 'framer-motion';
 
 type StoreCharacterInfoProps = {
   have: boolean;
@@ -21,9 +21,13 @@ const StoreCharacterCard = ({
       } p-[10px] rounded-[10px] relative`}
     >
       <div className='w-full relative mb-3'>
-        <img className='w-full relative' src={img} alt='캐릭터 뷰' />
         <img
-          className='w-full absolute top-0 left-0 bottom-0 right-0 z-10'
+          className='w-full aspect-[2/3] relative'
+          src={img}
+          alt='캐릭터 뷰'
+        />
+        <img
+          className='w-full absolute aspect-[2/3] top-0 left-0 bottom-0 right-0 z-10'
           src={have ? images.store.buygra : images.store.boughtgra}
           alt='그라데이션 뷰'
         />
@@ -35,22 +39,31 @@ const StoreCharacterCard = ({
           {name}
         </p>
       </div>
-      <button
-        className='w-full flex aspect-[7/2.229]'
-        style={{
-          backgroundImage: `url(${
-            have ? images.button.buy : images.button.bought
-          })`,
-          backgroundSize: 'contain',
-        }}
+      <motion.div
+        className='w-full'
+        whileHover={have ? { scale: 1.05 } : {}}
+        whileTap={have ? { scale: 0.9 } : {}}
+        transition={have ? { type: 'spring', stiffness: 150, damping: 10 } : {}}
       >
-        {have && (
-          <div className='flex w-full h-full flex-row items-center px-8 justify-between'>
-            <img className='h-7' src={images.icon.point} alt='코인 아이콘' />
-            <p className='text-[18px] font-black text-text-100'>{point}</p>
-          </div>
-        )}
-      </button>
+        <button
+          className={`w-full flex aspect-[194/61] bg-no-repeat ${
+            have ? '' : 'cursor-not-allowed'
+          }`}
+          style={{
+            backgroundImage: `url(${
+              have ? images.button.buy : images.button.bought
+            })`,
+            backgroundSize: 'contain',
+          }}
+        >
+          {have && (
+            <div className='flex w-full h-full flex-row items-center px-8 justify-between'>
+              <img className='h-7' src={images.icon.point} alt='코인 아이콘' />
+              <p className='text-[18px] font-black text-text-100'>{point}</p>
+            </div>
+          )}
+        </button>
+      </motion.div>
     </div>
   );
 };

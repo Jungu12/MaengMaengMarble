@@ -1,4 +1,5 @@
 import { images } from '@constants/images';
+import { addComma } from '@utils/format';
 import StoreCharacterCard from '@components/store/StoreCharacterCard';
 import StoreOwnerView from '@components/store/StoreOwnerView';
 
@@ -30,55 +31,55 @@ const Store = () => {
               have={true}
               img={images.store.dog1}
               name='허스키'
-              point='10,000'
+              point={addComma(450)}
             />
             <StoreCharacterCard
               have={true}
               img={images.store.dog2}
               name='시츄'
-              point='11,000'
+              point={addComma(450)}
             />
             <StoreCharacterCard
               have={false}
               img={images.store.rabbit}
               name='토끼'
-              point='18,000'
+              point={addComma(1250)}
             />
             <StoreCharacterCard
               have={false}
               img={images.store.hedgehog}
               name='고슴도치'
-              point='18,000'
+              point={addComma(1250)}
             />
             <StoreCharacterCard
               have={true}
               img={images.store.panda}
               name='팬더'
-              point='18,000'
+              point={addComma(4800)}
             />
             <StoreCharacterCard
               have={true}
               img={images.store.whale}
               name='고래'
-              point='21,000'
+              point={addComma(4800)}
             />
             <StoreCharacterCard
               have={true}
               img={images.store.phoenix}
               name='불사조'
-              point='31,000'
+              point={addComma(6300)}
             />
             <StoreCharacterCard
               have={false}
               img={images.store.squirrel}
               name='다람쥐'
-              point='18,000'
+              point={addComma(3150)}
             />
             <StoreCharacterCard
               have={true}
               img={images.store.unicorn}
               name='유니콘'
-              point='35,000'
+              point={addComma(6300)}
             />
           </div>
         </div>
