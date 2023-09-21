@@ -5,14 +5,20 @@ type CharacterInfoProps = {
   name: string;
   img: string;
   point: string;
+  handleMyPageModal: () => void;
 };
 
-const LobbyCharacterView = ({ name, img, point }: CharacterInfoProps) => {
+const LobbyCharacterView = ({
+  name,
+  img,
+  point,
+  handleMyPageModal,
+}: CharacterInfoProps) => {
   return (
     <div className='flex flex-col w-fit h-full justify-between mr-10 p-8 bg-white bg-opacity-50 rounded-[40px]'>
       <div className='flex flex-row items-center justify-between'>
         <p className='text-3xl font-extrabold text-text-100'>{name}</p>
-        <button>
+        <button onClick={handleMyPageModal}>
           <img
             className='w-8 h-8'
             src={images.icon.setting}
