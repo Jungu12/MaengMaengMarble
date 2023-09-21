@@ -1,4 +1,4 @@
-const WatingRoomChatting = () => {
+const WaitingRoomChatting = () => {
   return (
     <div className='flex flex-col'>
       <div
@@ -19,4 +19,4 @@ const WatingRoomChatting = () => {
   );
 };
 
-export default WatingRoomChatting;
+export default WaitingRoomChatting;
