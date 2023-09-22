@@ -17,10 +17,10 @@ public class LobbyRestController {
 	private final LobbyService lobbyService;
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
-	@GetMapping("/rooms")
-	public ResponseEntity<?> waitingRoomCreate() {
-		logger.debug("waitingRoomCreate()");
-
-		return ResponseEntity.ok().body(lobbyService.createWaitingRoom());
-	}
+	// @GetMapping("/rooms")
+	// public ResponseEntity<?> waitingRoomCreate() {
+	// 	logger.debug("waitingRoomCreate()");
+	//
+	// 	return ResponseEntity.ok().body(lobbyService.createWaitingRoom());
+	// }
 }

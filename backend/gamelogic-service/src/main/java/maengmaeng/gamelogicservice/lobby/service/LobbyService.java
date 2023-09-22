@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import maengmaeng.gamelogicservice.exception.ExceptionCode;
 import maengmaeng.gamelogicservice.exception.LobbyException;
 import maengmaeng.gamelogicservice.lobby.repository.LobbyRepository;
-import maengmaeng.gamelogicservice.lobby.util.RedisInOutManager;
 import maengmaeng.gamelogicservice.util.RedisSubscriber;
 
 import org.slf4j.Logger;
@@ -14,7 +13,6 @@ import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.stereotype.Service;
 
-import java.time.format.SignStyle;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -24,7 +22,6 @@ public class LobbyService {
     // 로비(topic)에 발행되는 메시지를 처리할 Listener
     private final RedisMessageListenerContainer redisMessageListener;
     private final RedisSubscriber redisSubscriber;
-    private final RedisInOutManager redisSubscriberManager;
     private final RedisTemplate<String, String> redisTemplate;
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -48,6 +45,6 @@ public class LobbyService {
     }
 
     // public WaitingRoom createWaitingRoom() {
-    //
+    //     return new WaitingRoom();
     // }
 }
