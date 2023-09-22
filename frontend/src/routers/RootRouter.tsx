@@ -1,6 +1,7 @@
 import GameRoom from '@pages/GameRoom';
 import HomePage from '@pages/HomePage';
 import Lobby from '@pages/Lobby';
+import Store from '@pages/Store';
 import LoginCallBackPage from '@pages/LoginCallBackPage';
 import LoginPage from '@pages/LoginPage';
 import NotFound from '@pages/NotFound';
@@ -11,23 +12,26 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 const RootRouter = () => {
   return (
     <BrowserRouter>
-      <Routes>
-        <Route path='/' element={<HomePage />}></Route>
-        <Route path='/login' element={<LoginPage />}></Route>
-        <Route
-          path='/login/oauth/naver/callback'
-          element={<LoginCallBackPage />}
-        ></Route>
-        <Route path='/lobby' element={<Lobby />}></Route>
-        <Route path='/waiting-room'>
-          <Route index element={<NotFound />}></Route>
-          <Route path=':roomId' element={<WaitingRoom />}></Route>
-        </Route>
-        <Route path='/game-room'>
-          <Route index element={<NotFound />}></Route>
-          <Route path=':gameId' element={<GameRoom />}></Route>
-        </Route>
-      </Routes>
+      <AnimatePresence>
+        <Routes>
+          <Route path='/' element={<HomePage />}></Route>
+          <Route path='/login' element={<LoginPage />}></Route>
+          <Route
+            path='/login/oauth/naver/callback'
+            element={<LoginCallBackPage />}
+          ></Route>
+          <Route path='/lobby' element={<Lobby />}></Route>
+          <Route path='/store' element={<Store />}></Route>
+          <Route path='/waiting-room'>
+            <Route index element={<NotFound />}></Route>
+            <Route path=':roomId' element={<WaitingRoom />}></Route>
+          </Route>
+          <Route path='/game-room'>
+            <Route index element={<NotFound />}></Route>
+            <Route path=':gameId' element={<GameRoom />}></Route>
+          </Route>
+        </Routes>
+      </AnimatePresence>
     </BrowserRouter>
   );
 };

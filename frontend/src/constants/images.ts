@@ -37,6 +37,14 @@ export const images = {
     refresh: '/src/assets/images/icon-refresh.png',
     invite: '/src/assets/images/icon-invite.png',
     plus: '/src/assets/images/icon-plus.png',
+    room: '/src/assets/images/icon-room.png',
+    people: '/src/assets/images/icon-people.png',
+  },
+  button: {
+    close: '/src/assets/images/btn-close.png',
+    create: '/src/assets/images/btn-create.png',
+    checked: '/src/assets/images/btn-checked.png',
+    unchecked: '/src/assets/images/btn-unchecked.png',
   },
   lobby: {
     background: '/src/assets/images/lobby-background.png',
