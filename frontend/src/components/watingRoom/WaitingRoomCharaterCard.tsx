@@ -19,7 +19,7 @@ type Props = {
   };
 };
 
-const WatingRoomCharaterCard = ({
+const WaitingRoomCharaterCard = ({
   name,
   avaterUrl,
   isReady,
@@ -161,4 +161,4 @@ const WatingRoomCharaterCard = ({
   );
 };
 
-export default WatingRoomCharaterCard;
+export default WaitingRoomCharaterCard;
