@@ -55,7 +55,7 @@ const CModal = ({
         <div
           className='absolute flex w-full h-full bg-black bg-opacity-50 items-center justify-center'
           style={{
-            zIndex: 3,
+            zIndex: 100,
           }}
           ref={modalRef}
           onClick={(e) => modalOutSideClick(e)}
