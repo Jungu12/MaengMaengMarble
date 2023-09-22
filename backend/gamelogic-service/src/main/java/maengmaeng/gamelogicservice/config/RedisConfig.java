@@ -28,15 +28,21 @@ public class RedisConfig {
 		return new ChannelTopic("GAME_ROOM");
 	}
 
+	@Bean
+	public ChannelTopic chatTopic() {
+		return new ChannelTopic("CHAT");
+	}
+
 	// redis pub/sub 메시지를 처리하는 listener 설정
 	@Bean
-	public RedisMessageListenerContainer redisMessageListener(RedisConnectionFactory connectionFactory, RedisSubscriber subscriber, ChannelTopic lobbyTopic, ChannelTopic waitingRoomTopic, ChannelTopic gameRoomTopic) {
+	public RedisMessageListenerContainer redisMessageListener(RedisConnectionFactory connectionFactory, RedisSubscriber subscriber, ChannelTopic lobbyTopic, ChannelTopic waitingRoomTopic, ChannelTopic gameRoomTopic, ChannelTopic chatTopic) {
 		RedisMessageListenerContainer container = new RedisMessageListenerContainer();
 		container.setConnectionFactory(connectionFactory);
 		//Topic Listener에 설정
 		container.addMessageListener(subscriber, lobbyTopic);
 		container.addMessageListener(subscriber, waitingRoomTopic);
 		container.addMessageListener(subscriber, gameRoomTopic);
+		container.addMessageListener(subscriber, chatTopic);
 		return container;
 	}
 
