@@ -13,10 +13,7 @@ const RoomInfoCard = ({ title, currentCnt, clientRef }: RoomInfoProps) => {
 
   const enterGameRoom = useCallback(() => {
     navigation('/waiting-room/12345');
-    clientRef.current?.subscribe(`/sub/waiting-rooms/12345`, (res) => {
-      console.log(res);
-    });
-  }, [clientRef, navigation]);
+  }, [navigation]);
 
   return (
     <div className='flex flex-col p-6 bg-primary-100 rounded-[40px]'>

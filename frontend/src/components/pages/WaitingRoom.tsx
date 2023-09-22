@@ -5,7 +5,7 @@ import * as StompJs from '@stomp/stompjs';
 import { activateClient, getClient } from '@utils/socket';
 import { motion } from 'framer-motion';
 import { useCallback, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 
 const BoxAnimation = {
   start: { scale: 0, opacity: 0.5 },
@@ -29,6 +29,7 @@ const InnerAnimation = {
 
 const WaitingRoom = () => {
   const navigate = useNavigate();
+  const { roomId } = useParams();
   const isReady = true;
   const client = useRef<StompJs.Client>();
 
@@ -39,6 +40,21 @@ const WaitingRoom = () => {
   useEffect(() => {
     client.current = getClient();
     activateClient(client.current);
+    client.current.onConnect = () => {
+      if (client.current) {
+        client.current.subscribe('/sub/waiting-rooms/12345', (res) => {
+          console.log(JSON.parse(res.body));
+        });
+        client.current.publish({
+          destination: '/pub/lobby/12345',
+          body: JSON.stringify({
+            userid: '12345',
+            nickname: '김상근',
+            characterId: 1,
+          }),
+        });
+      }
+    };
   }, []);
 
   return (
