@@ -55,7 +55,7 @@ const MyPageCharacterCard = ({ src, alt, name, status }: Props) => {
       )}
       {status === 'possession' && (
         <div
-          className='w-[164px] h-[164px] absolute bottom-[0px] z-[2]'
+          className='w-[164px] h-[164px] absolute bottom-[0px] z-[2] cursor-pointer'
           style={{
             borderRadius: '10px',
             border: '4px solid #68634F',

@@ -1,4 +1,3 @@
-import { colors } from '@constants/colors';
 import React from 'react';
 
 type Props = {
@@ -29,9 +28,7 @@ const CButton = ({ width, height, onClick, children, rounded }: Props) => {
       <div
         className={`w-${width ? '[' + width + 'px' + ']' : 'full'} h-${
           height ? '[' + height + 'px' + ']' : 'full'
-        } bg-[${
-          colors.secondary[200]
-        }] absolute bottom-[-4px] right-[-6px] z-[0] ${
+        } bg-[#28B1A6] absolute bottom-[-4px] right-[-6px] z-[0] ${
           rounded && `rounded-[${rounded}px]`
         }`}
       ></div>

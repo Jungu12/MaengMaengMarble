@@ -42,6 +42,8 @@ export const images = {
     people: '/src/assets/images/icon-people.png',
     error: '/src/assets/images/icon-error.png',
     edit: '/src/assets/images/icon-edit.png',
+    registrationActive: '/src/assets/images/ic-registration-active.png',
+    registrationInactive: '/src/assets/images/ic-registration-inactive.png',
   },
   button: {
     close: '/src/assets/images/btn-close.png',

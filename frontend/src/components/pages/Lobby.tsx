@@ -35,6 +35,7 @@ const Lobby = () => {
         setIsOpenNewRoomModal={setIsOpenNewRoomModal}
       />
       <MyPageModal
+        name={'개멋있는 사람'}
         isOpenNewRoomModal={isOpenMyPageModal}
         handleMyPageModalClose={handleMyPageModalClose}
       />
