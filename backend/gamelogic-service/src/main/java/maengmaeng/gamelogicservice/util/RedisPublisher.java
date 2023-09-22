@@ -12,7 +12,7 @@ import maengmaeng.gamelogicservice.gameRoom.domain.Map;
 public class RedisPublisher {
 	private final RedisTemplate<String, Object> redisTemplate;
 
-	public void publish(ChannelTopic topic, Map map) {
+	public void publish(ChannelTopic topic, Object map) {
 		redisTemplate.convertAndSend(topic.getTopic(), map);
 	}
 }
