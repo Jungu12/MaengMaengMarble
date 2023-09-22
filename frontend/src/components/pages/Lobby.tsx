@@ -1,5 +1,5 @@
 import { images } from '@constants/images';
-import NewRoomModal from '@components/lobby/NewRoomModal';
+import CreateRoomModal from '@components/modal/CreateRoomModal';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import LobbyHeader from '@components/lobby/LobbyHeader';
 import LobbyCharacterView from '@components/lobby/LobbyCharacterView';
@@ -10,8 +10,16 @@ import MyPageModal from '@components/modal/MyPageModal';
 
 const Lobby = () => {
   const clientRef = useRef<StompJs.Client>();
-  const [isOpenNewRoomModal, setIsOpenNewRoomModal] = useState(false);
+  const [isOpenCreateRoomModal, setIsOpenCreateRoomModal] = useState(false);
   const [isOpenMyPageModal, setIsOpenMyPageModal] = useState(false);
+
+  const onClickCreateRoomButton = useCallback(() => {
+    setIsOpenCreateRoomModal((prev) => !prev);
+  }, []);
+
+  const handleCreateRoomModalClose = useCallback(() => {
+    setIsOpenCreateRoomModal(false);
+  }, []);
 
   const onClickSettingButton = useCallback(() => {
     setIsOpenMyPageModal((prev) => !prev);
@@ -25,18 +33,19 @@ const Lobby = () => {
   useEffect(() => {
     clientRef.current = getClient();
     activateClient(clientRef.current);
+    clientRef.current.onConnect = () => {};
   }, []);
 
   return (
     <>
-      {/* {isOpenRoomModal && <NewRoomModal closeModal={closeRoomModal} />} */}
-      <NewRoomModal
-        isOpenNewRoomModal={isOpenNewRoomModal}
-        setIsOpenNewRoomModal={setIsOpenNewRoomModal}
+      {/* {isOpenRoomModal && <CreateRoomModal closeModal={closeRoomModal} />} */}
+      <CreateRoomModal
+        isOpenCreateRoomModal={isOpenCreateRoomModal}
+        handleCreateRoomModalClose={handleCreateRoomModalClose}
       />
       <MyPageModal
         name={'개멋있는 사람'}
-        isOpenNewRoomModal={isOpenMyPageModal}
+        isOpenCreateRoomModal={isOpenMyPageModal}
         handleMyPageModalClose={handleMyPageModalClose}
       />
       <div
@@ -56,8 +65,7 @@ const Lobby = () => {
             handleMyPageModal={onClickSettingButton}
           />
           <LobbyRoomListView
-            isOpenNewRoomModal={isOpenNewRoomModal}
-            setIsOpenNewRoomModal={setIsOpenNewRoomModal}
+            onClickCreateRoomButton={onClickCreateRoomButton}
             clientRef={clientRef}
           />
         </div>
