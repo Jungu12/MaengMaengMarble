@@ -4,8 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,23 +20,26 @@ import maengmaeng.gamelogicservice.waitingRoom.domain.WaitingRoom;
 @RestController
 @RequestMapping("/api/lobby")
 public class LobbyRestController {
+	private static final String LOBBY = "LOBBY";
 	private final LobbyService lobbyService;
 	private final RedisPublisher redisPublisher;
 	private final ChannelTopic lobbyTopic;
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	@PostMapping("/rooms")
-	public void waitingRoomCreate(@RequestBody WaitingRoomCreateRequest roomInfo) {
+	public ResponseEntity<?> waitingRoomCreate(@RequestBody WaitingRoomCreateRequest roomInfo) {
 		logger.debug("waitingRoomCreate()");
 
-		WaitingRoom waitingRoom = lobbyService.createWaitingRoom(roomInfo.getUserInfo(), roomInfo.getTitle());
+		WaitingRoom waitingRoom = lobbyService.createWaitingRoom(roomInfo);
 
 		GameData gameData = GameData.builder()
-			.type("LOBBY")
+			.type(LOBBY)
 			.roomCode(waitingRoom.getCode())
 			.data(waitingRoom)
 			.build();
 
 		redisPublisher.publish(lobbyTopic, gameData);
+
+		return ResponseEntity.ok().body(gameData.getRoomCode());
 	}
 }
