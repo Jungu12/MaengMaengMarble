@@ -61,6 +61,7 @@ const Lobby = () => {
           <LobbyRoomListView
             isOpenNewRoomModal={isOpenNewRoomModal}
             setIsOpenNewRoomModal={setIsOpenNewRoomModal}
+            clientRef={clientRef}
           />
         </div>
       </motion.div>
