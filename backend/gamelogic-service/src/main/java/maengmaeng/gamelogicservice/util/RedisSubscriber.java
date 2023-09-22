@@ -1,5 +1,6 @@
 package maengmaeng.gamelogicservice.util;
 
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.redis.connection.Message;
 import org.springframework.data.redis.connection.MessageListener;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -36,8 +37,8 @@ public class RedisSubscriber implements MessageListener {
 			if (topicType.equals("WAITING_ROOM")) {
 				messagingTemplate.convertAndSend("/sub/waiting-rooms/" + gameData.getRoomCode(), gameData.getData());
 			}
-			if (topicType.equals("GAME_ROOM")) {
-				messagingTemplate.convertAndSend("/sub/game-rooms/" + gameData.getRoomCode(), gameData.getData());
+			if (topicType.equals("CHAT")) {
+				messagingTemplate.convertAndSend("/sub/chat/" + gameData.getRoomCode(), gameData.getData());
 			}
 		} catch (Exception e) {
 			log.error(e.getMessage());

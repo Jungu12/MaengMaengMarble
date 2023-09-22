@@ -1,10 +1,11 @@
 package maengmaeng.gamelogicservice.lobby.domain.dto;
 
 import lombok.Getter;
-import maengmaeng.gamelogicservice.global.dto.UserInfo;
+import maengmaeng.gamelogicservice.global.dto.WaitingRoomUserInfo;
 
 @Getter
 public class WaitingRoomCreateRequest {
-	private UserInfo userInfo;
+	private WaitingRoomUserInfo userInfo;
 	private String title;
+	private int maxParticipants;
 }
