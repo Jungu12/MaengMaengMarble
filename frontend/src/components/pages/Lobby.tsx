@@ -35,6 +35,7 @@ const Lobby = () => {
         setIsOpenNewRoomModal={setIsOpenNewRoomModal}
       />
       <MyPageModal
+        name={'개멋있는 사람'}
         isOpenNewRoomModal={isOpenMyPageModal}
         handleMyPageModalClose={handleMyPageModalClose}
       />
@@ -47,7 +48,7 @@ const Lobby = () => {
       >
         <LobbyHeader />
 
-        <div className='flex flex-1 flex-row w-full items-center justify-between mt-5'>
+        <div className='flex flex-1 flex-row w-full items-center justify-between mt-5 '>
           <LobbyCharacterView
             name='상근시치'
             img={images.default.character}

@@ -24,6 +24,10 @@ export const images = {
     dummy1: '/src/assets/images/dummy1.png',
     dummy2: '/src/assets/images/dummy2.png',
     dummy3: '/src/assets/images/dummy3.png',
+    dummyCharacter1: '/src/assets/images/dummyCharacter1.png',
+    dummyCharacter2: '/src/assets/images/dummyCharacter2.png',
+    dummyCharacter3: '/src/assets/images/dummyCharacter3.png',
+    dummyCharacter4: '/src/assets/images/dummyCharacter4.png',
   },
   icon: {
     volume_on: '/src/assets/images/icon-volume-on.png',
@@ -44,6 +48,9 @@ export const images = {
     info: '/src/assets/images/icon-info.png',
     warning: '/src/assets/images/icon-warning.png',
     close: '/src/assets/images/icon-close-black.png',
+    edit: '/src/assets/images/icon-edit.png',
+    registrationActive: '/src/assets/images/ic-registration-active.png',
+    registrationInactive: '/src/assets/images/ic-registration-inactive.png',
   },
   button: {
     close: '/src/assets/images/btn-close.png',
@@ -85,5 +92,10 @@ export const images = {
     egypt: '/src/assets/images/map/이집트.png',
     southAfrica: '/src/assets/images/map/남아공.png',
     transactionSuspended: '/src/assets/images/map/거래정지.png',
+  },
+  mypage: {
+    lock: '/src/assets/images/ic-lock.png',
+    choice: '/src/assets/images/ic-choice.png',
+    buttonGreen: '/src/assets/images/button-green.png',
   },
 };
