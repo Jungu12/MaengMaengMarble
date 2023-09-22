@@ -10,21 +10,25 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@stomp/stompjs": "^7.0.0",
     "@tanstack/react-query": "^4.35.0",
     "@types/axios": "^0.14.0",
     "@types/react-router-dom": "^5.3.3",
-    "axios": "^1.5.0",
+    "axios": "1.4",
     "framer-motion": "^10.16.4",
     "lottie-react": "^2.4.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.15.0",
-    "recoil": "^0.7.7"
+    "recoil": "^0.7.7",
+    "sockjs-client": "^1.6.1",
+    "websocket": "^1.0.34"
   },
   "devDependencies": {
     "@types/node": "^20.6.0",
     "@types/react": "^18.2.21",
     "@types/react-dom": "^18.2.7",
+    "@types/sockjs-client": "^1.5.1",
     "@typescript-eslint/eslint-plugin": "^6.7.0",
     "@typescript-eslint/parser": "^6.7.0",
     "@vitejs/plugin-react-swc": "^3.3.2",
