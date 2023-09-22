@@ -4,7 +4,8 @@ import { images } from '@constants/images';
 import * as StompJs from '@stomp/stompjs';
 import { activateClient, getClient } from '@utils/socket';
 import { motion } from 'framer-motion';
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 const BoxAnimation = {
   start: { scale: 0, opacity: 0.5 },
@@ -27,8 +28,13 @@ const InnerAnimation = {
 };
 
 const WaitingRoom = () => {
+  const navigate = useNavigate();
   const isReady = true;
   const client = useRef<StompJs.Client>();
+
+  const onClickExitButton = useCallback(() => {
+    navigate(-1);
+  }, [navigate]);
 
   useEffect(() => {
     client.current = getClient();
@@ -67,11 +73,13 @@ const WaitingRoom = () => {
             whileTap={{ scale: 0.9 }}
           />
         </div>
-        <img
-          className='ml-auto mr-[12px] w-[56px] h-[56px] cursor-pointer'
-          src={images.waitingRoom.exit}
-          alt='나가기'
-        />
+        <button className='ml-auto mr-[12px]' onClick={onClickExitButton}>
+          <img
+            className='w-[56px] h-[56px] cursor-pointer'
+            src={images.waitingRoom.exit}
+            alt='나가기'
+          />
+        </button>
       </div>
       <motion.div
         initial='start'
