@@ -211,7 +211,7 @@ const MyPageModal = ({
           </div>
           <div className='w-full h-[48px] mt-[16px] relative'>
             <div className='w-full h-full'>
-              <CButton rounded={20}>
+              <CButton type='green' rounded={20}>
                 <p className={`text-xl font-semibold text-[#FFFDF2]`}>
                   저장하기
                 </p>

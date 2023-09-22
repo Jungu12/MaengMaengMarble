@@ -1,5 +1,5 @@
 import useToastList from '@hooks/useToastList';
-import { MouseEventHandler, useEffect } from 'react';
+import { useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { createPortal } from 'react-dom';
 import { ToastType } from '@atom/toastAtom';
