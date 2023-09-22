@@ -19,13 +19,14 @@ const CButton = ({
 }: Props) => {
   const bgColor = type === 'green' ? '#0BC7B9' : '#DC2C2C';
   const borderColor = type === 'green' ? '#28B1A6' : '#B32727';
-  console.log(borderColor);
 
   return (
     <div
-      className={`w-${width ? '[' + width + 'px' + ']' : 'full'} h-${
-        height ? '[' + height + 'px' + ']' : 'full'
-      } relative flex justify-center items-center `}
+      className='relative flex justify-center items-center'
+      style={{
+        width: width ? width : '100%',
+        height: height ? height : '100%',
+      }}
     >
       <button
         onClick={onClick}

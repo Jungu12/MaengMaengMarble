@@ -5,9 +5,7 @@ import StoreCharacterCard from '@components/store/StoreCharacterCard';
 import StoreOwnerView from '@components/store/StoreOwnerView';
 import PurchaseModal from '@components/modal/PurchaseModal';
 import CToastSuccess from '@components/common/CToastSuccess';
-import CToastInfo from '@components/common/CToastInfo';
 import CToastError from '@components/common/CToastError';
-import CToastWarning from '@components/common/CToastWarning';
 import useToastList from '@hooks/useToastList';
 
 const Store = () => {
