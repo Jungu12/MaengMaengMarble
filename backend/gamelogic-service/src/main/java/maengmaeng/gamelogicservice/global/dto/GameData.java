@@ -1,4 +1,4 @@
-package maengmaeng.gamelogicservice.gameRoom.domain.dto;
+package maengmaeng.gamelogicservice.global.dto;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -6,6 +6,7 @@ import lombok.Getter;
 @Builder
 @Getter
 public class GameData {
-	private String destination;
+	private String type;
+	private String roomCode;
 	private Object data;
 }

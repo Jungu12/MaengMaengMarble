@@ -10,7 +10,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import maengmaeng.gamelogicservice.gameRoom.domain.dto.GameData;
+import maengmaeng.gamelogicservice.global.dto.GameData;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -24,11 +24,21 @@ public class RedisSubscriber implements MessageListener {
 	@Override
 	public void onMessage(Message message, byte[] pattern) {
 		try {
-			// 발행된 데이터를 받아 deserialize
+			// 발행된 데이터를 받아 역직렬화
 			String publishMessage = (String)redisTemplate.getStringSerializer().deserialize(message.getBody());
 			GameData gameData = objectMapper.readValue(publishMessage, GameData.class);
-			// destination으로 data 전송
-			messagingTemplate.convertAndSend(gameData.getDestination(), gameData.getData());
+
+			String topicType = gameData.getType();
+
+			if (topicType.equals("LOBBY")) {
+				messagingTemplate.convertAndSend("/sub/lobby", gameData.getData());
+			}
+			if (topicType.equals("WAITING_ROOM")) {
+				messagingTemplate.convertAndSend("/sub/waitingRooms" + gameData.getRoomCode(), gameData.getData());
+			}
+			if (topicType.equals("GAME_ROOM")) {
+				messagingTemplate.convertAndSend("/sub/gameRooms" + gameData.getRoomCode(), gameData.getData());
+			}
 		} catch (Exception e) {
 			log.error(e.getMessage());
 		}
