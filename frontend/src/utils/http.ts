@@ -2,15 +2,16 @@
 // import store from '@store/store';
 // import { AuthType } from '@typedef/common.types';
 // eslint-disable-next-line import/no-named-as-default
-import { ResponseAccessTokenType } from '@/types/common/auth.type';
-import Axios, {
+// import { ResponseAccessTokenType } from '@/types/common/auth.type';
+import AxiosS, {
+  // eslint-disable-next-line import/named
   AxiosRequestConfig,
-  AxiosRequestHeaders,
-  InternalAxiosRequestConfig,
+  // AxiosRequestHeaders,
+  // InternalAxiosRequestConfig,
 } from 'axios';
 
-const axios = Axios.create();
-const authAxios = Axios.create();
+const axios = AxiosS.create();
+const authAxios = AxiosS.create();
 // axios.defaults.baseURL = 'https://i9d211.p.ssafy.io/api/';
 // axios.defaults.baseURL = 'http://i9d211.p.ssafy.io/api/';
 axios.defaults.baseURL = 'http://192.168.100.64:8080/api/';

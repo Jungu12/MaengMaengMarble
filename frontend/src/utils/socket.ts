@@ -1,7 +1,7 @@
 import * as StompJs from '@stomp/stompjs';
 
 /**
- *
+ * 클라이언트 객체를 반환하는 함수
  * @returns Client 객체 반환
  */
 export const getClient = () => {
@@ -26,7 +26,7 @@ export const getClient = () => {
 };
 
 /**
- *
+ * 소켓을 활성화시킨다.
  * @param client
  */
 export const activateClient = (client: StompJs.Client) => {
