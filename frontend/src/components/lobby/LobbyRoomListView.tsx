@@ -1,23 +1,34 @@
 import React from 'react';
 import { images } from '@constants/images';
 import RoomInfoCard from './RoomInfoCard';
+import { Client } from '@stomp/stompjs';
 
 type NewRoomModalProps = {
   isOpenNewRoomModal: boolean;
   setIsOpenNewRoomModal: React.Dispatch<React.SetStateAction<boolean>>;
+  clientRef: React.MutableRefObject<Client | undefined>;
 };
 
 const LobbyRoomListView = ({
   isOpenNewRoomModal,
   setIsOpenNewRoomModal,
+  clientRef,
 }: NewRoomModalProps) => {
   return (
     <div className='flex flex-col h-full w-full p-12 justify-between bg-white bg-opacity-50 rounded-[40px]'>
       <div className='grid grid-cols-2 gap-10 place-content-between place-items-stretch'>
-        <RoomInfoCard title='맹맹 시치 모여라~' currentCnt='3' />
-        <RoomInfoCard title='모마말고 맹맹' currentCnt='1' />
-        <RoomInfoCard title='맹맹맹맹' currentCnt='2' />
-        <RoomInfoCard title='야호' currentCnt='4' />
+        <RoomInfoCard
+          clientRef={clientRef}
+          title='맹맹 시치 모여라~'
+          currentCnt='3'
+        />
+        <RoomInfoCard
+          clientRef={clientRef}
+          title='모마말고 맹맹'
+          currentCnt='1'
+        />
+        <RoomInfoCard clientRef={clientRef} title='맹맹맹맹' currentCnt='2' />
+        <RoomInfoCard clientRef={clientRef} title='야호' currentCnt='4' />
       </div>
       <div className='flex flex-row items-center justify-center my-[24px]'>
         <button className='h-10 mr-8'>
