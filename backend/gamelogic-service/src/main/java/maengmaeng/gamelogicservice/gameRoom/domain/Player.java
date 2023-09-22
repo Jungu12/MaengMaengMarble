@@ -2,6 +2,7 @@ package maengmaeng.gamelogicservice.gameRoom.domain;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,7 +26,7 @@ public class Player implements Serializable {
 	private int stopTradeCount;
 	private int doubleCount;
 	private int currentLap;
-	private List<Integer> stocks;
+	private List<Map<String, Integer>> stocks;
 	private int loan;
 	private boolean[] cards;
 	private int currentLocation;
