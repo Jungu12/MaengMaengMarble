@@ -17,6 +17,9 @@ export const images = {
     cancelButton: '/src/assets/images/cancel-button.png',
     readyButton: '/src/assets/images/ready-button.png',
   },
+  gameRoom: {
+    background: '/src/assets/images/game-room-background.png',
+  },
   dummy: {
     dummy1: '/src/assets/images/dummy1.png',
     dummy2: '/src/assets/images/dummy2.png',
@@ -66,5 +69,16 @@ export const images = {
   },
   default: {
     character: '/src/assets/images/default-character.png',
+  },
+  map: {
+    start: '/src/assets/images/map/시작점.png',
+    vietnam: '/src/assets/images/map/베트남.png',
+    revenue: '/src/assets/images/map/세금징수.png',
+    thailand: '/src/assets/images/map/태국.png',
+    goldKey1: '/src/assets/images/map/황금열쇠1.png',
+    singapore: '/src/assets/images/map/싱가포르.png',
+    egypt: '/src/assets/images/map/이집트.png',
+    southAfrica: '/src/assets/images/map/남아공.png',
+    transactionSuspended: '/src/assets/images/map/거래정지.png',
   },
 };
