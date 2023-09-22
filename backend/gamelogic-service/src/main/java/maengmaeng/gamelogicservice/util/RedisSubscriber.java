@@ -34,10 +34,10 @@ public class RedisSubscriber implements MessageListener {
 				messagingTemplate.convertAndSend("/sub/lobby", gameData.getData());
 			}
 			if (topicType.equals("WAITING_ROOM")) {
-				messagingTemplate.convertAndSend("/sub/waitingRooms" + gameData.getRoomCode(), gameData.getData());
+				messagingTemplate.convertAndSend("/sub/waiting-rooms/" + gameData.getRoomCode(), gameData.getData());
 			}
 			if (topicType.equals("GAME_ROOM")) {
-				messagingTemplate.convertAndSend("/sub/gameRooms" + gameData.getRoomCode(), gameData.getData());
+				messagingTemplate.convertAndSend("/sub/game-rooms/" + gameData.getRoomCode(), gameData.getData());
 			}
 		} catch (Exception e) {
 			log.error(e.getMessage());
