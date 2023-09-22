@@ -7,11 +7,15 @@ import LobbyRoomListView from '@components/lobby/LobbyRoomListView';
 import * as StompJs from '@stomp/stompjs';
 import { activateClient, getClient } from '@utils/socket';
 import MyPageModal from '@components/modal/MyPageModal';
+import InviteModal from '@components/modal/InviteModal';
+import CToastError from '@components/common/CToastError';
+import CToastSuccess from '@components/common/CToastSuccess';
 
 const Lobby = () => {
   const clientRef = useRef<StompJs.Client>();
   const [isOpenCreateRoomModal, setIsOpenCreateRoomModal] = useState(false);
   const [isOpenMyPageModal, setIsOpenMyPageModal] = useState(false);
+  const [isOpenInviteModal, setIsOpenInviteModal] = useState(false);
 
   const onClickCreateRoomButton = useCallback(() => {
     setIsOpenCreateRoomModal((prev) => !prev);
@@ -29,6 +33,14 @@ const Lobby = () => {
     setIsOpenMyPageModal(false);
   }, []);
 
+  const onClickInviteButton = useCallback(() => {
+    setIsOpenInviteModal((prev) => !prev);
+  }, []);
+
+  const handleInviteModal = useCallback(() => {
+    setIsOpenInviteModal(false);
+  }, []);
+
   // 소켓 연결
   useEffect(() => {
     clientRef.current = getClient();
@@ -38,7 +50,10 @@ const Lobby = () => {
 
   return (
     <>
-      {/* {isOpenRoomModal && <CreateRoomModal closeModal={closeRoomModal} />} */}
+      <InviteModal
+        isOpenInviteModal={isOpenInviteModal}
+        handleInviteModalClose={handleInviteModal}
+      />
       <CreateRoomModal
         isOpenCreateRoomModal={isOpenCreateRoomModal}
         handleCreateRoomModalClose={handleCreateRoomModalClose}
@@ -65,11 +80,14 @@ const Lobby = () => {
             handleMyPageModal={onClickSettingButton}
           />
           <LobbyRoomListView
+            onClickInviteButton={onClickInviteButton}
             onClickCreateRoomButton={onClickCreateRoomButton}
             clientRef={clientRef}
           />
         </div>
       </div>
+      <CToastError text='존재하지 않는 초대코드입니다' />
+      <CToastSuccess text='입장 성공' />
     </>
   );
 };

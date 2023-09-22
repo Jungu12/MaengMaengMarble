@@ -4,11 +4,13 @@ import RoomInfoCard from './RoomInfoCard';
 import { Client } from '@stomp/stompjs';
 
 type CreateRoomModalProps = {
+  onClickInviteButton: () => void;
   onClickCreateRoomButton: () => void;
   clientRef: React.MutableRefObject<Client | undefined>;
 };
 
 const LobbyRoomListView = ({
+  onClickInviteButton,
   onClickCreateRoomButton,
   clientRef,
 }: CreateRoomModalProps) => {
@@ -45,7 +47,10 @@ const LobbyRoomListView = ({
         </button>
       </div>
       <div className='flex flex-row items-center justify-between'>
-        <button className='flex flex-row px-5 py-3 items-center justify-between bg-primary-dark100 rounded-[15px]'>
+        <button
+          onClick={onClickInviteButton}
+          className='flex flex-row px-5 py-3 items-center justify-between bg-primary-dark100 rounded-[15px]'
+        >
           <img
             className='h-[18px] mr-3'
             src={images.icon.invite}
