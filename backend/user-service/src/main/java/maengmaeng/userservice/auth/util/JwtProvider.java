@@ -71,29 +71,29 @@ public class JwtProvider {
 		}
 	}
 
-	// 요청 헤더에서 JWT 추출
-	// public String resolveToken(HttpServletRequest request) {
-	// 	String bearerToken = request.getHeader("Authorization");
-	// 	if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
-	// 		return bearerToken.substring(7);
-	// 	}
-	// 	return null;
-	// }
+//	 요청 헤더에서 JWT 추출
+	 public String resolveToken(HttpServletRequest request) {
+	 	String bearerToken = request.getHeader("Authorization");
+	 	if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
+	 		return bearerToken.substring(7);
+	 	}
+	 	return null;
+	 }
 
 	// 요청 헤더에서 JWT 추출
-	public String resolveToken(HttpServletRequest request) {
-		Cookie[] cookies = request.getCookies();
-
-		// logger.debug("cookie size = {}", cookies.length);
-		for (Cookie cookie : cookies) {
-			// logger.debug("cookie name = {}", cookie.getName());
-			if (cookie.getName().equals("refreshToken")) {
-				// logger.debug("cookie name = {}, value = {}", cookie.getName(), cookie.getValue());
-				return cookie.getValue();
-			}
-		}
-		return null;
-	}
+//	public String resolveToken(HttpServletRequest request) {
+//		Cookie[] cookies = request.getCookies();
+//
+//		// logger.debug("cookie size = {}", cookies.length);
+//		for (Cookie cookie : cookies) {
+//			// logger.debug("cookie name = {}", cookie.getName());
+//			if (cookie.getName().equals("refreshToken")) {
+//				// logger.debug("cookie name = {}, value = {}", cookie.getName(), cookie.getValue());
+//				return cookie.getValue();
+//			}
+//		}
+//		return null;
+//	}
 
 	// 유효 기간을 받아, 만료 날짜를 반환
 	private Date getExpiryDate(int expiry) {
