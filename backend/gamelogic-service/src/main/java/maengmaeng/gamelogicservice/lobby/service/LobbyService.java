@@ -3,8 +3,11 @@ package maengmaeng.gamelogicservice.lobby.service;
 import lombok.RequiredArgsConstructor;
 import maengmaeng.gamelogicservice.exception.ExceptionCode;
 import maengmaeng.gamelogicservice.exception.LobbyException;
+import maengmaeng.gamelogicservice.global.dto.UserInfo;
 import maengmaeng.gamelogicservice.lobby.repository.LobbyRepository;
 import maengmaeng.gamelogicservice.util.RedisSubscriber;
+import maengmaeng.gamelogicservice.waitingRoom.domain.CurrentParticipants;
+import maengmaeng.gamelogicservice.waitingRoom.domain.WaitingRoom;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +16,8 @@ import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -44,7 +49,21 @@ public class LobbyService {
         return UUID.randomUUID().toString();
     }
 
-    // public WaitingRoom createWaitingRoom() {
-    //     return new WaitingRoom();
-    // }
+    public WaitingRoom createWaitingRoom(UserInfo userInfo, String title) {
+        CurrentParticipants currentParticipant = CurrentParticipants.builder()
+            .userId(userInfo.getUserId())
+            .nickname(userInfo.getNickname())
+            .characterId(userInfo.getCharacterId())
+            .closed(false)
+            .ready(false)
+            .build();
+
+        WaitingRoom waitingRoom = WaitingRoom.builder()
+            .code(createRoomCode())
+            .title(title)
+            .build();
+        waitingRoom.addCurrentParticipants(currentParticipant);
+
+        return waitingRoom;
+    }
 }

@@ -12,7 +12,6 @@ import java.util.List;
 @Getter
 public class WaitingRoom implements Serializable {
     private static final long serialVersionUID = 207207207207L;
-    private int id;
     private String title;
     private List<CurrentParticipants> currentParticipants;
     private String code;
