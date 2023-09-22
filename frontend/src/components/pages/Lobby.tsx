@@ -1,5 +1,5 @@
 import { images } from '@constants/images';
-import NewRoomModal from '@components/lobby/NewRoomModal';
+import CreateRoomModal from '@components/modal/CreateRoomModal';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import LobbyHeader from '@components/lobby/LobbyHeader';
 import LobbyCharacterView from '@components/lobby/LobbyCharacterView';
@@ -11,8 +11,16 @@ import { motion } from 'framer-motion';
 
 const Lobby = () => {
   const clientRef = useRef<StompJs.Client>();
-  const [isOpenNewRoomModal, setIsOpenNewRoomModal] = useState(false);
+  const [isOpenCreateRoomModal, setIsOpenCreateRoomModal] = useState(false);
   const [isOpenMyPageModal, setIsOpenMyPageModal] = useState(false);
+
+  const onClickCreateRoomButton = useCallback(() => {
+    setIsOpenCreateRoomModal((prev) => !prev);
+  }, []);
+
+  const handleCreateRoomModalClose = useCallback(() => {
+    setIsOpenCreateRoomModal(false);
+  }, []);
 
   const onClickSettingButton = useCallback(() => {
     setIsOpenMyPageModal((prev) => !prev);
@@ -26,17 +34,19 @@ const Lobby = () => {
   useEffect(() => {
     clientRef.current = getClient();
     activateClient(clientRef.current);
+    clientRef.current.onConnect = () => {};
   }, []);
 
   return (
     <>
-      {/* {isOpenRoomModal && <NewRoomModal closeModal={closeRoomModal} />} */}
-      <NewRoomModal
-        isOpenNewRoomModal={isOpenNewRoomModal}
-        setIsOpenNewRoomModal={setIsOpenNewRoomModal}
+      {/* {isOpenRoomModal && <CreateRoomModal closeModal={closeRoomModal} />} */}
+      <CreateRoomModal
+        isOpenCreateRoomModal={isOpenCreateRoomModal}
+        handleCreateRoomModalClose={handleCreateRoomModalClose}
       />
       <MyPageModal
-        isOpenNewRoomModal={isOpenMyPageModal}
+        name={'개멋있는 사람'}
+        isOpenCreateRoomModal={isOpenMyPageModal}
         handleMyPageModalClose={handleMyPageModalClose}
       />
       <motion.div
@@ -51,7 +61,7 @@ const Lobby = () => {
       >
         <LobbyHeader />
 
-        <div className='flex flex-1 flex-row w-full items-center justify-between mt-5'>
+        <div className='flex flex-1 flex-row w-full items-center justify-between mt-5 '>
           <LobbyCharacterView
             name='상근시치'
             img={images.default.character}
@@ -59,8 +69,7 @@ const Lobby = () => {
             handleMyPageModal={onClickSettingButton}
           />
           <LobbyRoomListView
-            isOpenNewRoomModal={isOpenNewRoomModal}
-            setIsOpenNewRoomModal={setIsOpenNewRoomModal}
+            onClickCreateRoomButton={onClickCreateRoomButton}
             clientRef={clientRef}
           />
         </div>
