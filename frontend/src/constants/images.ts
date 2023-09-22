@@ -39,6 +39,11 @@ export const images = {
     plus: '/src/assets/images/icon-plus.png',
     room: '/src/assets/images/icon-room.png',
     people: '/src/assets/images/icon-people.png',
+    success: '/src/assets/images/icon-success.png',
+    error: '/src/assets/images/icon-error.png',
+    info: '/src/assets/images/icon-info.png',
+    warning: '/src/assets/images/icon-warning.png',
+    close: '/src/assets/images/icon-close-black.png',
   },
   button: {
     close: '/src/assets/images/btn-close.png',

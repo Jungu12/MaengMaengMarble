@@ -1,19 +1,35 @@
+import { TOAST_TYPE, ToastType } from '@atom/toastAtom';
 import { images } from '@constants/images';
+import useToastList from '@hooks/useToastList';
 import { motion } from 'framer-motion';
+import { MouseEventHandler } from 'react';
 
 type StoreCharacterInfoProps = {
+  canBuy: boolean;
   have: boolean;
   img: string;
   name: string;
   point: string;
+  handlePurchaseModal: () => void;
 };
 
 const StoreCharacterCard = ({
+  canBuy,
   have,
   img,
   name,
   point,
+  handlePurchaseModal,
 }: StoreCharacterInfoProps) => {
+  const { show } = useToastList();
+
+  const handleClick: MouseEventHandler = (e) => {
+    const { toastType } = (e.currentTarget as HTMLButtonElement).dataset as {
+      toastType: ToastType;
+    };
+    show(toastType);
+  };
+
   return (
     <div
       className={`flex flex-col w-fit h-fit items-center justify-center ${
@@ -46,6 +62,10 @@ const StoreCharacterCard = ({
         transition={have ? { type: 'spring', stiffness: 150, damping: 10 } : {}}
       >
         <button
+          onClick={
+            have ? (canBuy ? handlePurchaseModal : handleClick) : () => {}
+          }
+          data-toast-type={TOAST_TYPE.error}
           className={`w-full flex aspect-[194/61] bg-no-repeat ${
             have ? '' : 'cursor-not-allowed'
           }`}
