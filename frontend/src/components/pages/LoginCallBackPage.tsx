@@ -61,7 +61,7 @@ const LoginCallBackPage = () => {
             setAccessToken({ accessToken: res.accessToken });
           }
           console.log(res);
-          navigate('lobby');
+          navigate('/lobby');
         })
         .catch((err) => {
           alert(err);
