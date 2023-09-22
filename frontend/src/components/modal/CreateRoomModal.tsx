@@ -3,6 +3,8 @@ import { images } from '@constants/images';
 import { motion } from 'framer-motion';
 import PeopleRadioButton from '../lobby/PeopleRadioButton';
 import CModal from '@components/common/CModal';
+import { createRoom } from '@apis/lobbyApi';
+import { useNavigate } from 'react-router-dom';
 
 type CreateRoomModalProps = {
   isOpenCreateRoomModal: boolean;
@@ -13,8 +15,11 @@ const CreateRoomModal = ({
   isOpenCreateRoomModal,
   handleCreateRoomModalClose,
 }: CreateRoomModalProps) => {
+  const navigation = useNavigate();
   // 방 제목 입력 관리
   const [roomName, setRoomName] = useState('');
+  // 인원수 체크 관리
+  const [selectedOption, setSelectedOption] = useState('2');
   const onChange = (event: React.FormEvent<HTMLInputElement>) => {
     const { currentTarget: roomName } = event;
     if (roomName.value.length <= 12) {
@@ -23,11 +28,19 @@ const CreateRoomModal = ({
   };
   const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    createRoom(
+      { userId: 'ksg', nickname: 'ksg', characterId: 1 },
+      roomName,
+      selectedOption
+    )
+      .then((res) => {
+        navigation(`/waiting-room/${res}`);
+      })
+      .catch(() => {
+        // 에러 토스트메시지 출력
+      });
     console.log(roomName);
   };
-
-  // 인원수 체크 관리
-  const [selectedOption, setSelectedOption] = useState('2');
 
   const handleOptionChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSelectedOption(event.target.value);

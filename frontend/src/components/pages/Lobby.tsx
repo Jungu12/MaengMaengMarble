@@ -33,6 +33,7 @@ const Lobby = () => {
   useEffect(() => {
     clientRef.current = getClient();
     activateClient(clientRef.current);
+    clientRef.current.onConnect = () => {};
   }, []);
 
   return (
