@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import maengmaeng.gamelogicservice.waitingRoom.domain.WaitingRoom;
 import maengmaeng.gamelogicservice.waitingRoom.domain.dto.ChatMessage;
 import maengmaeng.gamelogicservice.waitingRoom.domain.dto.UserInfo;
+import maengmaeng.gamelogicservice.waitingRoom.exception.ExceptionCode;
+import maengmaeng.gamelogicservice.waitingRoom.exception.WaitingRoomException;
 import maengmaeng.gamelogicservice.waitingRoom.repository.WaitingRoomRepository;
 import maengmaeng.gamelogicservice.waitingRoom.util.RedisInOutManager;
 import org.slf4j.Logger;
@@ -28,7 +30,7 @@ public class WaitingRoomService {
     private final RedisSubscriber redisSubscriber;
     private final RedisInOutManager redisSubscriberManager;
     private final WaitingRoomRepository waitingRoomRepository;
-//    private ChannelTopic topic;
+    //    private ChannelTopic topic;
     private final ChannelTopic gameTopic;
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -37,9 +39,9 @@ public class WaitingRoomService {
      */
     public void enter(String roomCode, UserInfo userInfo) {
         // 대기방(WaitingRoom) 정보에 사용자 추가하기
-        waitingRoomRepository.addNewMember(roomCode,userInfo);
-
+        waitingRoomRepository.addNewMember(roomCode, userInfo);
     }
+
     /*
         현재 대기방 정보 얻기
      */
@@ -47,4 +49,7 @@ public class WaitingRoomService {
         return waitingRoomRepository.getWaitingRoomNow(roomCode);
     }
 
+    public void ready(String roomCode, UserInfo user) {
+        waitingRoomRepository.readyMember(roomCode, user);
+    }
 }
