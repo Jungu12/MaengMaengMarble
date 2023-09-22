@@ -31,7 +31,7 @@ const WaitingRoom = () => {
 
   const connect = useCallback(() => {
     client.current = new StompJs.Client({
-      brokerURL: 'ws://192.168.100.64:8080/api/maeng',
+      brokerURL: 'ws://192.168.100.186:8080/api/maeng',
       connectHeaders: {
         login: '',
         passcode: 'password',
@@ -52,7 +52,7 @@ const WaitingRoom = () => {
 
   useEffect(() => {
     connect();
-  }, []);
+  }, [connect]);
 
   return (
     <motion.div
