@@ -12,3 +12,15 @@ export type DetailUserType = {
   lose: number;
   point: number;
 };
+
+export type ParticipantsType = {
+  userId: string;
+  nickname: string;
+  characterId: number;
+  ready: boolean;
+  closed: boolean;
+};
+
+export type ChatMessageType = {
+  test: string;
+};

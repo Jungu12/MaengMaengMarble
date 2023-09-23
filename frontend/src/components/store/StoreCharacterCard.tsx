@@ -1,11 +1,12 @@
 import { images } from '@constants/images';
+import { addComma } from '@utils/format';
 import { motion } from 'framer-motion';
 
 type StoreCharacterInfoProps = {
   have: boolean;
   img: string;
   name: string;
-  point: string;
+  point: number;
   onClick: () => void;
 };
 
@@ -62,7 +63,9 @@ const StoreCharacterCard = ({
           {have && (
             <div className='flex w-full h-full flex-row items-center px-8 justify-between'>
               <img className='h-7' src={images.icon.point} alt='코인 아이콘' />
-              <p className='text-[18px] font-black text-text-100'>{point}</p>
+              <p className='text-[18px] font-black text-text-100'>
+                {addComma(point)}
+              </p>
             </div>
           )}
         </button>

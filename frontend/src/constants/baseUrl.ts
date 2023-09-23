@@ -1,1 +1,4 @@
-export const baseUrl = 'http://j9d207.p.ssafy.io:8000/api/';
+const baseUri = 'localhost:3000';
+
+export const baseUrl = `http://192.168.1.11:8080/api/`;
+export const loginUrl = `http://${baseUri}/login`;
