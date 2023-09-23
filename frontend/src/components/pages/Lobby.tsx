@@ -64,7 +64,7 @@ const Lobby = () => {
         handleMyPageModalClose={handleMyPageModalClose}
       />
       <div
-        className='flex flex-col w-full h-full overflow-hidden relative p-[45px]'
+        className='flex flex-col w-full h-full relative p-[45px] overflow-auto'
         style={{
           backgroundImage: `url(${images.lobby.background})`,
           backgroundSize: 'cover',
@@ -72,7 +72,7 @@ const Lobby = () => {
       >
         <LobbyHeader />
 
-        <div className='flex flex-1 flex-row w-full items-center justify-between mt-5 '>
+        <div className='flex flex-1 flex-row w-full items-center justify-between mt-5 overflow-auto'>
           <LobbyCharacterView
             name='상근시치'
             img={images.default.character}

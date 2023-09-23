@@ -19,7 +19,7 @@ const RoomInfoCard = ({ title, currentCnt, clientRef }: RoomInfoProps) => {
   }, [clientRef, navigation]);
 
   return (
-    <div className='flex flex-col p-6 bg-primary-100 rounded-[40px]'>
+    <div className='flex flex-col w-full p-6 bg-primary-100 rounded-[40px]'>
       <p className='text-2xl font-extrabold text-text-100'>{title}</p>
       <div className='flex flex-row items-center mt-5 justify-between'>
         <p className='text-xl font-bold text-text-50'>{currentCnt} / 4</p>
