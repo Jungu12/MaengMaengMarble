@@ -37,6 +37,9 @@ public class RedisSubscriber implements MessageListener {
 			if (topicType.equals("WAITING_ROOM")) {
 				messagingTemplate.convertAndSend("/sub/waiting-rooms/" + gameData.getRoomCode(), gameData.getData());
 			}
+			if (topicType.equals("GAME_ROOM")) {
+				messagingTemplate.convertAndSend("/sub/game-rooms/" + gameData.getRoomCode(), gameData.getData());
+			}
 			if (topicType.equals("CHAT")) {
 				messagingTemplate.convertAndSend("/sub/chat/" + gameData.getRoomCode(), gameData.getData());
 			}
