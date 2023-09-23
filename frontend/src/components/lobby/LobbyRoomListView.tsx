@@ -3,17 +3,15 @@ import { images } from '@constants/images';
 import RoomInfoCard from './RoomInfoCard';
 import { Client } from '@stomp/stompjs';
 
-type NewRoomModalProps = {
-  isOpenNewRoomModal: boolean;
-  setIsOpenNewRoomModal: React.Dispatch<React.SetStateAction<boolean>>;
+type CreateRoomModalProps = {
+  onClickCreateRoomButton: () => void;
   clientRef: React.MutableRefObject<Client | undefined>;
 };
 
 const LobbyRoomListView = ({
-  isOpenNewRoomModal,
-  setIsOpenNewRoomModal,
+  onClickCreateRoomButton,
   clientRef,
-}: NewRoomModalProps) => {
+}: CreateRoomModalProps) => {
   return (
     <div className='flex flex-col h-full w-full p-12 justify-between bg-white bg-opacity-50 rounded-[40px]'>
       <div className='grid grid-cols-2 gap-10 place-content-between place-items-stretch'>
@@ -56,7 +54,7 @@ const LobbyRoomListView = ({
           <p className='text-[18px] font-bold text-white'>초대 코드 입력</p>
         </button>
         <button
-          onClick={() => setIsOpenNewRoomModal(!isOpenNewRoomModal)}
+          onClick={onClickCreateRoomButton}
           className='flex flex-row px-5 py-3 items-center justify-between bg-primary-dark100 rounded-[15px]'
         >
           <img
