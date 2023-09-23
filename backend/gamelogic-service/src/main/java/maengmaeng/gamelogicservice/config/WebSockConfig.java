@@ -1,5 +1,6 @@
 package maengmaeng.gamelogicservice.config;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
@@ -11,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @Configuration
 @EnableWebSocketMessageBroker
+@Slf4j
 public class WebSockConfig implements WebSocketMessageBrokerConfigurer {
 
 	@Override
@@ -27,5 +29,7 @@ public class WebSockConfig implements WebSocketMessageBrokerConfigurer {
 	public void registerStompEndpoints(StompEndpointRegistry registry) {
 		//sockJs 클라이언트가 WebSocket hand-shake를 하기 위한 endpoint를 지정함
 		registry.addEndpoint("/api/maeng").setAllowedOriginPatterns("*");
+
+		log.info("엔드포인트 연결");
 	}
 }
