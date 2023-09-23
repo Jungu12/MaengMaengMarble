@@ -2,6 +2,7 @@ import CButton from '@components/common/CButton';
 import CModal from '@components/common/CModal';
 import useToastList from '@hooks/useToastList';
 import { useCallback } from 'react';
+import { motion } from 'framer-motion';
 
 type PurchaseModalProps = {
   isOpenPurchaseModal: boolean;
@@ -26,24 +27,36 @@ const PurchaseModal = ({
           정말 구매하시겠습니까?
         </p>
         <div className='flex flex-row items-center justify-between w-[350px] h-[50px] mb-[20px]'>
-          <CButton
-            type='green'
-            onClick={onClickOkButton}
-            width={150}
-            height={50}
-            rounded={20}
+          <motion.div
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            transition={{ type: 'spring', stiffness: 400, damping: 17 }}
           >
-            <p className='text-[22px] font-black text-primary-100'>예</p>
-          </CButton>
-          <CButton
-            type='red'
-            onClick={handlePurchaseModalClose}
-            width={150}
-            height={50}
-            rounded={20}
+            <CButton
+              type='green'
+              onClick={onClickOkButton}
+              width={150}
+              height={50}
+              rounded={20}
+            >
+              <p className='text-[22px] font-black text-primary-100'>예</p>
+            </CButton>
+          </motion.div>
+          <motion.div
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            transition={{ type: 'spring', stiffness: 400, damping: 17 }}
           >
-            <p className='text-[22px] font-black text-primary-100'>아니오</p>
-          </CButton>
+            <CButton
+              type='red'
+              onClick={handlePurchaseModalClose}
+              width={150}
+              height={50}
+              rounded={20}
+            >
+              <p className='text-[22px] font-black text-primary-100'>아니오</p>
+            </CButton>
+          </motion.div>
         </div>
       </div>
     </CModal>
