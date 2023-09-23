@@ -7,6 +7,7 @@ import LobbyRoomListView from '@components/lobby/LobbyRoomListView';
 import * as StompJs from '@stomp/stompjs';
 import { activateClient, getClient } from '@utils/socket';
 import MyPageModal from '@components/modal/MyPageModal';
+import { motion } from 'framer-motion';
 
 const Lobby = () => {
   const clientRef = useRef<StompJs.Client>();
@@ -48,12 +49,15 @@ const Lobby = () => {
         isOpenCreateRoomModal={isOpenMyPageModal}
         handleMyPageModalClose={handleMyPageModalClose}
       />
-      <div
+      <motion.div
         className='flex flex-col w-full h-full overflow-hidden relative p-[45px]'
         style={{
           backgroundImage: `url(${images.lobby.background})`,
           backgroundSize: 'cover',
         }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
       >
         <LobbyHeader />
 
@@ -69,7 +73,7 @@ const Lobby = () => {
             clientRef={clientRef}
           />
         </div>
-      </div>
+      </motion.div>
     </>
   );
 };
