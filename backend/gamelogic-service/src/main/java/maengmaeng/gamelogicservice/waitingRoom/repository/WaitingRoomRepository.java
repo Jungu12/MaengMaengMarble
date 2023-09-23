@@ -81,13 +81,20 @@ public class WaitingRoomRepository {
 
 
     public synchronized void readyMember(String roomCode, UserInfo userInfo) {
+        // 사용자 상태 변경 내용을 담아서 웹소켓으로 전달
+        // 디비에도 변경하기
         WaitingRoom waitingRoom = opsHashWaitingRoom.get(WAITING_ROOMS,roomCode);
+
 
         for(int i = 0 ; i < waitingRoom.getCurrentParticipants().size() ; i++) {
             if(waitingRoom.getCurrentParticipants().get(i).getUserId().equals(userInfo.getUserId())){
                 // 지금 안에 들어있는 사용자와 ready누른 사용자가 같을때
                 // 그 사람 상태 변경
                 CurrentParticipants participant = waitingRoom.getCurrentParticipants().get(i);
+                boolean nowState = participant.isReady();
+                participant.setReady(!nowState);
+                logger.info("User {} is now ready in room {}", userInfo.getUserId(), roomCode);
+
                 opsHashWaitingRoom.put(WAITING_ROOMS,roomCode,waitingRoom);
                 break;
             }

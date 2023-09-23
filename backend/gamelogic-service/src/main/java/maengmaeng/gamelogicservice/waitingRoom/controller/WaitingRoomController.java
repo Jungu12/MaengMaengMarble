@@ -50,13 +50,20 @@ public class WaitingRoomController {
     @MessageMapping("/waiting-rooms/ready/{roomCode}")
     public void ready(@DestinationVariable String roomCode, UserInfo user){
         // 유저가 ready를 누른 것을 변경하기
+
         waitingRoomService.ready(roomCode, user);
 
+        WaitingRoom waitingRoom = waitingRoomService.getWaitingRoomNow(roomCode);
 
-
+        // 현재 방의 최신 게임데이터 생성
+        GameData gameData = GameData.builder()
+                .roomCode(roomCode)
+                .type("WAITING_ROOM_CHANE_USER_STATE")
+                .data(waitingRoom)
+                .build();
 
         // WAITINGROOM topic에 gameData를 넣어서 발행하기 : 메세지를 redis topic에 발행
-//        redisPublisher.publish(waitingRoomTopic, );
+        redisPublisher.publish(waitingRoomTopic,gameData);
     }
 
 }
