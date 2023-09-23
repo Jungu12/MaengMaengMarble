@@ -1,6 +1,7 @@
 /* eslint-disable import/named */
 import { ResponseAccessTokenType } from '@/types/common/auth.type';
 import { accessTokenState } from '@atom/userAtom';
+import { loginUrl } from '@constants/baseUrl';
 import { authAxios, http } from '@utils/http';
 // eslint-disable-next-line import/named
 import {
@@ -19,7 +20,7 @@ export const useAxiosInterceptor = () => {
   const errorHandler = (error: AxiosError) => {
     console.log('errInterceptor!', error);
     if (error.response?.status === 401) {
-      window.location.href = 'http://j9d207.p.ssafy.io/login';
+      window.location.href = loginUrl;
     }
     return Promise.reject(error);
   };
@@ -51,7 +52,7 @@ export const useAxiosInterceptor = () => {
       } catch (error) {
         console.error('엑세스 토큰 재발급 실패: ', error);
         // 이후 로그인 화면으로 이동시키기
-        window.location.href = 'http://j9d207.p.ssafy.io/login';
+        window.location.href = loginUrl;
       }
     }
     return config;
