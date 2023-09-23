@@ -1,37 +1,27 @@
 package maengmaeng.gamelogicservice.waitingRoom.service;
 
-import lombok.AllArgsConstructor;
 import maengmaeng.gamelogicservice.waitingRoom.domain.WaitingRoom;
-import maengmaeng.gamelogicservice.waitingRoom.domain.dto.ChatMessage;
 import maengmaeng.gamelogicservice.waitingRoom.domain.dto.UserInfo;
 import maengmaeng.gamelogicservice.waitingRoom.exception.ExceptionCode;
 import maengmaeng.gamelogicservice.waitingRoom.exception.WaitingRoomException;
 import maengmaeng.gamelogicservice.waitingRoom.repository.WaitingRoomRepository;
-import maengmaeng.gamelogicservice.waitingRoom.util.RedisInOutManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
-import maengmaeng.gamelogicservice.util.RedisPublisher;
-import maengmaeng.gamelogicservice.util.RedisSubscriber;
 
-import javax.annotation.PostConstruct;
-import java.util.HashMap;
-import java.util.Map;
+import maengmaeng.gamelogicservice.util.RedisSubscriber;
 
 @RequiredArgsConstructor
 @Service
 public class WaitingRoomService {
     private final RedisMessageListenerContainer redisMessageListener;
     private final RedisSubscriber redisSubscriber;
-    private final RedisInOutManager redisSubscriberManager;
     private final WaitingRoomRepository waitingRoomRepository;
-    //    private ChannelTopic topic;
-    private final ChannelTopic gameTopic;
+    private final ChannelTopic gameRoomTopic;
     private final Logger logger = LoggerFactory.getLogger(getClass());
 
     /*

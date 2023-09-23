@@ -3,7 +3,6 @@ package maengmaeng.gamelogicservice.waitingRoom.repository;
 import lombok.RequiredArgsConstructor;
 import maengmaeng.gamelogicservice.waitingRoom.domain.CurrentParticipants;
 import maengmaeng.gamelogicservice.waitingRoom.domain.WaitingRoom;
-import maengmaeng.gamelogicservice.waitingRoom.domain.dto.GameData;
 import maengmaeng.gamelogicservice.waitingRoom.domain.dto.UserInfo;
 import maengmaeng.gamelogicservice.waitingRoom.exception.ExceptionCode;
 import maengmaeng.gamelogicservice.waitingRoom.exception.WaitingRoomException;
@@ -19,7 +18,7 @@ import java.util.ArrayList;
 @Repository
 @RequiredArgsConstructor
 public class WaitingRoomRepository {
-    private static final String WAITING_ROOMS = "WAITINGROOM";
+    private static final String WAITING_ROOMS = "WAITING_ROOM";
     private static final String JOINED_PERSON = "JOINEDPERSON";
     //Redis
     private final RedisTemplate<String, Object> redisTemplate;
@@ -81,15 +80,14 @@ public class WaitingRoomRepository {
 
 
 
-    public void readyMember(String roomCode, UserInfo userInfo) {
+    public synchronized void readyMember(String roomCode, UserInfo userInfo) {
         WaitingRoom waitingRoom = opsHashWaitingRoom.get(WAITING_ROOMS,roomCode);
 
         for(int i = 0 ; i < waitingRoom.getCurrentParticipants().size() ; i++) {
             if(waitingRoom.getCurrentParticipants().get(i).getUserId().equals(userInfo.getUserId())){
                 // 지금 안에 들어있는 사용자와 ready누른 사용자가 같을때
-                // 그 사람 상태를 ready로 변경
-                CurrentParticipants currentParticipants = waitingRoom.getCurrentParticipants().get(i);
-                currentParticipants.setReady(true);
+                // 그 사람 상태 변경
+                CurrentParticipants participant = waitingRoom.getCurrentParticipants().get(i);
                 opsHashWaitingRoom.put(WAITING_ROOMS,roomCode,waitingRoom);
                 break;
             }

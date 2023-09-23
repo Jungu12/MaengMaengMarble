@@ -12,7 +12,7 @@ import lombok.RequiredArgsConstructor;
 @AllArgsConstructor
 @Builder
 @Getter
-public class Map implements Serializable {
+public class GameInfo implements Serializable {
 	@Builder.Default
 	private static final long serialVersionUID = 207207207207L;
 	private String roomCode;

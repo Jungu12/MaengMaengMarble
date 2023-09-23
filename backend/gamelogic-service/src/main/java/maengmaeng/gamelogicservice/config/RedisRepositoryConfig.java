@@ -11,11 +11,12 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
+import org.springframework.data.redis.repository.configuration.EnableRedisRepositories;
 
 import redis.embedded.RedisServer;
 
 @Configuration
-// @EnableRedisRepositories
+@EnableRedisRepositories
 public class RedisRepositoryConfig {
 	@Value("${spring.redis.host}")
 	private String redisHost;

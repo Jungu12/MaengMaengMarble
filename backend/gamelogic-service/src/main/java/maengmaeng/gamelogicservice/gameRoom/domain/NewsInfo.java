@@ -1,5 +1,6 @@
 package maengmaeng.gamelogicservice.gameRoom.domain;
 
+import java.io.Serializable;
 import java.util.List;
 
 import lombok.AllArgsConstructor;
@@ -12,7 +13,7 @@ import lombok.RequiredArgsConstructor;
 @AllArgsConstructor
 @Builder
 @Getter
-public class NewsInfo {
+public class NewsInfo implements Serializable {
 	@Builder.Default
 	private static final long serialVersionUID = 207207207207L;;
 	private List<News> silver;

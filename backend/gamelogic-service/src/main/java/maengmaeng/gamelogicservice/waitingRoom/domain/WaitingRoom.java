@@ -2,6 +2,7 @@ package maengmaeng.gamelogicservice.waitingRoom.domain;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 import maengmaeng.gamelogicservice.waitingRoom.domain.dto.ChatMessage;
 
 import java.io.Serializable;
@@ -10,9 +11,9 @@ import java.util.List;
 
 @Builder
 @Getter
+@Setter
 public class WaitingRoom implements Serializable {
     private static final long serialVersionUID = 207207207207L;
-    private int id;
     private String title;
     private List<CurrentParticipants> currentParticipants;
     private String code;

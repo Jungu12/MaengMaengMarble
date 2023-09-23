@@ -11,15 +11,33 @@ import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 @Configuration
+
 public class RedisConfig {
+
+	@Bean
+	public ChannelTopic lobbyTopic() {
+		return new ChannelTopic("LOBBY");
+	}
+
+	@Bean
+	public ChannelTopic waitingRoomTopic() {
+		return new ChannelTopic("WAITING_ROOM");
+	}
+
+	@Bean
+	public ChannelTopic gameRoomTopic() {
+		return new ChannelTopic("GAME_ROOM");
+	}
 
 	// redis pub/sub 메시지를 처리하는 listener 설정
 	@Bean
-	public RedisMessageListenerContainer redisMessageListener(RedisConnectionFactory connectionFactory, RedisSubscriber subscriber, ChannelTopic waitingroomTopic) {
+	public RedisMessageListenerContainer redisMessageListener(RedisConnectionFactory connectionFactory, RedisSubscriber subscriber, ChannelTopic lobbyTopic, ChannelTopic waitingRoomTopic, ChannelTopic gameRoomTopic) {
 		RedisMessageListenerContainer container = new RedisMessageListenerContainer();
 		container.setConnectionFactory(connectionFactory);
-		// 대기방 토픽을 RedisSubscriber에 등록
-		container.addMessageListener(subscriber,waitingroomTopic);
+		//Topic Listener에 설정
+		container.addMessageListener(subscriber, lobbyTopic);
+		container.addMessageListener(subscriber, waitingRoomTopic);
+		container.addMessageListener(subscriber, gameRoomTopic);
 		return container;
 	}
 
@@ -33,14 +51,6 @@ public class RedisConfig {
 		//Json 포맷 형식으로 메세지를 교환하기 위해 인자로 JackSon2JsonRedisSerializer 설정
 		redisTemplate.setValueSerializer(new Jackson2JsonRedisSerializer<>(String.class));
 		return redisTemplate;
-	}
-
-	/*
-	공통으로 쓸 수 있는 대기방 토픽 생성
-	 */
-	@Bean
-	public ChannelTopic waitingroomTopic(){
-		return new ChannelTopic("WAITINGROOM");
 	}
 }
 
