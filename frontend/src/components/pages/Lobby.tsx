@@ -16,6 +16,11 @@ const Lobby = () => {
   const [isOpenCreateRoomModal, setIsOpenCreateRoomModal] = useState(false);
   const [isOpenMyPageModal, setIsOpenMyPageModal] = useState(false);
   const [isOpenInviteModal, setIsOpenInviteModal] = useState(false);
+  const [toastErrorMessage, setToastErrorMessage] = useState('');
+
+  const toastInvalidInviteCode = useCallback(() => {
+    setToastErrorMessage('존재하지 않는 초대코드입니다');
+  }, []);
 
   const onClickCreateRoomButton = useCallback(() => {
     setIsOpenCreateRoomModal((prev) => !prev);
@@ -53,6 +58,7 @@ const Lobby = () => {
       <InviteModal
         isOpenInviteModal={isOpenInviteModal}
         handleInviteModalClose={handleInviteModal}
+        toastInvalidInviteCode={toastInvalidInviteCode}
       />
       <CreateRoomModal
         isOpenCreateRoomModal={isOpenCreateRoomModal}
@@ -86,7 +92,7 @@ const Lobby = () => {
           />
         </div>
       </div>
-      <CToastError text='존재하지 않는 초대코드입니다' />
+      <CToastError text={toastErrorMessage} />
       <CToastSuccess text='입장 성공' />
     </>
   );

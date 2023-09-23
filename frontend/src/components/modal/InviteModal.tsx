@@ -8,13 +8,15 @@ import useToastList from '@hooks/useToastList';
 type InviteModalProps = {
   isOpenInviteModal: boolean;
   handleInviteModalClose: () => void;
+  toastInvalidInviteCode: () => void;
 };
 
 const InviteModal = ({
   isOpenInviteModal,
   handleInviteModalClose,
+  toastInvalidInviteCode,
 }: InviteModalProps) => {
-  const inviteCodeConfirm = true;
+  const inviteCodeConfirm = false;
   const [inviteCode, setInviteCode] = useState('');
   const { show } = useToastList();
 
@@ -34,9 +36,16 @@ const InviteModal = ({
     if (inviteCodeConfirm) {
       show('success');
     } else {
+      toastInvalidInviteCode();
       show('error');
     }
-  }, [inviteCode, handleClose, inviteCodeConfirm, show]);
+  }, [
+    inviteCode,
+    handleClose,
+    inviteCodeConfirm,
+    toastInvalidInviteCode,
+    show,
+  ]);
 
   return (
     <CModal isOpen={isOpenInviteModal} handleClose={handleClose}>
