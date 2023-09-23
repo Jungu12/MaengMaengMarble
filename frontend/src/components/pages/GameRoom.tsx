@@ -10,7 +10,7 @@ const GameRoom = () => {
   const controls = useAnimation();
 
   const moveCharacter = useCallback(
-    async (playNum: number, count: number, cur: number) => {
+    async (_playNum: number, count: number, cur: number) => {
       const moveList = [];
       let curX = 0;
       let curY = 0;
@@ -107,6 +107,11 @@ const GameRoom = () => {
       setY((32 - position) * 67);
     }
   }, [position]);
+
+  // 임시 코드 (지워야함)
+  useEffect(() => {
+    setPosition(7);
+  }, []);
 
   return (
     <div

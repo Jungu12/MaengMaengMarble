@@ -10,6 +10,9 @@ import MyPageModal from '@components/modal/MyPageModal';
 import InviteModal from '@components/modal/InviteModal';
 import CToastError from '@components/common/CToastError';
 import CToastSuccess from '@components/common/CToastSuccess';
+import { motion } from 'framer-motion';
+import { getRooms } from '@apis/lobbyApi';
+import { RoomType } from '@/types/common/lobby.type';
 
 const Lobby = () => {
   const clientRef = useRef<StompJs.Client>();
@@ -17,6 +20,7 @@ const Lobby = () => {
   const [isOpenMyPageModal, setIsOpenMyPageModal] = useState(false);
   const [isOpenInviteModal, setIsOpenInviteModal] = useState(false);
   const [toastErrorMessage, setToastErrorMessage] = useState('');
+  const [roomList, setRoomList] = useState<RoomType[]>([]);
 
   const toastInvalidInviteCode = useCallback(() => {
     setToastErrorMessage('존재하지 않는 초대코드입니다');
@@ -50,7 +54,12 @@ const Lobby = () => {
   useEffect(() => {
     clientRef.current = getClient();
     activateClient(clientRef.current);
-    clientRef.current.onConnect = () => {};
+    clientRef.current.onConnect = () => {
+      getRooms().then((res: { waitingRooms: RoomType[] }) => {
+        console.log(res.waitingRooms);
+        setRoomList(res.waitingRooms);
+      });
+    };
   }, []);
 
   return (
@@ -69,12 +78,15 @@ const Lobby = () => {
         isOpenCreateRoomModal={isOpenMyPageModal}
         handleMyPageModalClose={handleMyPageModalClose}
       />
-      <div
+      <motion.div
         className='flex flex-col w-full h-full relative p-[45px] overflow-auto'
         style={{
           backgroundImage: `url(${images.lobby.background})`,
           backgroundSize: 'cover',
         }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
       >
         <LobbyHeader />
 
@@ -86,14 +98,15 @@ const Lobby = () => {
             handleMyPageModal={onClickSettingButton}
           />
           <LobbyRoomListView
+            roomList={roomList}
             onClickInviteButton={onClickInviteButton}
             onClickCreateRoomButton={onClickCreateRoomButton}
             clientRef={clientRef}
           />
         </div>
-      </div>
-      <CToastError text={toastErrorMessage} />
-      <CToastSuccess text='입장 성공' />
+        <CToastError text={toastErrorMessage} />
+        <CToastSuccess text='입장 성공' />
+      </motion.div>
     </>
   );
 };

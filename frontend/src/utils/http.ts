@@ -3,21 +3,21 @@
 // import { AuthType } from '@typedef/common.types';
 // eslint-disable-next-line import/no-named-as-default
 // import { ResponseAccessTokenType } from '@/types/common/auth.type';
+import { baseUrl } from '@constants/baseUrl';
 import AxiosS, {
   // eslint-disable-next-line import/named
   AxiosRequestConfig,
-  // AxiosRequestHeaders,
-  // InternalAxiosRequestConfig,
 } from 'axios';
 
 const axios = AxiosS.create();
-const authAxios = AxiosS.create();
+export const authAxios = AxiosS.create();
 // axios.defaults.baseURL = 'https://i9d211.p.ssafy.io/api/';
 // axios.defaults.baseURL = 'http://i9d211.p.ssafy.io/api/';
-axios.defaults.baseURL = 'http://192.168.100.64:8080/api/';
+// axios.defaults.baseURL = 'http://192.168.100.62:8080/api/';
+axios.defaults.baseURL = baseUrl;
 axios.defaults.withCredentials = true;
-authAxios.defaults.baseURL = 'https://i9d211.p.ssafy.io/api/';
-// authAxios.defaults.baseURL = 'http://192.168.100.64:8080/api/';
+// authAxios.defaults.baseURL = 'http://192.168.100.62:8080/api/';
+authAxios.defaults.baseURL = baseUrl;
 authAxios.defaults.withCredentials = true;
 
 export const http = {
@@ -49,7 +49,8 @@ export const http = {
 // 인터셉터 설정
 // authAxios.interceptors.request.use(
 //   async (config: InternalAxiosRequestConfig) => {
-//     const accessToken = store.getState().auth.token;
+//     const accessToken = useRecoilValue(accessTokenState);
+//     const setAccessToken = useSetRecoilState(accessTokenState);
 
 //     if (accessToken) {
 //       config.headers = config.headers || {};
@@ -60,7 +61,9 @@ export const http = {
 //     // 없는 경우 리프레시 토큰으로 액세스 토큰 재발급
 //     else {
 //       try {
-//         const refreshResponse = await http.get<ResponseAccessTokenType>('oauth/refresh-token');
+//         const refreshResponse = await http.post<ResponseAccessTokenType>(
+//           'user-service/auth/token'
+//         );
 //         const newAccessToken = refreshResponse.accessToken;
 
 //         if (newAccessToken) {
@@ -70,15 +73,15 @@ export const http = {
 //           ).Authorization = `Bearer ${newAccessToken}`;
 
 //           // 액세스 토큰을 전역에 저장
-//           store.dispatch(setToken(newAccessToken));
+//           setAccessToken(refreshResponse);
 
-//           await setUserData();
+//           // await setUserData();
 //         }
 //       } catch (error) {
 //         console.error('액세스 토큰 재발급 실패:', error);
 //         // 재발급 실패 시 로그아웃 등의 처리를 진행할 수 있습니다.
 //         localStorage.removeItem('login');
-//         window.location.href = 'https://i9d211.p.ssafy.io/login';
+//         // window.location.href = 'https://i9d211.p.ssafy.io/login';
 //       }
 //     }
 //     return config;
