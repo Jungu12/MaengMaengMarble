@@ -53,7 +53,6 @@ const Store = () => {
           </div>
 
           <div className='flex flex-col w-full h-full p-[25px] overflow-auto relative bg-primary-dark300 bg-opacity-70 rounded-[40px]'>
-            {/* <div className='flex flex-col w-full h-full overflow-auto relative bg-white scrollbar'> */}
             <div className='grid grid-cols-4 gap-10 pr-[20px] w-full h-full relative scrollbar'>
               <StoreCharacterCard
                 have={true}

@@ -49,6 +49,7 @@ export const images = {
     warning: '/src/assets/images/icon-warning.png',
     close: '/src/assets/images/icon-close-black.png',
     edit: '/src/assets/images/icon-edit.png',
+    letter: '/src/assets/images/ic-mail.png',
     registrationActive: '/src/assets/images/ic-registration-active.png',
     registrationInactive: '/src/assets/images/ic-registration-inactive.png',
   },
