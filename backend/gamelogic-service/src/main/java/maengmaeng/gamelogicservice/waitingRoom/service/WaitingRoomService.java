@@ -70,4 +70,7 @@ public class WaitingRoomService {
     }
 
 
+    public void exit(String roomCode, UserInfo user) {
+        waitingRoomRepository.exit(roomCode, user);
+    }
 }

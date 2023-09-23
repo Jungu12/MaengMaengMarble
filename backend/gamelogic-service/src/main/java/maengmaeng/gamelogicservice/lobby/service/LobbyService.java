@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import maengmaeng.gamelogicservice.lobby.domain.dto.WaitingRoomCreateRequest;
 import maengmaeng.gamelogicservice.lobby.repository.LobbyRepository;
 import maengmaeng.gamelogicservice.util.RedisSubscriber;
-import maengmaeng.gamelogicservice.waitingRoom.domain.CurrentParticipants;
+import maengmaeng.gamelogicservice.waitingRoom.domain.CurrentParticipant;
 import maengmaeng.gamelogicservice.waitingRoom.domain.WaitingRoom;
 import maengmaeng.gamelogicservice.waitingRoom.service.WaitingRoomService;
 
@@ -32,7 +32,7 @@ public class LobbyService {
     }
 
     public void saveNewWaitingRoom(WaitingRoomCreateRequest roomInfo) {
-        CurrentParticipants currentParticipant = CurrentParticipants.builder()
+        CurrentParticipant currentParticipant = CurrentParticipant.builder()
             .userId(roomInfo.getUserInfo().getUserId())
             .nickname(roomInfo.getUserInfo().getNickname())
             .characterId(roomInfo.getUserInfo().getCharacterId())
@@ -50,7 +50,7 @@ public class LobbyService {
 
         //닫힌 자리를 CurrentParticipants에 추가
         for (int cnt = 0; cnt < MAX_PARTICIPANTS - roomInfo.getMaxParticipants(); cnt++) {
-            CurrentParticipants closed = CurrentParticipants.builder()
+            CurrentParticipant closed = CurrentParticipant.builder()
                 .closed(true)
                 .build();
 

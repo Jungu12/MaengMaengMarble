@@ -1,7 +1,7 @@
 package maengmaeng.gamelogicservice.waitingRoom.repository;
 
 import lombok.RequiredArgsConstructor;
-import maengmaeng.gamelogicservice.waitingRoom.domain.CurrentParticipants;
+import maengmaeng.gamelogicservice.waitingRoom.domain.CurrentParticipant;
 import maengmaeng.gamelogicservice.waitingRoom.domain.WaitingRoom;
 import maengmaeng.gamelogicservice.waitingRoom.domain.dto.UserInfo;
 import maengmaeng.gamelogicservice.waitingRoom.exception.ExceptionCode;
@@ -44,19 +44,19 @@ public class WaitingRoomRepository {
         if (waitingRoom == null) {
             waitingRoom = WaitingRoom.builder()
                     .code(roomCode)
-                    .currentParticipants(new ArrayList<>())
+                    .currentParticipant(new ArrayList<>())
                     .build();
             logger.info("현재 대기방 정보가 없어서 새로 만들어 줌");
         }
 
         // 현재 참여하고있는 사용자가 4명이면 더이상 참여할 수 없음
-        if (waitingRoom.getCurrentParticipants().size() == 4) {
+        if (waitingRoom.getCurrentParticipant().size() == 4) {
             throw new WaitingRoomException(ExceptionCode.WAITINGROOM_FULLED);
         }
 
 
         // 입장한 사용자 객체 생성
-        CurrentParticipants currentParticipants = CurrentParticipants.builder()
+        CurrentParticipant currentParticipant = CurrentParticipant.builder()
                 .characterId(userInfo.getCharacterId())
                 .userId(userInfo.getUserId())
                 .nickname(userInfo.getNickname())
@@ -65,7 +65,7 @@ public class WaitingRoomRepository {
                 .build();
 
         // 대기방 정보에 현재 들어온 사람 추가
-        waitingRoom.addCurrentParticipants(currentParticipants);
+        waitingRoom.addCurrentParticipants(currentParticipant);
 
         // 업데이트된 대기방 정보를 레디스에 업데이트
 
@@ -87,17 +87,17 @@ public class WaitingRoomRepository {
     public Map<String, WaitingRoom> getWaitingRooms() { return opsHashWaitingRoom.entries(WAITING_ROOMS); }
 
 
-    public synchronized void readyMember(String roomCode, UserInfo userInfo) {
+    public void readyMember(String roomCode, UserInfo userInfo) {
         // 사용자 상태 변경 내용을 담아서 웹소켓으로 전달
         // 디비에도 변경하기
         WaitingRoom waitingRoom = opsHashWaitingRoom.get(WAITING_ROOMS,roomCode);
 
 
-        for(int i = 0 ; i < waitingRoom.getCurrentParticipants().size() ; i++) {
-            if(waitingRoom.getCurrentParticipants().get(i).getUserId().equals(userInfo.getUserId())){
+        for(int i = 0 ; i < waitingRoom.getCurrentParticipant().size() ; i++) {
+            if(waitingRoom.getCurrentParticipant().get(i).getUserId().equals(userInfo.getUserId())){
                 // 지금 안에 들어있는 사용자와 ready누른 사용자가 같을때
                 // 그 사람 상태 변경
-                CurrentParticipants participant = waitingRoom.getCurrentParticipants().get(i);
+                CurrentParticipant participant = waitingRoom.getCurrentParticipant().get(i);
                 boolean nowState = participant.isReady();
                 participant.setReady(!nowState);
                 logger.info("User {} is now ready in room {}", userInfo.getUserId(), roomCode);
@@ -112,5 +112,11 @@ public class WaitingRoomRepository {
     public void removeWaitingRoom(String roomCode) {
         System.out.println("roomCode =" + roomCode);
         opsHashWaitingRoom.delete(WAITING_ROOMS, roomCode);
+    }
+
+    public void exit(String roomCode, UserInfo user) {
+        // db에서 지우고 지운 db데이터 반환, 사용자 sub끊기
+
+
     }
 }

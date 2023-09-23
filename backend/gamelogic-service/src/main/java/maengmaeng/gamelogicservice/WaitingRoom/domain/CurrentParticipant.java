@@ -10,7 +10,7 @@ import java.io.Serializable;
 @Builder
 @Setter
 @Getter
-public class CurrentParticipants implements Serializable {
+public class CurrentParticipant implements Serializable {
     private static final long serialVersionUID = 207207207207L;
     private String userId;
     private String nickname;

@@ -66,4 +66,9 @@ public class WaitingRoomController {
         redisPublisher.publish(waitingRoomTopic,gameData);
     }
 
+    @MessageMapping("/waiting-rooms/exit/{roomCode}")
+    public void exit(@DestinationVariable String roomCode, UserInfo user){
+        waitingRoomService.exit(roomCode, user);
+    }
+
 }
