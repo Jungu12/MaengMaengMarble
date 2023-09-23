@@ -20,7 +20,7 @@ public class Player implements Serializable {
 	private String nickname;
 	private long money;
 	private long asset;
-	private int[] lands;
+	private List<Integer> lands;
 	private boolean alive;
 	private int currentTurn;
 	private int stopTradeCount;

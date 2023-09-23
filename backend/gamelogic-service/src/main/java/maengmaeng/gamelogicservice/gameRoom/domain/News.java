@@ -19,5 +19,5 @@ public class News {
 	private int year;
 	private String event;
 	private List<Map<String, Integer>> countryEffects;
-	private List<Map<String, Integer>> industryEffects;
+	private List<Map<String, Integer>> stockEffects;
 }

@@ -19,8 +19,11 @@ public class TestController {
 
     @RequestMapping("test")
     public ResponseEntity<?> test(){
-        gameRoomService.getCountries();
 
+        gameRoomService.getInfo();
         return ResponseEntity.ok().build();
+
+
+
     }
 }
