@@ -8,7 +8,7 @@ type RoomInfoProps = {
   clientRef: React.MutableRefObject<Client | undefined>;
 };
 
-const RoomInfoCard = ({ title, currentCnt, clientRef }: RoomInfoProps) => {
+const RoomInfoCard = ({ title, currentCnt }: RoomInfoProps) => {
   const navigation = useNavigate();
 
   const enterGameRoom = useCallback(() => {
