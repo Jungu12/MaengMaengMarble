@@ -12,4 +12,8 @@ public class LobbyRepository {
 	public void saveWaitingRoom(WaitingRoom waitingRoom) {
 
 	}
+
+	public void findWaitingRooms() {
+
+	}
 }
