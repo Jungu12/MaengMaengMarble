@@ -8,7 +8,7 @@ import NotFound from '@pages/NotFound';
 import WaitingRoom from '@pages/WaitingRoom';
 import { AnimatePresence } from 'framer-motion';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
-import PrivateRoutes from './PrivateRouter';
+// import PrivateRoutes from './PrivateRouter';
 
 const RootRouter = () => {
   return (
