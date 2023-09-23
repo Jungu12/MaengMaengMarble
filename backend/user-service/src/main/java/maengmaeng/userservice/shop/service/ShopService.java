@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import maengmaeng.userservice.exception.ExceptionCode;
 import maengmaeng.userservice.exception.UserException;
 import maengmaeng.userservice.shop.domain.dto.AvatarResponseDto;
+import maengmaeng.userservice.shop.domain.dto.ShopResponseDto;
 import maengmaeng.userservice.shop.domain.dto.UserAvatarDto;
 import maengmaeng.userservice.user.domain.Avatar;
 
@@ -29,18 +30,34 @@ public class ShopService {
 
 
 
-    public List<AvatarResponseDto> getAvatars(String loginUser){
+    public ShopResponseDto getAvatars(String loginUser){
         List<Avatar> avatars = avatarRepository.findAll();
         List<AvatarResponseDto> avatarResponseDtoList = new ArrayList<>();
 
-        return avatars.stream()
-                .map(avatar -> AvatarResponseDto.builder()
-                        .avatarId(avatar.getAvatarId())
-                        .avatarImage(avatar.getAvatarImage())
-                        .avatarName(avatar.getAvatarName())
-                        .avatarPrice(avatar.getAvatarPrice())
-                        .build())
-                .collect(Collectors.toList());
+        List<Integer> userAvatarIds = userAvatarRepository.findUserAvatarsByUserId(loginUser);
+
+        for(Avatar avatar : avatars){
+            AvatarResponseDto avatarDto = AvatarResponseDto
+                    .builder()
+                    .avatarId(avatar.getAvatarId())
+                    .avatarPrice(Integer.parseInt(avatar.getAvatarPrice()))
+                    .avatarName(avatar.getAvatarName())
+                    .avatarImage(avatar.getAvatarImage())
+                    .hasAvatar(userAvatarIds.contains(avatar.getAvatarId()))
+                    .build();
+
+            avatarResponseDtoList.add(avatarDto);
+        }
+
+        User user = userRepository.findByUserId(loginUser).orElseThrow(() -> new UserException(ExceptionCode.USER_NOT_FOUND));
+        int point = user.getPoint();
+
+        ShopResponseDto result = ShopResponseDto.builder()
+                .avatarList(avatarResponseDtoList)
+                .point(point)
+                .build();
+
+        return result;
 
     }
 

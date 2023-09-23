@@ -1,8 +1,8 @@
 package maengmaeng.userservice.shop.controller;
 
 import lombok.AllArgsConstructor;
-import lombok.Getter;
 import maengmaeng.userservice.shop.domain.dto.AvatarResponseDto;
+import maengmaeng.userservice.shop.domain.dto.ShopResponseDto;
 import maengmaeng.userservice.shop.service.ShopService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -18,8 +18,8 @@ public class ShopController {
     private final ShopService shopService;
 
     @GetMapping("/list")
-    public ResponseEntity<List<AvatarResponseDto>> getAvatars(@AuthenticationPrincipal String loginUser){
-        List<AvatarResponseDto> avatarList = shopService.getAvatars(loginUser);
+    public ResponseEntity<ShopResponseDto> getAvatars(@AuthenticationPrincipal String loginUser){
+        ShopResponseDto avatarList = shopService.getAvatars(loginUser);
         return ResponseEntity.ok(avatarList);
     }
 

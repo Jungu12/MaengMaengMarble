@@ -11,6 +11,7 @@ public class AvatarResponseDto {
     private int avatarId;
     private String avatarName;
     private String avatarImage;
-    private String avatarPrice;
+    private int avatarPrice;
+    private boolean hasAvatar;
 
 }
