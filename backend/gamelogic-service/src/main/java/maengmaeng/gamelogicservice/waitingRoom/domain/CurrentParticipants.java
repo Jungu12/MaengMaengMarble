@@ -1,5 +1,6 @@
 package maengmaeng.gamelogicservice.waitingRoom.domain;
 
+
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -7,13 +8,14 @@ import lombok.Setter;
 import java.io.Serializable;
 
 @Builder
-@Getter
 @Setter
+@Getter
 public class CurrentParticipants implements Serializable {
     private static final long serialVersionUID = 207207207207L;
-    String userId;
-    String nickname;
-    int characterId;
-    boolean closed;
-    boolean ready;
+    private String userId;
+    private String nickname;
+    private int characterId;
+    private boolean ready;
+    private boolean closed;
+
 }

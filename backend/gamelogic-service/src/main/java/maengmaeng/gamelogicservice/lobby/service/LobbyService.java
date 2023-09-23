@@ -6,6 +6,7 @@ import maengmaeng.gamelogicservice.lobby.repository.LobbyRepository;
 import maengmaeng.gamelogicservice.util.RedisSubscriber;
 import maengmaeng.gamelogicservice.waitingRoom.domain.CurrentParticipants;
 import maengmaeng.gamelogicservice.waitingRoom.domain.WaitingRoom;
+import maengmaeng.gamelogicservice.waitingRoom.service.WaitingRoomService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +20,7 @@ import java.util.UUID;
 @Service
 public class LobbyService {
     private final static int MAX_PARTICIPANTS = 4;
+    private final WaitingRoomService waitingRoomService;
     private final LobbyRepository lobbyRepository;
     // 로비(topic)에 발행되는 메시지를 처리할 Listener
     private final RedisMessageListenerContainer redisMessageListener;
@@ -29,7 +31,7 @@ public class LobbyService {
         return UUID.randomUUID().toString();
     }
 
-    public WaitingRoom saveWaitingRoom(WaitingRoomCreateRequest roomInfo) {
+    public void saveNewWaitingRoom(WaitingRoomCreateRequest roomInfo) {
         CurrentParticipants currentParticipant = CurrentParticipants.builder()
             .userId(roomInfo.getUserInfo().getUserId())
             .nickname(roomInfo.getUserInfo().getNickname())
@@ -55,13 +57,14 @@ public class LobbyService {
             waitingRoom.addCurrentParticipants(closed);
         }
 
-        lobbyRepository.saveWaitingRoom(waitingRoom);
-
-        return waitingRoom;
+        waitingRoomService.saveWaitingRoom(waitingRoom);
     }
 
     public List<WaitingRoom> findWaitingRooms() {
-        lobbyRepository.findWaitingRooms();
-        return null;
+        return waitingRoomService.getWaitingRooms();
+    }
+
+    public void removeWaitingRoom(String roomCode) {
+        waitingRoomService.removeWaitingRoom(roomCode);
     }
 }

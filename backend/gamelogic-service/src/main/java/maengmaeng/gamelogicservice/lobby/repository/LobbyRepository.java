@@ -9,11 +9,4 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class LobbyRepository {
 
-	public void saveWaitingRoom(WaitingRoom waitingRoom) {
-
-	}
-
-	public void findWaitingRooms() {
-
-	}
 }
