@@ -14,14 +14,15 @@ import maengmaeng.gamelogicservice.util.RedisPublisher;
 @RequiredArgsConstructor
 @Controller
 public class ChatController {
-	private static ChannelTopic chatTopic;
+	private final static String CHAT = "CHAT";
+	private final ChannelTopic chatTopic;
 	private final RedisPublisher redisPublisher;
-	private final ChatService chatService;
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	@MessageMapping("/chats")
 	public void message(ChatMessage message) {
-		GameData gameData = GameData.builder().roomCode(message.getRoomCode()).data(message).build();
+		logger.debug("message()");
+		GameData gameData = GameData.builder().type(CHAT).roomCode(message.getRoomCode()).data(message).build();
 		redisPublisher.publish(chatTopic, gameData);
 	}
 }

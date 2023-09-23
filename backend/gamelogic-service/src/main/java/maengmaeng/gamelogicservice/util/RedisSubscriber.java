@@ -41,10 +41,10 @@ public class RedisSubscriber implements MessageListener {
 				messagingTemplate.convertAndSend("/sub/game-rooms/" + gameData.getRoomCode(), gameData.getData());
 			}
 			if (topicType.equals("CHAT")) {
-				messagingTemplate.convertAndSend("/sub/chat/" + gameData.getRoomCode(), gameData.getData());
+				messagingTemplate.convertAndSend("/sub/chats/" + gameData.getRoomCode(), gameData.getData());
 			}
 		} catch (Exception e) {
-			System.out.println(message);
+			System.out.println(e.getMessage());
 		}
 	}
 }
