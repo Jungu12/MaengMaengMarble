@@ -14,6 +14,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
+import java.util.Map;
 
 @Repository
 @RequiredArgsConstructor
@@ -71,13 +72,19 @@ public class WaitingRoomRepository {
         // 근데 이렇게 저장을 안해주고 바로 쏴주면 안되는가에 대한 고찰
         // 그치만 저장을 해야하는 이유는 사방에서 하도 들어왔다나갔다 채팅했다안했다 레디눌렀다안눌렀다해서 현재상태를 저장해놓지않으면 모르기때문이 아닐까?
         // 대기방의 상태(사용자의 입장, 퇴장, 채팅 등)가 지속적으로 변하기 때문에, 현재 상태를 실시간으로 파악하기 위해서는 Redis와 같은 저장소에 상태를 저장해두어야 합니다.
-        opsHashWaitingRoom.put(WAITING_ROOMS, roomCode, waitingRoom);
+        saveWaitingRoom(waitingRoom);
+    }
+
+    public void saveWaitingRoom(WaitingRoom waitingRoom) {
+        opsHashWaitingRoom.put(WAITING_ROOMS, waitingRoom.getCode(), waitingRoom);
     }
 
     public WaitingRoom getWaitingRoomNow(String roomCode) {
         return opsHashWaitingRoom.get(WAITING_ROOMS, roomCode);
     }
 
+
+    public Map<String, WaitingRoom> getWaitingRooms() { return opsHashWaitingRoom.entries(WAITING_ROOMS); }
 
 
     public synchronized void readyMember(String roomCode, UserInfo userInfo) {
@@ -102,6 +109,8 @@ public class WaitingRoomRepository {
 
     }
 
-
-
+    public void removeWaitingRoom(String roomCode) {
+        System.out.println("roomCode =" + roomCode);
+        opsHashWaitingRoom.delete(WAITING_ROOMS, roomCode);
+    }
 }

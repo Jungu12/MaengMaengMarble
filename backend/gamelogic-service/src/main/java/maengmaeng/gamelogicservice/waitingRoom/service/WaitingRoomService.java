@@ -1,5 +1,9 @@
 package maengmaeng.gamelogicservice.waitingRoom.service;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 import maengmaeng.gamelogicservice.waitingRoom.domain.WaitingRoom;
 import maengmaeng.gamelogicservice.waitingRoom.domain.dto.UserInfo;
 import maengmaeng.gamelogicservice.waitingRoom.exception.ExceptionCode;
@@ -39,7 +43,31 @@ public class WaitingRoomService {
         return waitingRoomRepository.getWaitingRoomNow(roomCode);
     }
 
+    public List<WaitingRoom> getWaitingRooms() {
+        Map<String, WaitingRoom> waitingRoomMap = waitingRoomRepository.getWaitingRooms();
+        List<WaitingRoom> waitingRooms = new ArrayList<>();
+
+        waitingRoomMap.forEach((roomCode, waitingRoom) -> {
+            waitingRooms.add(waitingRoom);
+        });
+
+        return waitingRooms;
+    }
+
+    /*
+        대기방 Redis에 저장
+     */
+    public void saveWaitingRoom(WaitingRoom waitingRoom) {
+        waitingRoomRepository.saveWaitingRoom(waitingRoom);
+    }
+
+    public void removeWaitingRoom(String roomCode) {
+        waitingRoomRepository.removeWaitingRoom(roomCode);
+    }
+
     public void ready(String roomCode, UserInfo user) {
         waitingRoomRepository.readyMember(roomCode, user);
     }
+
+
 }
