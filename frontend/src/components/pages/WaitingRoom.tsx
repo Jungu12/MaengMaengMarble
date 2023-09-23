@@ -42,11 +42,11 @@ const WaitingRoom = () => {
     activateClient(client.current);
     client.current.onConnect = () => {
       if (client.current) {
-        client.current.subscribe('/sub/waiting-rooms/12345', (res) => {
+        client.current.subscribe(`/sub/waiting-rooms/${roomId}`, (res) => {
           console.log(JSON.parse(res.body));
         });
         client.current.publish({
-          destination: '/pub/lobby/12345',
+          destination: `/pub/lobby/${roomId}`,
           body: JSON.stringify({
             userid: '12345',
             nickname: '김상근',
@@ -55,7 +55,7 @@ const WaitingRoom = () => {
         });
       }
     };
-  }, []);
+  }, [roomId]);
 
   return (
     <motion.div

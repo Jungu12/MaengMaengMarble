@@ -1,12 +1,13 @@
 import { getAccessToken } from '@apis/loginApi';
-import { accessTokenState } from '@atom/userAtom';
+import { accessTokenState, userState } from '@atom/userAtom';
 import { useEffect } from 'react';
-import { useRecoilState } from 'recoil';
+import { useRecoilState, useSetRecoilState } from 'recoil';
 import Lottie from 'lottie-react';
 import flyBee from '@/assets/lotties/flyBee.json';
 import { images } from '@constants/images';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
+import { getMyProfile } from '@apis/userApi';
 
 const LoadingAnimation = {
   start: { scale: 0, opacity: 0.0 },
@@ -31,6 +32,7 @@ const InnerAnimation = {
 const LoginCallBackPage = () => {
   const navigate = useNavigate();
   const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
+  const setUser = useSetRecoilState(userState);
   const loginLoadingMsg = [
     '로',
     '그',
@@ -61,14 +63,22 @@ const LoginCallBackPage = () => {
             setAccessToken({ accessToken: res.accessToken });
           }
           console.log(res);
-          navigate('/lobby');
+          // 유저 정보 저장 -> 로비로 이동
+          // setUser()
+          // navigate('/lobby');
+        })
+        .then(() => {
+          getMyProfile().then((res) => {
+            setUser(res);
+            console.log(res);
+          });
         })
         .catch((err) => {
           alert(err);
           navigate('/login');
         });
     }
-  }, [navigate, setAccessToken]);
+  }, [navigate, setAccessToken, setUser]);
 
   useEffect(() => {
     console.log(accessToken?.accessToken);
