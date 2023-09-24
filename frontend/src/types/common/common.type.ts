@@ -24,3 +24,11 @@ export type ParticipantsType = {
 export type ChatMessageType = {
   test: string;
 };
+
+export type CharacterType = {
+  avatarId: number;
+  avatarName: string;
+  avatarImage: string;
+  avatarPrice: number;
+  hasAvatar: boolean;
+};
