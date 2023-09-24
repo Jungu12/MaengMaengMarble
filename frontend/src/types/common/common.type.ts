@@ -22,7 +22,9 @@ export type ParticipantsType = {
 };
 
 export type ChatMessageType = {
-  test: string;
+  message: string;
+  roomCode: string;
+  sender: string;
 };
 
 export type CharacterType = {
