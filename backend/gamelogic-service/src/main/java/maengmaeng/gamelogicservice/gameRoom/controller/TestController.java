@@ -3,6 +3,7 @@ package maengmaeng.gamelogicservice.gameRoom.controller;
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
+import maengmaeng.gamelogicservice.gameRoom.domain.GameInfo;
 import maengmaeng.gamelogicservice.gameRoom.service.GameRoomService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -20,10 +21,8 @@ public class TestController {
     @RequestMapping("test")
     public ResponseEntity<?> test(){
 
-        gameRoomService.getInfo();
-        return ResponseEntity.ok().build();
-
-
+        GameInfo info = gameRoomService.setInfo();
+        return ResponseEntity.ok().body(info);
 
     }
 }

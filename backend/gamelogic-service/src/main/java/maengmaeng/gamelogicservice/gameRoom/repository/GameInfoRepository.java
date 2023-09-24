@@ -21,7 +21,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class GameInfoRepository {
 
-    private final RedisTemplate <String,GameInfo> redisTemplate;
+    private final RedisTemplate<String, Object> redisTemplate;
     private HashOperations<String, String, GameInfo> opsHashGameInfo;
     private static final String GAME_INFOS = "gameInfo";
 
@@ -30,56 +30,13 @@ public class GameInfoRepository {
         opsHashGameInfo = redisTemplate.opsForHash();
     }
 
-    public GameInfo createGameRoom(){
-        GameInfo gameInfo = new GameInfo();
-        /*더미 데이터 */
-        Player player1 = Player.builder()
-                .playerId("ksg")
-                .nickname("ksg")
-                .money(100000000)
-                .asset(100000000)
-                .lands(new ArrayList<Integer>())
-                .alive(true)
-                .currentTurn(0)
-                .stopTradeCount(0)
-                .doubleCount(0)
-                .currentLap(0)
-                .stocks(new ArrayList<Map<String, Integer>>())
-                .loan(0)
-                .cards(new boolean[0])
-                .currentLocation(0)
-                .build();
-        Player player2 = Player.builder()
-                .playerId("LEE")
-                .nickname("LEE")
-                .money(100000000)
-                .asset(100000000)
-                .lands(new ArrayList<Integer>())
-                .alive(true)
-                .currentTurn(0)
-                .stopTradeCount(0)
-                .doubleCount(0)
-                .currentLap(0)
-                .stocks(new ArrayList<Map<String, Integer>>())
-                .loan(0)
-                .cards(new boolean[0])
-                .currentLocation(0)
-                .build();
-        Player[] players = new Player[4];
-        players[0] = player1;
-        players[1] = player2;
-        gameInfo = GameInfo.builder()
-                .roomCode("roomCode")
-                .players(players)
-                .lands()
-                .info()
-                .goldenKeys()
-                .newsInfo()
-                .stocks()
-                .build();
+    public GameInfo createGameRoom(GameInfo gameInfo){
 
         opsHashGameInfo.put(GAME_INFOS,gameInfo.getRoomCode(),gameInfo);
+        return gameInfo;
     }
+
+
 
 
 

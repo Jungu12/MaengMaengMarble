@@ -1,14 +1,40 @@
 package maengmaeng.gamelogicservice.gameRoom.domain;
 
-import maengmaeng.gamelogicservice.gameRoom.domain.db.DbCountry;
-import maengmaeng.gamelogicservice.gameRoom.domain.db.DbNews;
+import maengmaeng.gamelogicservice.gameRoom.domain.db.*;
 import org.springframework.stereotype.Component;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Component
 public class GameInfoMapper {
 
+    /**
+     * redisPlayer객체로 전환하는 Mapper
+     * */
+    public Player toReidsPlayer(String id, String nickName){
+        boolean[] cards = {false,false};
+        return   Player.builder()
+                .playerId(id)
+                .nickname(nickName)
+                .money(100000000)
+                .asset(100000000)
+                .lands(new ArrayList<Integer>())
+                .alive(true)
+                .currentTurn(0)
+                .stopTradeCount(0)
+                .doubleCount(0)
+                .currentLap(0)
+                .stocks(new ArrayList<Map<String, Integer>>())
+                .loan(0)
+                .cards(cards)
+                .currentLocation(0)
+                .build();
+    }
 
-    /** DB 데이터 REDIS 에 저장할 DATA로 전환
+    /** DB Country객체 REDIS 에 저장할 Land 객체로 전환
      * */
     public Land toRedisLand(DbCountry dbCountry){
         int[] buildingPrices = { dbCountry.getVillaPrice(), dbCountry.getBuildingPrice(),dbCountry.getHotelPrice()};
@@ -28,7 +54,80 @@ public class GameInfoMapper {
                 .build();
 
     }
+    /**
+    * redis Info 객체로 변환하는 Mapper
+     * */
+    public Info toRedisInfo(String currentPlayer,int[] news, int turnCount){
 
-    /***/
-    public News toRedisNews(DbNews)
+
+        return Info.builder()
+                .currentPlayer(currentPlayer)
+                .turnCount(turnCount)
+                .news(news)
+                .build();
+    }
+
+    /**
+     * redis GoldenKeys 객체로 변환하는  Mapper
+     * */
+    public GoldenKeys toRedisGoldenKeys(){
+
+        return GoldenKeys.builder()
+                .silver(4)
+                .gold(4)
+                .platinum(4)
+                .newsBan(4)
+                .hurricane(4)
+                .angel(4)
+                .kangJunGu(4)
+                .lotto(4)
+                .door(4)
+                .earthquake(4)
+                .build();
+    }
+
+    /** DBNews 객체 REDIS에 저장할 news 객체로 전환
+     * */
+    public News toRedisNews(DbNews dbNews){
+
+        List<DbNewsCountry> dbNewsCountryList = dbNews.getDbNewsCountryList();
+        List<Map<String,Integer>> countryEffects = new ArrayList<>();
+
+        List<DbNewsStock> dbNewsStockList= dbNews.getDbNewsStockList();
+        List<Map<String,Integer>> stockEffects = new ArrayList<>();
+
+        for(DbNewsCountry dbNewsCountry: dbNewsCountryList){
+            Map<String, Integer> countryEffect = new HashMap<>();
+            countryEffect.put(dbNewsCountry.getDbCountry().getCountryName(),dbNewsCountry.getEffect());
+            countryEffects.add(countryEffect);
+        }
+        for(DbNewsStock dbNewsStock: dbNewsStockList){
+            Map<String, Integer> stockEffect = new HashMap<>();
+            stockEffect.put(dbNewsStock.getDbStock().getStockName(),dbNewsStock.getEffect());
+            stockEffects.add(stockEffect);
+
+        }
+        return News.builder()
+                .newsId(dbNews.getNewsId())
+                .imageUrl(dbNews.getNewsImage())
+                .content(dbNews.getNewsContent())
+                .countryEffects(countryEffects)
+                .stockEffects(stockEffects)
+                .build();
+    }
+
+    /**
+     *  Redis Stock Mapper
+     * */
+    public Stock toRedisStock(DbStock dbStock){
+
+        return Stock.builder()
+                .id(dbStock.getStockId())
+                .name(dbStock.getStockName())
+                .cost(dbStock.getStockPrice())
+                .currentCost(dbStock.getStockPrice())
+                .dividends(dbStock.getDividends())
+                .build();
+    }
+
 }

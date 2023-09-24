@@ -16,7 +16,6 @@ public class Info implements Serializable {
 	@Builder.Default
 	private static final long serialVersionUID = 207207207207L;
 	private String currentPlayer;
-	private int[] order;
 	private int turnCount;
 	private int[] news;
 	private int doorCheck;

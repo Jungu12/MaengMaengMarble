@@ -1,6 +1,7 @@
 package maengmaeng.gamelogicservice.gameRoom.domain;
 
 import java.io.Serializable;
+import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,9 +18,9 @@ public class GameInfo implements Serializable {
 	private static final long serialVersionUID = 207207207207L;
 	private String roomCode;
 	private Player[] players;
-	private Land[] lands;
+	private List<Land> lands;
 	private Info info;
 	private GoldenKeys goldenKeys;
 	private NewsInfo newsInfo;
-	private Stock[] stocks;
+	private List<Stock> stocks;
 }

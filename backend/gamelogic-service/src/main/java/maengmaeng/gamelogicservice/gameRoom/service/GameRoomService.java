@@ -1,11 +1,14 @@
 package maengmaeng.gamelogicservice.gameRoom.service;
 
 import lombok.AllArgsConstructor;
+import maengmaeng.gamelogicservice.gameRoom.domain.*;
 import maengmaeng.gamelogicservice.gameRoom.domain.db.*;
 import maengmaeng.gamelogicservice.gameRoom.repository.*;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -18,54 +21,44 @@ public class GameRoomService {
     private final DbCardRepository dbCardRepository;
     private final DbNewsStockRepository dbNewsStockRepository;
     private final GameInfoRepository gameInfoRepository;
+    private final GameInfoMapper gameInfoMapper;
     /** 나라 목록 가져오기
      * */
-    public void getInfo (){
-        List<DbCountry> countries = dbCountryRespository.findAll();
-        for(DbCountry dbCountry: countries){
-            System.out.println(dbCountry.toString());
-        }
-        List<DbNews> news = dbNewsRepository.findAll();
-        for(DbNews dbNews: news) {
-            System.out.println(dbNews.toString());
-        }
-        List<DbStock> stocks = dbStockRepository.findAll();
-        for(DbStock stock: stocks ){
-            System.out.println(stock.toString());
-        }
-        List<DbCard> dbCards = dbCardRepository.findAll();
-        for(DbCard card : dbCards){
-            System.out.println(card.toString());
-        }
-        List<DbNewsCountry> dbNewsCountriesList = dbNewsCountryRepository.findAll();
-        for(DbNewsCountry dbNewsCountry: dbNewsCountriesList){
-            System.out.println(dbNewsCountry.getNewsCountryId()+" "
-                    +dbNewsCountry.getDbNews().toString()+ " "+ dbNewsCountry.getDbCountry()+" "
-            + dbNewsCountry.getEffect());
-        }
-        List<DbNewsStock> dbNewsStocks = dbNewsStockRepository.findAll();
-        for(DbNewsStock dbNewsStock:dbNewsStocks){
-            System.out.println(dbNewsStock.getNewsStockId().toString() +" " +
-                    dbNewsStock.getDbNews().toString() +" "+ dbNewsStock.getDbStock().toString() + " "
-            + dbNewsStock.getEffect().toString());
-        }
+    public void getInfo () {
+
+    }
+
+
+
+    public GameInfo setInfo (){
+        Player[] players = new Player[4];
+        players[0] = gameInfoMapper.toReidsPlayer("LEE","LEE");
+        players[1] = gameInfoMapper.toReidsPlayer("KIM", "KIM");
+        players[2] = gameInfoMapper.toReidsPlayer("jungu", "jungu");
+        players[3] = gameInfoMapper.toReidsPlayer("215","215");
+        List<DbCountry> dbCountryList = dbCountryRespository.findAll();
+
+        List<Land> landList = dbCountryList.stream().map(gameInfoMapper::toRedisLand).collect(Collectors.toList());
+
+        List<Stock> stockList = dbStockRepository.findAll().stream().map(gameInfoMapper::toRedisStock).collect(Collectors.toList());
+        int[] news = new int[3];
+        GameInfo gameInfo = GameInfo.builder()
+                .roomCode("1234")
+                .players(players)
+                .lands(landList)
+                .info(gameInfoMapper.toRedisInfo("LEE",news,0))
+                .goldenKeys(gameInfoMapper.toRedisGoldenKeys())
+                .stocks(stockList)
+                .build();
+
+
+
+
+        return gameInfoRepository.createGameRoom(gameInfo);
 
 
     }
 
-    public void setInfo (){
-        List<DbCountry> countries = dbCountryRespository.findAll();
-        List<DbNews> news = dbNewsRepository.findAll();
-        List<DbStock> stocks = dbStockRepository.findAll();
-        List<DbCard> dbCards = dbCardRepository.findAll();
-
-
-
-
-        gameInfoRepository.createGameRoom();
-
-
-    }
 
 
 }
