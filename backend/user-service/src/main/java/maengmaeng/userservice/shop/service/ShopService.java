@@ -40,9 +40,9 @@ public class ShopService {
             AvatarResponseDto avatarDto = AvatarResponseDto
                     .builder()
                     .avatarId(avatar.getAvatarId())
-                    .avatarPrice(Integer.parseInt(avatar.getAvatarPrice()))
+                    .avatarPrice(avatar.getAvatarPrice())
                     .avatarName(avatar.getAvatarName())
-                    .avatarImage(avatar.getAvatarImage())
+                    .avatarImage(avatar.getAvatarImageBg())
                     .hasAvatar(userAvatarIds.contains(avatar.getAvatarId()))
                     .build();
 
@@ -69,7 +69,7 @@ public class ShopService {
         Avatar avatar = avatarRepository.findById(id).orElseThrow(()-> new UserException(ExceptionCode.AVATAR_NOT_FOUND));
         
         // 포인트 부족 시
-        if(point < Integer.parseInt(avatar.getAvatarPrice())){
+        if(point < avatar.getAvatarPrice()){
             throw new UserException(ExceptionCode.POINT_NOT_SUFFICIENT);
         }
 
@@ -80,7 +80,7 @@ public class ShopService {
         }
 
         UserAvatar userAvatar = new UserAvatar(user,avatar,false);
-        user.setPointSub(Integer.parseInt(avatar.getAvatarPrice()));
+        user.setPointSub(avatar.getAvatarPrice());
         userAvatarRepository.save(userAvatar);
 
 
