@@ -13,9 +13,12 @@ import { getRooms } from '@apis/lobbyApi';
 import MyFriendModal from '@components/modal/MyFriendModal';
 import { RoomType } from '@/types/lobby/lobby.type';
 import { friendDetail, getFriendlist } from '@apis/friendApi';
+import { useRecoilValue } from 'recoil';
+import { userState } from '@atom/userAtom';
 
 const Lobby = () => {
   const clientRef = useRef<StompJs.Client>();
+  const user = useRecoilValue(userState);
   const [isOpenCreateRoomModal, setIsOpenCreateRoomModal] = useState(false);
   const [isOpenMyPageModal, setIsOpenMyPageModal] = useState(false);
   const [isOpenInviteModal, setIsOpenInviteModal] = useState(false);
@@ -107,12 +110,14 @@ const Lobby = () => {
         <LobbyHeader onClickFriendButton={onClickFriendButton} />
 
         <div className='flex flex-1 flex-row w-full items-center justify-between mt-5 overflow-auto'>
-          <LobbyCharacterView
-            name='상근시치'
-            img={images.default.character}
-            point='28,000'
-            handleMyPageModal={onClickSettingButton}
-          />
+          {user && (
+            <LobbyCharacterView
+              name={user.nickname}
+              img={user.avatarImageNoBg}
+              point={user.point}
+              handleMyPageModal={onClickSettingButton}
+            />
+          )}
           <LobbyRoomListView
             roomList={roomList}
             onClickInviteButton={onClickInviteButton}

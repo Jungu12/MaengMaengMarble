@@ -3,7 +3,7 @@ import { images } from '@constants/images';
 type CharacterInfoProps = {
   name: string;
   img: string;
-  point: string;
+  point: number;
   handleMyPageModal: () => void;
 };
 

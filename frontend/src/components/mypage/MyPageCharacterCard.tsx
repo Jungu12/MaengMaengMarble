@@ -1,20 +1,24 @@
+import { CharacterType } from '@/types/common/common.type';
 import { images } from '@constants/images';
-import {} from 'react';
+import { useEffect } from 'react';
 
 type Props = {
-  src: string;
-  alt: string;
-  name: string;
   status: 'choice' | 'lock' | 'possession';
+  character: CharacterType;
+  selectCharater: (id: number) => void;
 };
 
-const MyPageCharacterCard = ({ src, alt, name, status }: Props) => {
+const MyPageCharacterCard = ({ status, character, selectCharater }: Props) => {
+  useEffect(() => {
+    console.log(character);
+  }, [character]);
+
   return (
-    <div className='w-[160px] h-[160px] flex flex-col items-center relative'>
+    <div className='w-[160px] h-[160px] flex flex-col items-center relative mb-[40px]'>
       <img
-        className='w-[156xp] h-[156px] rounded-[6px] mb-[20px] z-[1]'
-        src={src}
-        alt={alt}
+        className='w-[156px] h-[156px] rounded-[6px] mb-[20px] z-[1] object-cover'
+        src={character.avatarImageBg}
+        alt={character.avatarName}
       />
       {status === 'choice' && (
         <>
@@ -54,17 +58,22 @@ const MyPageCharacterCard = ({ src, alt, name, status }: Props) => {
         </>
       )}
       {status === 'possession' && (
-        <div
+        <button
           className='w-[164px] h-[164px] absolute bottom-[0px] z-[2] cursor-pointer'
-          style={{
-            borderRadius: '10px',
-            border: '4px solid #68634F',
-            background:
-              'linear-gradient(180deg, rgba(46, 31, 2, 0.00) 47.92%, rgba(46, 31, 2, 0.54) 79.69%, #2E1F02 93.75%)',
-          }}
-        ></div>
+          onClick={() => selectCharater(character.avatarId)}
+        >
+          <div
+            className='w-[164px] h-[164px] absolute bottom-[0px] z-[2] cursor-pointer'
+            style={{
+              borderRadius: '10px',
+              border: '4px solid #969696',
+              background:
+                'linear-gradient(180deg, rgba(46, 31, 2, 0.00) 47.92%, rgba(46, 31, 2, 0.54) 79.69%, #2E1F02 93.75%)',
+            }}
+          ></div>
+        </button>
       )}
-      <p className='text-xl font-semibold'>{name}</p>
+      <p className='text-xl font-semibold'>{character.avatarName}</p>
     </div>
   );
 };
