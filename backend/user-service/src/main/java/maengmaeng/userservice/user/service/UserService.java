@@ -12,6 +12,7 @@ import maengmaeng.userservice.user.repository.AvatarRepository;
 import maengmaeng.userservice.user.repository.UserAvatarRepository;
 import maengmaeng.userservice.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.OptionalInt;
@@ -34,6 +35,7 @@ public class UserService {
         Avatar avatarIdOptional = userRepository.findMountedAvatarIdByUserId(userId);
 
         int avatarId = avatarIdOptional.getAvatarId(); // 만약 마운트된 아바타가 없으면 기본값으로 0을 사용하거나 다른 방법으로 처리할 수 있습니다.
+        String avatarUrl = avatarIdOptional.getAvatarImage();
         // 내 정보를 DTO 형태로 보기 위해서 user의 값들과 avatar_id를 가져와서 만든다.
         UserDetail userDetail = UserDetail.builder()
                 .userId(user.getUserId())
@@ -42,6 +44,7 @@ public class UserService {
                 .win(user.getWin())
                 .lose(user.getLose())
                 .avatarId(avatarId)
+                .avatarUrl(avatarUrl)
                 .build();
 
         return userDetail;
@@ -91,7 +94,9 @@ public class UserService {
         return userAvatars;
     }
 
+
     // 캐릭터 변경
+    @Transactional
     public void changeProfileAvatar(String userId, int newAvatarId) {
         // 현재 마운트된 아바타 중에서 `mounting` 컬럼을 `true`에서 `false`로 변경
         userAvatarRepository.unmountAvatarByUserId(userId);

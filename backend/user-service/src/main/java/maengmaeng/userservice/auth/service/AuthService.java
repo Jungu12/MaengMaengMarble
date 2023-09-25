@@ -160,11 +160,20 @@ public class AuthService {
 
 	private void addUserAvatar(String userId) {
 		try {
-			User user = userRepository.findById(userId).orElseGet(() -> new User());
-			Avatar avatar = avatarRepository.findById(1).orElseGet(() -> new Avatar());
-			UserAvatar userAvatar = new UserAvatar(user, avatar, true);
-			userAvatarRepository.save(userAvatar);
-		} catch (Exception e) {
+			User user = userRepository.findById(userId).orElse(null); // 기존 코드 수정
+			Avatar avatar = avatarRepository.findById(1).orElse(null); // 기존 코드 수정
+
+			if (user != null && avatar != null) {
+				// 이미 존재하는 사용자와 아바타의 조합인지 확인
+				UserAvatar existingUserAvatar = userAvatarRepository.findByUserAndAvatar(user, avatar);
+
+				if (existingUserAvatar == null) {
+					// 조합이 존재하지 않으면 새로운 UserAvatar 생성
+					UserAvatar userAvatar = new UserAvatar(user, avatar, true);
+					userAvatarRepository.save(userAvatar);
+				}
+			}
+		}catch (Exception e) {
 			e.printStackTrace();
 		}
 	}

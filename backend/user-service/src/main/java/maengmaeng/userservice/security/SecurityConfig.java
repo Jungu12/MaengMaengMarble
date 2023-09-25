@@ -33,9 +33,8 @@ public class SecurityConfig {
 		CorsConfiguration config = new CorsConfiguration();
 
 		config.setAllowCredentials(true);
-		config.setAllowedOrigins(
-			List.of("http://localhost:3000", "http://j9d207.p.ssafy.io", "http://192.168.100.58:3000"));
-		config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
+		config.setAllowedOrigins(List.of("http://localhost:3000", "https://i9d207.p.ssafy.io", "http://192.168.100.58:3000"));
+		config.setAllowedMethods(List.of("*"));
 		config.setAllowedHeaders(List.of("*"));
 		config.setExposedHeaders(List.of("*"));
 
