@@ -25,11 +25,6 @@ public interface UserAvatarRepository extends JpaRepository<UserAvatar, Integer>
     @Query("UPDATE UserAvatar ua SET ua.mounting = true WHERE ua.user.userId = :userId AND ua.avatar.avatarId = :avatarId")
     void mountAvatarByUserIdAndAvatarId(@Param("userId") String userId, @Param("avatarId") int avatarId);
 
-
-    @Query("SELECT ua.avatar.avatarImageBg FROM UserAvatar ua WHERE ua.user.userId = :userId and ua.mounting =true")
-    String findMountingUserAvatarsByUserId(@Param("userId") String userId);
-
-
     boolean existsByUserUserIdAndAvatarAvatarId(String userId, int avatarId);
 
     // 로그인하는 유저가 이미 기본캐릭터를 가지고 있는지 판별 용
