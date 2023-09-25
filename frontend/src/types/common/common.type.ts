@@ -40,3 +40,11 @@ export type AxiosResponse<T> = {
   config: AxiosRequestConfig;
   request: XMLHttpRequest;
 };
+
+export type CharacterType = {
+  avatarId: number;
+  avatarName: string;
+  avatarImage: string;
+  avatarPrice: number;
+  hasAvatar: boolean;
+};

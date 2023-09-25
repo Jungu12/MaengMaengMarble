@@ -1,24 +1,28 @@
 import CButton from '@components/common/CButton';
 import CModal from '@components/common/CModal';
-import useToastList from '@hooks/useToastList';
+// import useToastList from '@hooks/useToastList';
 import { useCallback } from 'react';
 import { motion } from 'framer-motion';
 
 type PurchaseModalProps = {
+  selectedCid: number;
   isOpenPurchaseModal: boolean;
   handlePurchaseModalClose: () => void;
+  handlePurchase: (cid: number) => void;
 };
 
 const PurchaseModal = ({
+  selectedCid,
   isOpenPurchaseModal,
   handlePurchaseModalClose,
+  handlePurchase,
 }: PurchaseModalProps) => {
-  const { show } = useToastList();
+  // const { show } = useToastList();
 
   const onClickOkButton = useCallback(() => {
     handlePurchaseModalClose();
-    show('success');
-  }, [handlePurchaseModalClose, show]);
+    handlePurchase(selectedCid);
+  }, [handlePurchase, selectedCid, handlePurchaseModalClose]);
 
   return (
     <CModal isOpen={isOpenPurchaseModal} handleClose={handlePurchaseModalClose}>

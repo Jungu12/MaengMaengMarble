@@ -1,17 +1,33 @@
 import { images } from '@constants/images';
 import { addComma } from '@utils/format';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import StoreCharacterCard from '@components/store/StoreCharacterCard';
 import StoreOwnerView from '@components/store/StoreOwnerView';
 import PurchaseModal from '@components/modal/PurchaseModal';
 import CToastSuccess from '@components/common/CToastSuccess';
 import CToastError from '@components/common/CToastError';
 import useToastList from '@hooks/useToastList';
+import { CharacterType } from '@/types/common/common.type';
+import { getStoreInfo, purchaseCharacter } from '@apis/storeApi';
+import { StoreInfoType } from '@/types/store/store.type';
 
 const Store = () => {
-  const myMoney = 3000;
   const [isOpenPurchaseModal, setIsOpenPurchaseModal] = useState(false);
+  const [myMoney, setMyMoney] = useState(3000);
+  const [characterList, setCharacterList] = useState<CharacterType[]>([]);
+  const [selectCid, setSelectCid] = useState(-1);
+  const [toastErrorMessage, setToastErrorMessage] = useState('');
   const { show } = useToastList();
+
+  const toastFailPurchase = useCallback(() => {
+    setToastErrorMessage('구매에 실패하였습니다');
+    show('error');
+  }, [show]);
+
+  const toastLessPoint = useCallback(() => {
+    setToastErrorMessage('포인트가 부족합니다');
+    show('error');
+  }, [show]);
 
   const handlePurchaseModalOpen = useCallback(() => {
     setIsOpenPurchaseModal((prev) => !prev);
@@ -21,13 +37,39 @@ const Store = () => {
     setIsOpenPurchaseModal(false);
   }, []);
 
-  const showToastError = useCallback(() => {
-    show('error');
-  }, [show]);
+  // const showToastError = useCallback(() => {
+  //   show('error');
+  // }, [show]);
+
+  const handleSelectedCid = useCallback((cid: number) => {
+    setSelectCid(cid);
+  }, []);
+
+  const resquestPurchase = useCallback((cid: number) => {
+    purchaseCharacter(cid)
+      .then((res) => {
+        setMyMoney(res.point);
+        setCharacterList(res.avatarList);
+        show('success');
+      })
+      .catch(() => {
+        toastFailPurchase();
+      });
+  }, []);
+
+  useEffect(() => {
+    getStoreInfo().then((res: StoreInfoType) => {
+      console.log(res);
+      setMyMoney(res.point);
+      setCharacterList(res.avatarList);
+    });
+  }, []);
 
   return (
     <>
       <PurchaseModal
+        selectedCid={selectCid}
+        handlePurchase={resquestPurchase}
         isOpenPurchaseModal={isOpenPurchaseModal}
         handlePurchaseModalClose={handlePurchaseModalClose}
       />
@@ -54,93 +96,28 @@ const Store = () => {
 
           <div className='flex flex-col w-full h-full p-[25px] overflow-auto relative bg-primary-dark300 bg-opacity-70 rounded-[40px]'>
             <div className='grid grid-cols-4 gap-10 pr-[20px] w-full h-full relative scrollbar'>
-              <StoreCharacterCard
-                have={true}
-                img={images.store.dog1}
-                name='허스키'
-                point={450}
-                onClick={
-                  myMoney < 450 ? showToastError : handlePurchaseModalOpen
-                }
-              />
-              <StoreCharacterCard
-                have={true}
-                img={images.store.dog2}
-                name='시츄'
-                point={450}
-                onClick={
-                  myMoney < 450 ? showToastError : handlePurchaseModalOpen
-                }
-              />
-              <StoreCharacterCard
-                have={false}
-                img={images.store.rabbit}
-                name='토끼'
-                point={1250}
-                onClick={
-                  myMoney < 1250 ? showToastError : handlePurchaseModalOpen
-                }
-              />
-              <StoreCharacterCard
-                have={false}
-                img={images.store.hedgehog}
-                name='고슴도치'
-                point={1250}
-                onClick={
-                  myMoney < 1250 ? showToastError : handlePurchaseModalOpen
-                }
-              />
-              <StoreCharacterCard
-                have={true}
-                img={images.store.panda}
-                name='팬더'
-                point={4800}
-                onClick={
-                  myMoney < 4800 ? showToastError : handlePurchaseModalOpen
-                }
-              />
-              <StoreCharacterCard
-                have={true}
-                img={images.store.whale}
-                name='고래'
-                point={4800}
-                onClick={
-                  myMoney < 4800 ? showToastError : handlePurchaseModalOpen
-                }
-              />
-              <StoreCharacterCard
-                have={true}
-                img={images.store.phoenix}
-                name='불사조'
-                point={6300}
-                onClick={
-                  myMoney < 6300 ? showToastError : handlePurchaseModalOpen
-                }
-              />
-              <StoreCharacterCard
-                have={false}
-                img={images.store.squirrel}
-                name='다람쥐'
-                point={3150}
-                onClick={
-                  myMoney < 3150 ? showToastError : handlePurchaseModalOpen
-                }
-              />
-              <StoreCharacterCard
-                have={true}
-                img={images.store.unicorn}
-                name='유니콘'
-                point={6300}
-                onClick={
-                  myMoney < 6300 ? showToastError : handlePurchaseModalOpen
-                }
-              />
+              {characterList.map((character) => (
+                <StoreCharacterCard
+                  key={character.avatarId}
+                  id={character.avatarId}
+                  have={character.hasAvatar}
+                  img={character.avatarImage}
+                  name={character.avatarName}
+                  point={character.avatarPrice}
+                  onClick={
+                    myMoney < character.avatarPrice
+                      ? toastLessPoint
+                      : handlePurchaseModalOpen
+                  }
+                  handleSelectedCid={handleSelectedCid}
+                />
+              ))}
             </div>
           </div>
         </div>
       </div>
       <CToastSuccess text='구매 완료' />
-      <CToastError text='포인트가 부족합니다' />
+      <CToastError text={toastErrorMessage} />
     </>
   );
 };
