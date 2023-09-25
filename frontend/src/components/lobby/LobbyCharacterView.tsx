@@ -29,7 +29,7 @@ const LobbyCharacterView = ({
         // src={images.default.character}
         src={img}
         alt='캐릭터 뷰'
-        width={'600px'}
+        width={'400px'}
         height={'600px'}
       />
       <div className='flex flex-row items-center'>
