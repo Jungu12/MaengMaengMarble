@@ -1,35 +1,92 @@
 import { images } from '@constants/images';
 import { addComma } from '@utils/format';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import StoreCharacterCard from '@components/store/StoreCharacterCard';
 import StoreOwnerView from '@components/store/StoreOwnerView';
 import PurchaseModal from '@components/modal/PurchaseModal';
-import CToastSuccess from '@components/common/CToastSuccess';
-import CToastError from '@components/common/CToastError';
 import useToastList from '@hooks/useToastList';
+import { CharacterType } from '@/types/common/common.type';
+import { getStoreInfo, purchaseCharacter } from '@apis/storeApi';
+import { StoreInfoType } from '@/types/store/store.type';
+import { ToastMessageState } from '@atom/toastAtom';
+import { useSetRecoilState } from 'recoil';
 
 const Store = () => {
-  const myMoney = 3000;
-  const [isOpenPurchaseModal, setIsOpenMyPageModal] = useState(false);
+  const [isOpenPurchaseModal, setIsOpenPurchaseModal] = useState(false);
+  const [myMoney, setMyMoney] = useState(3000);
+  const [characterList, setCharacterList] = useState<CharacterType[]>([]);
+  const [selectCid, setSelectCid] = useState(-1);
   const { show } = useToastList();
+  const setToastMessage = useSetRecoilState(ToastMessageState);
 
-  const handleMyPageModalOpen = useCallback(() => {
-    setIsOpenMyPageModal((prev) => !prev);
-  }, []);
-
-  const handleMyPageModalClose = useCallback(() => {
-    setIsOpenMyPageModal(false);
-  }, []);
-
-  const showToastError = useCallback(() => {
+  const toastFailPurchase = useCallback(() => {
+    setToastMessage((prev) => {
+      return {
+        ...prev,
+        error: '구매에 실패하였습니다.',
+      };
+    });
     show('error');
-  }, [show]);
+  }, [setToastMessage, show]);
+
+  const toastLessPoint = useCallback(() => {
+    setToastMessage((prev) => {
+      return {
+        ...prev,
+        error: '포인트가 부족합니다.',
+      };
+    });
+    show('error');
+  }, [setToastMessage, show]);
+
+  const handlePurchaseModalOpen = useCallback(() => {
+    setIsOpenPurchaseModal((prev) => !prev);
+  }, []);
+
+  const handlePurchaseModalClose = useCallback(() => {
+    setIsOpenPurchaseModal(false);
+  }, []);
+
+  const handleSelectedCid = useCallback((cid: number) => {
+    setSelectCid(cid);
+  }, []);
+
+  const resquestPurchase = useCallback(
+    (cid: number) => {
+      purchaseCharacter(cid)
+        .then((res) => {
+          setMyMoney(res.point);
+          setCharacterList(res.avatarList);
+          setToastMessage((prev) => {
+            return {
+              ...prev,
+              success: '구매 성공',
+            };
+          });
+          show('success');
+        })
+        .catch(() => {
+          toastFailPurchase();
+        });
+    },
+    [setToastMessage, show, toastFailPurchase]
+  );
+
+  useEffect(() => {
+    getStoreInfo().then((res: StoreInfoType) => {
+      console.log(res);
+      setMyMoney(res.point);
+      setCharacterList(res.avatarList);
+    });
+  }, []);
 
   return (
     <>
       <PurchaseModal
+        selectedCid={selectCid}
+        handlePurchase={resquestPurchase}
         isOpenPurchaseModal={isOpenPurchaseModal}
-        handlePurchaseModalClose={handleMyPageModalClose}
+        handlePurchaseModalClose={handlePurchaseModalClose}
       />
       <div
         className='flex flex-row w-full h-full justify-between relative'
@@ -53,91 +110,27 @@ const Store = () => {
           </div>
 
           <div className='flex flex-col w-full h-full p-[25px] overflow-auto relative bg-primary-dark300 bg-opacity-70 rounded-[40px]'>
-            {/* <div className='flex flex-col w-full h-full overflow-auto relative bg-white scrollbar'> */}
             <div className='grid grid-cols-4 gap-10 pr-[20px] w-full h-full relative scrollbar'>
-              <StoreCharacterCard
-                have={true}
-                img={images.store.dog1}
-                name='허스키'
-                point={addComma(450)}
-                onClick={myMoney < 450 ? showToastError : handleMyPageModalOpen}
-              />
-              <StoreCharacterCard
-                have={true}
-                img={images.store.dog2}
-                name='시츄'
-                point={addComma(450)}
-                onClick={myMoney < 450 ? showToastError : handleMyPageModalOpen}
-              />
-              <StoreCharacterCard
-                have={false}
-                img={images.store.rabbit}
-                name='토끼'
-                point={addComma(1250)}
-                onClick={
-                  myMoney < 1250 ? showToastError : handleMyPageModalOpen
-                }
-              />
-              <StoreCharacterCard
-                have={false}
-                img={images.store.hedgehog}
-                name='고슴도치'
-                point={addComma(1250)}
-                onClick={
-                  myMoney < 1250 ? showToastError : handleMyPageModalOpen
-                }
-              />
-              <StoreCharacterCard
-                have={true}
-                img={images.store.panda}
-                name='팬더'
-                point={addComma(4800)}
-                onClick={
-                  myMoney < 4800 ? showToastError : handleMyPageModalOpen
-                }
-              />
-              <StoreCharacterCard
-                have={true}
-                img={images.store.whale}
-                name='고래'
-                point={addComma(4800)}
-                onClick={
-                  myMoney < 4800 ? showToastError : handleMyPageModalOpen
-                }
-              />
-              <StoreCharacterCard
-                have={true}
-                img={images.store.phoenix}
-                name='불사조'
-                point={addComma(6300)}
-                onClick={
-                  myMoney < 6300 ? showToastError : handleMyPageModalOpen
-                }
-              />
-              <StoreCharacterCard
-                have={false}
-                img={images.store.squirrel}
-                name='다람쥐'
-                point={addComma(3150)}
-                onClick={
-                  myMoney < 3150 ? showToastError : handleMyPageModalOpen
-                }
-              />
-              <StoreCharacterCard
-                have={true}
-                img={images.store.unicorn}
-                name='유니콘'
-                point={addComma(6300)}
-                onClick={
-                  myMoney < 6300 ? showToastError : handleMyPageModalOpen
-                }
-              />
+              {characterList.map((character) => (
+                <StoreCharacterCard
+                  key={character.avatarId}
+                  id={character.avatarId}
+                  have={character.hasAvatar}
+                  img={character.avatarImage}
+                  name={character.avatarName}
+                  point={character.avatarPrice}
+                  onClick={
+                    myMoney < character.avatarPrice
+                      ? toastLessPoint
+                      : handlePurchaseModalOpen
+                  }
+                  handleSelectedCid={handleSelectedCid}
+                />
+              ))}
             </div>
           </div>
         </div>
       </div>
-      <CToastSuccess text='구매 완료' />
-      <CToastError text='포인트가 부족합니다' />
     </>
   );
 };

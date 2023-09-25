@@ -64,14 +64,18 @@ const LoginCallBackPage = () => {
           }
           console.log(res);
           // 유저 정보 저장 -> 로비로 이동
-          // setUser()
-          // navigate('/lobby');
+          // setUser(res);
         })
         .then(() => {
-          getMyProfile().then((res) => {
-            setUser(res);
-            console.log(res);
-          });
+          getMyProfile()
+            .then((res) => {
+              setUser(res.data);
+              console.log(res.data);
+              navigate('/lobby');
+            })
+            .catch(() => {
+              navigate('/login');
+            });
         })
         .catch((err) => {
           alert(err);

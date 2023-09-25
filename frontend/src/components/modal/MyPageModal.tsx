@@ -1,25 +1,32 @@
+import { changeNickname, checkNickname } from '@apis/userApi';
+import { ToastMessageState } from '@atom/toastAtom';
+import { userState } from '@atom/userAtom';
 import CButton from '@components/common/CButton';
 import CModal from '@components/common/CModal';
 import MyPageCharacterCard from '@components/mypage/MyPageCharacterCard';
 import { images } from '@constants/images';
-import { ChangeEvent, useCallback, useEffect, useState } from 'react';
+import useToastList from '@hooks/useToastList';
+import { ChangeEvent, useCallback, useEffect, useRef, useState } from 'react';
+import { useRecoilState, useSetRecoilState } from 'recoil';
 
 type CreateRoomModalProps = {
   isOpenCreateRoomModal: boolean;
   handleMyPageModalClose: () => void;
-  name: string;
 };
 
 const MyPageModal = ({
   isOpenCreateRoomModal,
   handleMyPageModalClose,
-  name,
 }: CreateRoomModalProps) => {
   const [isError, setIsError] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
-  const [nickname, setNickname] = useState(name);
+  const [nickname, setNickname] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
   // const [seletedCharater, setSeletedCharater] = useState(0); // 현재 선택한 캐릭터 (캐릭터 id값 저장)
+  const inputRef = useRef<HTMLInputElement>(null);
+  const { show } = useToastList();
+  const setToastMessage = useSetRecoilState(ToastMessageState);
+  const [user, setUser] = useRecoilState(userState);
 
   const handleNickName = useCallback((e: ChangeEvent<HTMLInputElement>) => {
     setNickname(e.target.value);
@@ -27,6 +34,7 @@ const MyPageModal = ({
 
   const onClickEdit = useCallback(() => {
     setIsEdit(true);
+    inputRef.current?.focus();
   }, []);
 
   const saveNickName = useCallback(() => {
@@ -34,19 +42,81 @@ const MyPageModal = ({
     setIsEdit(false);
   }, [nickname]);
 
-  useEffect(() => {
-    console.log(nickname.length);
+  const saveProfile = useCallback(() => {
+    if (isError || isEdit) {
+      setIsEdit(true);
+      inputRef.current?.focus();
+      return;
+    }
+    changeNickname(nickname);
+    if (user) {
+      setUser({
+        ...user,
+        nickname: nickname,
+      });
+    }
+    handleMyPageModalClose();
+    // 토스트 메시지 띄우기
+    setToastMessage((prev) => {
+      return {
+        ...prev,
+        success: '저장 완료',
+      };
+    });
+    show('success');
+  }, [
+    handleMyPageModalClose,
+    isEdit,
+    isError,
+    nickname,
+    setToastMessage,
+    setUser,
+    show,
+    user,
+  ]);
 
-    if (nickname.length === 0) {
+  useEffect(() => {
+    if (user) {
+      setNickname(user.nickname);
+    }
+    setIsEdit(false);
+    setIsError(false);
+    setErrorMsg('');
+  }, [isOpenCreateRoomModal, user]);
+
+  useEffect(() => {
+    if (nickname.length < 2) {
       setIsError(true);
-      setErrorMsg('닉네임은 1 ~ 20자 사이로 입력해야합니다.');
+      setErrorMsg('닉네임은 2 ~ 12자 사이로 입력해야합니다.');
+      console.log('맹');
+
+      return;
     }
 
     if (nickname.length > 0 && nickname.length <= 20) {
       setIsError(false);
       setErrorMsg('');
+      console.log('맹맹');
     }
-  }, [nickname]);
+
+    // 중복 닉네임 체크
+    const checkValid = setTimeout(() => {
+      if (user?.nickname === nickname) return;
+      checkNickname(nickname).then((res) => {
+        if (res.data) {
+          setIsError(true);
+          setErrorMsg('중복된 아이디입니다.');
+        } else {
+          setIsError(false);
+          setErrorMsg('');
+        }
+      });
+    }, 1000);
+
+    return () => {
+      clearTimeout(checkValid);
+    };
+  }, [nickname, user?.nickname]);
 
   return (
     <CModal isOpen={isOpenCreateRoomModal} handleClose={handleMyPageModalClose}>
@@ -182,6 +252,7 @@ const MyPageModal = ({
               onChange={handleNickName}
               readOnly={isEdit ? false : true}
               maxLength={20}
+              ref={inputRef}
             />
             {isEdit ? (
               isError ? (
@@ -211,7 +282,7 @@ const MyPageModal = ({
           </div>
           <div className='w-full h-[48px] mt-[16px] relative'>
             <div className='w-full h-full'>
-              <CButton type='green' rounded={20}>
+              <CButton type='green' rounded={20} onClick={saveProfile}>
                 <p className={`text-xl font-semibold text-[#FFFDF2]`}>
                   저장하기
                 </p>
