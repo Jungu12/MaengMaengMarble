@@ -10,9 +10,10 @@ import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @Configuration
-
+@EnableTransactionManagement
 public class RedisConfig {
 
 	@Bean
@@ -57,7 +58,8 @@ public class RedisConfig {
 		redisTemplate.setKeySerializer(new StringRedisSerializer());
 		//Json 포맷 형식으로 메세지를 교환하기 위해 인자로 JackSon2JsonRedisSerializer 설정
 		redisTemplate.setValueSerializer(new Jackson2JsonRedisSerializer<>(String.class));
+		// Redis 트랜잭션 처리 설정부분
+		redisTemplate.setEnableTransactionSupport(true);
 		return redisTemplate;
 	}
 }
-

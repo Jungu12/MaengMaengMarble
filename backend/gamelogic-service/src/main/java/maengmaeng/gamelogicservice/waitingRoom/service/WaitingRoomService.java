@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import maengmaeng.gamelogicservice.waitingRoom.domain.CurrentParticipant;
 import maengmaeng.gamelogicservice.waitingRoom.domain.WaitingRoom;
+import maengmaeng.gamelogicservice.waitingRoom.domain.dto.StartResponseDto;
 import maengmaeng.gamelogicservice.waitingRoom.domain.dto.UserInfo;
 import maengmaeng.gamelogicservice.waitingRoom.exception.ExceptionCode;
 import maengmaeng.gamelogicservice.waitingRoom.exception.WaitingRoomException;
@@ -73,4 +75,35 @@ public class WaitingRoomService {
     public void exit(String roomCode, UserInfo user) {
         waitingRoomRepository.exit(roomCode, user);
     }
+
+    public StartResponseDto start(String roomCode) {
+        WaitingRoom waitingRoom = waitingRoomRepository.getWaitingRoomNow(roomCode);
+        boolean startPossible = true;
+        for(CurrentParticipant participant : waitingRoom.getCurrentParticipant()){
+            if(!participant.isReady()){
+                startPossible = false;
+                logger.info("닉네임 {}가 ready를 하지않아서 start를 할 수 없음" , participant.getNickname());
+                break;
+            }
+        }
+        logger.info("시작여부 : {} " , startPossible);
+        StartResponseDto startResponseDto = null;
+        if(startPossible){
+            List<CurrentParticipant> participants = new ArrayList<>();
+            participants = waitingRoom.getCurrentParticipant();
+            startResponseDto = StartResponseDto.builder()
+                    .test("시작하세요")
+                    .roomCode(roomCode)
+                    .currentParticipantList(participants)
+                    .build();
+        }else{
+            throw new WaitingRoomException(ExceptionCode.WAITINGROOM_FULLED);
+        }
+
+        return startResponseDto;
+    }
 }
+
+
+
+

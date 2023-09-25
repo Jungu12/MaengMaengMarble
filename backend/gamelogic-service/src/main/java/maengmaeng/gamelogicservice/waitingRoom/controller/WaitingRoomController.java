@@ -2,9 +2,11 @@ package maengmaeng.gamelogicservice.waitingRoom.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import maengmaeng.gamelogicservice.global.dto.ResponseDto;
 import maengmaeng.gamelogicservice.util.RedisPublisher;
 import maengmaeng.gamelogicservice.waitingRoom.domain.WaitingRoom;
 import maengmaeng.gamelogicservice.global.dto.GameData;
+import maengmaeng.gamelogicservice.waitingRoom.domain.dto.StartResponseDto;
 import maengmaeng.gamelogicservice.waitingRoom.domain.dto.UserInfo;
 import maengmaeng.gamelogicservice.waitingRoom.service.WaitingRoomService;
 import org.slf4j.Logger;
@@ -35,7 +37,7 @@ public class WaitingRoomController {
 
         // 현재 방의 최신 게임데이터 생성
         GameData gameData = GameData.builder()
-                .data(waitingRoom)
+                .data(ResponseDto.builder().type("WAITINGROOMLIST").data(waitingRoom).build())
                 .roomCode(roomCode)
                 .type("WAITING_ROOM")
                 .build();
@@ -58,8 +60,8 @@ public class WaitingRoomController {
         // 현재 방의 최신 게임데이터 생성
         GameData gameData = GameData.builder()
                 .roomCode(roomCode)
-                .type("WAITING_ROOM_CHANE_USER_STATE")
-                .data(waitingRoom)
+                .type("WAITING_ROOM")
+                .data(ResponseDto.builder().type("READY").data(waitingRoom).build())
                 .build();
 
         // WAITINGROOM topic에 gameData를 넣어서 발행하기 : 메세지를 redis topic에 발행
@@ -69,6 +71,21 @@ public class WaitingRoomController {
     @MessageMapping("/waiting-rooms/exit/{roomCode}")
     public void exit(@DestinationVariable String roomCode, UserInfo user){
         waitingRoomService.exit(roomCode, user);
+    }
+
+    @MessageMapping("/waiting-rooms/start/{roomCode}")
+    public void start(@DestinationVariable String roomCode){
+        // start 했을때 반환값은 룸코드랑 게임을 시작하는 사람들 정보
+        StartResponseDto startResponseDto = waitingRoomService.start(roomCode);
+
+        GameData gameData = GameData.builder()
+                .roomCode(roomCode)
+                .type("WAITING_ROOM_START")
+                .data(ResponseDto.builder().type("START").data(startResponseDto).build())
+                .build();
+
+        redisPublisher.publish(waitingRoomTopic,gameData);
+
     }
 
 }
