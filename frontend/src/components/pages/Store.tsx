@@ -4,30 +4,40 @@ import { useCallback, useEffect, useState } from 'react';
 import StoreCharacterCard from '@components/store/StoreCharacterCard';
 import StoreOwnerView from '@components/store/StoreOwnerView';
 import PurchaseModal from '@components/modal/PurchaseModal';
-import CToastSuccess from '@components/common/CToastSuccess';
-import CToastError from '@components/common/CToastError';
 import useToastList from '@hooks/useToastList';
 import { CharacterType } from '@/types/common/common.type';
 import { getStoreInfo, purchaseCharacter } from '@apis/storeApi';
 import { StoreInfoType } from '@/types/store/store.type';
+import { ToastMessageState } from '@atom/toastAtom';
+import { useSetRecoilState } from 'recoil';
 
 const Store = () => {
   const [isOpenPurchaseModal, setIsOpenPurchaseModal] = useState(false);
   const [myMoney, setMyMoney] = useState(3000);
   const [characterList, setCharacterList] = useState<CharacterType[]>([]);
   const [selectCid, setSelectCid] = useState(-1);
-  const [toastErrorMessage, setToastErrorMessage] = useState('');
   const { show } = useToastList();
+  const setToastMessage = useSetRecoilState(ToastMessageState);
 
   const toastFailPurchase = useCallback(() => {
-    setToastErrorMessage('구매에 실패하였습니다');
+    setToastMessage((prev) => {
+      return {
+        ...prev,
+        error: '구매에 실패하였습니다.',
+      };
+    });
     show('error');
-  }, [show]);
+  }, [setToastMessage, show]);
 
   const toastLessPoint = useCallback(() => {
-    setToastErrorMessage('포인트가 부족합니다');
+    setToastMessage((prev) => {
+      return {
+        ...prev,
+        error: '포인트가 부족합니다.',
+      };
+    });
     show('error');
-  }, [show]);
+  }, [setToastMessage, show]);
 
   const handlePurchaseModalOpen = useCallback(() => {
     setIsOpenPurchaseModal((prev) => !prev);
@@ -37,25 +47,30 @@ const Store = () => {
     setIsOpenPurchaseModal(false);
   }, []);
 
-  // const showToastError = useCallback(() => {
-  //   show('error');
-  // }, [show]);
-
   const handleSelectedCid = useCallback((cid: number) => {
     setSelectCid(cid);
   }, []);
 
-  const resquestPurchase = useCallback((cid: number) => {
-    purchaseCharacter(cid)
-      .then((res) => {
-        setMyMoney(res.point);
-        setCharacterList(res.avatarList);
-        show('success');
-      })
-      .catch(() => {
-        toastFailPurchase();
-      });
-  }, []);
+  const resquestPurchase = useCallback(
+    (cid: number) => {
+      purchaseCharacter(cid)
+        .then((res) => {
+          setMyMoney(res.point);
+          setCharacterList(res.avatarList);
+          setToastMessage((prev) => {
+            return {
+              ...prev,
+              success: '구매 성공',
+            };
+          });
+          show('success');
+        })
+        .catch(() => {
+          toastFailPurchase();
+        });
+    },
+    [setToastMessage, show, toastFailPurchase]
+  );
 
   useEffect(() => {
     getStoreInfo().then((res: StoreInfoType) => {
@@ -116,8 +131,6 @@ const Store = () => {
           </div>
         </div>
       </div>
-      <CToastSuccess text='구매 완료' />
-      <CToastError text={toastErrorMessage} />
     </>
   );
 };
