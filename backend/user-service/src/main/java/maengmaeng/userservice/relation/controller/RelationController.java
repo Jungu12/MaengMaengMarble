@@ -53,9 +53,9 @@ public class RelationController {
         return ResponseEntity.ok(lists);
     }
 
-    @GetMapping("/detail")
-    public ResponseEntity<UserInfoResponseDto> getUserInfo(@PathVariable Map<String,String> id, @AuthenticationPrincipal String loginUser){
-        UserInfoResponseDto user = relationService.getUserInfo(id.get("id"));
+    @GetMapping("/detail/{id}")
+    public ResponseEntity<UserInfoResponseDto> getUserInfo(@PathVariable String id, @AuthenticationPrincipal String loginUser){
+        UserInfoResponseDto user = relationService.getUserInfo(id);
         return ResponseEntity.ok(user);
     }
 
