@@ -17,9 +17,17 @@ const MyPageCharacterCard = ({ status, character, selectCharater }: Props) => {
     <div className='w-[160px] h-[160px] flex flex-col items-center relative mb-[40px]'>
       <img
         className='w-[156px] h-[156px] rounded-[6px] mb-[20px] z-[1] object-cover'
+        style={{
+          objectPosition: '0px 0px',
+        }}
         src={character.avatarImageBg}
         alt={character.avatarName}
       />
+      {/* <img
+        className='rounded-[6px] z-[1] absolute top-[50%] left-[50%] transform-[translate(-50%, -50%)] w-full h'
+        src={character.avatarImageBg}
+        alt={character.avatarName}
+      /> */}
       {status === 'choice' && (
         <>
           <img
