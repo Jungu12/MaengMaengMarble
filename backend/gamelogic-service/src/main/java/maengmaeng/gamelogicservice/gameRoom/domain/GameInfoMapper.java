@@ -70,18 +70,18 @@ public class GameInfoMapper {
     /**
      * redis GoldenKeys 객체로 변환하는  Mapper
      * */
-    public GoldenKeys toRedisGoldenKeys(){
+    public GoldenKeys toRedisGoldenKeys(int bronze, int silver, int platinum){
 
         return GoldenKeys.builder()
-                .silver(4)
-                .gold(4)
-                .platinum(4)
+                .bronze(bronze)
+                .silver(silver)
+                .platinum(platinum)
                 .newsBan(4)
                 .hurricane(4)
                 .angel(4)
-                .kangJunGu(4)
-                .lotto(4)
-                .door(4)
+                .kangJunGu(2)
+                .lotto(2)
+                .door(2)
                 .earthquake(4)
                 .build();
     }

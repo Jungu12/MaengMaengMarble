@@ -18,7 +18,7 @@ public class GoldenKeys implements Serializable {
 	// 남은 실버 카드
 	private int silver;
 	//남은 골드 카드
-	private int gold;
+	private int bronze;
 	//남은 플레 카드
 	private int platinum;
 	// 남은 언론 통제

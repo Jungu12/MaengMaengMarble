@@ -37,6 +37,9 @@ public class GameRoomService {
         players[2] = gameInfoMapper.toReidsPlayer("jungu", "jungu");
         players[3] = gameInfoMapper.toReidsPlayer("215","215");
         List<DbCountry> dbCountryList = dbCountryRespository.findAll();
+        int platinum = dbNewsRepository.findByNewsType("Platinum").size();
+        int silver = dbNewsRepository.findByNewsType("silver").size();
+        int bronze = dbNewsRepository.findByNewsType("Bronze").size();
 
         List<Land> landList = dbCountryList.stream().map(gameInfoMapper::toRedisLand).collect(Collectors.toList());
 
@@ -46,8 +49,8 @@ public class GameRoomService {
                 .roomCode("1234")
                 .players(players)
                 .lands(landList)
-                .info(gameInfoMapper.toRedisInfo("LEE",news,0))
-                .goldenKeys(gameInfoMapper.toRedisGoldenKeys())
+                .info(gameInfoMapper.toRedisInfo(players[0].getNickname(),news,0))
+                .goldenKeys(gameInfoMapper.toRedisGoldenKeys(bronze,silver,platinum))
                 .stocks(stockList)
                 .build();
 
