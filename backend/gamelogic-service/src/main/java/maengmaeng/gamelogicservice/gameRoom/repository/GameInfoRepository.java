@@ -30,6 +30,10 @@ public class GameInfoRepository {
         opsHashGameInfo = redisTemplate.opsForHash();
     }
 
+
+    /**
+    *  게임방 생성
+     * */
     public GameInfo createGameRoom(GameInfo gameInfo){
 
         opsHashGameInfo.put(GAME_INFOS,gameInfo.getRoomCode(),gameInfo);
@@ -37,9 +41,17 @@ public class GameInfoRepository {
     }
 
 
-//    public GameInfo getGameInfo(String roomCode){
-////        opsHashGameInfo.
-//    }
+    /**
+     * 게임 정보 가져오기
+    * */
+    public GameInfo getGameInfo(String roomCode){
+
+        GameInfo gameInfo= opsHashGameInfo.get(GAME_INFOS,roomCode);
+        return gameInfo;
+
+    }
+
+
 
 
 

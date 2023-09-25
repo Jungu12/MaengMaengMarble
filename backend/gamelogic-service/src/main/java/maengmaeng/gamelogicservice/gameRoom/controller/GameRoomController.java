@@ -75,32 +75,14 @@ public class GameRoomController {
 	 * */
 
 	@MessageMapping("/game-rooms/turn-end/{roomCode}")
-	public void endTurn(@DestinationVariable String roomCode, UserInfo userInfo) {
+	public void endTurn(@DestinationVariable String roomCode) {
 
-//
-//		GameData gameData = GameData.builder()
-//				.roomCode()
-//				.build();
+
+
 	}
 
-	/**
-	* 주사위 던지기
-	 *
-	* */
-	@MessageMapping("/game-rooms/move/{roomCode}")
-	public void move(@DestinationVariable String roomCode, UserInfo user){
 
-		Random random = new Random();
 
-		// 주사위 1 던지기 (1부터 6까지)
-		int dice1 = random.nextInt(6) + 1;
-
-		// 주사위 2 던지기 (1부터 6까지)
-		int dice2 = random.nextInt(6) + 1;
-
-		System.out.println("첫 번째 주사위: " + dice1);
-		System.out.println("두 번째 주사위: " + dice2);
-	}
 
 
 

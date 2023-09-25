@@ -25,7 +25,8 @@ public class GameRoomService {
     private final GameInfoMapper gameInfoMapper;
     /** 나라 목록 가져오기
      * */
-    public void getInfo () {
+    public GameInfo getInfo () {
+        return gameInfoRepository.getGameInfo("1234");
 
     }
 
@@ -78,6 +79,55 @@ public class GameRoomService {
 
         System.out.println("첫 번째 주사위: " + dice1);
         System.out.println("두 번째 주사위: " + dice2);
+
+    }
+    /**
+     * 턴을 종료하는 로직
+     * 1. 게임 정보를 가져오기
+    * */
+    public GameInfo endTurn(String roomCode){
+
+        GameInfo gameInfo =gameInfoRepository.getGameInfo(roomCode);
+        // player 리스트
+
+        Player[] players= gameInfo.getPlayers();
+        Info info = gameInfo.getInfo();
+        String currentPlayer = info.getCurrentPlayer();
+        System.out.println(currentPlayer);
+        int playerIdx =-1;
+        boolean nextTurn = false;
+        // 현재 플레이어
+        for(int i=0;i<players.length;i++){
+            if(players[i].getNickname().equals(currentPlayer)){
+                playerIdx = i;
+            }
+        }
+        if(playerIdx==-1){
+            System.out.println("혼자 살아있음");
+        }
+        if(playerIdx==3){
+            // 턴 카운트를 +1
+            System.out.println("마지막 플레이어");
+            nextTurn = true;
+        }
+        // 살아있는 마지막 플레이어
+        for(int i=0;i<3;i++){
+            int nextPlayerIdx = playerIdx+1;
+
+            // 플레이어가 살아있
+            if(players[nextPlayerIdx+i].isAlive()){
+
+                break;
+            }
+        }
+
+
+
+
+        return gameInfo;
+
+
+
 
     }
 

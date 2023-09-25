@@ -1,6 +1,8 @@
 package maengmaeng.gamelogicservice.gameRoom.domain;
 
 import java.io.Serializable;
+import java.util.LinkedList;
+import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,7 +19,8 @@ public class Info implements Serializable {
 	private static final long serialVersionUID = 207207207207L;
 	private String currentPlayer;
 	private int turnCount;
-	private int[] news;
+	private List<News> effectNews = new LinkedList<>();
+	private List<News> waitingNews = new LinkedList<>();
 	private int doorCheck;
 
 }
