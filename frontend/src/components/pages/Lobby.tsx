@@ -13,9 +13,12 @@ import CToastSuccess from '@components/common/CToastSuccess';
 import { motion } from 'framer-motion';
 import { getRooms } from '@apis/lobbyApi';
 import { RoomType } from '@/types/common/lobby.type';
+import { useRecoilValue } from 'recoil';
+import { userState } from '@atom/userAtom';
 
 const Lobby = () => {
   const clientRef = useRef<StompJs.Client>();
+  const user = useRecoilValue(userState);
   const [isOpenCreateRoomModal, setIsOpenCreateRoomModal] = useState(false);
   const [isOpenMyPageModal, setIsOpenMyPageModal] = useState(false);
   const [isOpenInviteModal, setIsOpenInviteModal] = useState(false);
@@ -74,7 +77,6 @@ const Lobby = () => {
         handleCreateRoomModalClose={handleCreateRoomModalClose}
       />
       <MyPageModal
-        name={'개멋있는 사람'}
         isOpenCreateRoomModal={isOpenMyPageModal}
         handleMyPageModalClose={handleMyPageModalClose}
       />
