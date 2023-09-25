@@ -53,7 +53,7 @@ public class GameRoomService {
                 .roomCode(roomCode)
                 .players(players)
                 .lands(landList)
-                .info(gameInfoMapper.toRedisInfo(players[0].getNickname(),news,0))
+                .info(gameInfoMapper.toRedisInfo(players[0].getNickname(),0))
                 .goldenKeys(gameInfoMapper.toRedisGoldenKeys(bronze,silver,platinum))
                 .stocks(stockList)
                 .build();
