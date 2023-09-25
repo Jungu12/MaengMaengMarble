@@ -15,14 +15,13 @@ import lombok.RequiredArgsConstructor;
 public class Land implements Serializable {
 	@Builder.Default
 	private static final long serialVersionUID = 207207207207L;;
-	private int landId;
+	private long landId;
 	private String name;
 	private int landPrice;
 	private int[] buildingPrices;
 	private int[] fees;
 	private int currentLandPrice;
-	private int[] buildings;
+	private boolean [] buildings;
 	private int[] currentFees;
 	private int owner;
-	private String[] industries;
 }

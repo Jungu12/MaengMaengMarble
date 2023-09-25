@@ -15,9 +15,9 @@ import lombok.NoArgsConstructor;
 public class News {
 	@Builder.Default
 	private static final long serialVersionUID = 207207207207L;;
-	private int newsId;
-	private int year;
-	private String event;
+	private long newsId;
+	private String imageUrl;
+	private String content;
 	private List<Map<String, Integer>> countryEffects;
-	private List<Map<String, Integer>> industryEffects;
+	private List<Map<String, Integer>> stockEffects;
 }

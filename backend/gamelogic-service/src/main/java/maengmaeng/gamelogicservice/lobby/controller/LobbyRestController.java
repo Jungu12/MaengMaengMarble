@@ -2,6 +2,7 @@ package maengmaeng.gamelogicservice.lobby.controller;
 
 import java.util.List;
 
+import maengmaeng.gamelogicservice.global.dto.ResponseDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.listener.ChannelTopic;
@@ -48,7 +49,7 @@ public class LobbyRestController {
 
 		GameData gameData = GameData.builder()
 			.type(LOBBY)
-			.data(WaitingRoomListResponse.builder().waitingRooms(waitingRooms).build())
+			.data(ResponseDto.builder().type("WAITINGROOMLIST").data(WaitingRoomListResponse.builder().waitingRooms(waitingRooms).build()).build())
 			.build();
 
 		//구독자들에게 대기 방 전체 목록 pub
@@ -76,7 +77,7 @@ public class LobbyRestController {
 
 		GameData gameData = GameData.builder()
 			.type(LOBBY)
-			.data(WaitingRoomListResponse.builder().waitingRooms(waitingRooms).build())
+			.data(ResponseDto.builder().type("WAITINGROOMLIST").data(WaitingRoomListResponse.builder().waitingRooms(waitingRooms).build()).build())
 			.build();
 
 		//구독자들에게 대기 방 전체 목록 pub
