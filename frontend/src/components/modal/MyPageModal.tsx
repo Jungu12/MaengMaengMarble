@@ -1,5 +1,10 @@
 import { CharacterType } from '@/types/common/common.type';
-import { changeNickname, checkNickname, getCharaterList } from '@apis/userApi';
+import {
+  changeCharater,
+  changeNickname,
+  checkNickname,
+  getCharaterList,
+} from '@apis/userApi';
 import { ToastMessageState } from '@atom/toastAtom';
 import { userState } from '@atom/userAtom';
 import CButton from '@components/common/CButton';
@@ -50,10 +55,17 @@ const MyPageModal = ({
       inputRef.current?.focus();
       return;
     }
-    changeNickname(nickname);
+    // 닉네임이 같은 경우 요청 안보내기
+    if (nickname !== user?.nickname) {
+      changeNickname(nickname);
+    }
+    changeCharater(seletedCharater);
     if (user) {
       setUser({
         ...user,
+        avatarId: seletedCharater,
+        avatarImageBg: charaterList[seletedCharater - 1].avatarImageBg,
+        avatarImageNoBg: charaterList[seletedCharater - 1].avatarImageNoBg,
         nickname: nickname,
       });
     }
@@ -67,10 +79,12 @@ const MyPageModal = ({
     });
     show('success');
   }, [
+    charaterList,
     handleMyPageModalClose,
     isEdit,
     isError,
     nickname,
+    seletedCharater,
     setToastMessage,
     setUser,
     show,
@@ -160,7 +174,7 @@ const MyPageModal = ({
             className='h-[450px] w-full object-cover rounded-[12px]'
             src={
               charaterList.length
-                ? charaterList[seletedCharater - 1].avatarImage
+                ? charaterList[seletedCharater - 1].avatarImageBg
                 : ''
             }
             alt='내 캐릭터'

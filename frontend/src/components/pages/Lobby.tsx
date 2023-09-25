@@ -88,8 +88,8 @@ const Lobby = () => {
           {user && (
             <LobbyCharacterView
               name={user.nickname}
-              img={images.default.character}
-              point='28,000'
+              img={user.avatarImageNoBg}
+              point={user.point}
               handleMyPageModal={onClickSettingButton}
             />
           )}

@@ -14,7 +14,8 @@ export type DetailUserType = {
   point: number;
   userId: string;
   win: number;
-  avatarUrl: string;
+  avatarImageBg: string;
+  avatarImageNoBg: string;
 };
 
 export type ParticipantsType = {
@@ -45,7 +46,8 @@ export type AxiosResponse<T> = {
 export type CharacterType = {
   avatarId: number;
   avatarName: string;
-  avatarImage: string;
   avatarPrice: number;
   hasAvatar: boolean;
+  avatarImageBg: string;
+  avatarImageNoBg: string;
 };

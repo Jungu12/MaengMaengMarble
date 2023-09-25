@@ -28,3 +28,7 @@ export async function getCharaterList(): Promise<
 > {
   return authAxios.get(`user-service/users/avatars`);
 }
+
+export async function changeCharater(charaterId: number) {
+  return authAxios.patch(`user-service/users/avatars/${charaterId}`);
+}
