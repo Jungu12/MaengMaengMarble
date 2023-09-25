@@ -10,8 +10,9 @@ import MyPageModal from '@components/modal/MyPageModal';
 import InviteModal from '@components/modal/InviteModal';
 import { motion } from 'framer-motion';
 import { getRooms } from '@apis/lobbyApi';
-import { RoomType } from '@/types/common/lobby.type';
 import MyFriendModal from '@components/modal/MyFriendModal';
+import { RoomType } from '@/types/lobby/lobby.type';
+import { friendDetail, getFriendlist } from '@apis/friendApi';
 
 const Lobby = () => {
   const clientRef = useRef<StompJs.Client>();
@@ -55,6 +56,15 @@ const Lobby = () => {
 
   // 소켓 연결
   useEffect(() => {
+    // getFriendlist().then((res) => {
+    //   console.log(`성공`);
+    //   console.log(`${res}`);
+    // });
+
+    // friendDetail('rlatkdrms').then((res) => {
+    //   console.log(`성공${res}`);
+    // });
+
     clientRef.current = getClient();
     activateClient(clientRef.current);
     clientRef.current.onConnect = () => {

@@ -1,5 +1,5 @@
 import { UserType } from '@/types/common/common.type';
-import { RoomType } from '@/types/common/lobby.type';
+import { RoomType } from '@/types/lobby/lobby.type';
 import { http } from '@utils/http';
 
 export async function createRoom(

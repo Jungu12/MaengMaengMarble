@@ -21,7 +21,9 @@ const FriendInfoCard = ({
   return (
     <div className='flex flex-row w-full h-fit items-center px-[30px] py-[10px] bg-primary-500 rounded-[20px] shadow-md'>
       <img
-        className='mr-[20px] w-[70px] h-[70px] object-cover rounded-full'
+        // className='mr-[20px] w-[70px] h-[70px] object-cover rounded-full'
+        // className='mr-[20px] w-[70px] h-[70px] object-cover rounded-full border-4 border-transparent bg-gradient-to-br from-[#ffce0c] to-[#f5e5a6]'
+        className='mr-[20px] w-[70px] h-[70px] object-cover rounded-full border-4 border-primary-dark300 border-opacity-50'
         src={img}
         alt='친구 프로필 이미지'
       />
