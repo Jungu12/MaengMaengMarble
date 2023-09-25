@@ -11,12 +11,8 @@ import AxiosS, {
 
 const axios = AxiosS.create();
 export const authAxios = AxiosS.create();
-// axios.defaults.baseURL = 'https://i9d211.p.ssafy.io/api/';
-// axios.defaults.baseURL = 'http://i9d211.p.ssafy.io/api/';
-// axios.defaults.baseURL = 'http://192.168.100.62:8080/api/';
 axios.defaults.baseURL = baseUrl;
 axios.defaults.withCredentials = true;
-// authAxios.defaults.baseURL = 'http://192.168.100.62:8080/api/';
 authAxios.defaults.baseURL = baseUrl;
 authAxios.defaults.withCredentials = true;
 
@@ -132,6 +128,20 @@ export const authHttp = {
     const res = await authAxios.put<Response>(url, body, options);
     return res.data;
   },
+
+  patch: async function patch<Response = unknown, Request = unknown>(
+    url: string,
+    body?: Request,
+    header?: AxiosRequestConfig['headers']
+  ) {
+    const options: AxiosRequestConfig = {
+      headers: header,
+    };
+
+    const res = await authAxios.patch<Response>(url, body, options);
+    return res.data;
+  },
+
   delete: async function axiosDelete<Response = unknown>(
     url: string,
     header?: AxiosRequestConfig['headers']

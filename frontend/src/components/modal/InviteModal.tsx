@@ -4,21 +4,22 @@ import { images } from '@constants/images';
 import { motion } from 'framer-motion';
 import CButton from '@components/common/CButton';
 import useToastList from '@hooks/useToastList';
+import { useSetRecoilState } from 'recoil';
+import { ToastMessageState } from '@atom/toastAtom';
 
 type InviteModalProps = {
   isOpenInviteModal: boolean;
   handleInviteModalClose: () => void;
-  toastInvalidInviteCode: () => void;
 };
 
 const InviteModal = ({
   isOpenInviteModal,
   handleInviteModalClose,
-  toastInvalidInviteCode,
 }: InviteModalProps) => {
   const inviteCodeConfirm = false;
   const [inviteCode, setInviteCode] = useState('');
   const { show } = useToastList();
+  const setToastMessage = useSetRecoilState(ToastMessageState);
 
   const onChange = (event: React.FormEvent<HTMLInputElement>) => {
     const { currentTarget: inviteCode } = event;
@@ -36,16 +37,15 @@ const InviteModal = ({
     if (inviteCodeConfirm) {
       show('success');
     } else {
-      toastInvalidInviteCode();
+      setToastMessage((prev) => {
+        return {
+          ...prev,
+          error: '존재하지 않는 초대코드입니다.',
+        };
+      });
       show('error');
     }
-  }, [
-    inviteCode,
-    handleClose,
-    inviteCodeConfirm,
-    toastInvalidInviteCode,
-    show,
-  ]);
+  }, [inviteCode, handleClose, inviteCodeConfirm, show, setToastMessage]);
 
   return (
     <CModal isOpen={isOpenInviteModal} handleClose={handleClose}>

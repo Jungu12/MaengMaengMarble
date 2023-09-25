@@ -30,7 +30,7 @@ const PrivateRoutes = () => {
       }
     };
 
-    initLogin();
+    // initLogin();
   }, [navigation, setAccessToken, setUser]);
 
   return <Outlet />;

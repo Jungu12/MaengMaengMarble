@@ -1,12 +1,11 @@
-import { TOAST_TYPE } from '@atom/toastAtom';
+import { TOAST_TYPE, ToastMessageState } from '@atom/toastAtom';
 import { images } from '@constants/images';
 import CToast from './CToast';
+import { useRecoilValue } from 'recoil';
 
-type WarningProps = {
-  text: string;
-};
+const CToastWarning = () => {
+  const text = useRecoilValue(ToastMessageState);
 
-const CToastWarning = ({ text }: WarningProps) => {
   return (
     <CToast toastType={TOAST_TYPE.warning} bgColor='bg-[#F8F3D6]'>
       <div className='flex flex-row items-center'>
@@ -15,7 +14,9 @@ const CToastWarning = ({ text }: WarningProps) => {
           src={images.icon.warning}
           alt='경고 아이콘'
         />
-        <p className='text-[18px] font-semibold text-[#987032]'>{text}</p>
+        <p className='text-[18px] font-semibold text-[#987032]'>
+          {text.warning}
+        </p>
       </div>
     </CToast>
   );

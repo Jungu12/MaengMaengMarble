@@ -8,8 +8,6 @@ import * as StompJs from '@stomp/stompjs';
 import { activateClient, getClient } from '@utils/socket';
 import MyPageModal from '@components/modal/MyPageModal';
 import InviteModal from '@components/modal/InviteModal';
-import CToastError from '@components/common/CToastError';
-import CToastSuccess from '@components/common/CToastSuccess';
 import { motion } from 'framer-motion';
 import { getRooms } from '@apis/lobbyApi';
 import { RoomType } from '@/types/common/lobby.type';
@@ -21,12 +19,7 @@ const Lobby = () => {
   const [isOpenMyPageModal, setIsOpenMyPageModal] = useState(false);
   const [isOpenInviteModal, setIsOpenInviteModal] = useState(false);
   const [isOpenFriendModal, setIsOpenFriendModal] = useState(false);
-  const [toastErrorMessage, setToastErrorMessage] = useState('');
   const [roomList, setRoomList] = useState<RoomType[]>([]);
-
-  const toastInvalidInviteCode = useCallback(() => {
-    setToastErrorMessage('존재하지 않는 초대코드입니다');
-  }, []);
 
   const onClickCreateRoomButton = useCallback(() => {
     setIsOpenCreateRoomModal((prev) => !prev);
@@ -77,14 +70,12 @@ const Lobby = () => {
       <InviteModal
         isOpenInviteModal={isOpenInviteModal}
         handleInviteModalClose={handleInviteModal}
-        toastInvalidInviteCode={toastInvalidInviteCode}
       />
       <CreateRoomModal
         isOpenCreateRoomModal={isOpenCreateRoomModal}
         handleCreateRoomModalClose={handleCreateRoomModalClose}
       />
       <MyPageModal
-        name={'개멋있는 사람'}
         isOpenCreateRoomModal={isOpenMyPageModal}
         handleMyPageModalClose={handleMyPageModalClose}
       />
@@ -119,8 +110,6 @@ const Lobby = () => {
             clientRef={clientRef}
           />
         </div>
-        <CToastError text={toastErrorMessage} />
-        <CToastSuccess text='입장 성공' />
       </motion.div>
     </>
   );

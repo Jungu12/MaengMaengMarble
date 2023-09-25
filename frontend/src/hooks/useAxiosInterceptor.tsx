@@ -34,27 +34,27 @@ export const useAxiosInterceptor = () => {
     }
 
     // 엑세스토큰 없는 경우 리프레시 토큰으로 엑세스 토큰 재발급
-    else {
-      try {
-        const refreshResponse = await http.post<ResponseAccessTokenType>(
-          'user-service/auth/token'
-        );
-        const newAccessToken = refreshResponse.accessToken;
+    // else {
+    //   try {
+    //     const refreshResponse = await http.post<ResponseAccessTokenType>(
+    //       'user-service/auth/token'
+    //     );
+    //     const newAccessToken = refreshResponse.accessToken;
 
-        if (newAccessToken) {
-          config.headers = config.headers || {};
-          (
-            config.headers as AxiosRequestHeaders
-          ).Authorization = `Bearer ${newAccessToken}`;
+    //     if (newAccessToken) {
+    //       config.headers = config.headers || {};
+    //       (
+    //         config.headers as AxiosRequestHeaders
+    //       ).Authorization = `Bearer ${newAccessToken}`;
 
-          setAccessToken(refreshResponse);
-        }
-      } catch (error) {
-        console.error('엑세스 토큰 재발급 실패: ', error);
-        // 이후 로그인 화면으로 이동시키기
-        window.location.href = loginUrl;
-      }
-    }
+    //       setAccessToken(refreshResponse);
+    //     }
+    //   } catch (error) {
+    //     console.error('엑세스 토큰 재발급 실패: ', error);
+    //     // 이후 로그인 화면으로 이동시키기
+    //     window.location.href = loginUrl;
+    //   }
+    // }
     return config;
   };
 
