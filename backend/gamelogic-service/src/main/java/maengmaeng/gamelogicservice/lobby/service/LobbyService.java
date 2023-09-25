@@ -1,24 +1,26 @@
 package maengmaeng.gamelogicservice.lobby.service;
 
 import lombok.RequiredArgsConstructor;
-import maengmaeng.gamelogicservice.global.dto.WaitingRoomUserInfo;
 import maengmaeng.gamelogicservice.lobby.domain.dto.WaitingRoomCreateRequest;
 import maengmaeng.gamelogicservice.lobby.repository.LobbyRepository;
 import maengmaeng.gamelogicservice.util.RedisSubscriber;
 import maengmaeng.gamelogicservice.waitingRoom.domain.CurrentParticipants;
 import maengmaeng.gamelogicservice.waitingRoom.domain.WaitingRoom;
+import maengmaeng.gamelogicservice.waitingRoom.service.WaitingRoomService;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service
 public class LobbyService {
     private final static int MAX_PARTICIPANTS = 4;
+    private final WaitingRoomService waitingRoomService;
     private final LobbyRepository lobbyRepository;
     // 로비(topic)에 발행되는 메시지를 처리할 Listener
     private final RedisMessageListenerContainer redisMessageListener;
@@ -29,7 +31,7 @@ public class LobbyService {
         return UUID.randomUUID().toString();
     }
 
-    public WaitingRoom createWaitingRoom(WaitingRoomCreateRequest roomInfo) {
+    public void saveNewWaitingRoom(WaitingRoomCreateRequest roomInfo) {
         CurrentParticipants currentParticipant = CurrentParticipants.builder()
             .userId(roomInfo.getUserInfo().getUserId())
             .nickname(roomInfo.getUserInfo().getNickname())
@@ -55,8 +57,14 @@ public class LobbyService {
             waitingRoom.addCurrentParticipants(closed);
         }
 
-        lobbyRepository.saveWaitingRoom(waitingRoom);
+        waitingRoomService.saveWaitingRoom(waitingRoom);
+    }
 
-        return waitingRoom;
+    public List<WaitingRoom> findWaitingRooms() {
+        return waitingRoomService.getWaitingRooms();
+    }
+
+    public void removeWaitingRoom(String roomCode) {
+        waitingRoomService.removeWaitingRoom(roomCode);
     }
 }
