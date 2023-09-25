@@ -5,8 +5,11 @@ import maengmaeng.userservice.exception.ExceptionCode;
 import maengmaeng.userservice.exception.RelationException;
 import maengmaeng.userservice.exception.UserException;
 import maengmaeng.userservice.relation.domain.dto.RelationResponseDto;
+import maengmaeng.userservice.relation.domain.dto.UserInfoResponseDto;
 import maengmaeng.userservice.user.domain.User;
+import maengmaeng.userservice.user.domain.UserAvatar;
 import maengmaeng.userservice.user.domain.dto.UserDetail;
+import maengmaeng.userservice.user.repository.UserAvatarRepository;
 import maengmaeng.userservice.user.repository.UserRepository;
 import maengmaeng.userservice.relation.repository.RelationRepository;
 import org.springframework.stereotype.Service;
@@ -25,6 +28,8 @@ public class RelationService {
 
     private final RelationRepository relationRepository;
     private final UserRepository userRepository;
+    private final UserAvatarRepository userAvatarRepository;
+
 
     @Transactional
     public void addRelation(String loginUser, String to) {
@@ -44,8 +49,11 @@ public class RelationService {
 
     @Transactional
     public void deleteRelation(String loginUser, String to){
-        Relation relation = relationRepository.findByFromIdAndToId(loginUser,to).orElseThrow(()->new RelationException(ExceptionCode.FOLLOW_CANCEL_FAILED));
-        int deleteCnt = relationRepository.deleteByFromIdAndToId(loginUser,to);
+        // 클라에서 친구id를 보내줌
+        User toUser = userRepository.findUserByUserId(to).orElseThrow(()->new UserException(ExceptionCode.USER_NOT_FOUND));
+        System.out.println(toUser.getUserId() + " /// " + toUser.getNickname());
+        Relation relation = relationRepository.findByFromIdAndToId(loginUser,toUser.getNickname()).orElseThrow(()->new RelationException(ExceptionCode.FOLLOW_CANCEL_FAILED));
+        int deleteCnt = relationRepository.deleteByFromIdAndToId(loginUser,toUser.getNickname());
         if (deleteCnt == 0) {
             throw new RelationException(ExceptionCode.FOLLOW_CANCEL_FAILED);
         }
@@ -56,26 +64,32 @@ public class RelationService {
 
         List<RelationResponseDto> lst = new ArrayList<>();
         for(Relation relation : relationList){
+            User user = userRepository.findByNickname(relation.getToId()).orElseThrow(()->new RelationException(ExceptionCode.FOLLOW_CANCEL_FAILED));
+            String characterImage = userAvatarRepository.findMountingUserAvatarsByUserId(user.getUserId());
+            System.out.println(characterImage);
+
             RelationResponseDto responseDto = RelationResponseDto.builder()
-                    .relationId(relation.getRelationId())
-                    .fromId(relation.getFromId())
-                    .toId(relation.getToId())
+                    .userId(user.getUserId())
+                    .nickname(user.getNickname())
+                    .character(String.valueOf(characterImage))
                     .build();
             lst.add(responseDto);
         }
         return lst;
     }
 
-    public UserDetail getUserInfo(String id){
+    public UserInfoResponseDto getUserInfo(String id){
         User user = userRepository.findByUserId(id) .orElseThrow(() -> new UserException(ExceptionCode.USER_NOT_FOUND));
-        UserDetail userDetail = UserDetail.builder()
+        String characterImage = userAvatarRepository.findMountingUserAvatarsByUserId(user.getUserId());
+        UserInfoResponseDto userInfoResponseDto = UserInfoResponseDto.builder()
                 .userId(user.getUserId())
                 .nickname(user.getNickname())
                 .point(user.getPoint())
                 .win(user.getWin())
                 .lose(user.getLose())
+                .avatarImage(characterImage)
                 .build();
-        return userDetail;
+        return userInfoResponseDto;
     }
 
 

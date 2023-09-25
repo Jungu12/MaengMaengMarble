@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import java.util.Map;
 
 
 @AllArgsConstructor
@@ -23,9 +24,9 @@ public class ShopController {
         return ResponseEntity.ok(avatarList);
     }
 
-    @PostMapping("/characters/{id}")
-    public ResponseEntity<Void> buyAvatar(@AuthenticationPrincipal String loginUser, @PathVariable int id){
-        shopService.buyAvatar(loginUser, id);
-        return ResponseEntity.ok().build();
+    @PostMapping("/characters")
+    public ResponseEntity<ShopResponseDto> buyAvatar(@AuthenticationPrincipal String loginUser, @RequestBody Map<String,Integer> id){
+        ShopResponseDto avatarList = shopService.buyAvatar(loginUser, id.get("id"));
+        return ResponseEntity.ok(avatarList);
     }
 }

@@ -14,9 +14,10 @@ public interface UserRepository extends JpaRepository<User, String> {
 
     Optional<User> findByUserId(String userId);
 
+    Optional<User> findByNickname(String nickname);
+
     boolean existsByNickname(String nickname);
 
     @Query("SELECT ua.avatar FROM UserAvatar ua WHERE ua.user.userId = :userId AND ua.mounting = true")
     Avatar findMountedAvatarIdByUserId(@Param("userId") String userId);
 }
-

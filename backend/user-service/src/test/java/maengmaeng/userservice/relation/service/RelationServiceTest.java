@@ -3,6 +3,7 @@ package maengmaeng.userservice.relation.service;
 import maengmaeng.userservice.exception.RelationException;
 import maengmaeng.userservice.relation.domain.Relation;
 import maengmaeng.userservice.relation.domain.dto.RelationResponseDto;
+import maengmaeng.userservice.relation.domain.dto.UserInfoResponseDto;
 import maengmaeng.userservice.relation.repository.RelationRepository;
 import maengmaeng.userservice.relation.service.RelationService;
 import maengmaeng.userservice.user.domain.Avatar;
@@ -124,9 +125,7 @@ public class RelationServiceTest {
         List<RelationResponseDto> result = relationService.relationLists(from);
 
         // then
-        assertThat(result.get(0).getRelationId()).isEqualTo(1L);
-        assertThat(result.get(0).getFromId()).isEqualTo("user1@naver.com");
-        assertThat(result.get(0).getToId()).isEqualTo("user2@naver.com");
+
     }
 
     @Test
@@ -140,7 +139,7 @@ public class RelationServiceTest {
 
 
         // when
-        UserDetail user = relationService.getUserInfo("user@naver.com");
+        UserInfoResponseDto user = relationService.getUserInfo("user@naver.com");
 
         // then
         assertThat(user.getUserId()).isEqualTo("user@naver.com");

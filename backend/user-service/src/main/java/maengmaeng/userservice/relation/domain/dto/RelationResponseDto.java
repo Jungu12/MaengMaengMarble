@@ -8,8 +8,8 @@ import lombok.Setter;
 @Getter
 @Setter
 public class RelationResponseDto {
-    public Long relationId;
-    public String fromId;
-    public String toId;
+    private String userId;
+    private String nickname;
+    private String character;
 
 }

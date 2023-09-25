@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import maengmaeng.userservice.relation.domain.dto.RelationResponseDto;
+import maengmaeng.userservice.relation.domain.dto.UserInfoResponseDto;
 import maengmaeng.userservice.user.domain.User;
 import maengmaeng.userservice.relation.domain.Relation;
 import maengmaeng.userservice.relation.service.RelationService;
@@ -33,28 +34,28 @@ public class RelationController {
         from : 로그인된 사용자, 친구 요청 보내는 사람
         to : 내가 친구요청 하는 사람
      */
-    @PostMapping("/relations")
-    public ResponseEntity<String> addRelation(@AuthenticationPrincipal String loginUser, @RequestBody Map<String, String> to){
+    @PostMapping("")
+    public ResponseEntity<Void> addRelation(@AuthenticationPrincipal String loginUser, @RequestBody Map<String, String> to){
         relationService.addRelation(loginUser,to.get("to"));
-        return ResponseEntity.ok(loginUser);
-    }
-
-
-    @DeleteMapping("/relations/{to}")
-    public ResponseEntity<Void> deleteRelation(@AuthenticationPrincipal String loginUser, @PathVariable String to){
-        relationService.deleteRelation(loginUser,to);
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/relations")
+
+    @DeleteMapping("")
+    public ResponseEntity<Void> deleteRelation(@AuthenticationPrincipal String loginUser, @RequestBody Map<String, String> to){
+        relationService.deleteRelation(loginUser,to.get("to"));
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("")
     public ResponseEntity<List<RelationResponseDto>> relationLists(@AuthenticationPrincipal String loginUser){
         List<RelationResponseDto> lists = relationService.relationLists(loginUser);
         return ResponseEntity.ok(lists);
     }
 
-    @GetMapping("/relations/detail/{id}")
-    public ResponseEntity<UserDetail> getUserInfo(@PathVariable String id){
-        UserDetail user = relationService.getUserInfo(id);
+    @GetMapping("/detail/{id}")
+    public ResponseEntity<UserInfoResponseDto> getUserInfo(@PathVariable String id, @AuthenticationPrincipal String loginUser){
+        UserInfoResponseDto user = relationService.getUserInfo(id);
         return ResponseEntity.ok(user);
     }
 

@@ -24,6 +24,10 @@ public interface UserAvatarRepository extends JpaRepository<UserAvatar, Integer>
     void mountAvatarByUserIdAndAvatarId(@Param("userId") String userId, @Param("avatarId") int avatarId);
 
 
+    @Query("SELECT ua.avatar.avatarImage FROM UserAvatar ua WHERE ua.user.userId = :userId and ua.mounting =true")
+    String findMountingUserAvatarsByUserId(@Param("userId") String userId);
+
+
     boolean existsByUserUserIdAndAvatarAvatarId(String userId, int avatarId);
 
 }

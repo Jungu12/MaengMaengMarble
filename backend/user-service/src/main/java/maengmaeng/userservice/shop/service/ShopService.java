@@ -62,7 +62,7 @@ public class ShopService {
     }
 
     @Transactional
-    public void buyAvatar(String loginUser, int id){
+    public ShopResponseDto buyAvatar(String loginUser, int id){
         // 잔여포인트 확인
         User user = userRepository.findByUserId(loginUser).orElseThrow(() -> new UserException(ExceptionCode.USER_NOT_FOUND));
         int point = user.getPoint();
@@ -82,5 +82,8 @@ public class ShopService {
         UserAvatar userAvatar = new UserAvatar(user,avatar,false);
         user.setPointSub(Integer.parseInt(avatar.getAvatarPrice()));
         userAvatarRepository.save(userAvatar);
+
+
+        return getAvatars(loginUser);
     }
 }
