@@ -2,11 +2,14 @@ package maengmaeng.gamelogicservice.global.dto;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
 @Builder
 @Getter
-public class GameData {
-	private String type;
-	private String roomCode;
-	private ResponseDto data;
+@Setter
+public class ResponseDto {
+
+    private String type;
+    private Object data;
+
 }

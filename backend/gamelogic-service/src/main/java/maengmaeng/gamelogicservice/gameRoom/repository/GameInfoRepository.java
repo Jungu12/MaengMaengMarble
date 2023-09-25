@@ -37,6 +37,13 @@ public class GameInfoRepository {
     }
 
 
+//    public GameInfo getGameInfo(String roomCode){
+////        opsHashGameInfo.
+//    }
+
+
+
+
 
 
 

@@ -18,11 +18,11 @@ public class TestController {
 
 
 
-    @RequestMapping("test")
-    public ResponseEntity<?> test(){
-
-        GameInfo info = gameRoomService.setInfo();
-        return ResponseEntity.ok().body(info);
-
-    }
+//    @RequestMapping("test")
+//    public ResponseEntity<?> test(){
+//
+//        GameInfo info = gameRoomService.setInfo();
+//        return ResponseEntity.ok().body(info);
+//
+//    }
 }

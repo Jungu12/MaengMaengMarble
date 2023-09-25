@@ -1,6 +1,12 @@
 package maengmaeng.gamelogicservice.gameRoom.controller;
 
+import maengmaeng.gamelogicservice.gameRoom.domain.GameInfo;
+import maengmaeng.gamelogicservice.gameRoom.domain.dto.GameStart;
 import maengmaeng.gamelogicservice.gameRoom.service.GameRoomService;
+import maengmaeng.gamelogicservice.global.dto.GameData;
+import maengmaeng.gamelogicservice.global.dto.ResponseDto;
+import maengmaeng.gamelogicservice.waitingRoom.domain.WaitingRoom;
+import maengmaeng.gamelogicservice.waitingRoom.domain.dto.UserInfo;
 import maengmaeng.gamelogicservice.waitingRoom.service.WaitingRoomService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,20 +19,92 @@ import lombok.RequiredArgsConstructor;
 // import maengmaeng.gamelogicservice.gameRoom.service.GameRoomService;
 import maengmaeng.gamelogicservice.util.RedisPublisher;
 
+import java.nio.file.attribute.UserPrincipal;
+import java.util.Random;
+
 @RequiredArgsConstructor
 @Controller
 public class GameRoomController {
 	private final RedisPublisher redisPublisher;
 	private final GameRoomService gameRoomService;
 	private final Logger logger = LoggerFactory.getLogger(getClass());
-//	private final WaitingRoomService waitingRoomService;
+	private final WaitingRoomService waitingRoomService;
 	private final ChannelTopic gameRoomTopic;
 
-	@MessageMapping("/gamerooms/start/{roomCode}")
-	public void qq(@DestinationVariable String roomCode) {
 
-		// gameRoomService.setGameInfos(roomCode);
+	/**
+	 *  Game 시작
+	 *  게임이 시작되었다는 것을 알림
+	 * */
+//	@MessageMapping("/game-rooms/start/{roomCode}")
+//	public void startGame(@DestinationVariable String roomCode) {
+//
+//		GameData gameData = GameData.builder()
+//				.data(GameStart.builder().message("start").build())
+//				.roomCode(roomCode)
+//				.type("GAME_ROOM")
+//				.build();
+//
+//		redisPublisher.publish(gameRoomTopic, gameData);
+//
+//
+//
+//	}
+	/**
+	 * 초기 맵 데이터 세팅
+	 * */
+	@MessageMapping("/game-rooms/set-info/{roomCode}")
+	public void setGame(@DestinationVariable String roomCode) {
 
-		System.out.println("test");
+		GameInfo gameInfo = gameRoomService.setInfo(roomCode);
+
+		GameData gameData = GameData.builder()
+				.data(ResponseDto.builder()
+						.type("MAPINFO")
+						.data(gameInfo)
+						.build())
+				.roomCode(roomCode)
+				.type("GAME_ROOM")
+				.build();
+
+		redisPublisher.publish(gameRoomTopic, gameData);
 	}
+
+	/**
+	 * 턴 종료
+	 * */
+
+	@MessageMapping("/game-rooms/turn-end/{roomCode}")
+	public void endTurn(@DestinationVariable String roomCode, UserInfo userInfo) {
+
+//
+//		GameData gameData = GameData.builder()
+//				.roomCode()
+//				.build();
+	}
+
+	/**
+	* 주사위 던지기
+	 *
+	* */
+	@MessageMapping("/game-rooms/move/{roomCode}")
+	public void move(@DestinationVariable String roomCode, UserInfo user){
+
+		Random random = new Random();
+
+		// 주사위 1 던지기 (1부터 6까지)
+		int dice1 = random.nextInt(6) + 1;
+
+		// 주사위 2 던지기 (1부터 6까지)
+		int dice2 = random.nextInt(6) + 1;
+
+		System.out.println("첫 번째 주사위: " + dice1);
+		System.out.println("두 번째 주사위: " + dice2);
+	}
+
+
+
+
+
+
 }

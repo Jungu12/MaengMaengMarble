@@ -1,5 +1,6 @@
 package maengmaeng.gamelogicservice.chat.controller;
 
+import maengmaeng.gamelogicservice.global.dto.ResponseDto;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.listener.ChannelTopic;
@@ -22,7 +23,7 @@ public class ChatController {
 	@MessageMapping("/chats")
 	public void message(ChatMessage message) {
 		logger.debug("message()");
-		GameData gameData = GameData.builder().type(CHAT).roomCode(message.getRoomCode()).data(message).build();
+		GameData gameData = GameData.builder().type(CHAT).roomCode(message.getRoomCode()).data(ResponseDto.builder().type("CHAT").data(message).build()).build();
 		redisPublisher.publish(chatTopic, gameData);
 	}
 }
