@@ -13,12 +13,14 @@ import CToastSuccess from '@components/common/CToastSuccess';
 import { motion } from 'framer-motion';
 import { getRooms } from '@apis/lobbyApi';
 import { RoomType } from '@/types/common/lobby.type';
+import MyFriendModal from '@components/modal/MyFriendModal';
 
 const Lobby = () => {
   const clientRef = useRef<StompJs.Client>();
   const [isOpenCreateRoomModal, setIsOpenCreateRoomModal] = useState(false);
   const [isOpenMyPageModal, setIsOpenMyPageModal] = useState(false);
   const [isOpenInviteModal, setIsOpenInviteModal] = useState(false);
+  const [isOpenFriendModal, setIsOpenFriendModal] = useState(false);
   const [toastErrorMessage, setToastErrorMessage] = useState('');
   const [roomList, setRoomList] = useState<RoomType[]>([]);
 
@@ -50,6 +52,14 @@ const Lobby = () => {
     setIsOpenInviteModal(false);
   }, []);
 
+  const onClickFriendButton = useCallback(() => {
+    setIsOpenFriendModal((prev) => !prev);
+  }, []);
+
+  const handleFriendModalClose = useCallback(() => {
+    setIsOpenFriendModal(false);
+  }, []);
+
   // 소켓 연결
   useEffect(() => {
     clientRef.current = getClient();
@@ -78,6 +88,11 @@ const Lobby = () => {
         isOpenCreateRoomModal={isOpenMyPageModal}
         handleMyPageModalClose={handleMyPageModalClose}
       />
+      <MyFriendModal
+        isOpenFriendModal={isOpenFriendModal}
+        handleFriendModalClose={handleFriendModalClose}
+      />
+
       <motion.div
         className='flex flex-col w-full h-full relative p-[45px] overflow-auto'
         style={{
@@ -88,7 +103,7 @@ const Lobby = () => {
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
       >
-        <LobbyHeader />
+        <LobbyHeader onClickFriendButton={onClickFriendButton} />
 
         <div className='flex flex-1 flex-row w-full items-center justify-between mt-5 overflow-auto'>
           <LobbyCharacterView

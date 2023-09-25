@@ -1,7 +1,11 @@
 import { images } from '@constants/images';
 import { useNavigate } from 'react-router-dom';
 
-const LobbyHeader = () => {
+type LobbyHeaderProps = {
+  onClickFriendButton: () => void;
+};
+
+const LobbyHeader = ({ onClickFriendButton }: LobbyHeaderProps) => {
   const navigation = useNavigate();
 
   return (
@@ -20,7 +24,7 @@ const LobbyHeader = () => {
         <button onClick={() => navigation('/store')}>
           <img className='w-10 h-10' src={images.icon.shop} alt='상점 버튼' />
         </button>
-        <button>
+        <button onClick={onClickFriendButton}>
           <img
             className='w-10 h-10'
             src={images.icon.friend}
