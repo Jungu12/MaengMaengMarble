@@ -14,5 +14,6 @@ public class UserDetail {
     private int win;
     private int lose;
     private int avatarId;
-    private String avatarUrl;
+    private String avatarImageBg;
+    private String avatarImageNoBg;
 }

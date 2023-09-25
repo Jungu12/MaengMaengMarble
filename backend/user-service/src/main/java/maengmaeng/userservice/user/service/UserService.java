@@ -35,7 +35,8 @@ public class UserService {
         Avatar avatarIdOptional = userRepository.findMountedAvatarIdByUserId(userId);
 
         int avatarId = avatarIdOptional.getAvatarId(); // 만약 마운트된 아바타가 없으면 기본값으로 0을 사용하거나 다른 방법으로 처리할 수 있습니다.
-        String avatarUrl = avatarIdOptional.getAvatarImage();
+        String avatarImageBg = avatarIdOptional.getAvatarImageBg();
+        String avatarImageNoBg = avatarIdOptional.getAvatarImageNoBg();
         // 내 정보를 DTO 형태로 보기 위해서 user의 값들과 avatar_id를 가져와서 만든다.
         UserDetail userDetail = UserDetail.builder()
                 .userId(user.getUserId())
@@ -44,7 +45,8 @@ public class UserService {
                 .win(user.getWin())
                 .lose(user.getLose())
                 .avatarId(avatarId)
-                .avatarUrl(avatarUrl)
+                .avatarImageBg(avatarImageBg)
+                .avatarImageNoBg(avatarImageNoBg)
                 .build();
 
         return userDetail;
@@ -86,7 +88,8 @@ public class UserService {
                     userAvatar.setAvatarName(avatar.getAvatarName());
                     userAvatar.setHasAvatar(userAvatarIds.contains(avatar.getAvatarId()));
                     userAvatar.setAvatarPrice(avatar.getAvatarPrice());
-                    userAvatar.setAvatarImage(avatar.getAvatarImage());
+                    userAvatar.setAvatarImageBg(avatar.getAvatarImageBg());
+                    userAvatar.setAvatarImageNoBg(avatar.getAvatarImageNoBg());
                     return userAvatar;
                 })
                 .collect(Collectors.toList());

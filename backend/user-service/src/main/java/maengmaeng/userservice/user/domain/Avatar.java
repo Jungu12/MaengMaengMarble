@@ -23,11 +23,14 @@ public class Avatar {
     @Column(name = "avatar_name")
     private String avatarName;
 
-    @Column(name = "avatar_image")
-    private String avatarImage;
+    @Column(name = "avatar_image_bg")
+    private String avatarImageBg;
+
+    @Column(name = "avatar_image_no_bg")
+    private String avatarImageNoBg;
 
     @Column(name = "avatar_price")
-    private String avatarPrice;
+    private int avatarPrice;
 
     @OneToMany(mappedBy = "avatar")
     private List<UserAvatar> userAvatars;

@@ -11,8 +11,9 @@ public class UserPossessionAvatar {
     private int avatarId;
     private String avatarName;
     private boolean hasAvatar;
-    private String avatarPrice;
-    private String avatarImage;
+    private int avatarPrice;
+    private String avatarImageBg;
+    private String avatarImageNoBg;
 
     public void setAvatarId(int avatarId) {
         this.avatarId = avatarId;
@@ -26,12 +27,15 @@ public class UserPossessionAvatar {
         this.hasAvatar = contains;
     }
 
-    public void setAvatarPrice(String avatarPrice) {
+    public void setAvatarPrice(int avatarPrice) {
         this.avatarPrice = avatarPrice;
     }
 
-    public void setAvatarImage(String avatarImage) {
-        this.avatarImage = avatarImage;
+    public void setAvatarImageBg(String avatarImageBg) {
+        this.avatarImageBg = avatarImageBg;
+    }
+    public void setAvatarImageNoBg(String avatarImageNoBg) {
+        this.avatarImageNoBg = avatarImageNoBg;
     }
 
     public UserPossessionAvatar() {
