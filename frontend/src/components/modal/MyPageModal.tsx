@@ -53,6 +53,13 @@ const MyPageModal = ({
     if (isError || isEdit) {
       setIsEdit(true);
       inputRef.current?.focus();
+      setToastMessage((prev) => {
+        return {
+          ...prev,
+          error: isError ? '닉네임을 확인해주세요.' : '닉네임을 저장해주세요.',
+        };
+      });
+      show('error');
       return;
     }
     // 닉네임이 같은 경우 요청 안보내기
@@ -169,7 +176,7 @@ const MyPageModal = ({
             ))}
           </div>
         </div>
-        <div className='min-w-[450px] flex flex-col relative ml-[32px] items-center'>
+        <div className='min-w-[350px] flex flex-col relative ml-[32px] items-center'>
           <img
             className='h-[450px] w-full object-cover rounded-[12px]'
             style={{
