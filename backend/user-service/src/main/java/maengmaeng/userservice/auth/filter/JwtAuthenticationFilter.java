@@ -38,10 +38,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 			return;
 		}
 
-		// if (requestURI.startsWith("/")) {
-		// 	filterChain.doFilter(request, response);
-		// 	return;
-		// }
+//		 if (requestURI.startsWith("/")) {
+//		 	filterChain.doFilter(request, response);
+//		 	return;
+//		 }
 
 		String token = jwtProvider.resolveToken(request);
 
