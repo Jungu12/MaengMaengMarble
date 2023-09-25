@@ -25,7 +25,7 @@ export const images = {
   },
   gameRoom: {
     background:
-      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/game-room-background.png',
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/game-room-background.pngss',
   },
   dummy: {
     dummy1: 'https://maeng.s3.ap-northeast-2.amazonaws.com/images/dummy1.png',
