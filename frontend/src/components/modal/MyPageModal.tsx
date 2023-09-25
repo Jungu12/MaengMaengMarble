@@ -172,6 +172,9 @@ const MyPageModal = ({
         <div className='min-w-[450px] flex flex-col relative ml-[32px] items-center'>
           <img
             className='h-[450px] w-full object-cover rounded-[12px]'
+            style={{
+              objectPosition: '0px 0px',
+            }}
             src={
               charaterList.length
                 ? charaterList[seletedCharater - 1].avatarImageBg
