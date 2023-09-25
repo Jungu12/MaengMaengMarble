@@ -17,12 +17,12 @@ public interface UserAvatarRepository extends JpaRepository<UserAvatar, Integer>
 
     // userId를 기준으로 마운트된 아바타의 "mounting" 값을 false로 변경
     @Modifying
-    @Query("UPDATE UserAvatar ua SET ua.mounting = false WHERE ua.user = :userId")
+    @Query("UPDATE UserAvatar ua SET ua.mounting = false WHERE ua.user.userId = :userId")
     void unmountAvatarByUserId(@Param("userId") String userId);
 
     // userId와 avatarId를 기준으로 해당 아바타의 "mounting" 값을 true로 변경
     @Modifying
-    @Query("UPDATE UserAvatar ua SET ua.mounting = true WHERE ua.user = :userId AND ua.avatar = :avatarId")
+    @Query("UPDATE UserAvatar ua SET ua.mounting = true WHERE ua.user.userId = :userId AND ua.avatar.avatarId = :avatarId")
     void mountAvatarByUserIdAndAvatarId(@Param("userId") String userId, @Param("avatarId") int avatarId);
 
 
