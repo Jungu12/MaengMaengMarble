@@ -11,9 +11,12 @@ import InviteModal from '@components/modal/InviteModal';
 import { motion } from 'framer-motion';
 import { getRooms } from '@apis/lobbyApi';
 import { RoomType } from '@/types/common/lobby.type';
+import { useRecoilValue } from 'recoil';
+import { userState } from '@atom/userAtom';
 
 const Lobby = () => {
   const clientRef = useRef<StompJs.Client>();
+  const user = useRecoilValue(userState);
   const [isOpenCreateRoomModal, setIsOpenCreateRoomModal] = useState(false);
   const [isOpenMyPageModal, setIsOpenMyPageModal] = useState(false);
   const [isOpenInviteModal, setIsOpenInviteModal] = useState(false);
@@ -82,12 +85,14 @@ const Lobby = () => {
         <LobbyHeader />
 
         <div className='flex flex-1 flex-row w-full items-center justify-between mt-5 overflow-auto'>
-          <LobbyCharacterView
-            name='상근시치'
-            img={images.default.character}
-            point='28,000'
-            handleMyPageModal={onClickSettingButton}
-          />
+          {user && (
+            <LobbyCharacterView
+              name={user.nickname}
+              img={images.default.character}
+              point='28,000'
+              handleMyPageModal={onClickSettingButton}
+            />
+          )}
           <LobbyRoomListView
             roomList={roomList}
             onClickInviteButton={onClickInviteButton}

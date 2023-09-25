@@ -14,6 +14,7 @@ export type DetailUserType = {
   point: number;
   userId: string;
   win: number;
+  avatarUrl: string;
 };
 
 export type ParticipantsType = {

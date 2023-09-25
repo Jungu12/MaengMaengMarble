@@ -1,4 +1,5 @@
-import { changeNickname, checkNickname } from '@apis/userApi';
+import { CharacterType } from '@/types/common/common.type';
+import { changeNickname, checkNickname, getCharaterList } from '@apis/userApi';
 import { ToastMessageState } from '@atom/toastAtom';
 import { userState } from '@atom/userAtom';
 import CButton from '@components/common/CButton';
@@ -22,7 +23,8 @@ const MyPageModal = ({
   const [isEdit, setIsEdit] = useState(false);
   const [nickname, setNickname] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
-  // const [seletedCharater, setSeletedCharater] = useState(0); // 현재 선택한 캐릭터 (캐릭터 id값 저장)
+  const [charaterList, setCharaterList] = useState<CharacterType[]>([]);
+  const [seletedCharater, setSeletedCharater] = useState(0); // 현재 선택한 캐릭터 (캐릭터 id값 저장)
   const inputRef = useRef<HTMLInputElement>(null);
   const { show } = useToastList();
   const setToastMessage = useSetRecoilState(ToastMessageState);
@@ -75,6 +77,20 @@ const MyPageModal = ({
     user,
   ]);
 
+  const selectCharater = useCallback((id: number) => {
+    setSeletedCharater(id);
+  }, []);
+
+  // 캐릭터 리스트 불러오기
+  useEffect(() => {
+    getCharaterList().then((res) => {
+      setCharaterList(res.data);
+    });
+    if (user) {
+      setSeletedCharater(user.avatarId);
+    }
+  }, [user]);
+
   useEffect(() => {
     if (user) {
       setNickname(user.nickname);
@@ -122,115 +138,31 @@ const MyPageModal = ({
     <CModal isOpen={isOpenCreateRoomModal} handleClose={handleMyPageModalClose}>
       <div className='flex p-[16px] min-w-[960px]'>
         <div className='min-w-[600px] w-[600px] px-[24px] py-[12px] h-[600px] flex-1 flex flex-col overflow-y-scroll overflow-x-hidden scrollbar gap-[70px]'>
-          <div className='w-[600px] flex gap-[16px]'>
-            <MyPageCharacterCard
-              src={images.dummy.dummyCharacter1}
-              alt=''
-              name='푸바오'
-              status='choice'
-            />
-            <MyPageCharacterCard
-              src={images.dummy.dummyCharacter2}
-              alt=''
-              name='깜찍이'
-              status='lock'
-            />
-            <MyPageCharacterCard
-              src={images.dummy.dummyCharacter3}
-              alt=''
-              name='맹티즈'
-              status='possession'
-            />
-          </div>
-
-          <div className='min-w-[600px] flex gap-[16px]'>
-            <MyPageCharacterCard
-              src={images.dummy.dummyCharacter1}
-              alt=''
-              name='푸바오'
-              status='choice'
-            />
-            <MyPageCharacterCard
-              src={images.dummy.dummyCharacter2}
-              alt=''
-              name='깜찍이'
-              status='lock'
-            />
-            <MyPageCharacterCard
-              src={images.dummy.dummyCharacter3}
-              alt=''
-              name='맹티즈'
-              status='possession'
-            />
-          </div>
-
-          <div className='min-w-[600px] flex gap-[16px]'>
-            <MyPageCharacterCard
-              src={images.dummy.dummyCharacter1}
-              alt=''
-              name='푸바오'
-              status='choice'
-            />
-            <MyPageCharacterCard
-              src={images.dummy.dummyCharacter2}
-              alt=''
-              name='깜찍이'
-              status='lock'
-            />
-            <MyPageCharacterCard
-              src={images.dummy.dummyCharacter3}
-              alt=''
-              name='맹티즈'
-              status='possession'
-            />
-          </div>
-
-          <div className='min-w-[600px] flex gap-[16px]'>
-            <MyPageCharacterCard
-              src={images.dummy.dummyCharacter1}
-              alt=''
-              name='푸바오'
-              status='choice'
-            />
-            <MyPageCharacterCard
-              src={images.dummy.dummyCharacter2}
-              alt=''
-              name='깜찍이'
-              status='lock'
-            />
-            <MyPageCharacterCard
-              src={images.dummy.dummyCharacter3}
-              alt=''
-              name='맹티즈'
-              status='possession'
-            />
-          </div>
-
-          <div className='min-w-[600px] flex gap-[16px]'>
-            <MyPageCharacterCard
-              src={images.dummy.dummyCharacter1}
-              alt=''
-              name='푸바오'
-              status='choice'
-            />
-            <MyPageCharacterCard
-              src={images.dummy.dummyCharacter2}
-              alt=''
-              name='깜찍이'
-              status='lock'
-            />
-            <MyPageCharacterCard
-              src={images.dummy.dummyCharacter3}
-              alt=''
-              name='맹티즈'
-              status='possession'
-            />
+          <div className='w-[600px] flex gap-[16px] flex-wrap'>
+            {charaterList.map((character, index) => (
+              <MyPageCharacterCard
+                key={index}
+                character={character}
+                status={
+                  !character.hasAvatar
+                    ? 'lock'
+                    : seletedCharater === character.avatarId
+                    ? 'choice'
+                    : 'possession'
+                }
+                selectCharater={selectCharater}
+              />
+            ))}
           </div>
         </div>
         <div className='min-w-[450px] flex flex-col relative ml-[32px] items-center'>
           <img
             className='h-[450px] w-full object-cover rounded-[12px]'
-            src={images.dummy.dummyCharacter1}
+            src={
+              charaterList.length
+                ? charaterList[seletedCharater - 1].avatarImage
+                : ''
+            }
             alt='내 캐릭터'
           />
           {isError ? (
