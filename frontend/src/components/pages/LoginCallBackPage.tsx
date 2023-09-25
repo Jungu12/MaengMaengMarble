@@ -73,8 +73,9 @@ const LoginCallBackPage = () => {
               console.log(res.data);
               navigate('/lobby');
             })
-            .catch(() => {
-              navigate('/login');
+            .catch((err) => {
+              console.log(err);
+              // navigate('/login');
             });
         })
         .catch((err) => {
