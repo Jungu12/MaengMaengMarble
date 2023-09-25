@@ -12,6 +12,7 @@ import maengmaeng.userservice.user.repository.AvatarRepository;
 import maengmaeng.userservice.user.repository.UserAvatarRepository;
 import maengmaeng.userservice.user.repository.UserRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.OptionalInt;
@@ -93,7 +94,9 @@ public class UserService {
         return userAvatars;
     }
 
+
     // 캐릭터 변경
+    @Transactional
     public void changeProfileAvatar(String userId, int newAvatarId) {
         // 현재 마운트된 아바타 중에서 `mounting` 컬럼을 `true`에서 `false`로 변경
         userAvatarRepository.unmountAvatarByUserId(userId);
