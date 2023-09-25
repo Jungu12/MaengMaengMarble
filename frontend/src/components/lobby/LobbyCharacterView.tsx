@@ -14,7 +14,7 @@ const LobbyCharacterView = ({
   handleMyPageModal,
 }: CharacterInfoProps) => {
   return (
-    <div className='flex flex-col w-fit h-full justify-between mr-10 p-8 bg-white bg-opacity-50 rounded-[40px]'>
+    <div className='flex flex-1 flex-col w-fit h-full justify-between mr-10 p-8 bg-white bg-opacity-50 rounded-[40px]'>
       <div className='flex flex-row items-center justify-between'>
         <p className='text-3xl font-extrabold text-text-100'>{name}</p>
         <button onClick={handleMyPageModal}>
@@ -27,10 +27,9 @@ const LobbyCharacterView = ({
       </div>
       <img
         // src={images.default.character}
+        className='max-w-full'
         src={img}
         alt='캐릭터 뷰'
-        width={'400px'}
-        height={'600px'}
       />
       <div className='flex flex-row items-center'>
         <img
