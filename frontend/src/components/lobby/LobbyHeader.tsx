@@ -1,4 +1,3 @@
-import React from 'react';
 import { images } from '@constants/images';
 import { useNavigate } from 'react-router-dom';
 
@@ -6,7 +5,7 @@ const LobbyHeader = () => {
   const navigation = useNavigate();
 
   return (
-    <div className='flex flex-row w-full items-center justify-between'>
+    <div className='flex flex-row w-full h-fit items-center justify-between'>
       <h1 className='px-[30px] text-left text-5xl font-inooariduri text-white'>
         맹맹마블
       </h1>

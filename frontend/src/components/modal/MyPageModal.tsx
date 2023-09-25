@@ -4,17 +4,17 @@ import MyPageCharacterCard from '@components/mypage/MyPageCharacterCard';
 import { images } from '@constants/images';
 import { ChangeEvent, useCallback, useEffect, useState } from 'react';
 
-type NewRoomModalProps = {
-  isOpenNewRoomModal: boolean;
+type CreateRoomModalProps = {
+  isOpenCreateRoomModal: boolean;
   handleMyPageModalClose: () => void;
   name: string;
 };
 
 const MyPageModal = ({
-  isOpenNewRoomModal,
+  isOpenCreateRoomModal,
   handleMyPageModalClose,
   name,
-}: NewRoomModalProps) => {
+}: CreateRoomModalProps) => {
   const [isError, setIsError] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   const [nickname, setNickname] = useState(name);
@@ -49,7 +49,7 @@ const MyPageModal = ({
   }, [nickname]);
 
   return (
-    <CModal isOpen={isOpenNewRoomModal} handleClose={handleMyPageModalClose}>
+    <CModal isOpen={isOpenCreateRoomModal} handleClose={handleMyPageModalClose}>
       <div className='flex p-[16px] min-w-[960px]'>
         <div className='min-w-[600px] w-[600px] px-[24px] py-[12px] h-[600px] flex-1 flex flex-col overflow-y-scroll overflow-x-hidden scrollbar gap-[70px]'>
           <div className='w-[600px] flex gap-[16px]'>
@@ -211,7 +211,7 @@ const MyPageModal = ({
           </div>
           <div className='w-full h-[48px] mt-[16px] relative'>
             <div className='w-full h-full'>
-              <CButton rounded={20}>
+              <CButton type='green' rounded={20}>
                 <p className={`text-xl font-semibold text-[#FFFDF2]`}>
                   저장하기
                 </p>

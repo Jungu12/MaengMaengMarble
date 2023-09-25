@@ -1,5 +1,5 @@
 import { ResponseAccessTokenType } from '@/types/common/auth.type';
-import { http } from '@utils/http';
+import { authHttp, http } from '@utils/http';
 
 export async function getAccessToken(
   code: string,
@@ -9,4 +9,8 @@ export async function getAccessToken(
     code: code,
     state: state,
   });
+}
+
+export async function regenerateAccessToken(): Promise<ResponseAccessTokenType> {
+  return authHttp.post(`user-service/auth/token`);
 }

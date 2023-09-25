@@ -1,9 +1,12 @@
+import { ChatMessageType } from '@/types/common/common.type';
 import WaitingRoomCharaterCard from '@components/watingRoom/WaitingRoomCharaterCard';
 import WaitingRoomChatting from '@components/watingRoom/WaitingRoomChatting';
 import { images } from '@constants/images';
 import * as StompJs from '@stomp/stompjs';
+import { activateClient, getClient } from '@utils/socket';
 import { motion } from 'framer-motion';
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 
 const BoxAnimation = {
   start: { scale: 0, opacity: 0.5 },
@@ -26,33 +29,57 @@ const InnerAnimation = {
 };
 
 const WaitingRoom = () => {
+  const navigate = useNavigate();
+  const { roomId } = useParams();
   const isReady = true;
   const client = useRef<StompJs.Client>();
+  const [chatList, setChatList] = useState<ChatMessageType[]>([]);
 
-  const connect = useCallback(() => {
-    client.current = new StompJs.Client({
-      brokerURL: 'ws://192.168.100.64:8080/api/maeng',
-      connectHeaders: {
-        login: '',
-        passcode: 'password',
-      },
-      onConnect: () => {
-        console.log('연결 됬습니다~');
-      },
-      debug: function (str) {
-        console.log(str);
-      },
-      reconnectDelay: 5000, // 자동 재 연결
-      heartbeatIncoming: 4000,
-      heartbeatOutgoing: 4000,
-    });
+  const onClickExitButton = useCallback(() => {
+    navigate(-1);
+  }, [navigate]);
 
-    client.current.activate();
-  }, []);
+  const sendChatMessage = useCallback(
+    (msg: string) => {
+      console.log(msg);
+
+      client.current?.publish({
+        destination: `/pub/chats`,
+        body: JSON.stringify({
+          roomCode: roomId,
+          sender: '강준구',
+          message: msg,
+        }),
+      });
+    },
+    [roomId]
+  );
 
   useEffect(() => {
-    connect();
-  }, []);
+    client.current = getClient();
+    activateClient(client.current);
+    client.current.onConnect = () => {
+      if (client.current) {
+        client.current.subscribe(`/sub/waiting-rooms/${roomId}`, (res) => {
+          console.log(JSON.parse(res.body));
+        });
+        client.current.subscribe(`/sub/chats/${roomId}`, (res) => {
+          const newMsg: ChatMessageType = JSON.parse(res.body);
+          // 채팅 리스트 추가
+          setChatList((prev) => [...prev, newMsg]);
+          console.log(JSON.parse(res.body));
+        });
+        client.current.publish({
+          destination: `/pub/lobby/${roomId}`,
+          body: JSON.stringify({
+            userid: '12345',
+            nickname: '김상근',
+            characterId: 1,
+          }),
+        });
+      }
+    };
+  }, [roomId]);
 
   return (
     <motion.div
@@ -86,11 +113,13 @@ const WaitingRoom = () => {
             whileTap={{ scale: 0.9 }}
           />
         </div>
-        <img
-          className='ml-auto mr-[12px] w-[56px] h-[56px] cursor-pointer'
-          src={images.waitingRoom.exit}
-          alt='나가기'
-        />
+        <button className='ml-auto mr-[12px]' onClick={onClickExitButton}>
+          <img
+            className='w-[56px] h-[56px] cursor-pointer'
+            src={images.waitingRoom.exit}
+            alt='나가기'
+          />
+        </button>
       </div>
       <motion.div
         initial='start'
@@ -132,7 +161,10 @@ const WaitingRoom = () => {
         />
       </motion.div>
       <div className='absolute bottom-[8px] left-[12px]'>
-        <WaitingRoomChatting />
+        <WaitingRoomChatting
+          chatList={chatList}
+          sendChatMessage={sendChatMessage}
+        />
       </div>
       <motion.div
         className='z-10 cursor-pointer absolute bottom-[8px] left-[40%]'
