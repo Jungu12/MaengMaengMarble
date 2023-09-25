@@ -1,12 +1,11 @@
-import { TOAST_TYPE } from '@atom/toastAtom';
+import { TOAST_TYPE, ToastMessageState } from '@atom/toastAtom';
 import { images } from '@constants/images';
 import CToast from './CToast';
+import { useRecoilValue } from 'recoil';
 
-type InfoProps = {
-  text: string;
-};
+const CToastInfo = () => {
+  const text = useRecoilValue(ToastMessageState);
 
-const CToastInfo = ({ text }: InfoProps) => {
   return (
     <CToast toastType={TOAST_TYPE.info} bgColor='bg-[#CCE8F4]'>
       <div className='flex flex-row items-center'>
@@ -15,7 +14,7 @@ const CToastInfo = ({ text }: InfoProps) => {
           src={images.icon.info}
           alt='정보 아이콘'
         />
-        <p className='text-[18px] font-semibold text-[#4780AB]'>{text}</p>
+        <p className='text-[18px] font-semibold text-[#4780AB]'>{text.info}</p>
       </div>
     </CToast>
   );

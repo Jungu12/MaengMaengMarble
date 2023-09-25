@@ -1,11 +1,13 @@
 import { changeNickname, checkNickname } from '@apis/userApi';
+import { ToastMessageState } from '@atom/toastAtom';
 import { userState } from '@atom/userAtom';
 import CButton from '@components/common/CButton';
 import CModal from '@components/common/CModal';
 import MyPageCharacterCard from '@components/mypage/MyPageCharacterCard';
 import { images } from '@constants/images';
+import useToastList from '@hooks/useToastList';
 import { ChangeEvent, useCallback, useEffect, useRef, useState } from 'react';
-import { useRecoilState } from 'recoil';
+import { useRecoilState, useSetRecoilState } from 'recoil';
 
 type CreateRoomModalProps = {
   isOpenCreateRoomModal: boolean;
@@ -22,6 +24,8 @@ const MyPageModal = ({
   const [errorMsg, setErrorMsg] = useState('');
   // const [seletedCharater, setSeletedCharater] = useState(0); // 현재 선택한 캐릭터 (캐릭터 id값 저장)
   const inputRef = useRef<HTMLInputElement>(null);
+  const { show } = useToastList();
+  const setToastMessage = useSetRecoilState(ToastMessageState);
   const [user, setUser] = useRecoilState(userState);
 
   const handleNickName = useCallback((e: ChangeEvent<HTMLInputElement>) => {
@@ -52,7 +56,24 @@ const MyPageModal = ({
       });
     }
     handleMyPageModalClose();
-  }, [handleMyPageModalClose, isEdit, isError, nickname, setUser, user]);
+    // 토스트 메시지 띄우기
+    setToastMessage((prev) => {
+      return {
+        ...prev,
+        success: '저장 완료',
+      };
+    });
+    show('success');
+  }, [
+    handleMyPageModalClose,
+    isEdit,
+    isError,
+    nickname,
+    setToastMessage,
+    setUser,
+    show,
+    user,
+  ]);
 
   useEffect(() => {
     if (user) {
