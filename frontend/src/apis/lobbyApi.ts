@@ -1,13 +1,14 @@
-import { UserType } from '@/types/common/common.type';
+import { UserType, WSResponseType } from '@/types/common/common.type';
 import { RoomType } from '@/types/common/lobby.type';
-import { http } from '@utils/http';
+import { gameHttp } from '@utils/http';
 
+// 추후 gameHttp -> http로 변경해야함.
 export async function createRoom(
   user: UserType,
   title: string,
   maxParticipants: string
-): Promise<{ code: string }> {
-  return http.post(`maeng/lobby/rooms`, {
+): Promise<{ roomCode: string }> {
+  return gameHttp.post(`maeng/lobby/rooms`, {
     userInfo: user,
     title: title,
     maxParticipants: maxParticipants,
@@ -15,5 +16,5 @@ export async function createRoom(
 }
 
 export async function getRooms(): Promise<{ waitingRooms: RoomType[] }> {
-  return http.get(`maeng/lobby`);
+  return gameHttp.get(`maeng/lobby`);
 }

@@ -1,4 +1,4 @@
-import { ChatMessageType } from '@/types/common/common.type';
+import { ChatMessageType, WSResponseType } from '@/types/common/common.type';
 import { userState } from '@atom/userAtom';
 import WaitingRoomCharaterCard from '@components/watingRoom/WaitingRoomCharaterCard';
 import WaitingRoomChatting from '@components/watingRoom/WaitingRoomChatting';
@@ -42,33 +42,53 @@ const WaitingRoom = () => {
     navigate(-1);
   }, [navigate]);
 
+  const sendChatMessage = useCallback(
+    (msg: string) => {
+      console.log(msg);
+
+      client.current?.publish({
+        destination: `/pub/chats`,
+        body: JSON.stringify({
+          roomCode: roomId,
+          sender: user?.nickname,
+          message: msg,
+        }),
+      });
+    },
+    [roomId, user?.nickname]
+  );
+
   useEffect(() => {
     client.current = getClient();
     activateClient(client.current);
     client.current.onConnect = () => {
       if (client.current) {
+        // 방 구독 하기
+        console.log('맹맹맹맹매애ㅐㅇ매앵');
         client.current.subscribe(`/sub/waiting-rooms/${roomId}`, (res) => {
           console.log(JSON.parse(res.body));
         });
-        client.current.subscribe(`/sub/chats/${roomId}`, (res) => {
-          const newMsg: ChatMessageType = JSON.parse(res.body);
-          // 채팅 리스트 추가
-          setChatList((prev) => [...prev, newMsg]);
-          console.log(JSON.parse(res.body));
-        });
+
+        // 방 정보 얻어오기
         client.current.publish({
-          destination: `/pub/lobby/${roomId}`,
+          destination: `/pub/waiting-rooms/${roomId}`,
           body: JSON.stringify({
-            userid: user?.userId,
+            userId: user?.userId,
             nickname: user?.nickname,
             characterId: user?.avatarId,
           }),
         });
+        client.current.subscribe(`/sub/chats/${roomId}`, (res) => {
+          const response: WSResponseType<ChatMessageType> = JSON.parse(
+            res.body
+          );
+          // 채팅 리스트 추가
+          setChatList((prev) => [...prev, response.data]);
+          console.log(JSON.parse(res.body));
+        });
       }
     };
-  }, [roomId, user]);
-
-  if (!roomId) return;
+  }, [roomId, user?.avatarId, user?.nickname, user?.userId]);
 
   return (
     <motion.div
@@ -151,9 +171,8 @@ const WaitingRoom = () => {
       </motion.div>
       <div className='absolute bottom-[8px] left-[12px]'>
         <WaitingRoomChatting
-          client={client.current ? client.current : null}
-          roomId={roomId}
           chatList={chatList}
+          sendChatMessage={sendChatMessage}
         />
       </div>
       <motion.div

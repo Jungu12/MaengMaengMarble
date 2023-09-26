@@ -5,6 +5,8 @@ import PeopleRadioButton from '../lobby/PeopleRadioButton';
 import CModal from '@components/common/CModal';
 import { createRoom } from '@apis/lobbyApi';
 import { useNavigate } from 'react-router-dom';
+import { useRecoilValue } from 'recoil';
+import { userState } from '@atom/userAtom';
 
 type CreateRoomModalProps = {
   isOpenCreateRoomModal: boolean;
@@ -16,6 +18,7 @@ const CreateRoomModal = ({
   handleCreateRoomModalClose,
 }: CreateRoomModalProps) => {
   const navigation = useNavigate();
+  const user = useRecoilValue(userState);
   // 방 제목 입력 관리
   const [roomName, setRoomName] = useState('');
   // 인원수 체크 관리
@@ -28,13 +31,21 @@ const CreateRoomModal = ({
   };
   const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+
+    if (!user) return;
+
     createRoom(
-      { userId: 'ksg', nickname: 'ksg', characterId: 1 },
+      {
+        userId: user?.userId,
+        nickname: user?.nickname,
+        characterId: user?.avatarId,
+      },
       roomName,
       selectedOption
     )
       .then((res) => {
-        navigation(`/waiting-room/${res}`);
+        console.log(res);
+        navigation(`/waiting-room/${res.roomCode}`);
       })
       .catch(() => {
         // 에러 토스트메시지 출력

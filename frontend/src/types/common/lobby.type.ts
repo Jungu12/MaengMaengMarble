@@ -1,8 +1,7 @@
-import { ChatMessageType, ParticipantsType } from './common.type';
+import { ParticipantsType } from './common.type';
 
 export type RoomType = {
   title: string;
-  currentParticipants: ParticipantsType[];
+  currentParticipant: ParticipantsType[];
   code: string;
-  chatMessageList: null | ChatMessageType;
 };
