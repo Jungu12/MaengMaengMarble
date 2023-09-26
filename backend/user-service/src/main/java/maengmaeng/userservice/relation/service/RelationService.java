@@ -92,23 +92,23 @@ public class RelationService {
         for(Relation relation : relationList){ // 내 친구 목록을 돌면서
 
             User user = userRepository.findByNickname(relation.getToId()).orElseThrow(()->new RelationException(ExceptionCode.USER_NOT_FOUND));
-
-            List<UserAvatar> userAvatars = user.getUserAvatars();
-            UserAvatar result = null;
-            for(UserAvatar avatar : userAvatars){
-                if(avatar.isMounting()){
-                    result = avatar;
-                }
-            }
-
-            Avatar resultAvatar = avatarRepository.findById(result.getAvatar().getAvatarId()).orElseThrow(()->new RelationException(ExceptionCode.AVATAR_NOT_FOUND));
-            String charaterImageUrl = resultAvatar.getAvatarImageBg();
+//
+//            List<UserAvatar> userAvatars = user.getUserAvatars();
+//            UserAvatar result = null;
+//            for(UserAvatar avatar : userAvatars){
+//                if(avatar.isMounting()){
+//                    result = avatar;
+//                }
+//            }
+//
+//            Avatar resultAvatar = avatarRepository.findById(result.getAvatar().getAvatarId()).orElseThrow(()->new RelationException(ExceptionCode.AVATAR_NOT_FOUND));
+//            String charaterImageUrl = resultAvatar.getAvatarImageBg();
 
 
             RelationResponseDto responseDto = RelationResponseDto.builder()
                     .userId(user.getUserId())
                     .nickname(relation.getToId())
-                    .character(charaterImageUrl)
+//                    .character(charaterImageUrl)
                     .build();
             lst.add(responseDto);
         }
