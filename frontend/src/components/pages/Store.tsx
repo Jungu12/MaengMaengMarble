@@ -77,7 +77,11 @@ const Store = () => {
       .then((res: StoreInfoType) => {
         console.log(res);
         setMyMoney(res.point);
-        setCharacterList(res.avatarList);
+        setCharacterList(
+          res.avatarList.sort(function (a, b) {
+            return a.avatarPrice - b.avatarPrice;
+          })
+        );
       })
       .catch(() => {
         console.log('실패');
