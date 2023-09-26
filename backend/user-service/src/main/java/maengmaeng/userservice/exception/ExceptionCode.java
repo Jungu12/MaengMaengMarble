@@ -21,6 +21,7 @@ public enum ExceptionCode {
     FOLLOW_CANCEL_FAILED(HttpStatus.BAD_REQUEST, "친구삭제를 실행할 수 없습니다."),
     ALREADY_REQUESTED(HttpStatus.CONFLICT, "이미 친구 관계입니다."),
     RELATION_NOT_FOUND(HttpStatus.BAD_REQUEST, "친구 신청 내역이 없습니다."),
+    FOLLOW_NOT_FOUND(HttpStatus.CONFLICT, "불러올 친구 목록이 없습니다."),
 
     /* Auth */
     USER_CREATED_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "사용자 객체 생성에 실패했습니다."),

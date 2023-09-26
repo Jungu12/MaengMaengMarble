@@ -40,6 +40,10 @@ public class RelationService {
         if (relationRepository.existsByFromIdAndToId(loginUser, to)) {
             throw new RelationException(ExceptionCode.ALREADY_REQUESTED);
         }
+        // 닉네임을 가진 사용작 없는 경우
+        if(!userRepository.existsByNickname(to)){
+            throw new RelationException(ExceptionCode.USER_NOT_FOUND);
+        }
 
 
         // 없으면 친구신청 보냄
@@ -69,7 +73,8 @@ public class RelationService {
 
         List<RelationResponseDto> lst = new ArrayList<>();
         for(Relation relation : relationList){
-            User friend = userRepository.findByNickname(relation.getToId()).orElseThrow(()->new RelationException(ExceptionCode.FOLLOW_CANCEL_FAILED));
+            User friend = userRepository.findByNickname(relation.getToId()).orElseThrow(()->new RelationException(ExceptionCode.FOLLOW_NOT_FOUND));
+
             UserAvatar result = null;
             for(UserAvatar userAvatar : friend.getUserAvatars()){
                 if(userAvatar.isMounting()){
@@ -103,7 +108,6 @@ public class RelationService {
 
         Avatar resultAvatar = avatarRepository.findById(result.getAvatar().getAvatarId()).orElseThrow(()->new RelationException(ExceptionCode.AVATAR_NOT_FOUND));
         String charaterImageUrl = resultAvatar.getAvatarImageBg();
-        System.out.println(charaterImageUrl + " characterImage / RelationService.java");
 
 
 
