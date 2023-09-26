@@ -1,25 +1,39 @@
+import { CharacterType } from '@/types/common/common.type';
+import {
+  changeCharater,
+  changeNickname,
+  checkNickname,
+  getCharaterList,
+} from '@apis/userApi';
+import { ToastMessageState } from '@atom/toastAtom';
+import { userState } from '@atom/userAtom';
 import CButton from '@components/common/CButton';
 import CModal from '@components/common/CModal';
 import MyPageCharacterCard from '@components/mypage/MyPageCharacterCard';
 import { images } from '@constants/images';
-import { ChangeEvent, useCallback, useEffect, useState } from 'react';
+import useToastList from '@hooks/useToastList';
+import { ChangeEvent, useCallback, useEffect, useRef, useState } from 'react';
+import { useRecoilState, useSetRecoilState } from 'recoil';
 
 type CreateRoomModalProps = {
   isOpenCreateRoomModal: boolean;
   handleMyPageModalClose: () => void;
-  name: string;
 };
 
 const MyPageModal = ({
   isOpenCreateRoomModal,
   handleMyPageModalClose,
-  name,
 }: CreateRoomModalProps) => {
   const [isError, setIsError] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
-  const [nickname, setNickname] = useState(name);
+  const [nickname, setNickname] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
-  // const [seletedCharater, setSeletedCharater] = useState(0); // 현재 선택한 캐릭터 (캐릭터 id값 저장)
+  const [charaterList, setCharaterList] = useState<CharacterType[]>([]);
+  const [seletedCharater, setSeletedCharater] = useState(0); // 현재 선택한 캐릭터 (캐릭터 id값 저장)
+  const inputRef = useRef<HTMLInputElement>(null);
+  const { show } = useToastList();
+  const setToastMessage = useSetRecoilState(ToastMessageState);
+  const [user, setUser] = useRecoilState(userState);
 
   const handleNickName = useCallback((e: ChangeEvent<HTMLInputElement>) => {
     setNickname(e.target.value);
@@ -27,6 +41,7 @@ const MyPageModal = ({
 
   const onClickEdit = useCallback(() => {
     setIsEdit(true);
+    inputRef.current?.focus();
   }, []);
 
   const saveNickName = useCallback(() => {
@@ -34,133 +49,144 @@ const MyPageModal = ({
     setIsEdit(false);
   }, [nickname]);
 
-  useEffect(() => {
-    console.log(nickname.length);
+  const saveProfile = useCallback(() => {
+    if (isError || isEdit) {
+      setIsEdit(true);
+      inputRef.current?.focus();
+      setToastMessage((prev) => {
+        return {
+          ...prev,
+          error: isError ? '닉네임을 확인해주세요.' : '닉네임을 저장해주세요.',
+        };
+      });
+      show('error');
+      return;
+    }
+    // 닉네임이 같은 경우 요청 안보내기
+    if (nickname !== user?.nickname) {
+      changeNickname(nickname);
+    }
+    changeCharater(seletedCharater);
+    if (user) {
+      setUser({
+        ...user,
+        avatarId: seletedCharater,
+        avatarImageBg: charaterList[seletedCharater - 1].avatarImageBg,
+        avatarImageNoBg: charaterList[seletedCharater - 1].avatarImageNoBg,
+        nickname: nickname,
+      });
+    }
+    handleMyPageModalClose();
+    // 토스트 메시지 띄우기
+    setToastMessage((prev) => {
+      return {
+        ...prev,
+        success: '저장 완료',
+      };
+    });
+    show('success');
+  }, [
+    charaterList,
+    handleMyPageModalClose,
+    isEdit,
+    isError,
+    nickname,
+    seletedCharater,
+    setToastMessage,
+    setUser,
+    show,
+    user,
+  ]);
 
-    if (nickname.length === 0) {
+  const selectCharater = useCallback((id: number) => {
+    setSeletedCharater(id);
+  }, []);
+
+  // 캐릭터 리스트 불러오기
+  useEffect(() => {
+    getCharaterList().then((res) => {
+      setCharaterList(res.data);
+    });
+    if (user) {
+      setSeletedCharater(user.avatarId);
+    }
+  }, [user]);
+
+  useEffect(() => {
+    if (user) {
+      setNickname(user.nickname);
+    }
+    setIsEdit(false);
+    setIsError(false);
+    setErrorMsg('');
+  }, [isOpenCreateRoomModal, user]);
+
+  useEffect(() => {
+    if (nickname.length < 2) {
       setIsError(true);
-      setErrorMsg('닉네임은 1 ~ 20자 사이로 입력해야합니다.');
+      setErrorMsg('닉네임은 2 ~ 12자 사이로 입력해야합니다.');
+      console.log('맹');
+
+      return;
     }
 
     if (nickname.length > 0 && nickname.length <= 20) {
       setIsError(false);
       setErrorMsg('');
+      console.log('맹맹');
     }
-  }, [nickname]);
+
+    // 중복 닉네임 체크
+    const checkValid = setTimeout(() => {
+      if (user?.nickname === nickname) return;
+      checkNickname(nickname).then((res) => {
+        if (res.data) {
+          setIsError(true);
+          setErrorMsg('중복된 아이디입니다.');
+        } else {
+          setIsError(false);
+          setErrorMsg('');
+        }
+      });
+    }, 1000);
+
+    return () => {
+      clearTimeout(checkValid);
+    };
+  }, [nickname, user?.nickname]);
 
   return (
     <CModal isOpen={isOpenCreateRoomModal} handleClose={handleMyPageModalClose}>
       <div className='flex p-[16px] min-w-[960px]'>
         <div className='min-w-[600px] w-[600px] px-[24px] py-[12px] h-[600px] flex-1 flex flex-col overflow-y-scroll overflow-x-hidden scrollbar gap-[70px]'>
-          <div className='w-[600px] flex gap-[16px]'>
-            <MyPageCharacterCard
-              src={images.dummy.dummyCharacter1}
-              alt=''
-              name='푸바오'
-              status='choice'
-            />
-            <MyPageCharacterCard
-              src={images.dummy.dummyCharacter2}
-              alt=''
-              name='깜찍이'
-              status='lock'
-            />
-            <MyPageCharacterCard
-              src={images.dummy.dummyCharacter3}
-              alt=''
-              name='맹티즈'
-              status='possession'
-            />
-          </div>
-
-          <div className='min-w-[600px] flex gap-[16px]'>
-            <MyPageCharacterCard
-              src={images.dummy.dummyCharacter1}
-              alt=''
-              name='푸바오'
-              status='choice'
-            />
-            <MyPageCharacterCard
-              src={images.dummy.dummyCharacter2}
-              alt=''
-              name='깜찍이'
-              status='lock'
-            />
-            <MyPageCharacterCard
-              src={images.dummy.dummyCharacter3}
-              alt=''
-              name='맹티즈'
-              status='possession'
-            />
-          </div>
-
-          <div className='min-w-[600px] flex gap-[16px]'>
-            <MyPageCharacterCard
-              src={images.dummy.dummyCharacter1}
-              alt=''
-              name='푸바오'
-              status='choice'
-            />
-            <MyPageCharacterCard
-              src={images.dummy.dummyCharacter2}
-              alt=''
-              name='깜찍이'
-              status='lock'
-            />
-            <MyPageCharacterCard
-              src={images.dummy.dummyCharacter3}
-              alt=''
-              name='맹티즈'
-              status='possession'
-            />
-          </div>
-
-          <div className='min-w-[600px] flex gap-[16px]'>
-            <MyPageCharacterCard
-              src={images.dummy.dummyCharacter1}
-              alt=''
-              name='푸바오'
-              status='choice'
-            />
-            <MyPageCharacterCard
-              src={images.dummy.dummyCharacter2}
-              alt=''
-              name='깜찍이'
-              status='lock'
-            />
-            <MyPageCharacterCard
-              src={images.dummy.dummyCharacter3}
-              alt=''
-              name='맹티즈'
-              status='possession'
-            />
-          </div>
-
-          <div className='min-w-[600px] flex gap-[16px]'>
-            <MyPageCharacterCard
-              src={images.dummy.dummyCharacter1}
-              alt=''
-              name='푸바오'
-              status='choice'
-            />
-            <MyPageCharacterCard
-              src={images.dummy.dummyCharacter2}
-              alt=''
-              name='깜찍이'
-              status='lock'
-            />
-            <MyPageCharacterCard
-              src={images.dummy.dummyCharacter3}
-              alt=''
-              name='맹티즈'
-              status='possession'
-            />
+          <div className='w-[600px] flex gap-[16px] flex-wrap'>
+            {charaterList.map((character, index) => (
+              <MyPageCharacterCard
+                key={index}
+                character={character}
+                status={
+                  !character.hasAvatar
+                    ? 'lock'
+                    : seletedCharater === character.avatarId
+                    ? 'choice'
+                    : 'possession'
+                }
+                selectCharater={selectCharater}
+              />
+            ))}
           </div>
         </div>
-        <div className='min-w-[450px] flex flex-col relative ml-[32px] items-center'>
+        <div className='min-w-[350px] flex flex-col relative ml-[32px] items-center'>
           <img
             className='h-[450px] w-full object-cover rounded-[12px]'
-            src={images.dummy.dummyCharacter1}
+            style={{
+              objectPosition: '0px 0px',
+            }}
+            src={
+              charaterList.length
+                ? charaterList[seletedCharater - 1].avatarImageBg
+                : ''
+            }
             alt='내 캐릭터'
           />
           {isError ? (
@@ -182,6 +208,7 @@ const MyPageModal = ({
               onChange={handleNickName}
               readOnly={isEdit ? false : true}
               maxLength={20}
+              ref={inputRef}
             />
             {isEdit ? (
               isError ? (
@@ -211,7 +238,7 @@ const MyPageModal = ({
           </div>
           <div className='w-full h-[48px] mt-[16px] relative'>
             <div className='w-full h-full'>
-              <CButton type='green' rounded={20}>
+              <CButton type='green' rounded={20} onClick={saveProfile}>
                 <p className={`text-xl font-semibold text-[#FFFDF2]`}>
                   저장하기
                 </p>

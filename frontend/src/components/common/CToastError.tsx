@@ -1,12 +1,11 @@
-import { TOAST_TYPE } from '@atom/toastAtom';
+import { TOAST_TYPE, ToastMessageState } from '@atom/toastAtom';
 import { images } from '@constants/images';
 import CToast from './CToast';
+import { useRecoilValue } from 'recoil';
 
-type ErrorProps = {
-  text: string;
-};
+const CToastError = () => {
+  const text = useRecoilValue(ToastMessageState);
 
-const CToastError = ({ text }: ErrorProps) => {
   return (
     <CToast toastType={TOAST_TYPE.error} bgColor='bg-[#EBC8C4]'>
       <div className='flex flex-row items-center'>
@@ -15,7 +14,7 @@ const CToastError = ({ text }: ErrorProps) => {
           src={images.icon.error}
           alt='에러 아이콘'
         />
-        <p className='text-[18px] font-semibold text-[#B22838]'>{text}</p>
+        <p className='text-[18px] font-semibold text-[#B22838]'>{text.error}</p>
       </div>
     </CToast>
   );

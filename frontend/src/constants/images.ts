@@ -146,6 +146,49 @@ export const images = {
       'https://maeng.s3.ap-northeast-2.amazonaws.com/images/map/%EB%82%A8%EC%95%84%EA%B3%B5.png',
     transactionSuspended:
       'https://maeng.s3.ap-northeast-2.amazonaws.com/images/map/%EA%B1%B0%EB%9E%98%EC%A0%95%EC%A7%80.png',
+    argentina:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/map/%EC%95%84%EB%A5%B4%ED%97%A8%ED%8B%B0%EB%82%98.png',
+    macau:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/map/%EB%A7%88%EC%B9%B4%EC%98%A4.png',
+    brazil:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/map/%EB%B8%8C%EB%9D%BC%EC%A7%88.png',
+    goldKey2:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/map/%ED%99%A9%EA%B8%88%EC%97%B4%EC%87%A02.png',
+    catarrh:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/map/%EC%B9%B4%ED%83%80%EB%A5%B4.png',
+    iran: 'https://maeng.s3.ap-northeast-2.amazonaws.com/images/map/%EC%9D%B4%EB%9E%80.png',
+    saudiArabia:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/map/%EC%82%AC%EC%9A%B0%EB%94%94%EC%95%84%EB%9D%BC%EB%B9%84%EC%95%84.png',
+    stockMarket:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/map/%EC%A3%BC%EC%8B%9D%EA%B1%B0%EB%9E%98%EC%86%8C.png',
+    czech:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/map/%EC%B2%B4%EC%BD%94.png',
+    rushAndCash:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/map/%EB%8C%80%EC%B6%9C.png',
+    russia:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/map/%EB%9F%AC%EC%8B%9C%EC%95%84.png',
+    goldKey3:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/map/%ED%99%A9%EA%B8%88%EC%97%B4%EC%87%A03.png',
+    france:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/map/%ED%94%84%EB%9E%91%EC%8A%A4.png',
+    germany:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/map/%EB%8F%85%EC%9D%BC.png',
+    uk: 'https://maeng.s3.ap-northeast-2.amazonaws.com/images/map/%EC%98%81%EA%B5%AD.png',
+    anywhere:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/map/%EC%96%B4%EB%94%94%EB%A1%9C%EB%93%A0%EB%AC%B8.png',
+    usa: 'https://maeng.s3.ap-northeast-2.amazonaws.com/images/map/%EB%AF%B8%EA%B5%AD.png',
+    canada:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/map/%EC%BA%90%EB%82%98%EB%8B%A4.png',
+    India:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/map/%EC%9D%B8%EB%8F%84.png',
+    goldKey4:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/map/%ED%99%A9%EA%B8%88%EC%97%B4%EC%87%A04.png',
+    china:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/map/%EC%A4%91%EA%B5%AD.png',
+    japan:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/map/%EC%9D%BC%EB%B3%B8.png',
+    korea:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/map/%ED%95%9C%EA%B5%AD.png',
   },
   mypage: {
     lock: 'https://maeng.s3.ap-northeast-2.amazonaws.com/images/ic-lock.png',

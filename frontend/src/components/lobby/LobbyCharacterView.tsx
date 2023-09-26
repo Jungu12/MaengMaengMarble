@@ -3,7 +3,7 @@ import { images } from '@constants/images';
 type CharacterInfoProps = {
   name: string;
   img: string;
-  point: string;
+  point: number;
   handleMyPageModal: () => void;
 };
 
@@ -14,7 +14,7 @@ const LobbyCharacterView = ({
   handleMyPageModal,
 }: CharacterInfoProps) => {
   return (
-    <div className='flex flex-col w-fit h-full justify-between mr-10 p-8 bg-white bg-opacity-50 rounded-[40px]'>
+    <div className='flex flex-1 flex-col w-fit h-full justify-between mr-10 p-8 bg-white bg-opacity-50 rounded-[40px]'>
       <div className='flex flex-row items-center justify-between'>
         <p className='text-3xl font-extrabold text-text-100'>{name}</p>
         <button onClick={handleMyPageModal}>
@@ -26,11 +26,12 @@ const LobbyCharacterView = ({
         </button>
       </div>
       <img
-        // src={images.default.character}
         src={img}
         alt='캐릭터 뷰'
-        width={'600px'}
-        height={'600px'}
+        style={{
+          height: 'calc(100% - 66px)',
+          objectFit: 'contain',
+        }}
       />
       <div className='flex flex-row items-center'>
         <img
