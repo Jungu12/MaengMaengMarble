@@ -18,6 +18,7 @@ public class Player implements Serializable {
 	private static final long serialVersionUID = 207207207207L;;
 	private String playerId;
 	private String nickname;
+	private int avatarId;
 	private long money;
 	private long asset;
 	private List<Integer> lands;

@@ -9,5 +9,6 @@ import lombok.Setter;
 @Setter
 @Builder
 public class GameStart {
-    private String message;
+    private int[] cards;
+
 }

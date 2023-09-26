@@ -49,7 +49,7 @@ public class LobbyRestController {
 
 		GameData gameData = GameData.builder()
 			.type(LOBBY)
-			.data(ResponseDto.builder().type("WAITINGROOMLIST").data(WaitingRoomListResponse.builder().waitingRooms(waitingRooms).build()).build())
+			.data(ResponseDto.builder().type("lobby").data(WaitingRoomListResponse.builder().waitingRooms(waitingRooms).build()).build())
 			.build();
 
 		//구독자들에게 대기 방 전체 목록 pub
@@ -77,7 +77,7 @@ public class LobbyRestController {
 
 		GameData gameData = GameData.builder()
 			.type(LOBBY)
-			.data(ResponseDto.builder().type("WAITINGROOMLIST").data(WaitingRoomListResponse.builder().waitingRooms(waitingRooms).build()).build())
+			.data(ResponseDto.builder().type("lobby").data(WaitingRoomListResponse.builder().waitingRooms(waitingRooms).build()).build())
 			.build();
 
 		//구독자들에게 대기 방 전체 목록 pub
