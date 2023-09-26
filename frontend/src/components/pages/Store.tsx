@@ -102,14 +102,21 @@ const Store = () => {
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
       >
-        <button
-          className='absolute top-[30px] left-[30px] w-[70px] h-[70px] z-10'
-          onClick={() => {
-            window.history.back();
-          }}
+        <motion.div
+          className='absolute top-[45px] left-[45px] w-[70px] h-[70px] z-10'
+          whileHover={{ scale: 1.2 }}
+          whileTap={{ scale: 0.9 }}
+          transition={{ type: 'spring', stiffness: 400, damping: 17 }}
         >
-          <img src={images.icon.back} alt='뒤로가기 버튼' />
-        </button>
+          <button
+            onClick={() => {
+              window.history.back();
+            }}
+          >
+            <img src={images.icon.back} alt='뒤로가기 버튼' />
+          </button>
+        </motion.div>
+
         <StoreOwnerView />
 
         <div className='basis-2/3 flex flex-col h-full items-end justify-between py-[45px] pr-[45px] relative'>
