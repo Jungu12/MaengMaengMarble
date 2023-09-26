@@ -99,9 +99,8 @@ public class RelationService {
             System.out.println("user : " + user.getUserAvatars().get(0));
             logger.info("USER : {} ", user.getUserAvatars().get(0).getAvatar().getAvatarImageBg());
 
-            List<UserAvatar> userAvatars = user.getUserAvatars();
             UserAvatar result = null;
-            for(UserAvatar avatar : userAvatars){
+            for(UserAvatar avatar : user.getUserAvatars()){
                 if(avatar.isMounting()){
                     result = avatar;
                 }
