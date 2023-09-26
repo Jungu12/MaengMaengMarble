@@ -23,7 +23,7 @@ public class ChatController {
 	@MessageMapping("/chats")
 	public void message(ChatMessage message) {
 		logger.debug("message()");
-		GameData gameData = GameData.builder().type(CHAT).roomCode(message.getRoomCode()).data(ResponseDto.builder().type("CHAT").data(message).build()).build();
+		GameData gameData = GameData.builder().type(CHAT).roomCode(message.getRoomCode()).data(ResponseDto.builder().type("chat").data(message).build()).build();
 		redisPublisher.publish(chatTopic, gameData);
 	}
 }

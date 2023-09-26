@@ -34,27 +34,45 @@ public class GameRoomController {
 
 	/**
 	 *  Game 시작
-	 *  게임이 시작되었다는 것을 알림
+	 *  게임이 시작되고 턴 순서를 정하기위해 카드를 전송
 	 * */
-//	@MessageMapping("/game-rooms/start/{roomCode}")
-//	public void startGame(@DestinationVariable String roomCode) {
-//
+	@MessageMapping("/game-rooms/start/{roomCode}")
+	public void setPlayer(@DestinationVariable String roomCode){
+		System.out.println(roomCode);
+		// TODO: WaitingRoom이 작성되면 참여 인원 불러와서 인원 만큼 카드 제공
+
+		int cnt =4;
+		GameStart cards = gameRoomService.setStart(roomCode, cnt);
+
+
+		GameData gameData = GameData.builder()
+				.type("GAME_ROOM")
+				.data(ResponseDto.builder().type("startCard").data(cards).build())
+				.roomCode(roomCode)
+				.build();
+
+		redisPublisher.publish(gameRoomTopic, gameData);
+
+	}
+	/**
+	*  플레이어가 카드를 골랐을 때 순서 세팅
+	* */
+	@MessageMapping("/game-rooms/set-player/{roomCode}")
+	public void setPlayer(@DestinationVariable String roomCode , UserInfo userInfo, int num){
+
+
+
 //		GameData gameData = GameData.builder()
-//				.data(GameStart.builder().message("start").build())
-//				.roomCode(roomCode)
 //				.type("GAME_ROOM")
-//				.build();
-//
-//		redisPublisher.publish(gameRoomTopic, gameData);
-//
-//
-//
-//	}
+//				.roomCode(roomCode)
+//				.data().build();
+	}
 	/**
 	 * 초기 맵 데이터 세팅
 	 * */
 	@MessageMapping("/game-rooms/set-info/{roomCode}")
 	public void setGame(@DestinationVariable String roomCode) {
+
 
 		GameInfo gameInfo = gameRoomService.setInfo(roomCode);
 
@@ -70,37 +88,21 @@ public class GameRoomController {
 		redisPublisher.publish(gameRoomTopic, gameData);
 	}
 
+
 	/**
 	 * 턴 종료
 	 * */
 
 	@MessageMapping("/game-rooms/turn-end/{roomCode}")
-	public void endTurn(@DestinationVariable String roomCode, UserInfo userInfo) {
+	public void endTurn(@DestinationVariable String roomCode) {
 
-//
-//		GameData gameData = GameData.builder()
-//				.roomCode()
-//				.build();
+
+
+
 	}
 
-	/**
-	* 주사위 던지기
-	 *
-	* */
-	@MessageMapping("/game-rooms/move/{roomCode}")
-	public void move(@DestinationVariable String roomCode, UserInfo user){
 
-		Random random = new Random();
 
-		// 주사위 1 던지기 (1부터 6까지)
-		int dice1 = random.nextInt(6) + 1;
-
-		// 주사위 2 던지기 (1부터 6까지)
-		int dice2 = random.nextInt(6) + 1;
-
-		System.out.println("첫 번째 주사위: " + dice1);
-		System.out.println("두 번째 주사위: " + dice2);
-	}
 
 
 

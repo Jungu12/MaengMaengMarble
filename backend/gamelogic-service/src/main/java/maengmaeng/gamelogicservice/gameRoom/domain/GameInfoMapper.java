@@ -57,13 +57,14 @@ public class GameInfoMapper {
     /**
     * redis Info 객체로 변환하는 Mapper
      * */
-    public Info toRedisInfo(String currentPlayer,int[] news, int turnCount){
+    public Info toRedisInfo(String currentPlayer, int turnCount){
 
 
         return Info.builder()
                 .currentPlayer(currentPlayer)
                 .turnCount(turnCount)
-                .news(news)
+                .effectNews(new ArrayList<>())
+                .waitingNews(new ArrayList<>())
                 .build();
     }
 
