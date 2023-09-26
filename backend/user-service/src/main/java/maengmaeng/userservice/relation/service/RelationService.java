@@ -72,18 +72,20 @@ public class RelationService {
     }
 
     public List<RelationResponseDto> relationLists(String from){
+        logger.info("FROM : {} ", from);
         // 내 친구목록들을 불러옴
         List<Relation> relationList = relationRepository.findAllByFromId(from);
 
 
         // 리스트가 0이면 아무도 없다는거니까 빈 리스트 바로 반환
         if(relationList.size()==0){
+            logger.info("친구가 0명이라서 빈 리스트를 반환합니다.");
             return new ArrayList<>();
         }
 
 
-        logger.info("relationList : {} " , relationList);
-        logger.info("from (즉 현재 로그인된 사용자) : {} " , from);
+        logger.info("RELATIONLIST : {} " , relationList);
+        logger.info("FROM (즉 현재 로그인된 사용자) : {} " , from);
 
         // 친구목록을 담을 lst
         List<RelationResponseDto> lst = new ArrayList<>();
@@ -91,24 +93,29 @@ public class RelationService {
         // 내가 팔로우한 친구 목록들을 불러오기
         for(Relation relation : relationList){ // 내 친구 목록을 돌면서
 
-            User user = userRepository.findByNickname(relation.getToId()).orElseThrow(()->new RelationException(ExceptionCode.USER_NOT_FOUND));
-//
-//            List<UserAvatar> userAvatars = user.getUserAvatars();
-//            UserAvatar result = null;
-//            for(UserAvatar avatar : userAvatars){
-//                if(avatar.isMounting()){
-//                    result = avatar;
-//                }
-//            }
-//
-//            Avatar resultAvatar = avatarRepository.findById(result.getAvatar().getAvatarId()).orElseThrow(()->new RelationException(ExceptionCode.AVATAR_NOT_FOUND));
-//            String charaterImageUrl = resultAvatar.getAvatarImageBg();
+
+            logger.info("친구추가된사람 닉네임 (getTOId) : {}" , relation.getToId());
+            User user = userRepository.findUserByNickname(relation.getToId()).orElseThrow(()->new RelationException(ExceptionCode.USER_NOT_FOUND));
+            System.out.println("user : " + user.getUserAvatars().get(0));
+            logger.info("USER : {} ", user.getUserAvatars().get(0).getAvatar().getAvatarImageBg());
+
+            List<UserAvatar> userAvatars = user.getUserAvatars();
+            UserAvatar result = null;
+            for(UserAvatar avatar : userAvatars){
+                if(avatar.isMounting()){
+                    result = avatar;
+                }
+            }
+
+
+            String charaterImageUrl = result.getAvatar().getAvatarImageBg();
+            logger.info("CHARACTER IMAGE URL : {} " , charaterImageUrl );
 
 
             RelationResponseDto responseDto = RelationResponseDto.builder()
                     .userId(user.getUserId())
                     .nickname(relation.getToId())
-//                    .character(charaterImageUrl)
+                    .character(charaterImageUrl)
                     .build();
             lst.add(responseDto);
         }
