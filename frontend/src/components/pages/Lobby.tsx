@@ -11,11 +11,10 @@ import InviteModal from '@components/modal/InviteModal';
 import { motion } from 'framer-motion';
 import { getRooms } from '@apis/lobbyApi';
 import { RoomType } from '@/types/lobby/lobby.type';
-import { friendDetail, getFriendlist } from '@apis/friendApi';
 import { useRecoilValue } from 'recoil';
 import { userState } from '@atom/userAtom';
-import CSidebar from '@components/common/CSideBar';
 import MyFriendSideBar from '@components/sidebar/MyFriendSideBar';
+import { friendDetail, getFriendlist } from '@apis/friendApi';
 
 const Lobby = () => {
   const clientRef = useRef<StompJs.Client>();
@@ -67,9 +66,9 @@ const Lobby = () => {
       console.log(res);
     });
 
-    // friendDetail('rlatkdrms').then((res) => {
-    //   console.log(`성공${res}`);
-    // });
+    friendDetail('rlatkdrms').then((res) => {
+      console.log(`성공${res}`);
+    });
 
     clientRef.current = getClient();
     activateClient(clientRef.current);
