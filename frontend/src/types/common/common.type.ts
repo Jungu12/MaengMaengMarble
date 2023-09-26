@@ -51,3 +51,8 @@ export type CharacterType = {
   avatarImageBg: string;
   avatarImageNoBg: string;
 };
+
+// export type SocketResponseType = {
+//   type: string;
+//   data:
+// }

@@ -12,9 +12,9 @@ import { motion } from 'framer-motion';
 import { getRooms } from '@apis/lobbyApi';
 import MyFriendModal from '@components/modal/MyFriendModal';
 import { RoomType } from '@/types/lobby/lobby.type';
-import { friendDetail, getFriendlist } from '@apis/friendApi';
 import { useRecoilValue } from 'recoil';
 import { userState } from '@atom/userAtom';
+import { friendDetail, getFriendlist } from '@apis/friendApi';
 
 const Lobby = () => {
   const clientRef = useRef<StompJs.Client>();
@@ -59,14 +59,14 @@ const Lobby = () => {
 
   // 소켓 연결
   useEffect(() => {
-    // getFriendlist().then((res) => {
-    //   console.log(`성공`);
-    //   console.log(`${res}`);
-    // });
+    getFriendlist().then((res) => {
+      console.log(`성공`);
+      console.log(`${res}`);
+    });
 
-    // friendDetail('rlatkdrms').then((res) => {
-    //   console.log(`성공${res}`);
-    // });
+    friendDetail('rlatkdrms').then((res) => {
+      console.log(`성공${res}`);
+    });
 
     clientRef.current = getClient();
     activateClient(clientRef.current);

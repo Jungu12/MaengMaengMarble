@@ -2,7 +2,7 @@ import React from 'react';
 import { images } from '@constants/images';
 import RoomInfoCard from './RoomInfoCard';
 import { Client } from '@stomp/stompjs';
-import { RoomType } from '@/types/common/lobby.type';
+import { RoomType } from '@/types/lobby/lobby.type';
 
 type CreateRoomModalProps = {
   roomList: RoomType[];
