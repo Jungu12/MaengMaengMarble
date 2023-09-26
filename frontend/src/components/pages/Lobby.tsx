@@ -10,11 +10,12 @@ import MyPageModal from '@components/modal/MyPageModal';
 import InviteModal from '@components/modal/InviteModal';
 import { motion } from 'framer-motion';
 import { getRooms } from '@apis/lobbyApi';
-import MyFriendModal from '@components/modal/MyFriendModal';
 import { RoomType } from '@/types/lobby/lobby.type';
 import { friendDetail, getFriendlist } from '@apis/friendApi';
 import { useRecoilValue } from 'recoil';
 import { userState } from '@atom/userAtom';
+import CSidebar from '@components/common/CSideBar';
+import MyFriendSideBar from '@components/sidebar/MyFriendSideBar';
 
 const Lobby = () => {
   const clientRef = useRef<StompJs.Client>();
@@ -22,7 +23,7 @@ const Lobby = () => {
   const [isOpenCreateRoomModal, setIsOpenCreateRoomModal] = useState(false);
   const [isOpenMyPageModal, setIsOpenMyPageModal] = useState(false);
   const [isOpenInviteModal, setIsOpenInviteModal] = useState(false);
-  const [isOpenFriendModal, setIsOpenFriendModal] = useState(false);
+  const [isOpenFriendSideBar, setIsOpenFriendSideBar] = useState(false);
   const [roomList, setRoomList] = useState<RoomType[]>([]);
 
   const onClickCreateRoomButton = useCallback(() => {
@@ -50,19 +51,21 @@ const Lobby = () => {
   }, []);
 
   const onClickFriendButton = useCallback(() => {
-    setIsOpenFriendModal((prev) => !prev);
+    // setIsOpenFriendModal((prev) => !prev);
+    setIsOpenFriendSideBar((prev) => !prev);
   }, []);
 
-  const handleFriendModalClose = useCallback(() => {
-    setIsOpenFriendModal(false);
+  const handleFriendSideBarClose = useCallback(() => {
+    setIsOpenFriendSideBar(false);
+    // setIsOpenFriendModal(false);
   }, []);
 
   // 소켓 연결
   useEffect(() => {
-    // getFriendlist().then((res) => {
-    //   console.log(`성공`);
-    //   console.log(`${res}`);
-    // });
+    getFriendlist().then((res) => {
+      console.log(`성공`);
+      console.log(res);
+    });
 
     // friendDetail('rlatkdrms').then((res) => {
     //   console.log(`성공${res}`);
@@ -92,9 +95,9 @@ const Lobby = () => {
         isOpenCreateRoomModal={isOpenMyPageModal}
         handleMyPageModalClose={handleMyPageModalClose}
       />
-      <MyFriendModal
-        isOpenFriendModal={isOpenFriendModal}
-        handleFriendModalClose={handleFriendModalClose}
+      <MyFriendSideBar
+        isOpenFriendSideBar={isOpenFriendSideBar}
+        handleFriendSideBarClose={handleFriendSideBarClose}
       />
 
       <motion.div
