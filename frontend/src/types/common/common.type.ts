@@ -53,6 +53,6 @@ export type CharacterType = {
 };
 
 export type WSResponseType<T> = {
-  tpye: string;
+  type: string;
   data: T;
 };

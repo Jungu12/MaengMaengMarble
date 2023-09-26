@@ -1,11 +1,15 @@
+import { userState } from '@atom/userAtom';
 import { images } from '@constants/images';
 import { motion } from 'framer-motion';
+import { useEffect } from 'react';
+import { useRecoilValue } from 'recoil';
 
 type Props = {
   name: string;
   avaterUrl: string;
   isReady: boolean;
   isManager: boolean;
+  manager: string;
   isClose: boolean;
   animation: {
     start: {
@@ -24,24 +28,21 @@ const WaitingRoomCharaterCard = ({
   avaterUrl,
   isReady,
   isManager,
+  manager,
   isClose,
   animation,
 }: Props) => {
   const backgroundImageStyle = isClose
     ? 'linear-gradient(180deg, rgba(0, 0, 0, 0.70) 25.52%, rgba(0, 0, 0, 0.43) 82.73%, rgba(0, 0, 0, 0.00) 100%)'
     : 'linear-gradient(180deg, rgba(255, 255, 255, 0.70) 25.52%, rgba(255, 255, 255, 0.43) 82.73%, rgba(255, 255, 255, 0.00) 100%)';
+  const user = useRecoilValue(userState);
+
+  useEffect(() => {
+    console.log(isReady);
+  }, [isReady]);
 
   return (
-    <motion.div
-      className='flex flex-col'
-      variants={animation}
-      // drag
-      // dragTransition={{
-      //   power: 0,
-      //   // Snap calculated target to nearest 50 pixels
-      //   modifyTarget: (target) => Math.round(target / 50) * 50,
-      // }}
-    >
+    <motion.div className='flex flex-col' variants={animation}>
       <div
         className='w-[320px] flex flex-col items-center relative'
         style={{
@@ -65,11 +66,14 @@ const WaitingRoomCharaterCard = ({
                 src={images.waitingRoom.info}
                 alt='info'
               />
-              <img
-                className='w-8 h-8 cursor-pointer'
-                src={images.waitingRoom.emit}
-                alt='강퇴'
-              />
+              {/* 본인이 방장이 맞는지 추가 확인 필요 */}
+              {manager === user?.userId && !isManager && (
+                <img
+                  className='w-8 h-8 cursor-pointer'
+                  src={images.waitingRoom.emit}
+                  alt='강퇴'
+                />
+              )}
             </div>
             {isManager && (
               <img

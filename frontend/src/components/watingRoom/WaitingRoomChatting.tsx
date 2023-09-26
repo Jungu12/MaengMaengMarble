@@ -1,19 +1,13 @@
 import { ChatMessageType } from '@/types/common/common.type';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import * as StompJs from '@stomp/stompjs';
-import { sendMessage } from '@utils/chatting';
-import { userState } from '@atom/userAtom';
-import { useRecoilValue } from 'recoil';
 
 type Props = {
   chatList: ChatMessageType[];
-  roomId: string;
-  client: StompJs.Client | null;
+  sendChatMessage: (msg: string) => void;
 };
 
-const WaitingRoomChatting = ({ chatList, roomId, client }: Props) => {
+const WaitingRoomChatting = ({ chatList, sendChatMessage }: Props) => {
   const [input, setInput] = useState('');
-  const user = useRecoilValue(userState);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
@@ -29,8 +23,6 @@ const WaitingRoomChatting = ({ chatList, roomId, client }: Props) => {
   useEffect(() => {
     scrollToBottom();
   }, [chatList, scrollToBottom]);
-
-  if (!user) return;
 
   return (
     <div className='flex flex-col'>
@@ -54,8 +46,8 @@ const WaitingRoomChatting = ({ chatList, roomId, client }: Props) => {
         onKeyDown={(e) => {
           if (e.key === 'Enter') {
             if (input === '') return;
-            sendMessage(client, input, roomId, user.nickname);
 
+            sendChatMessage(input);
             setInput('');
           }
         }}
