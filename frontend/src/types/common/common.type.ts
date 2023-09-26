@@ -51,3 +51,8 @@ export type CharacterType = {
   avatarImageBg: string;
   avatarImageNoBg: string;
 };
+
+export type WSResponseType<T> = {
+  tpye: string;
+  data: T;
+};
