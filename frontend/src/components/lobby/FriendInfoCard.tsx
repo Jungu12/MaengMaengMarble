@@ -1,22 +1,22 @@
 import CButton from '@components/common/CButton';
 import { motion } from 'framer-motion';
+import { useCallback } from 'react';
 
 type FriendInfoProps = {
-  id: number;
+  id: string;
   name: string;
   img: string;
-  onClickDeleteButton: (fid: number) => void;
+  // onClickDeleteButton: (fid: number) => void;
 };
 
 const FriendInfoCard = ({
   id,
   name,
-  img,
-  onClickDeleteButton,
+  img, // onClickDeleteButton,
 }: FriendInfoProps) => {
-  const onClick = () => {
-    onClickDeleteButton(id);
-  };
+  const onClickDelete = useCallback(() => {
+    console.log(id);
+  }, [id]);
 
   return (
     <div className='flex flex-row w-full h-fit items-center px-[30px] py-[10px] bg-primary-500 rounded-[20px] shadow-md'>
@@ -36,7 +36,7 @@ const FriendInfoCard = ({
         >
           <CButton
             type='red'
-            onClick={onClick}
+            onClick={onClickDelete}
             width={60}
             height={35}
             rounded={20}

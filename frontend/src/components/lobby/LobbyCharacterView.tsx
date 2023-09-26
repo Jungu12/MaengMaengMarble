@@ -27,9 +27,13 @@ const LobbyCharacterView = ({
       </div>
       <img
         // src={images.default.character}
-        className='max-w-full'
+        // className='max-w-full'
         src={img}
         alt='캐릭터 뷰'
+        style={{
+          height: 'calc(100% - 66px)',
+          objectFit: 'contain',
+        }}
       />
       <div className='flex flex-row items-center'>
         <img

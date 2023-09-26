@@ -11,10 +11,13 @@ import InviteModal from '@components/modal/InviteModal';
 import { motion } from 'framer-motion';
 import { getRooms } from '@apis/lobbyApi';
 import { RoomType } from '@/types/lobby/lobby.type';
-import { useRecoilValue } from 'recoil';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { userState } from '@atom/userAtom';
 import MyFriendSideBar from '@components/sidebar/MyFriendSideBar';
-import { friendDetail, getFriendlist } from '@apis/friendApi';
+import { getFriendlist } from '@apis/friendApi';
+import { FriendType } from '@/types/friend/friend.type';
+import { ToastMessageState } from '@atom/toastAtom';
+import useToastList from '@hooks/useToastList';
 
 const Lobby = () => {
   const clientRef = useRef<StompJs.Client>();
@@ -24,6 +27,9 @@ const Lobby = () => {
   const [isOpenInviteModal, setIsOpenInviteModal] = useState(false);
   const [isOpenFriendSideBar, setIsOpenFriendSideBar] = useState(false);
   const [roomList, setRoomList] = useState<RoomType[]>([]);
+  const [friendList, setFriendList] = useState<FriendType[]>([]);
+  const { show } = useToastList();
+  const setToastMessage = useSetRecoilState(ToastMessageState);
 
   const onClickCreateRoomButton = useCallback(() => {
     setIsOpenCreateRoomModal((prev) => !prev);
@@ -50,25 +56,28 @@ const Lobby = () => {
   }, []);
 
   const onClickFriendButton = useCallback(() => {
-    // setIsOpenFriendModal((prev) => !prev);
     setIsOpenFriendSideBar((prev) => !prev);
   }, []);
 
   const handleFriendSideBarClose = useCallback(() => {
     setIsOpenFriendSideBar(false);
-    // setIsOpenFriendModal(false);
   }, []);
 
   // 소켓 연결
   useEffect(() => {
-    getFriendlist().then((res) => {
-      console.log(`성공`);
-      console.log(res);
-    });
-
-    friendDetail('rlatkdrms').then((res) => {
-      console.log(`성공${res}`);
-    });
+    getFriendlist()
+      .then((res) => {
+        setFriendList(res);
+      })
+      .catch(() => {
+        setToastMessage((prev) => {
+          return {
+            ...prev,
+            error: '친구목록을 불러오는데 실패하였습니다.',
+          };
+        });
+        show('error');
+      });
 
     clientRef.current = getClient();
     activateClient(clientRef.current);
@@ -78,7 +87,7 @@ const Lobby = () => {
         setRoomList(res.waitingRooms);
       });
     };
-  }, []);
+  }, [setToastMessage, show]);
 
   return (
     <>
@@ -95,6 +104,7 @@ const Lobby = () => {
         handleMyPageModalClose={handleMyPageModalClose}
       />
       <MyFriendSideBar
+        friendList={friendList}
         isOpenFriendSideBar={isOpenFriendSideBar}
         handleFriendSideBarClose={handleFriendSideBarClose}
       />

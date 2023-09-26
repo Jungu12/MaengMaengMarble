@@ -3,13 +3,16 @@ import FriendInfoCard from '@components/lobby/FriendInfoCard';
 import { useCallback, useState } from 'react';
 import { motion } from 'framer-motion';
 import CButton from '@components/common/CButton';
+import { FriendType } from '@/types/friend/friend.type';
 
 type MyFriendSideBarProps = {
+  friendList: FriendType[];
   isOpenFriendSideBar: boolean;
   handleFriendSideBarClose: () => void;
 };
 
 const MyFriendSideBar = ({
+  friendList,
   isOpenFriendSideBar,
   handleFriendSideBarClose,
 }: MyFriendSideBarProps) => {
@@ -33,48 +36,20 @@ const MyFriendSideBar = ({
 
   return (
     <CSideBar isOpen={isOpenFriendSideBar} handleClose={handleClose}>
-      <div className='w-[450px] overflow-auto flex flex-col items-center justify-center'>
+      <div className='w-[450px] h-full overflow-auto flex flex-col items-center justify-center'>
         <p className='text-[28px] font-black text-text-100 mb-[20px]'>
           친구 목록
         </p>
-        <div className='flex flex-col flex-1 w-full p-[20px] mb-[20px] overflow-auto relative bg-primary-dark300 bg-opacity-90 rounded-[40px]'>
+        <div className='flex flex-col flex-1 w-full p-[20px] mb-[20px] overflow-auto bg-primary-dark300 bg-opacity-90 rounded-[40px]'>
           <div className='pr-[20px] w-full h-full relative scrollbar space-y-[20px]'>
-            <FriendInfoCard
-              id={1}
-              img='https://maeng.s3.ap-northeast-2.amazonaws.com/images/dummyCharacter2.png'
-              name='상근시치'
-              onClickDeleteButton={() => {}}
-            />
-            <FriendInfoCard
-              id={1}
-              img='https://maeng.s3.ap-northeast-2.amazonaws.com/images/character-phoenix.png'
-              name='상근시치'
-              onClickDeleteButton={() => {}}
-            />
-            <FriendInfoCard
-              id={1}
-              img='https://maeng.s3.ap-northeast-2.amazonaws.com/images/character-phoenix.png'
-              name='상근시치'
-              onClickDeleteButton={() => {}}
-            />
-            <FriendInfoCard
-              id={1}
-              img='https://maeng.s3.ap-northeast-2.amazonaws.com/images/character-phoenix.png'
-              name='상근시치'
-              onClickDeleteButton={() => {}}
-            />
-            <FriendInfoCard
-              id={1}
-              img='https://maeng.s3.ap-northeast-2.amazonaws.com/images/character-phoenix.png'
-              name='상근시치'
-              onClickDeleteButton={() => {}}
-            />
-            <FriendInfoCard
-              id={1}
-              img='https://maeng.s3.ap-northeast-2.amazonaws.com/images/character-phoenix.png'
-              name='상근시치'
-              onClickDeleteButton={() => {}}
-            />
+            {friendList.map((friend) => (
+              <FriendInfoCard
+                key={friend.userId}
+                id={friend.userId}
+                name={friend.nickname}
+                img={friend.character}
+              />
+            ))}
           </div>
         </div>
         <div className='flex flex-row w-full'>
