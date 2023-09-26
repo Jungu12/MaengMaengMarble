@@ -10,9 +10,9 @@ import MyPageModal from '@components/modal/MyPageModal';
 import InviteModal from '@components/modal/InviteModal';
 import { motion } from 'framer-motion';
 import { getRooms } from '@apis/lobbyApi';
-import { RoomType } from '@/types/common/lobby.type';
 import { useRecoilValue } from 'recoil';
 import { userState } from '@atom/userAtom';
+import { RoomType } from '@/types/lobby/lobby.type';
 
 const Lobby = () => {
   const clientRef = useRef<StompJs.Client>();

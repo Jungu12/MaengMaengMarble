@@ -115,6 +115,7 @@ const MyPageModal = ({
   useEffect(() => {
     if (user) {
       setNickname(user.nickname);
+      setSeletedCharater(user.avatarId);
     }
     setIsEdit(false);
     setIsError(false);
