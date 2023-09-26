@@ -6,8 +6,6 @@ import java.util.Map;
 
 import maengmaeng.gamelogicservice.waitingRoom.domain.WaitingRoom;
 import maengmaeng.gamelogicservice.waitingRoom.domain.dto.UserInfo;
-import maengmaeng.gamelogicservice.waitingRoom.exception.ExceptionCode;
-import maengmaeng.gamelogicservice.waitingRoom.exception.WaitingRoomException;
 import maengmaeng.gamelogicservice.waitingRoom.repository.WaitingRoomRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

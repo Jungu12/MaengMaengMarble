@@ -31,11 +31,10 @@ public class DbNews {
     @Column(name = "news_content", length = 150)
     private String newsContent;
 
-    @OneToMany
-    @JoinColumn(name= "news_id")
+
+    @OneToMany(mappedBy = "dbNews", fetch = FetchType.LAZY)
     private List<DbNewsCountry> dbNewsCountryList;
 
-    @OneToMany
-    @JoinColumn(name = "news_id")
+    @OneToMany(mappedBy = "dbNews", fetch = FetchType.LAZY)
     private List<DbNewsStock> dbNewsStockList;
 }
