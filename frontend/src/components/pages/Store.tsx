@@ -9,6 +9,7 @@ import { getStoreInfo, purchaseCharacter } from '@apis/storeApi';
 import { StoreCharacterType, StoreInfoType } from '@/types/store/store.type';
 import { ToastMessageState } from '@atom/toastAtom';
 import { useSetRecoilState } from 'recoil';
+import { motion } from 'framer-motion';
 
 const Store = () => {
   const [isOpenPurchaseModal, setIsOpenPurchaseModal] = useState(false);
@@ -91,13 +92,24 @@ const Store = () => {
         isOpenPurchaseModal={isOpenPurchaseModal}
         handlePurchaseModalClose={handlePurchaseModalClose}
       />
-      <div
+      <motion.div
         className='flex flex-row w-full h-full justify-between relative'
         style={{
           backgroundImage: `url(${images.store.background})`,
           backgroundSize: 'cover',
         }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
       >
+        <button
+          className='absolute top-[30px] left-[30px] w-[70px] h-[70px] z-10'
+          onClick={() => {
+            window.history.back();
+          }}
+        >
+          <img src={images.icon.back} alt='뒤로가기 버튼' />
+        </button>
         <StoreOwnerView />
 
         <div className='basis-2/3 flex flex-col h-full items-end justify-between py-[45px] pr-[45px] relative'>
@@ -133,7 +145,7 @@ const Store = () => {
             </div>
           </div>
         </div>
-      </div>
+      </motion.div>
     </>
   );
 };
