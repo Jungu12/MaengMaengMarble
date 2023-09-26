@@ -81,6 +81,7 @@ public class RelationService {
             return new ArrayList<>();
         }
 
+
         logger.info("relationList : {} " , relationList);
         logger.info("from (즉 현재 로그인된 사용자) : {} " , from);
 
@@ -90,27 +91,24 @@ public class RelationService {
         // 내가 팔로우한 친구 목록들을 불러오기
         for(Relation relation : relationList){ // 내 친구 목록을 돌면서
 
-            User user = userRepository.findByNickname(relation.getToId()).orElseThrow(()->new RelationException(ExceptionCode.USER_NOT_FOUND));
-
-            List<UserAvatar> userAvatars = user.getUserAvatars();
-            UserAvatar result = null;
-            for(UserAvatar avatar : userAvatars){
-                if(avatar.isMounting()){
-                    result = avatar;
-                }
-            }
-
-            Avatar resultAvatar = avatarRepository.findById(result.getAvatar().getAvatarId()).orElseThrow(()->new RelationException(ExceptionCode.AVATAR_NOT_FOUND));
-            String charaterImageUrl = resultAvatar.getAvatarImageBg();
-
-
-
+//            User user = userRepository.findByNickname(relation.getToId()).orElseThrow(()->new RelationException(ExceptionCode.USER_NOT_FOUND));
+//
+//            List<UserAvatar> userAvatars = user.getUserAvatars();
+//            UserAvatar result = null;
+//            for(UserAvatar avatar : userAvatars){
+//                if(avatar.isMounting()){
+//                    result = avatar;
+//                }
+//            }
+//
+//            Avatar resultAvatar = avatarRepository.findById(result.getAvatar().getAvatarId()).orElseThrow(()->new RelationException(ExceptionCode.AVATAR_NOT_FOUND));
+//            String charaterImageUrl = resultAvatar.getAvatarImageBg();
 
 
             RelationResponseDto responseDto = RelationResponseDto.builder()
-                    .userId(user.getUserId())
-                    .nickname(user.getNickname())
-                    .character(charaterImageUrl)
+                    .userId(relation.getToId())
+                    .nickname(relation.getToId())
+//                    .character(charaterImageUrl)
                     .build();
             lst.add(responseDto);
         }
