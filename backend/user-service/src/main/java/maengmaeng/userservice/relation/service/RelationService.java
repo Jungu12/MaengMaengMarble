@@ -14,6 +14,8 @@ import maengmaeng.userservice.user.repository.AvatarRepository;
 import maengmaeng.userservice.user.repository.UserAvatarRepository;
 import maengmaeng.userservice.user.repository.UserRepository;
 import maengmaeng.userservice.relation.repository.RelationRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,6 +34,7 @@ public class RelationService {
     private final UserRepository userRepository;
     private final UserAvatarRepository userAvatarRepository;
     private final AvatarRepository avatarRepository;
+    private final Logger logger = LoggerFactory.getLogger(getClass());
 
 
     @Transactional
@@ -69,10 +72,15 @@ public class RelationService {
     }
 
     public List<RelationResponseDto> relationLists(String from){
+        logger.info("친구 목록");
         List<Relation> relationList = relationRepository.findAllByFromId(from);
+
+        logger.info("relationList : {} " , relationList);
+        logger.info("from (즉 현재 로그인된 사용자) : {} " , from);
 
         List<RelationResponseDto> lst = new ArrayList<>();
         for(Relation relation : relationList){
+            logger.info("relationId : {}, toId(닉네임) : {} , fromId : {}" , relation.getRelationId(), relation.getToId() , relation.getFromId());
             User friend = userRepository.findByNickname(relation.getToId()).orElseThrow(()->new RelationException(ExceptionCode.FOLLOW_NOT_FOUND));
 
             UserAvatar result = null;
