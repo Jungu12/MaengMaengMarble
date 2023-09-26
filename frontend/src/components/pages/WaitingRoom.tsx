@@ -1,4 +1,5 @@
 import { ChatMessageType } from '@/types/common/common.type';
+import { userState } from '@atom/userAtom';
 import WaitingRoomCharaterCard from '@components/watingRoom/WaitingRoomCharaterCard';
 import WaitingRoomChatting from '@components/watingRoom/WaitingRoomChatting';
 import { images } from '@constants/images';
@@ -7,6 +8,7 @@ import { activateClient, getClient } from '@utils/socket';
 import { motion } from 'framer-motion';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { useRecoilValue } from 'recoil';
 
 const BoxAnimation = {
   start: { scale: 0, opacity: 0.5 },
@@ -30,6 +32,7 @@ const InnerAnimation = {
 
 const WaitingRoom = () => {
   const navigate = useNavigate();
+  const user = useRecoilValue(userState);
   const { roomId } = useParams();
   const isReady = true;
   const client = useRef<StompJs.Client>();
@@ -38,22 +41,6 @@ const WaitingRoom = () => {
   const onClickExitButton = useCallback(() => {
     navigate(-1);
   }, [navigate]);
-
-  const sendChatMessage = useCallback(
-    (msg: string) => {
-      console.log(msg);
-
-      client.current?.publish({
-        destination: `/pub/chats`,
-        body: JSON.stringify({
-          roomCode: roomId,
-          sender: '강준구',
-          message: msg,
-        }),
-      });
-    },
-    [roomId]
-  );
 
   useEffect(() => {
     client.current = getClient();
@@ -72,14 +59,16 @@ const WaitingRoom = () => {
         client.current.publish({
           destination: `/pub/lobby/${roomId}`,
           body: JSON.stringify({
-            userid: '12345',
-            nickname: '김상근',
-            characterId: 1,
+            userid: user?.userId,
+            nickname: user?.nickname,
+            characterId: user?.avatarId,
           }),
         });
       }
     };
-  }, [roomId]);
+  }, [roomId, user]);
+
+  if (!roomId) return;
 
   return (
     <motion.div
@@ -162,8 +151,9 @@ const WaitingRoom = () => {
       </motion.div>
       <div className='absolute bottom-[8px] left-[12px]'>
         <WaitingRoomChatting
+          client={client.current ? client.current : null}
+          roomId={roomId}
           chatList={chatList}
-          sendChatMessage={sendChatMessage}
         />
       </div>
       <motion.div
