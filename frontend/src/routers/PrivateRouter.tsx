@@ -21,7 +21,7 @@ const PrivateRoutes = () => {
         const newAccessToken = response;
         // Recoil 상태 업데이트
         setAccessToken(newAccessToken);
-        setUser(userData);
+        setUser(userData.data);
       } catch (error) {
         // refreshToken이 만료되었거나 다른 오류 발생
         // 로그아웃 처리 등을 수행

@@ -116,7 +116,7 @@ const Store = () => {
                   key={character.avatarId}
                   id={character.avatarId}
                   have={character.hasAvatar}
-                  img={character.avatarImage}
+                  img={character.avatarImageBg}
                   name={character.avatarName}
                   point={character.avatarPrice}
                   onClick={

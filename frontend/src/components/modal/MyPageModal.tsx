@@ -1,4 +1,10 @@
-import { changeNickname, checkNickname } from '@apis/userApi';
+import { CharacterType } from '@/types/common/common.type';
+import {
+  changeCharater,
+  changeNickname,
+  checkNickname,
+  getCharaterList,
+} from '@apis/userApi';
 import { ToastMessageState } from '@atom/toastAtom';
 import { userState } from '@atom/userAtom';
 import CButton from '@components/common/CButton';
@@ -22,7 +28,8 @@ const MyPageModal = ({
   const [isEdit, setIsEdit] = useState(false);
   const [nickname, setNickname] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
-  // const [seletedCharater, setSeletedCharater] = useState(0); // 현재 선택한 캐릭터 (캐릭터 id값 저장)
+  const [charaterList, setCharaterList] = useState<CharacterType[]>([]);
+  const [seletedCharater, setSeletedCharater] = useState(0); // 현재 선택한 캐릭터 (캐릭터 id값 저장)
   const inputRef = useRef<HTMLInputElement>(null);
   const { show } = useToastList();
   const setToastMessage = useSetRecoilState(ToastMessageState);
@@ -46,12 +53,26 @@ const MyPageModal = ({
     if (isError || isEdit) {
       setIsEdit(true);
       inputRef.current?.focus();
+      setToastMessage((prev) => {
+        return {
+          ...prev,
+          error: isError ? '닉네임을 확인해주세요.' : '닉네임을 저장해주세요.',
+        };
+      });
+      show('error');
       return;
     }
-    changeNickname(nickname);
+    // 닉네임이 같은 경우 요청 안보내기
+    if (nickname !== user?.nickname) {
+      changeNickname(nickname);
+    }
+    changeCharater(seletedCharater);
     if (user) {
       setUser({
         ...user,
+        avatarId: seletedCharater,
+        avatarImageBg: charaterList[seletedCharater - 1].avatarImageBg,
+        avatarImageNoBg: charaterList[seletedCharater - 1].avatarImageNoBg,
         nickname: nickname,
       });
     }
@@ -65,15 +86,31 @@ const MyPageModal = ({
     });
     show('success');
   }, [
+    charaterList,
     handleMyPageModalClose,
     isEdit,
     isError,
     nickname,
+    seletedCharater,
     setToastMessage,
     setUser,
     show,
     user,
   ]);
+
+  const selectCharater = useCallback((id: number) => {
+    setSeletedCharater(id);
+  }, []);
+
+  // 캐릭터 리스트 불러오기
+  useEffect(() => {
+    getCharaterList().then((res) => {
+      setCharaterList(res.data);
+    });
+    if (user) {
+      setSeletedCharater(user.avatarId);
+    }
+  }, [user]);
 
   useEffect(() => {
     if (user) {
@@ -122,115 +159,34 @@ const MyPageModal = ({
     <CModal isOpen={isOpenCreateRoomModal} handleClose={handleMyPageModalClose}>
       <div className='flex p-[16px] min-w-[960px]'>
         <div className='min-w-[600px] w-[600px] px-[24px] py-[12px] h-[600px] flex-1 flex flex-col overflow-y-scroll overflow-x-hidden scrollbar gap-[70px]'>
-          <div className='w-[600px] flex gap-[16px]'>
-            <MyPageCharacterCard
-              src={images.dummy.dummyCharacter1}
-              alt=''
-              name='푸바오'
-              status='choice'
-            />
-            <MyPageCharacterCard
-              src={images.dummy.dummyCharacter2}
-              alt=''
-              name='깜찍이'
-              status='lock'
-            />
-            <MyPageCharacterCard
-              src={images.dummy.dummyCharacter3}
-              alt=''
-              name='맹티즈'
-              status='possession'
-            />
-          </div>
-
-          <div className='min-w-[600px] flex gap-[16px]'>
-            <MyPageCharacterCard
-              src={images.dummy.dummyCharacter1}
-              alt=''
-              name='푸바오'
-              status='choice'
-            />
-            <MyPageCharacterCard
-              src={images.dummy.dummyCharacter2}
-              alt=''
-              name='깜찍이'
-              status='lock'
-            />
-            <MyPageCharacterCard
-              src={images.dummy.dummyCharacter3}
-              alt=''
-              name='맹티즈'
-              status='possession'
-            />
-          </div>
-
-          <div className='min-w-[600px] flex gap-[16px]'>
-            <MyPageCharacterCard
-              src={images.dummy.dummyCharacter1}
-              alt=''
-              name='푸바오'
-              status='choice'
-            />
-            <MyPageCharacterCard
-              src={images.dummy.dummyCharacter2}
-              alt=''
-              name='깜찍이'
-              status='lock'
-            />
-            <MyPageCharacterCard
-              src={images.dummy.dummyCharacter3}
-              alt=''
-              name='맹티즈'
-              status='possession'
-            />
-          </div>
-
-          <div className='min-w-[600px] flex gap-[16px]'>
-            <MyPageCharacterCard
-              src={images.dummy.dummyCharacter1}
-              alt=''
-              name='푸바오'
-              status='choice'
-            />
-            <MyPageCharacterCard
-              src={images.dummy.dummyCharacter2}
-              alt=''
-              name='깜찍이'
-              status='lock'
-            />
-            <MyPageCharacterCard
-              src={images.dummy.dummyCharacter3}
-              alt=''
-              name='맹티즈'
-              status='possession'
-            />
-          </div>
-
-          <div className='min-w-[600px] flex gap-[16px]'>
-            <MyPageCharacterCard
-              src={images.dummy.dummyCharacter1}
-              alt=''
-              name='푸바오'
-              status='choice'
-            />
-            <MyPageCharacterCard
-              src={images.dummy.dummyCharacter2}
-              alt=''
-              name='깜찍이'
-              status='lock'
-            />
-            <MyPageCharacterCard
-              src={images.dummy.dummyCharacter3}
-              alt=''
-              name='맹티즈'
-              status='possession'
-            />
+          <div className='w-[600px] flex gap-[16px] flex-wrap'>
+            {charaterList.map((character, index) => (
+              <MyPageCharacterCard
+                key={index}
+                character={character}
+                status={
+                  !character.hasAvatar
+                    ? 'lock'
+                    : seletedCharater === character.avatarId
+                    ? 'choice'
+                    : 'possession'
+                }
+                selectCharater={selectCharater}
+              />
+            ))}
           </div>
         </div>
-        <div className='min-w-[450px] flex flex-col relative ml-[32px] items-center'>
+        <div className='min-w-[350px] flex flex-col relative ml-[32px] items-center'>
           <img
             className='h-[450px] w-full object-cover rounded-[12px]'
-            src={images.dummy.dummyCharacter1}
+            style={{
+              objectPosition: '0px 0px',
+            }}
+            src={
+              charaterList.length
+                ? charaterList[seletedCharater - 1].avatarImageBg
+                : ''
+            }
             alt='내 캐릭터'
           />
           {isError ? (
