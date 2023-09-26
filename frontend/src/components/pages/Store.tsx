@@ -5,16 +5,16 @@ import StoreCharacterCard from '@components/store/StoreCharacterCard';
 import StoreOwnerView from '@components/store/StoreOwnerView';
 import PurchaseModal from '@components/modal/PurchaseModal';
 import useToastList from '@hooks/useToastList';
-import { CharacterType } from '@/types/common/common.type';
 import { getStoreInfo, purchaseCharacter } from '@apis/storeApi';
-import { StoreInfoType } from '@/types/store/store.type';
+import { StoreCharacterType, StoreInfoType } from '@/types/store/store.type';
 import { ToastMessageState } from '@atom/toastAtom';
 import { useSetRecoilState } from 'recoil';
+import { motion } from 'framer-motion';
 
 const Store = () => {
   const [isOpenPurchaseModal, setIsOpenPurchaseModal] = useState(false);
   const [myMoney, setMyMoney] = useState(3000);
-  const [characterList, setCharacterList] = useState<CharacterType[]>([]);
+  const [characterList, setCharacterList] = useState<StoreCharacterType[]>([]);
   const [selectCid, setSelectCid] = useState(-1);
   const { show } = useToastList();
   const setToastMessage = useSetRecoilState(ToastMessageState);
@@ -73,11 +73,15 @@ const Store = () => {
   );
 
   useEffect(() => {
-    getStoreInfo().then((res: StoreInfoType) => {
-      console.log(res);
-      setMyMoney(res.point);
-      setCharacterList(res.avatarList);
-    });
+    getStoreInfo()
+      .then((res: StoreInfoType) => {
+        console.log(res);
+        setMyMoney(res.point);
+        setCharacterList(res.avatarList);
+      })
+      .catch(() => {
+        console.log('실패');
+      });
   }, []);
 
   return (
@@ -88,13 +92,31 @@ const Store = () => {
         isOpenPurchaseModal={isOpenPurchaseModal}
         handlePurchaseModalClose={handlePurchaseModalClose}
       />
-      <div
+      <motion.div
         className='flex flex-row w-full h-full justify-between relative'
         style={{
           backgroundImage: `url(${images.store.background})`,
           backgroundSize: 'cover',
         }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
       >
+        <motion.div
+          className='absolute top-[45px] left-[45px] w-[70px] h-[70px] z-10'
+          whileHover={{ scale: 1.2 }}
+          whileTap={{ scale: 0.9 }}
+          transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+        >
+          <button
+            onClick={() => {
+              window.history.back();
+            }}
+          >
+            <img src={images.icon.back} alt='뒤로가기 버튼' />
+          </button>
+        </motion.div>
+
         <StoreOwnerView />
 
         <div className='basis-2/3 flex flex-col h-full items-end justify-between py-[45px] pr-[45px] relative'>
@@ -116,7 +138,7 @@ const Store = () => {
                   key={character.avatarId}
                   id={character.avatarId}
                   have={character.hasAvatar}
-                  img={character.avatarImageBg}
+                  img={character.avatarImage}
                   name={character.avatarName}
                   point={character.avatarPrice}
                   onClick={
@@ -130,7 +152,7 @@ const Store = () => {
             </div>
           </div>
         </div>
-      </div>
+      </motion.div>
     </>
   );
 };
