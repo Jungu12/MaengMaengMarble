@@ -20,8 +20,8 @@ public class Info implements Serializable {
 	private String currentPlayer;
 	private int playerCnt;
 	private int turnCount;
-	private List<News> effectNews = new LinkedList<>();
-	private List<WaitingNews> waitingNews = new LinkedList<>();
+	private List<News> effectNews;
+	private List<WaitingNews> waitingNews;
 	private int doorCheck;
 
 }

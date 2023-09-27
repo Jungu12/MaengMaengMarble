@@ -156,9 +156,10 @@ public class GameRoomService {
                 currentIdx = i;
             }
         }
-//        if(currentIdx != -1){
-//
-//        }
+
+        if(currentIdx != -1){
+            // 예외 처리
+        }
 
         Random random = new Random();
 
@@ -172,11 +173,35 @@ public class GameRoomService {
         dice.setDice1(dice1);
         dice.setDice2(dice2);
         dice.setDoubleCount(0);
+        Player curPlayer = players[currentIdx];
+
+        int currentLocation = curPlayer.getCurrentLocation();
+
         // 더블 일 때
-//        if(dice1 == dice2){
-//
-//        }
+        if(dice1 == dice2){
+
+
+        }
         System.out.println(dice1 + " " + dice2);
+        // 다음 위치
+        int nextLocation = currentLocation + dice1 + dice2;
+        nextLocation = nextLocation %32;
+
+        // 한바퀴 돌았음
+        if(currentLocation>nextLocation){
+            // 이자를 줘야함
+            // 배당금도 줘야함
+            long money = Math.round(curPlayer.getMoney() * 1.15);
+
+            // TODO: 배당금 관련 로직
+
+
+
+        }
+        //TODO: 플레이어 관련 정보 REDIS에 다시 저장.
+
+
+
         return dice;
     }
     /**
