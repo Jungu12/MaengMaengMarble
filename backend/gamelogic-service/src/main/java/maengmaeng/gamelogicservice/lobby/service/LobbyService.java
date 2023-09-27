@@ -30,10 +30,8 @@ public class LobbyService {
 
     public String createRoomCreatedTime() {
         Date currentTime = new Date();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
-        String formattedTime = dateFormat.format(currentTime);
 
-        return formattedTime;
+        return currentTime.toString();
     }
 
     public String saveNewWaitingRoom(WaitingRoomCreateRequest roomInfo) {
@@ -54,18 +52,24 @@ public class LobbyService {
         //방장을 CurrentParticipants에 추가
         waitingRoom.addCurrentParticipants(currentParticipant);
 
+        int currentParticipants = waitingRoom.getCurrentParticipants().size();
+        int maxParticipants = roomInfo.getMaxParticipants();
+
+        for (int cnt = 0; cnt < MAX_PARTICIPANTS - currentParticipants - maxParticipants; cnt++) {
+            CurrentParticipant empty = CurrentParticipant.builder().build();
+
+            waitingRoom.addCurrentParticipants(empty);
+        }
+
         //닫힌 자리를 CurrentParticipants에 추가
-        for (int cnt = 0; cnt < MAX_PARTICIPANTS - roomInfo.getMaxParticipants(); cnt++) {
+        currentParticipants = waitingRoom.getCurrentParticipants().size();
+
+        for (int cnt = 0; cnt < MAX_PARTICIPANTS - currentParticipants; cnt++) {
             CurrentParticipant closed = CurrentParticipant.builder()
                 .closed(true)
                 .build();
 
             waitingRoom.addCurrentParticipants(closed);
-        }
-
-        for (int cnt = 0; cnt < MAX_PARTICIPANTS - waitingRoom.getCurrentParticipants().size(); cnt++) {
-            CurrentParticipant empty = CurrentParticipant.builder().build();
-            waitingRoom.addCurrentParticipants(empty);
         }
 
         waitingRoomService.saveWaitingRoom(waitingRoom);
