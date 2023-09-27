@@ -9,12 +9,14 @@ import { getCharaterList } from '@apis/userApi';
 import { userState } from '@atom/userAtom';
 import WaitingRoomCharaterCard from '@components/watingRoom/WaitingRoomCharaterCard';
 import WaitingRoomChatting from '@components/watingRoom/WaitingRoomChatting';
+import WaitingRoomHeader from '@components/watingRoom/WaitingRoomHeader';
 import { images } from '@constants/images';
 import * as StompJs from '@stomp/stompjs';
 import { activateClient, getClient } from '@utils/socket';
+import { findMyData } from '@utils/waitingRoom';
 import { motion } from 'framer-motion';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { useRecoilValue } from 'recoil';
 
 const BoxAnimation = {
@@ -38,20 +40,14 @@ const InnerAnimation = {
 };
 
 const WaitingRoom = () => {
-  const navigate = useNavigate();
   const user = useRecoilValue(userState);
   const { roomId } = useParams();
-  const isReady = true;
   const client = useRef<StompJs.Client>();
   const [roomTitle, setRoomTitle] = useState('');
   const [inviteCode, setInviteCode] = useState('');
   const [userList, setUserList] = useState<ParticipantsType[]>([]);
   const [chatList, setChatList] = useState<ChatMessageType[]>([]);
   const [characterList, setCharacterList] = useState<CharacterType[]>([]);
-
-  const onClickExitButton = useCallback(() => {
-    navigate(-1);
-  }, [navigate]);
 
   const sendChatMessage = useCallback(
     (msg: string) => {
@@ -69,7 +65,7 @@ const WaitingRoom = () => {
     [roomId, user?.nickname]
   );
 
-  const onClickReady = useCallback(() => {
+  const handleReady = useCallback(() => {
     client.current?.publish({
       destination: `/pub/waiting-rooms/ready/${roomId}`,
       body: JSON.stringify({
@@ -78,6 +74,22 @@ const WaitingRoom = () => {
         characterId: user?.avatarId,
       }),
     });
+  }, [roomId, user?.avatarId, user?.nickname, user?.userId]);
+
+  const handleGameStart = useCallback(() => {
+    console.log('게임 시작');
+  }, []);
+
+  const handleExit = useCallback(() => {
+    client.current?.publish({
+      destination: `/pub/waiting-rooms/exit/${roomId}`,
+      body: JSON.stringify({
+        userId: user?.userId,
+        nickname: user?.nickname,
+        characterId: user?.avatarId,
+      }),
+    });
+    console.log('방에서 나갔습니다');
   }, [roomId, user?.avatarId, user?.nickname, user?.userId]);
 
   // 캐릭터 리스트 불러오기
@@ -121,7 +133,17 @@ const WaitingRoom = () => {
         });
       }
     };
-  }, [roomId, user?.avatarId, user?.nickname, user?.userId]);
+
+    // 연결 종료 시 로비로 이동 시킴
+    // client.current.onDisconnect
+
+    // 방 나가기
+    return () => {
+      handleExit();
+    };
+  }, [handleExit, roomId, user?.avatarId, user?.nickname, user?.userId]);
+
+  if (!user) return;
 
   return (
     <motion.div
@@ -134,47 +156,25 @@ const WaitingRoom = () => {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
     >
-      <div className='flex items-center w-full h-[80px] border-b-2 border-white/80 bg-blue-400/40 shadow-2xl'>
-        <p className='font-extrabold text-[36px] text-white ml-[24px]'>
-          {roomTitle}
-        </p>
-        <div className='flex items-center'>
-          <img
-            className='w-[28px] h-[28px] ml-[80px]'
-            src={images.waitingRoom.mail}
-            alt='초대코드'
-          />
-          <span className='ml-[20px] text-white font-extrabold text-[20px]'>
-            {inviteCode}
-          </span>
-          <motion.img
-            className='ml-[12px] w-[32px] h-[32px] cursor-pointer'
-            src={images.waitingRoom.copy}
-            alt='복사'
-            whileHover={{ scale: 1.2 }}
-            whileTap={{ scale: 0.9 }}
-          />
-        </div>
-        <button className='ml-auto mr-[12px]' onClick={onClickExitButton}>
-          <img
-            className='w-[56px] h-[56px] cursor-pointer'
-            src={images.waitingRoom.exit}
-            alt='나가기'
-          />
-        </button>
-      </div>
+      <WaitingRoomHeader title={roomTitle} code={inviteCode} />
       <motion.div
         initial='start'
         animate='end'
         variants={BoxAnimation}
         className='flex justify-around h-full'
       >
-        {characterList.length > 0 &&
+        {characterList.length &&
+          userList.length &&
           userList.map((user, index) => (
             <WaitingRoomCharaterCard
               key={index}
+              userId={user.userId}
               name={user.nickname}
-              avaterUrl={characterList[user.characterId - 1].avatarImageNoBg}
+              avaterUrl={
+                user.characterId >= 0
+                  ? characterList[user.characterId - 1].avatarImageNoBg
+                  : null
+              }
               isReady={user.ready}
               isManager={user.userId === userList[0].userId}
               manager={userList[0].userId}
@@ -182,38 +182,6 @@ const WaitingRoom = () => {
               animation={InnerAnimation}
             />
           ))}
-        {/* <WaitingRoomCharaterCard
-          name={'상근시치'}
-          avaterUrl={images.dummy.dummy1}
-          isReady={false}
-          isManager={true}
-          isClose={false}
-          animation={InnerAnimation}
-        />
-        <WaitingRoomCharaterCard
-          name={'215'}
-          avaterUrl={images.dummy.dummy2}
-          isReady={true}
-          isManager={false}
-          isClose={false}
-          animation={InnerAnimation}
-        />
-        <WaitingRoomCharaterCard
-          name={''}
-          avaterUrl={''}
-          isReady={false}
-          isManager={false}
-          isClose={true}
-          animation={InnerAnimation}
-        />
-        <WaitingRoomCharaterCard
-          name={'기므나'}
-          avaterUrl={images.dummy.dummy3}
-          isReady={false}
-          isManager={false}
-          isClose={false}
-          animation={InnerAnimation}
-        /> */}
       </motion.div>
       <div className='absolute bottom-[8px] left-[12px]'>
         <WaitingRoomChatting
@@ -227,17 +195,27 @@ const WaitingRoom = () => {
         whileTap={{ scale: 0.9 }}
         transition={{ type: 'spring', stiffness: 400, damping: 17 }}
       >
-        <button onClick={onClickReady}>
-          <img
-            className='h-[100px]'
-            src={
-              isReady
-                ? images.waitingRoom.readyButton
-                : images.waitingRoom.cancelButton
-            }
-            alt='button'
-          />
-        </button>
+        {userList.length && userList[0].userId === user.userId ? (
+          <button onClick={handleGameStart}>
+            <img
+              className='h-[100px]'
+              src={images.waitingRoom.gameStartButton}
+              alt='button'
+            />
+          </button>
+        ) : (
+          <button onClick={handleReady}>
+            <img
+              className='h-[100px]'
+              src={
+                findMyData(userList, user.userId)?.ready
+                  ? images.waitingRoom.cancelButton
+                  : images.waitingRoom.readyButton
+              }
+              alt='button'
+            />
+          </button>
+        )}
       </motion.div>
     </motion.div>
   );

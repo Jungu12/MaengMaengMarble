@@ -19,8 +19,8 @@ export type DetailUserType = {
 };
 
 export type ParticipantsType = {
-  userId: string;
-  nickname: string;
+  userId: string | null;
+  nickname: string | null;
   characterId: number;
   ready: boolean;
   closed: boolean;
