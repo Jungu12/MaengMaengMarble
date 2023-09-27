@@ -72,23 +72,19 @@ public class WaitingRoomService {
     }
 
 
-    public void exit(String roomCode, UserInfo user) {
-        waitingRoomRepository.exit(roomCode, user);
-    }
-
     public StartResponseDto start(String roomCode) {
         WaitingRoom waitingRoom = waitingRoomRepository.getWaitingRoomNow(roomCode);
         boolean startPossible = true;
-        for(CurrentParticipant participant : waitingRoom.getCurrentParticipant()){
-            if(!participant.isReady()){
+        for (CurrentParticipant participant : waitingRoom.getCurrentParticipant()) {
+            if (!participant.isReady()) {
                 startPossible = false;
-                logger.info("닉네임 {}가 ready를 하지않아서 start를 할 수 없음" , participant.getNickname());
+                logger.info("닉네임 {}가 ready를 하지않아서 start를 할 수 없음", participant.getNickname());
                 break;
             }
         }
-        logger.info("시작여부 : {} " , startPossible);
+        logger.info("시작여부 : {} ", startPossible);
         StartResponseDto startResponseDto = null;
-        if(startPossible){
+        if (startPossible) {
             List<CurrentParticipant> participants = new ArrayList<>();
             participants = waitingRoom.getCurrentParticipant();
             startResponseDto = StartResponseDto.builder()
@@ -96,14 +92,27 @@ public class WaitingRoomService {
                     .roomCode(roomCode)
                     .currentParticipantList(participants)
                     .build();
-        }else{
+        } else {
             throw new WaitingRoomException(ExceptionCode.WAITINGROOM_FULLED);
         }
 
         return startResponseDto;
     }
-}
 
+    public void exit(String roomCode, UserInfo user) {
+        waitingRoomRepository.exit(roomCode, user);
+    }
+
+    public void kick(String roomCode, UserInfo user, String outUser) {
+        waitingRoomRepository.kick(roomCode, user, outUser);
+    }
+
+
+
+
+
+
+}
 
 
 
