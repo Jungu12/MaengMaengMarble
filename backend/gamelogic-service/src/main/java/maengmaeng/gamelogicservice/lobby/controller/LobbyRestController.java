@@ -43,7 +43,7 @@ public class LobbyRestController {
 	public ResponseEntity<?> waitingRoomCreate(@RequestBody WaitingRoomCreateRequest roomInfo) {
 		logger.debug("waitingRoomCreate()");
 
-		lobbyService.saveNewWaitingRoom(roomInfo);
+		String roomCode = lobbyService.saveNewWaitingRoom(roomInfo);
 		List<WaitingRoom> waitingRooms = lobbyService.findWaitingRooms();
 
 		GameData gameData = GameData.builder()
@@ -55,7 +55,7 @@ public class LobbyRestController {
 		redisPublisher.publish(lobbyTopic, gameData);
 
 		//방 생성한
-		return ResponseEntity.ok().body(WaitingRoomCreateResponse.builder().roomCode(waitingRooms.get(0).getCode()).build());
+		return ResponseEntity.ok().body(WaitingRoomCreateResponse.builder().roomCode(roomCode).build());
 	}
 
 	@GetMapping()
