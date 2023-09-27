@@ -8,12 +8,13 @@ import useToastList from '@hooks/useToastList';
 import { getStoreInfo, purchaseCharacter } from '@apis/storeApi';
 import { StoreCharacterType, StoreInfoType } from '@/types/store/store.type';
 import { ToastMessageState } from '@atom/toastAtom';
-import { useSetRecoilState } from 'recoil';
+import { useRecoilState, useSetRecoilState } from 'recoil';
 import { motion } from 'framer-motion';
+import { userState } from '@atom/userAtom';
 
 const Store = () => {
   const [isOpenPurchaseModal, setIsOpenPurchaseModal] = useState(false);
-  const [myMoney, setMyMoney] = useState(3000);
+  const [user, setUser] = useRecoilState(userState);
   const [characterList, setCharacterList] = useState<StoreCharacterType[]>([]);
   const [selectCid, setSelectCid] = useState(-1);
   const { show } = useToastList();
@@ -55,7 +56,13 @@ const Store = () => {
     (cid: number) => {
       purchaseCharacter(cid)
         .then((res) => {
-          setMyMoney(res.point);
+          // setMyMoney(res.point);
+          if (!user) return;
+          setUser({
+            ...user,
+            point: res.point,
+          });
+
           setCharacterList(res.avatarList);
           setToastMessage((prev) => {
             return {
@@ -69,14 +76,19 @@ const Store = () => {
           toastFailPurchase();
         });
     },
-    [setToastMessage, show, toastFailPurchase]
+    [setToastMessage, setUser, show, toastFailPurchase, user]
   );
 
   useEffect(() => {
     getStoreInfo()
       .then((res: StoreInfoType) => {
         console.log(res);
-        setMyMoney(res.point);
+        // setMyMoney(res.point);
+        if (!user) return;
+        setUser({
+          ...user,
+          point: res.point,
+        });
         setCharacterList(
           res.avatarList.sort(function (a, b) {
             return a.avatarPrice - b.avatarPrice;
@@ -86,7 +98,9 @@ const Store = () => {
       .catch(() => {
         console.log('실패');
       });
-  }, []);
+  }, [setUser, user]);
+
+  if (!user) return;
 
   return (
     <>
@@ -131,7 +145,7 @@ const Store = () => {
               alt='포인트 아이콘'
             />
             <p className='text-[30px] font-bold text-text-100'>
-              {addComma(myMoney)}
+              {addComma(user.point)}
             </p>
           </div>
 
@@ -146,7 +160,7 @@ const Store = () => {
                   name={character.avatarName}
                   point={character.avatarPrice}
                   onClick={
-                    myMoney < character.avatarPrice
+                    user.point < character.avatarPrice
                       ? toastLessPoint
                       : handlePurchaseModalOpen
                   }
