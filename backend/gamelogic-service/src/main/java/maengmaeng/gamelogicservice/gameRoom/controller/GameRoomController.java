@@ -125,15 +125,31 @@ public class GameRoomController {
 		// 한 바퀴를 돌았으면 플레이어 정보 전송
 		if(dice.isLapCheck()){
 			GameInfo gameInfo = gameRoomService.getInfo(roomCode);
-			GameData gamedata = GameData.builder()
+			GameData gameData1 = GameData.builder()
 					.type("GAME_ROOM")
 					.roomCode(roomCode)
 					.data(ResponseDto.builder().type("player").data(gameInfo.getPlayers()).build())
 					.build();
-			redisPublisher.publish(gameRoomTopic,gameData);
+			redisPublisher.publish(gameRoomTopic,gameData1);
 
 		}
 
+	}
+	/**
+	 * 거래 정지에서 주사위 굴리기
+	 *
+	 * */
+	@MessageMapping("/game-rooms/stopTrade/{roomCode}")
+	public void stopTrade(@DestinationVariable String roomCode){
+		//TODO: 거래 정지일 때 주사위 굴리기
+
+		GameInfo gameInfo  = gameRoomService.getInfo(roomCode);
+		GameData gameData = GameData.builder()
+				.type("GAME_ROOM")
+				.roomCode(roomCode)
+				.data(ResponseDto.builder().build())
+				.build();
+		redisPublisher.publish(gameRoomTopic,gameData);
 
 	}
 

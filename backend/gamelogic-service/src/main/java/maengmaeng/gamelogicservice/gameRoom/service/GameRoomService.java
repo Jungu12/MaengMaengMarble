@@ -27,6 +27,7 @@ public class GameRoomService {
     private final DbNewsStockRepository dbNewsStockRepository;
     private final GameInfoRepository gameInfoRepository;
     private final GameInfoMapper gameInfoMapper;
+    private static final int stopTrade = 8;
     /**
      * 게임 정보  가져오기
      * Params: roomCode
@@ -131,6 +132,20 @@ public class GameRoomService {
         }
         return currentIdx;
     }
+    /**
+     * 주사위 눈 반환
+     * */
+    public Dice getDice(){
+        Random random = new Random();
+
+        // 주사위 1 던지기 (1부터 6까지)
+        int dice1 = random.nextInt(6) + 1;
+
+        // 주사위 2 던지기 (1부터 6까지)
+        int dice2 = random.nextInt(6) + 1;
+
+        return Dice.builder().dice1(dice1).dice2(2).build();
+    }
 
     /**
      * 주사위 굴리기.
@@ -142,6 +157,7 @@ public class GameRoomService {
 
         String currentPlayer = gameInfo.getInfo().getCurrentPlayer();
         int currentIdx =-1;
+        // 현재 플레이어 인덱스 찾기
         for(int i=0;i< players.length;i++){
             if(players[i]!=null && players[i].isAlive() && players[i].getNickname().equals(currentPlayer)){
                 currentIdx = i;
@@ -150,25 +166,16 @@ public class GameRoomService {
         if(currentIdx != -1){
             // 예외 처리
         }
-        Random random = new Random();
 
-        // 주사위 1 던지기 (1부터 6까지)
-        int dice1 = random.nextInt(6) + 1;
-
-        // 주사위 2 던지기 (1부터 6까지)
-        int dice2 = random.nextInt(6) + 1;
-        // 주사위 변환
-        Dice dice = new Dice();
-        dice.setDice1(dice1);
-        dice.setDice2(dice2);
+        Dice dice = getDice();
         Player curPlayer = players[currentIdx];
+
 
         int currentLocation = curPlayer.getCurrentLocation();
 
         boolean checkTrade = false;
         // 더블 일 때
-        if(dice1 == dice2){
-
+        if(dice.getDice1() == dice.getDice2()){
             int doubleCount = curPlayer.getDoubleCount();
             doubleCount++;
             if(doubleCount==3){
@@ -178,11 +185,9 @@ public class GameRoomService {
             curPlayer.setDoubleCount(doubleCount);
 
         }
-        System.out.println(dice1 + " " + dice2);
         // 다음 위치
-        int nextLocation = currentLocation + dice1 + dice2;
+        int nextLocation = currentLocation + dice.getDice1() + dice.getDice2();
         nextLocation = nextLocation % 32;
-
         // 한바퀴 돌았음
         if(currentLocation>nextLocation){
             // 돈 바퀴 수 증가
@@ -197,23 +202,20 @@ public class GameRoomService {
             // TODO: 배당금 관련 로직
 
 
-
-
             // TODO: 대출금 관련 로직
-
 
         }
         curPlayer.setCurrentLocation(nextLocation);
 
         if(checkTrade){
             // 거래 정지 칸으로 이동
-            curPlayer.setCurrentLocation(8);
+            curPlayer.setCurrentLocation(stopTrade);
 
         }
 
 
         //TODO: 플레이어 관련 정보 REDIS에 다시 저장.
-
+        // 플레이어 정보 재설정
         players[currentIdx] =  curPlayer;
         gameInfo.setPlayers(players);
         gameInfoRepository.createGameRoom(gameInfo);
@@ -223,58 +225,53 @@ public class GameRoomService {
 
         return dice;
     }
+
+
+    /**
+     *  현재 칸이 거래 정지에 있고 player의 doubleCount가 3이 아닐 때 주사위 굴리기
+     * */
+    public GameInfo stopTrade(String roomCode){
+        GameInfo gameInfo = getInfo(roomCode);
+        // 더블이면 탈출 or stopTradeCount 값이 3이면 탈출
+        Player[] players = gameInfo.getPlayers();
+
+        String currentPlayer = gameInfo.getInfo().getCurrentPlayer();
+        int currentIdx =-1;
+        // 현재 플레이어 인덱스 찾기
+        for(int i=0;i< players.length;i++){
+            if(players[i]!=null && players[i].isAlive() && players[i].getNickname().equals(currentPlayer)){
+                currentIdx = i;
+            }
+        }
+        Player curPlayer = players[currentIdx];
+        // 현재 위치가 stopTrade 위치가 아니면
+        if(curPlayer.getCurrentLocation()!=stopTrade){
+            // 예외 처리
+            System.out.println("예외");
+        }
+
+        // 주사위 던지기
+        Dice dice = getDice();
+
+        // TODO:  더블이 아니면 턴 종료
+        if(dice.getDice1() != dice.getDice2()){
+
+//            return gameInfo;
+        }
+        // TODO: 더블이면 이동
+
+
+
+        return gameInfo;
+    }
+
+
+    
+
     /**
      * 턴을 종료하는 로직
-     * 1. 게임 정보를 가져오기
+     * 1. 턴을 종료 후  다음 플레이어 확인(죽은 것도 생각)
+     * 2. 마지막 플레이어면 턴 count 올리고
     * */
-//    public GameInfo endTurn(String roomCode){
-//
-//        GameInfo gameInfo =gameInfoRepository.getGameInfo(roomCode);
-//        // player 리스트
-//
-//        Player[] players= gameInfo.getPlayers();
-//        Info info = gameInfo.getInfo();
-//        String currentPlayer = info.getCurrentPlayer();
-//        System.out.println(currentPlayer);
-//        int playerIdx =-1;
-//        boolean nextTurn = false;
-//        // 현재 플레이어
-//        for(int i=0;i<players.length;i++){
-//            if(players[i].getNickname().equals(currentPlayer)){
-//                playerIdx = i;
-//            }
-//        }
-//        if(playerIdx==-1){
-//            System.out.println("혼자 살아있음");
-//        }
-//        if(playerIdx==3){
-//            // 턴 카운트를 +1
-//            System.out.println("마지막 플레이어");
-//            nextTurn = true;
-//        }
-//        // 살아있는 마지막 플레이어
-//        for(int i=0;i<3;i++){
-//            int nextPlayerIdx = playerIdx+1;
-//
-//            // 플레이어가 살아있
-//            if(players[nextPlayerIdx+i].isAlive()){
-//
-//                break;
-//            }
-//        }
-//
-//
-//
-//
-//        return gameInfo;
-//
-//
-//
-//
-//    }
-
-
-
-
 
 }
