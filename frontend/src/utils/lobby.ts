@@ -18,7 +18,7 @@ export const currentParticipantsNum = (
   let participants = 0;
 
   participantsList.map((participant) => {
-    if (!participant.closed) participants += 1;
+    if (!participant.nickname) participants += 1;
   });
 
   return participants;
