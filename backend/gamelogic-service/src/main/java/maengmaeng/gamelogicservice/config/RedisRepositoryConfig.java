@@ -18,7 +18,7 @@ import redis.embedded.RedisServer;
 @Configuration
 @EnableRedisRepositories
 public class RedisRepositoryConfig {
-	@Value("${spring.redis.host}")
+	@Value("localhost")
 	private String redisHost;
 
 	@Value("6379")
@@ -35,20 +35,5 @@ public class RedisRepositoryConfig {
 		// redisConfiguration.setPassword(password);
 		return new LettuceConnectionFactory(redisConfiguration);
 	}
-
-	// private RedisServer redisServer;
-	//
-	// @PostConstruct
-	// public void redisServer() throws IOException {
-	// 	redisServer = new RedisServer(6379);
-	// 	redisServer.start();
-	// }
-	//
-	// @PreDestroy
-	// public void stopRedis() {
-	// 	if (redisServer != null) {
-	// 		redisServer.stop();
-	// 	}
-	// }
 
 }

@@ -1,7 +1,7 @@
 package maengmaeng.gamelogicservice.waitingRoom.repository;
 
 import lombok.RequiredArgsConstructor;
-import maengmaeng.gamelogicservice.waitingRoom.domain.CurrentParticipants;
+import maengmaeng.gamelogicservice.waitingRoom.domain.CurrentParticipant;
 import maengmaeng.gamelogicservice.waitingRoom.domain.WaitingRoom;
 import maengmaeng.gamelogicservice.waitingRoom.domain.dto.UserInfo;
 import maengmaeng.gamelogicservice.waitingRoom.exception.ExceptionCode;
@@ -56,7 +56,7 @@ public class WaitingRoomRepository {
 
 
         // 입장한 사용자 객체 생성
-        CurrentParticipants currentParticipants = CurrentParticipants.builder()
+        CurrentParticipant currentParticipants = CurrentParticipant.builder()
                 .characterId(userInfo.getCharacterId())
                 .userId(userInfo.getUserId())
                 .nickname(userInfo.getNickname())
@@ -94,7 +94,7 @@ public class WaitingRoomRepository {
             if(waitingRoom.getCurrentParticipants().get(i).getUserId().equals(userInfo.getUserId())){
                 // 지금 안에 들어있는 사용자와 ready누른 사용자가 같을때
                 // 그 사람 상태 변경
-                CurrentParticipants participant = waitingRoom.getCurrentParticipants().get(i);
+                CurrentParticipant participant = waitingRoom.getCurrentParticipants().get(i);
                 opsHashWaitingRoom.put(WAITING_ROOMS,roomCode,waitingRoom);
                 break;
             }
