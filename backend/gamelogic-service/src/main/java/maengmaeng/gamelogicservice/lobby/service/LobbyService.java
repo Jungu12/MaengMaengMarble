@@ -55,7 +55,7 @@ public class LobbyService {
         int currentParticipants = waitingRoom.getCurrentParticipants().size();
         int maxParticipants = roomInfo.getMaxParticipants();
 
-        for (int cnt = 0; cnt < MAX_PARTICIPANTS - currentParticipants - maxParticipants; cnt++) {
+        for (int cnt = 0; cnt < maxParticipants - 1; cnt++) {
             CurrentParticipant empty = CurrentParticipant.builder().build();
 
             waitingRoom.addCurrentParticipants(empty);
