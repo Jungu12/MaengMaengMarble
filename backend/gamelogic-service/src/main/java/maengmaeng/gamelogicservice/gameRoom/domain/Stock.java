@@ -17,7 +17,6 @@ public class Stock implements Serializable {
 	private static final long serialVersionUID = 207207207207L;
 	private int id;
 	private String name;
-	private String industry;
 	private int cost;
 	private int currentCost;
 	private double dividends;
