@@ -1,4 +1,4 @@
-import { RoomType } from '@/types/common/lobby.type';
+import { RoomType } from '@/types/lobby/lobby.type';
 import { currentParticipantsNum, totalParticipantsNum } from '@utils/lobby';
 // import { Client } from '@stomp/stompjs';
 import { useCallback } from 'react';
@@ -20,8 +20,8 @@ const RoomInfoCard = ({ room }: RoomInfoProps) => {
       <p className='text-2xl font-extrabold text-text-100'>{room.title}</p>
       <div className='flex flex-row items-center mt-5 justify-between'>
         <p className='text-xl font-bold text-text-50'>
-          {currentParticipantsNum(room.currentParticipant)} /{' '}
-          {totalParticipantsNum(room.currentParticipant)}
+          {currentParticipantsNum(room.currentParticipants)} /{' '}
+          {totalParticipantsNum(room.currentParticipants)}
         </p>
         <button
           onClick={enterGameRoom}

@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { images } from '@constants/images';
 import RoomInfoCard from './RoomInfoCard';
 import { Client } from '@stomp/stompjs';
-import { RoomType } from '@/types/common/lobby.type';
+import { RoomType } from '@/types/lobby/lobby.type';
+import { formatStringToDate } from '@utils/format';
 
 type CreateRoomModalProps = {
   roomList: RoomType[];
@@ -19,28 +20,15 @@ const LobbyRoomListView = ({
   return (
     <div className='flex flex-[3] flex-col h-full w-full p-12 justify-between bg-white bg-opacity-50 rounded-[40px] overflow-auto'>
       <div className='grid grid-cols-2 gap-10 place-content-between pr-[20px] w-full h-full relative scrollbar'>
-        {roomList.map((room) => (
-          <RoomInfoCard room={room} key={room.code} />
-        ))}
-
-        {/* <RoomInfoCard
-          clientRef={clientRef}
-          title='맹맹 시치 모여라~'
-          currentCnt='3'
-        />
-        <RoomInfoCard
-          clientRef={clientRef}
-          title='모마말고 맹맹'
-          currentCnt='1'
-        />
-        <RoomInfoCard clientRef={clientRef} title='맹맹맹맹' currentCnt='2' />
-        <RoomInfoCard clientRef={clientRef} title='야호' currentCnt='4' />
-        <RoomInfoCard clientRef={clientRef} title='맹맹맹맹' currentCnt='2' />
-        <RoomInfoCard clientRef={clientRef} title='야호' currentCnt='4' />
-        <RoomInfoCard clientRef={clientRef} title='맹맹맹맹' currentCnt='2' />
-        <RoomInfoCard clientRef={clientRef} title='야호' currentCnt='4' />
-        <RoomInfoCard clientRef={clientRef} title='맹맹맹맹' currentCnt='2' />
-        <RoomInfoCard clientRef={clientRef} title='야호' currentCnt='4' /> */}
+        {roomList
+          .sort((a, b) => {
+            const dateA = formatStringToDate(a.createdTime);
+            const dateB = formatStringToDate(b.createdTime);
+            return dateB.getTime() - dateA.getTime();
+          })
+          .map((room) => (
+            <RoomInfoCard room={room} key={room.code} />
+          ))}
       </div>
       <div className='flex flex-row h-[18px] items-center justify-between mt-[40px]'>
         <button
