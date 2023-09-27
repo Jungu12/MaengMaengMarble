@@ -106,10 +106,10 @@ const WaitingRoom = () => {
         client.current.subscribe(`/sub/waiting-rooms/${roomId}`, (res) => {
           const response: WSResponseType<RoomType> = JSON.parse(res.body);
           if (response.type === 'waitingRoom') {
-            const { title, code, currentParticipant } = response.data;
+            const { title, code, currentParticipants } = response.data;
             setRoomTitle(title);
             setInviteCode(code);
-            setUserList(currentParticipant);
+            setUserList(currentParticipants);
           }
           console.log(JSON.parse(res.body));
         });
