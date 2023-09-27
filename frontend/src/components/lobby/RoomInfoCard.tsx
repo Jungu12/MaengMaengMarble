@@ -20,8 +20,8 @@ const RoomInfoCard = ({ room }: RoomInfoProps) => {
       <p className='text-2xl font-extrabold text-text-100'>{room.title}</p>
       <div className='flex flex-row items-center mt-5 justify-between'>
         <p className='text-xl font-bold text-text-50'>
-          {currentParticipantsNum(room.currentParticipants)} /{' '}
-          {totalParticipantsNum(room.currentParticipants)}
+          {currentParticipantsNum(room.currentParticipant)} /{' '}
+          {totalParticipantsNum(room.currentParticipant)}
         </p>
         <button
           onClick={enterGameRoom}

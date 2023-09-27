@@ -1,4 +1,11 @@
-import { ChatMessageType } from '@/types/common/common.type';
+import {
+  CharacterType,
+  ChatMessageType,
+  ParticipantsType,
+  WSResponseType,
+} from '@/types/common/common.type';
+import { RoomType } from '@/types/lobby/lobby.type';
+import { getCharaterList } from '@apis/userApi';
 import { userState } from '@atom/userAtom';
 import WaitingRoomCharaterCard from '@components/watingRoom/WaitingRoomCharaterCard';
 import WaitingRoomChatting from '@components/watingRoom/WaitingRoomChatting';
@@ -36,39 +43,85 @@ const WaitingRoom = () => {
   const { roomId } = useParams();
   const isReady = true;
   const client = useRef<StompJs.Client>();
+  const [roomTitle, setRoomTitle] = useState('');
+  const [inviteCode, setInviteCode] = useState('');
+  const [userList, setUserList] = useState<ParticipantsType[]>([]);
   const [chatList, setChatList] = useState<ChatMessageType[]>([]);
+  const [characterList, setCharacterList] = useState<CharacterType[]>([]);
 
   const onClickExitButton = useCallback(() => {
     navigate(-1);
   }, [navigate]);
+
+  const sendChatMessage = useCallback(
+    (msg: string) => {
+      console.log(msg);
+
+      client.current?.publish({
+        destination: `/pub/chats`,
+        body: JSON.stringify({
+          roomCode: roomId,
+          sender: user?.nickname,
+          message: msg,
+        }),
+      });
+    },
+    [roomId, user?.nickname]
+  );
+
+  const onClickReady = useCallback(() => {
+    client.current?.publish({
+      destination: `/pub/waiting-rooms/ready/${roomId}`,
+      body: JSON.stringify({
+        userId: user?.userId,
+        nickname: user?.nickname,
+        characterId: user?.avatarId,
+      }),
+    });
+  }, [roomId, user?.avatarId, user?.nickname, user?.userId]);
+
+  // 캐릭터 리스트 불러오기
+  useEffect(() => {
+    getCharaterList().then((res) => setCharacterList(res.data));
+  }, []);
 
   useEffect(() => {
     client.current = getClient();
     activateClient(client.current);
     client.current.onConnect = () => {
       if (client.current) {
+        // 방 구독 하기
         client.current.subscribe(`/sub/waiting-rooms/${roomId}`, (res) => {
+          const response: WSResponseType<RoomType> = JSON.parse(res.body);
+          if (response.type === 'waitingRoom') {
+            const { title, code, currentParticipant } = response.data;
+            setRoomTitle(title);
+            setInviteCode(code);
+            setUserList(currentParticipant);
+          }
           console.log(JSON.parse(res.body));
         });
-        client.current.subscribe(`/sub/chats/${roomId}`, (res) => {
-          const newMsg: ChatMessageType = JSON.parse(res.body);
-          // 채팅 리스트 추가
-          setChatList((prev) => [...prev, newMsg]);
-          console.log(JSON.parse(res.body));
-        });
+
+        // 방 정보 얻어오기
         client.current.publish({
-          destination: `/pub/lobby/${roomId}`,
+          destination: `/pub/waiting-rooms/${roomId}`,
           body: JSON.stringify({
-            userid: user?.userId,
+            userId: user?.userId,
             nickname: user?.nickname,
             characterId: user?.avatarId,
           }),
         });
+        client.current.subscribe(`/sub/chats/${roomId}`, (res) => {
+          const response: WSResponseType<ChatMessageType> = JSON.parse(
+            res.body
+          );
+          // 채팅 리스트 추가
+          setChatList((prev) => [...prev, response.data]);
+          console.log(JSON.parse(res.body));
+        });
       }
     };
-  }, [roomId, user]);
-
-  if (!roomId) return;
+  }, [roomId, user?.avatarId, user?.nickname, user?.userId]);
 
   return (
     <motion.div
@@ -83,7 +136,7 @@ const WaitingRoom = () => {
     >
       <div className='flex items-center w-full h-[80px] border-b-2 border-white/80 bg-blue-400/40 shadow-2xl'>
         <p className='font-extrabold text-[36px] text-white ml-[24px]'>
-          맹맹 시치 모여라~~
+          {roomTitle}
         </p>
         <div className='flex items-center'>
           <img
@@ -92,7 +145,7 @@ const WaitingRoom = () => {
             alt='초대코드'
           />
           <span className='ml-[20px] text-white font-extrabold text-[20px]'>
-            12345
+            {inviteCode}
           </span>
           <motion.img
             className='ml-[12px] w-[32px] h-[32px] cursor-pointer'
@@ -116,7 +169,20 @@ const WaitingRoom = () => {
         variants={BoxAnimation}
         className='flex justify-around h-full'
       >
-        <WaitingRoomCharaterCard
+        {characterList.length > 0 &&
+          userList.map((user, index) => (
+            <WaitingRoomCharaterCard
+              key={index}
+              name={user.nickname}
+              avaterUrl={characterList[user.characterId - 1].avatarImageNoBg}
+              isReady={user.ready}
+              isManager={user.userId === userList[0].userId}
+              manager={userList[0].userId}
+              isClose={user.closed}
+              animation={InnerAnimation}
+            />
+          ))}
+        {/* <WaitingRoomCharaterCard
           name={'상근시치'}
           avaterUrl={images.dummy.dummy1}
           isReady={false}
@@ -147,13 +213,12 @@ const WaitingRoom = () => {
           isManager={false}
           isClose={false}
           animation={InnerAnimation}
-        />
+        /> */}
       </motion.div>
       <div className='absolute bottom-[8px] left-[12px]'>
         <WaitingRoomChatting
-          client={client.current ? client.current : null}
-          roomId={roomId}
           chatList={chatList}
+          sendChatMessage={sendChatMessage}
         />
       </div>
       <motion.div
@@ -162,15 +227,17 @@ const WaitingRoom = () => {
         whileTap={{ scale: 0.9 }}
         transition={{ type: 'spring', stiffness: 400, damping: 17 }}
       >
-        <img
-          className='h-[100px]'
-          src={
-            isReady
-              ? images.waitingRoom.readyButton
-              : images.waitingRoom.cancelButton
-          }
-          alt='button'
-        />
+        <button onClick={onClickReady}>
+          <img
+            className='h-[100px]'
+            src={
+              isReady
+                ? images.waitingRoom.readyButton
+                : images.waitingRoom.cancelButton
+            }
+            alt='button'
+          />
+        </button>
       </motion.div>
     </motion.div>
   );

@@ -10,11 +10,14 @@ import AxiosS, {
 } from 'axios';
 
 const axios = AxiosS.create();
+const gameAxios = AxiosS.create();
 export const authAxios = AxiosS.create();
 axios.defaults.baseURL = baseUrl;
 axios.defaults.withCredentials = true;
 authAxios.defaults.baseURL = baseUrl;
 authAxios.defaults.withCredentials = true;
+gameAxios.defaults.baseURL = 'http://192.168.100.186:8080/api/';
+gameAxios.defaults.withCredentials = true;
 
 export const http = {
   get: async function get<Response = unknown>(
@@ -38,6 +41,32 @@ export const http = {
     };
 
     const res = await axios.post<Response>(url, body, options);
+    return res.data;
+  },
+};
+
+export const gameHttp = {
+  get: async function get<Response = unknown>(
+    url: string,
+    header?: AxiosRequestConfig['headers']
+  ) {
+    const options: AxiosRequestConfig = {
+      headers: header,
+    };
+
+    const res = await gameAxios.get<Response>(url, options);
+    return res.data;
+  },
+  post: async function post<Response = unknown, Request = unknown>(
+    url: string,
+    body?: Request,
+    header?: AxiosRequestConfig['headers']
+  ) {
+    const options: AxiosRequestConfig = {
+      headers: header,
+    };
+
+    const res = await gameAxios.post<Response>(url, body, options);
     return res.data;
   },
 };
