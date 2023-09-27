@@ -52,6 +52,10 @@ export type CharacterType = {
   avatarImageNoBg: string;
 };
 
+// export type SocketResponseType = {
+//   type: string;
+//   data:
+// }
 export type WSResponseType<T> = {
   type: string;
   data: T;
