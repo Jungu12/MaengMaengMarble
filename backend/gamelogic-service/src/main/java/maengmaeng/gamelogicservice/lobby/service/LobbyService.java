@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import maengmaeng.gamelogicservice.lobby.domain.dto.WaitingRoomCreateRequest;
 import maengmaeng.gamelogicservice.lobby.repository.LobbyRepository;
 import maengmaeng.gamelogicservice.util.RedisSubscriber;
-import maengmaeng.gamelogicservice.waitingRoom.domain.CurrentParticipants;
+import maengmaeng.gamelogicservice.waitingRoom.domain.CurrentParticipant;
 import maengmaeng.gamelogicservice.waitingRoom.domain.WaitingRoom;
 import maengmaeng.gamelogicservice.waitingRoom.service.WaitingRoomService;
 
@@ -13,6 +13,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -21,18 +23,27 @@ import java.util.UUID;
 public class LobbyService {
     private final static int MAX_PARTICIPANTS = 4;
     private final WaitingRoomService waitingRoomService;
-    private final LobbyRepository lobbyRepository;
-    // 로비(topic)에 발행되는 메시지를 처리할 Listener
-    private final RedisMessageListenerContainer redisMessageListener;
-    private final RedisSubscriber redisSubscriber;
-    private final Logger logger = LoggerFactory.getLogger(getClass());
 
     public String createRoomCode() {
         return UUID.randomUUID().toString();
     }
 
-    public void saveNewWaitingRoom(WaitingRoomCreateRequest roomInfo) {
-        CurrentParticipants currentParticipant = CurrentParticipants.builder()
+    public String createRoomCreatedTime() {
+        Date currentTime = new Date();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+        String formattedTime = dateFormat.format(currentTime);
+
+        return formattedTime;
+    }
+
+    public String saveNewWaitingRoom(WaitingRoomCreateRequest roomInfo) {
+        WaitingRoom waitingRoom = WaitingRoom.builder()
+            .code(createRoomCode())
+            .title(roomInfo.getTitle())
+            .createdTime(createRoomCreatedTime())
+            .build();
+
+        CurrentParticipant currentParticipant = CurrentParticipant.builder()
             .userId(roomInfo.getUserInfo().getUserId())
             .nickname(roomInfo.getUserInfo().getNickname())
             .characterId(roomInfo.getUserInfo().getCharacterId())
@@ -40,24 +51,26 @@ public class LobbyService {
             .ready(false)
             .build();
 
-        WaitingRoom waitingRoom = WaitingRoom.builder()
-            .code(createRoomCode())
-            .title(roomInfo.getTitle())
-            .build();
-
         //방장을 CurrentParticipants에 추가
         waitingRoom.addCurrentParticipants(currentParticipant);
 
         //닫힌 자리를 CurrentParticipants에 추가
         for (int cnt = 0; cnt < MAX_PARTICIPANTS - roomInfo.getMaxParticipants(); cnt++) {
-            CurrentParticipants closed = CurrentParticipants.builder()
+            CurrentParticipant closed = CurrentParticipant.builder()
                 .closed(true)
                 .build();
 
             waitingRoom.addCurrentParticipants(closed);
         }
 
+        for (int cnt = 0; cnt < MAX_PARTICIPANTS - waitingRoom.getCurrentParticipants().size(); cnt++) {
+            CurrentParticipant empty = CurrentParticipant.builder().build();
+            waitingRoom.addCurrentParticipants(empty);
+        }
+
         waitingRoomService.saveWaitingRoom(waitingRoom);
+
+        return waitingRoom.getCode();
     }
 
     public List<WaitingRoom> findWaitingRooms() {

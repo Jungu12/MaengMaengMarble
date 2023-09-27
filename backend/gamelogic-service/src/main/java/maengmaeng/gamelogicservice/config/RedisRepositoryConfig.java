@@ -18,7 +18,7 @@ import redis.embedded.RedisServer;
 @Configuration
 @EnableRedisRepositories
 public class RedisRepositoryConfig {
-	@Value("${spring.redis.host}")
+	@Value("localhost")
 	private String redisHost;
 
 	@Value("6379")
