@@ -1,15 +1,16 @@
 import { userState } from '@atom/userAtom';
 import { images } from '@constants/images';
 import { motion } from 'framer-motion';
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useRecoilValue } from 'recoil';
 
 type Props = {
-  name: string;
-  avaterUrl: string;
+  userId: string | null;
+  name: string | null;
+  avaterUrl: string | null;
   isReady: boolean;
   isManager: boolean;
-  manager: string;
+  manager: string | null;
   isClose: boolean;
   animation: {
     start: {
@@ -24,6 +25,7 @@ type Props = {
 };
 
 const WaitingRoomCharaterCard = ({
+  userId,
   name,
   avaterUrl,
   isReady,
@@ -37,9 +39,9 @@ const WaitingRoomCharaterCard = ({
     : 'linear-gradient(180deg, rgba(255, 255, 255, 0.70) 25.52%, rgba(255, 255, 255, 0.43) 82.73%, rgba(255, 255, 255, 0.00) 100%)';
   const user = useRecoilValue(userState);
 
-  useEffect(() => {
-    console.log(isReady);
-  }, [isReady]);
+  const onClickCountOut = useCallback(() => {
+    console.log(userId);
+  }, [userId]);
 
   return (
     <motion.div className='flex flex-col' variants={animation}>
