@@ -18,21 +18,21 @@ import redis.embedded.RedisServer;
 @Configuration
 @EnableRedisRepositories
 public class RedisRepositoryConfig {
-	@Value("localhost")
+	@Value("${spring.redis.host}")
 	private String redisHost;
 
-	@Value("6379")
+	@Value("${spring.redis.port}")
 	private int redisPort;
 
-	// @Value("${spring.redis.password}")
-	// private String password;
+	@Value("${spring.redis.password}")
+	private String password;
 
 	@Bean
 	public RedisConnectionFactory redisConnectionFactory() {
 		RedisStandaloneConfiguration redisConfiguration = new RedisStandaloneConfiguration();
 		redisConfiguration.setHostName(redisHost);
 		redisConfiguration.setPort(redisPort);
-		// redisConfiguration.setPassword(password);
+		redisConfiguration.setPassword(password);
 		return new LettuceConnectionFactory(redisConfiguration);
 	}
 
