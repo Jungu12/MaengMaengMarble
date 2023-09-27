@@ -1,12 +1,17 @@
 import { images } from '@constants/images';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
+type Props = {
+  title: string;
+  code: string;
+};
 
-const WaitingRoomHeader = () => {
+const WaitingRoomHeader = ({ title, code }: Props) => {
+  const navigation = useNavigate();
+
   return (
     <div className='flex items-center w-full h-[80px] border-b-2 border-white/80 bg-blue-400/40 shadow-2xl'>
-      <p className='font-extrabold text-[36px] text-white ml-[24px]'>
-        맹맹 시치 모여라~~
-      </p>
+      <p className='font-extrabold text-[36px] text-white ml-[24px]'>{title}</p>
       <div className='flex items-center'>
         <img
           className='w-[28px] h-[28px] ml-[80px]'
@@ -14,7 +19,7 @@ const WaitingRoomHeader = () => {
           alt='초대코드'
         />
         <span className='ml-[20px] text-white font-extrabold text-[20px]'>
-          12345
+          {code}
         </span>
         <motion.img
           className='ml-[12px] w-[32px] h-[32px] cursor-pointer'
@@ -24,11 +29,18 @@ const WaitingRoomHeader = () => {
           whileTap={{ scale: 0.9 }}
         />
       </div>
-      <img
+      <button
         className='ml-auto mr-[12px] w-[56px] h-[56px] cursor-pointer'
-        src={images.waitingRoom.exit}
-        alt='나가기'
-      />
+        onClick={() => {
+          navigation(-1);
+        }}
+      >
+        <img
+          className='w-[56px] h-[56px]'
+          src={images.waitingRoom.exit}
+          alt='나가기'
+        />
+      </button>
     </div>
   );
 };
