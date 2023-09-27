@@ -7,7 +7,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -44,7 +43,7 @@ public class LobbyRestController {
 	public ResponseEntity<?> waitingRoomCreate(@RequestBody WaitingRoomCreateRequest roomInfo) {
 		logger.debug("waitingRoomCreate()");
 
-		lobbyService.saveNewWaitingRoom(roomInfo);
+		String roomCode = lobbyService.saveNewWaitingRoom(roomInfo);
 		List<WaitingRoom> waitingRooms = lobbyService.findWaitingRooms();
 
 		GameData gameData = GameData.builder()
@@ -56,7 +55,7 @@ public class LobbyRestController {
 		redisPublisher.publish(lobbyTopic, gameData);
 
 		//방 생성한
-		return ResponseEntity.ok().body(WaitingRoomCreateResponse.builder().roomCode(waitingRooms.get(0).getCode()).build());
+		return ResponseEntity.ok().body(WaitingRoomCreateResponse.builder().roomCode(roomCode).build());
 	}
 
 	@GetMapping()

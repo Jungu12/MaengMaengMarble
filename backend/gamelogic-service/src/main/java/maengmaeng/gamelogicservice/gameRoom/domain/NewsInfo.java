@@ -16,7 +16,8 @@ import lombok.RequiredArgsConstructor;
 public class NewsInfo implements Serializable {
 	@Builder.Default
 	private static final long serialVersionUID = 207207207207L;;
-	private List<News> silver;
-	private List<News> gold;
+	private List<News> bronze;
+	private List<News> diamond;
 	private List<News> platinum;
+
 }

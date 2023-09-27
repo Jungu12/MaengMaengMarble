@@ -15,15 +15,16 @@ import java.util.List;
 public class WaitingRoom implements Serializable {
     private static final long serialVersionUID = 207207207207L;
     private String title;
-    private List<CurrentParticipant> currentParticipant;
+
+    private List<CurrentParticipant> currentParticipants;
     private String code;
+    private String createdTime;
 
-
-    public void addCurrentParticipants(CurrentParticipant participant){
-        if(currentParticipant==null){
-            currentParticipant = new ArrayList<>();
+    public void addCurrentParticipants(CurrentParticipant currentParticipant){
+        if(currentParticipants==null){
+            currentParticipants = new ArrayList<>();
         }
-        currentParticipant.add(participant);
+        currentParticipants.add(currentParticipant);
     }
 
 }

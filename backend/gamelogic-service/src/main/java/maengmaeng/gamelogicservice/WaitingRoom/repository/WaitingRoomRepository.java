@@ -46,14 +46,14 @@ public class WaitingRoomRepository {
         if (waitingRoom == null) {
             waitingRoom = WaitingRoom.builder()
                     .code(roomCode)
-                    .currentParticipant(new ArrayList<>())
+                    .currentParticipants(new ArrayList<>())
                     .build();
             logger.info("현재 대기방 정보가 없어서 새로 만들어 줌");
         }
 
         // 현재 참여하고 있는 사용자를 돌면서 빈자리가 없으면 들어갈 수 없음
         boolean enterPossible = false;
-        for(CurrentParticipant participant : waitingRoom.getCurrentParticipant()){
+        for(CurrentParticipant participant : waitingRoom.getCurrentParticipants()){
             if(!participant.isClosed() && participant.getUserId()==null){ // userId는 null이고 closed느 false이면 들어갈 수 있는 자리니까
                 enterPossible =true;
                 break;
@@ -68,7 +68,8 @@ public class WaitingRoomRepository {
 
 
         // 입장한 사용자 객체 생성
-        CurrentParticipant currentParticipant = CurrentParticipant.builder()
+
+        CurrentParticipant currentParticipants = CurrentParticipant.builder()
                 .characterId(userInfo.getCharacterId())
                 .userId(userInfo.getUserId())
                 .nickname(userInfo.getNickname())
@@ -77,7 +78,7 @@ public class WaitingRoomRepository {
                 .build();
 
         // 대기방 정보에 현재 들어온 사람 추가
-        waitingRoom.addCurrentParticipants(currentParticipant);
+        waitingRoom.addCurrentParticipants(currentParticipants);
 
         // 업데이트된 대기방 정보를 레디스에 업데이트
 
@@ -113,17 +114,14 @@ public class WaitingRoomRepository {
         WaitingRoom waitingRoom = opsHashWaitingRoom.get(WAITING_ROOMS, roomCode);
         logger.info("readyMember");
 
-        for (int i = 1; i < waitingRoom.getCurrentParticipant().size(); i++) {
-            if (waitingRoom.getCurrentParticipant().get(i).getUserId().equals(userInfo.getUserId())) {
-                logger.info(waitingRoom.getCurrentParticipant().get(i).getUserId());
+        for (int i = 1; i < waitingRoom.getCurrentParticipants().size(); i++) {
+            if (waitingRoom.getCurrentParticipants().get(i).getUserId().equals(userInfo.getUserId())) {
+                logger.info(waitingRoom.getCurrentParticipants().get(i).getUserId());
                 // 지금 안에 들어있는 사용자와 ready누른 사용자가 같을때
                 // 그 사람 상태 변경
-                CurrentParticipant participant = waitingRoom.getCurrentParticipant().get(i);
-                boolean nowState = participant.isReady();
-                participant.setReady(!nowState);
-                logger.info("User {} is now ready in room {}", userInfo.getUserId(), roomCode);
 
-                opsHashWaitingRoom.put(WAITING_ROOMS, roomCode, waitingRoom);
+                CurrentParticipant participant = waitingRoom.getCurrentParticipants().get(i);
+                opsHashWaitingRoom.put(WAITING_ROOMS,roomCode,waitingRoom);
                 break;
             }
         }
@@ -139,10 +137,10 @@ public class WaitingRoomRepository {
         // db에서 지우고 지운 db데이터 반환, 사용자 sub끊기
         logger.info("exit()");
         WaitingRoom waitingRoom = opsHashWaitingRoom.get(WAITING_ROOMS, roomCode);
-        if (waitingRoom.getCurrentParticipant().size() == 1) {
+        if (waitingRoom.getCurrentParticipants().size() == 1) {
             removeWaitingRoom(roomCode);
         }else {
-            List<CurrentParticipant> nowParticipant = waitingRoom.getCurrentParticipant();
+            List<CurrentParticipant> nowParticipant = waitingRoom.getCurrentParticipants();
             List<CurrentParticipant> newParticipant = new ArrayList<>();
 
             for (CurrentParticipant participant : nowParticipant) {
@@ -160,7 +158,7 @@ public class WaitingRoomRepository {
 
             }
 
-            waitingRoom.setCurrentParticipant(newParticipant);
+            waitingRoom.setCurrentParticipants(newParticipant);
             opsHashWaitingRoom.put(WAITING_ROOMS, roomCode, waitingRoom);
         }
     }
@@ -171,13 +169,13 @@ public class WaitingRoomRepository {
 
         List<CurrentParticipant> afterParticipant = new ArrayList<>();
 
-        for(CurrentParticipant participant : waitingRoom.getCurrentParticipant()){
+        for(CurrentParticipant participant : waitingRoom.getCurrentParticipants()){
             if(!participant.getUserId().equals(outUser)){
                 afterParticipant.add(participant);
             }
         }
 
-        waitingRoom.setCurrentParticipant(afterParticipant);
+        waitingRoom.setCurrentParticipants(afterParticipant);
         opsHashWaitingRoom.put(WAITING_ROOMS, roomCode, waitingRoom);
 
     }
