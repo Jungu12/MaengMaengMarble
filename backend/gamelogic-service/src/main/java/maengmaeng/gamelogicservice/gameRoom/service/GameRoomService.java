@@ -27,12 +27,16 @@ public class GameRoomService {
     private final DbNewsStockRepository dbNewsStockRepository;
     private final GameInfoRepository gameInfoRepository;
     private final GameInfoMapper gameInfoMapper;
-    /** 나라 목록 가져오기
+    /**
+     * 게임 정보  가져오기
+     * Params: roomCode
+     * return GameInfo
      * */
     public GameInfo getInfo (String roomCode) {
         return gameInfoRepository.getGameInfo(roomCode);
 
     }
+
 
     /**
      * 처음 시작 카드 선택
@@ -112,35 +116,22 @@ public class GameRoomService {
         return  players;
     }
 
+    /**
+     * 현재 플레이어 인덱스 가져오기
+     *
+     * */
+    public int getPlayerIdx(String roomCode, String currentPlayer){
+        GameInfo gameInfo = gameInfoRepository.getGameInfo(roomCode);
+        Player[] players = gameInfo.getPlayers();
+        int currentIdx=-1;
+        for(int i=0;i< players.length;i++){
+            if(players[i]!=null && players[i].isAlive() && players[i].getNickname().equals(currentPlayer)){
+                currentIdx = i;
+            }
+        }
+        return currentIdx;
+    }
 
-    /**/
-//    public GameInfo setInfo (String roomCode){
-//        Player[] players = new Player[4];
-//
-//        List<DbCountry> dbCountryList = dbCountryRespository.findAll();
-//        int platinum = dbNewsRepository.findByNewsType("Platinum").size();
-//        int silver = dbNewsRepository.findByNewsType("silver").size();
-//        int bronze = dbNewsRepository.findByNewsType("Bronze").size();
-//
-//        List<Land> landList = dbCountryList.stream().map(gameInfoMapper::toRedisLand).collect(Collectors.toList());
-//
-//        List<Stock> stockList = dbStockRepository.findAll().stream().map(gameInfoMapper::toRedisStock).collect(Collectors.toList());
-//        int[] news = new int[3];
-//        GameInfo gameInfo = GameInfo.builder()
-//                .roomCode(roomCode)
-//                .players(players)
-//                .lands(landList)
-//                .goldenKeys(gameInfoMapper.toRedisGoldenKeys(bronze,silver,platinum))
-//                .stocks(stockList)
-//                .build();
-//
-//
-//
-//
-//        return gameInfoRepository.createGameRoom(gameInfo);
-//
-//
-//    }
     /**
      * 주사위 굴리기.
     * */
@@ -156,11 +147,9 @@ public class GameRoomService {
                 currentIdx = i;
             }
         }
-
         if(currentIdx != -1){
             // 예외 처리
         }
-
         Random random = new Random();
 
         // 주사위 1 던지기 (1부터 6까지)
@@ -168,37 +157,67 @@ public class GameRoomService {
 
         // 주사위 2 던지기 (1부터 6까지)
         int dice2 = random.nextInt(6) + 1;
-
+        // 주사위 변환
         Dice dice = new Dice();
         dice.setDice1(dice1);
         dice.setDice2(dice2);
-        dice.setDoubleCount(0);
         Player curPlayer = players[currentIdx];
 
         int currentLocation = curPlayer.getCurrentLocation();
 
+        boolean checkTrade = false;
         // 더블 일 때
         if(dice1 == dice2){
 
+            int doubleCount = curPlayer.getDoubleCount();
+            doubleCount++;
+            if(doubleCount==3){
+                checkTrade = true;
+
+            }
+            curPlayer.setDoubleCount(doubleCount);
 
         }
         System.out.println(dice1 + " " + dice2);
         // 다음 위치
         int nextLocation = currentLocation + dice1 + dice2;
-        nextLocation = nextLocation %32;
+        nextLocation = nextLocation % 32;
 
         // 한바퀴 돌았음
         if(currentLocation>nextLocation){
-            // 이자를 줘야함
-            // 배당금도 줘야함
-            long money = Math.round(curPlayer.getMoney() * 1.15);
+            // 돈 바퀴 수 증가
+            int currentLap = curPlayer.getCurrentLap();
+            currentLap++;
+            curPlayer.setCurrentLap(currentLap);
 
+            // 이자를 줘서 money 저장
+            long money = Math.round(curPlayer.getMoney() * 1.15);
+            curPlayer.setMoney(money);
+            dice.setLapCheck(true);
             // TODO: 배당금 관련 로직
 
 
 
+
+            // TODO: 대출금 관련 로직
+
+
         }
+        curPlayer.setCurrentLocation(nextLocation);
+
+        if(checkTrade){
+            // 거래 정지 칸으로 이동
+            curPlayer.setCurrentLocation(8);
+
+        }
+
+
         //TODO: 플레이어 관련 정보 REDIS에 다시 저장.
+
+        players[currentIdx] =  curPlayer;
+        gameInfo.setPlayers(players);
+        gameInfoRepository.createGameRoom(gameInfo);
+        dice.setDoubleCount(curPlayer.getDoubleCount());
 
 
 

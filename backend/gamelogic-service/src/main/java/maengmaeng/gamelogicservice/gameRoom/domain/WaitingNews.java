@@ -1,14 +1,12 @@
 package maengmaeng.gamelogicservice.gameRoom.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Getter
+@Setter
 public class WaitingNews {
     @Builder.Default
     private static final long serialVersionUID = 207207207207L;;

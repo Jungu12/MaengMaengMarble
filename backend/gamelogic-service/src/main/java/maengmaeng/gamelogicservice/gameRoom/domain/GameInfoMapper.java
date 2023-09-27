@@ -3,10 +3,7 @@ package maengmaeng.gamelogicservice.gameRoom.domain;
 import maengmaeng.gamelogicservice.gameRoom.domain.db.*;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Component
 public class GameInfoMapper {
@@ -63,8 +60,8 @@ public class GameInfoMapper {
         return Info.builder()
                 .currentPlayer(currentPlayer)
                 .turnCount(turnCount)
-                .effectNews(new ArrayList<>())
-                .waitingNews(new ArrayList<>())
+                .effectNews(new ArrayDeque<>())
+                .waitingNews(new ArrayDeque<>())
                 .build();
     }
 

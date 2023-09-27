@@ -118,8 +118,22 @@ public class GameRoomController {
 						.data(dice)
 						.build())
 				.build();
-
+		// 주사위 눈  double 카운트 전송
 		redisPublisher.publish(gameRoomTopic,gameData);
+
+
+		// 한 바퀴를 돌았으면 플레이어 정보 전송
+		if(dice.isLapCheck()){
+			GameInfo gameInfo = gameRoomService.getInfo(roomCode);
+			GameData gamedata = GameData.builder()
+					.type("GAME_ROOM")
+					.roomCode(roomCode)
+					.data(ResponseDto.builder().type("player").data(gameInfo.getPlayers()).build())
+					.build();
+			redisPublisher.publish(gameRoomTopic,gameData);
+
+		}
+
 
 	}
 

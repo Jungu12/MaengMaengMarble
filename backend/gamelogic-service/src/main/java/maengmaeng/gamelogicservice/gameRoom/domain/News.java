@@ -4,15 +4,14 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Getter
+@Setter
+
 public class News implements Serializable {
 	@Builder.Default
 	private static final long serialVersionUID = 207207207207L;;

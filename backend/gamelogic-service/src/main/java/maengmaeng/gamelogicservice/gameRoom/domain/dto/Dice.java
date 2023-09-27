@@ -9,4 +9,5 @@ public class Dice {
     int dice1;
     int dice2;
     int doubleCount;
+    boolean lapCheck;
 }
