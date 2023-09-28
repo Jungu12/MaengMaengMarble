@@ -89,9 +89,7 @@ const GameRoom = () => {
     activateClient(client.current);
     client.current.onConnect = () => {
       gameSub.current = client.current?.subscribe(
-        `
-        /sub/game-rooms/${gameId}
-      `,
+        `/sub/game-rooms/${gameId}`,
         (res) => {
           const response: WSResponseType<unknown> = JSON.parse(res.body);
           if (response.type === '플레이순서') {
