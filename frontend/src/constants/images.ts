@@ -28,6 +28,8 @@ export const images = {
   gameRoom: {
     background:
       'https://maeng.s3.ap-northeast-2.amazonaws.com/images/game-room-background.png',
+    cardFront: '/src/assets/images/card-front.png',
+    cardBack: '/src/assets/images/card-back.png',
   },
   dummy: {
     dummy1: 'https://maeng.s3.ap-northeast-2.amazonaws.com/images/dummy1.png',

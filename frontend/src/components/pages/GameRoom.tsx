@@ -1,14 +1,45 @@
 import MapArea from '@components/gameRoom/MapArea';
 import { images } from '@constants/images';
 import { moveCharacter } from '@utils/game';
-import { motion, useAnimation } from 'framer-motion';
-import { useEffect, useState } from 'react';
+import { AnimatePresence, motion, useAnimation } from 'framer-motion';
+import { useEffect, useRef, useState } from 'react';
+import * as StompJs from '@stomp/stompjs';
+import { activateClient, getClient } from '@utils/socket';
+import { useParams } from 'react-router-dom';
+import { WSResponseType } from '@/types/common/common.type';
+import { TurnListType } from '@/types/gameRoom/game.type';
+import { useRecoilValue } from 'recoil';
+import { userState } from '@atom/userAtom';
 
 const GameRoom = () => {
+  const user = useRecoilValue(userState);
+  const client = useRef<StompJs.Client>();
+  const gameSub = useRef<StompJs.StompSubscription>();
+  const { gameId } = useParams();
+  const [isGameStart, setIsGameStart] = useState(false);
+  const [cardChoice, setCardChoice] = useState(false);
+  const [orderList, setOrderList] = useState<TurnListType[]>([]);
   const [x, setX] = useState(0);
   const [y, setY] = useState(0);
   const [position, setPosition] = useState(7);
   const controls = useAnimation();
+
+  const flipCard = (index: number) => {
+    const updatedOrderList = [...orderList];
+    if (updatedOrderList[index].selected || cardChoice) return;
+    client.current?.publish({
+      destination: `/pub/game-rooms/set-player/${gameId}`,
+      body: JSON.stringify({
+        userId: user?.userId,
+        nickname: user?.nickname,
+        characterId: user?.avatarId,
+        playerCnt: index,
+      }),
+    });
+    updatedOrderList[index].selected = !updatedOrderList[index].selected;
+    setCardChoice(true);
+    setOrderList(updatedOrderList);
+  };
 
   useEffect(() => {
     const cur = moveCharacter(1, 32, position, controls).then((res) => {
@@ -48,8 +79,78 @@ const GameRoom = () => {
 
   // 임시 코드 (지워야함)
   useEffect(() => {
+    setIsGameStart(false);
     setPosition(7);
   }, []);
+
+  // 소켓 연결
+  useEffect(() => {
+    client.current = getClient();
+    activateClient(client.current);
+    client.current.onConnect = () => {
+      gameSub.current = client.current?.subscribe(
+        `
+        /sub/game-rooms/${gameId}
+      `,
+        (res) => {
+          const response: WSResponseType<unknown> = JSON.parse(res.body);
+          if (response.type === '플레이순서') {
+            const newOrderList = response.data as WSResponseType<
+              TurnListType[]
+            >;
+            setOrderList(newOrderList.data);
+          }
+          console.log(JSON.parse(res.body));
+        }
+      );
+    };
+  }, [gameId]);
+
+  if (!isGameStart) {
+    return (
+      <div
+        className='flex flex-col w-full h-full min-h-[700px] overflow-hidden relative items-center'
+        style={{
+          backgroundImage: `url(${images.gameRoom.background})`,
+          backgroundSize: 'cover',
+        }}
+      >
+        <div className='text-[white] text-3xl mt-[120px]'>
+          카드를 선택해주세요.
+        </div>
+        <div className='flex w-full items-center justify-around mb-auto mt-[100px]'>
+          <AnimatePresence>
+            {orderList &&
+              orderList.map((item, index) => (
+                <motion.button
+                  key={item.seq}
+                  initial={{ opacity: 0, rotateY: 0 }}
+                  animate={{ opacity: 1, rotateY: item.selected ? 0 : 180 }}
+                  exit={{ opacity: 0, rotateY: 0 }}
+                  onClick={() => flipCard(index)}
+                >
+                  <motion.div
+                    className={`h-[340px] w-[220px] rounded-[8px] flex justify-center items-center ${
+                      item.selected ? 'bg-[#e6e6e6] text-4xl font-bold' : ''
+                    }`}
+                    style={{
+                      backgroundImage: item.selected
+                        ? 'none'
+                        : `url(${images.gameRoom.cardBack})`,
+                      backgroundSize: 'cover',
+                      filter: 'drop-shadow(5px 5px 5px #000)',
+                    }}
+                    whileHover={{ scale: item.selected ? 1.0 : 1.1 }}
+                  >
+                    {item.selected ? `${item.seq} 등` : ''}
+                  </motion.div>
+                </motion.button>
+              ))}
+          </AnimatePresence>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div
