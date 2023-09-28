@@ -194,7 +194,7 @@ const WaitingRoom = () => {
 
     client.current.onConnect = () => {
       if (!client.current) return;
-      subTemp = waitSub.current = client.current.subscribe(
+      subTemp = client.current.subscribe(
         `/sub/waiting-rooms/${roomId}`,
         (res) => {
           const response: WSResponseType<RoomType> = JSON.parse(res.body);
