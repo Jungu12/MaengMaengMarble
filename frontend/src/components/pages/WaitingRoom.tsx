@@ -189,23 +189,25 @@ const WaitingRoom = () => {
   ]);
 
   useEffect(() => {
+    let subTemp: StompJs.StompSubscription;
     if (!client.current) return;
+    if (client.current.connected) {
+      subTemp = client.current.subscribe(
+        `/sub/waiting-rooms/${roomId}`,
+        (res) => {
+          const response: WSResponseType<RoomType> = JSON.parse(res.body);
 
-    const subTemp = client.current.subscribe(
-      `/sub/waiting-rooms/${roomId}`,
-      (res) => {
-        const response: WSResponseType<RoomType> = JSON.parse(res.body);
-
-        // 모두 레디가 완료되고 게임 시작 버튼을 클릭한 경우
-        if (response.type === 'gameStart') {
-          console.log('게임 시작!!');
-          waitSub.current?.unsubscribe();
-          navigation(`/game-room/${roomId}`, {
-            state: { userList: userList },
-          });
+          // 모두 레디가 완료되고 게임 시작 버튼을 클릭한 경우
+          if (response.type === 'gameStart') {
+            console.log('게임 시작!!');
+            waitSub.current?.unsubscribe();
+            navigation(`/game-room/${roomId}`, {
+              state: { userList: userList },
+            });
+          }
         }
-      }
-    );
+      );
+    }
 
     return () => {
       subTemp.unsubscribe();
