@@ -16,12 +16,12 @@ const RoomInfoCard = ({ room }: RoomInfoProps) => {
   const setToastMessage = useSetRecoilState(ToastMessageState);
   const navigation = useNavigate();
   const currentNum = useMemo(
-    () => currentParticipantsNum(room.currentParticipant),
-    [room.currentParticipant]
+    () => currentParticipantsNum(room.currentParticipants),
+    [room.currentParticipants]
   );
   const totalNum = useMemo(
-    () => totalParticipantsNum(room.currentParticipant),
-    [room.currentParticipant]
+    () => totalParticipantsNum(room.currentParticipants),
+    [room.currentParticipants]
   );
 
   const enterGameRoom = useCallback(() => {
