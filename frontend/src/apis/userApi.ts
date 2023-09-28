@@ -23,12 +23,12 @@ export async function changeNickname(nickname: string) {
   );
 }
 
-export async function getCharaterList(): Promise<
+export async function getCharacterList(): Promise<
   AxiosResponse<CharacterType[]>
 > {
   return authAxios.get(`user-service/users/avatars`);
 }
 
-export async function changeCharater(charaterId: number) {
+export async function changeCharacter(charaterId: number) {
   return authAxios.patch(`user-service/users/avatars/${charaterId}`);
 }
