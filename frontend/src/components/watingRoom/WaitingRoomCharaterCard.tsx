@@ -5,13 +5,13 @@ import { useCallback, useEffect } from 'react';
 import { useRecoilValue } from 'recoil';
 
 type Props = {
-  userId: string | null;
   name: string | null;
   avaterUrl: string | null;
   isReady: boolean;
   isManager: boolean;
   manager: string | null;
   isClose: boolean;
+  handleKick: (nickName: string) => void;
   animation: {
     start: {
       opacity: number;
@@ -25,23 +25,19 @@ type Props = {
 };
 
 const WaitingRoomCharaterCard = ({
-  userId,
   name,
   avaterUrl,
   isReady,
   isManager,
   manager,
   isClose,
+  handleKick,
   animation,
 }: Props) => {
   const backgroundImageStyle = isClose
     ? 'linear-gradient(180deg, rgba(0, 0, 0, 0.70) 25.52%, rgba(0, 0, 0, 0.43) 82.73%, rgba(0, 0, 0, 0.00) 100%)'
     : 'linear-gradient(180deg, rgba(255, 255, 255, 0.70) 25.52%, rgba(255, 255, 255, 0.43) 82.73%, rgba(255, 255, 255, 0.00) 100%)';
   const user = useRecoilValue(userState);
-
-  const onClickCountOut = useCallback(() => {
-    console.log(userId);
-  }, [userId]);
 
   return (
     <motion.div className='flex flex-col' variants={animation}>
@@ -63,18 +59,22 @@ const WaitingRoomCharaterCard = ({
         ) : (
           <>
             <div className='flex justify-between w-full px-[16px] pt-[12px]'>
-              <img
-                className='w-8 h-8 cursor-pointer'
-                src={images.waitingRoom.info}
-                alt='info'
-              />
-              {/* 본인이 방장이 맞는지 추가 확인 필요 */}
-              {manager === user?.userId && !isManager && (
+              {name && (
                 <img
                   className='w-8 h-8 cursor-pointer'
-                  src={images.waitingRoom.emit}
-                  alt='강퇴'
+                  src={images.waitingRoom.info}
+                  alt='info'
                 />
+              )}
+              {/* 본인이 방장이 맞는지 추가 확인 필요 */}
+              {name && manager === user?.userId && !isManager && (
+                <button onClick={() => (name ? handleKick(name) : '')}>
+                  <img
+                    className='w-8 h-8 cursor-pointer'
+                    src={images.waitingRoom.emit}
+                    alt='강퇴'
+                  />
+                </button>
               )}
             </div>
             {isManager && (

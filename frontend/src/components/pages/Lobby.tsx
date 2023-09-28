@@ -13,6 +13,7 @@ import { getRooms } from '@apis/lobbyApi';
 import { useRecoilValue } from 'recoil';
 import { userState } from '@atom/userAtom';
 import { RoomType } from '@/types/lobby/lobby.type';
+import { WSResponseType } from '@/types/common/common.type';
 
 const Lobby = () => {
   const clientRef = useRef<StompJs.Client>();
@@ -54,7 +55,22 @@ const Lobby = () => {
       getRooms().then((res: { waitingRooms: RoomType[] }) => {
         console.log(res.waitingRooms);
         setRoomList(res.waitingRooms);
+        clientRef.current?.subscribe('/sub/lobby', (res) => {
+          const response: WSResponseType<{ waitingRooms: RoomType[] }> =
+            JSON.parse(res.body);
+
+          if (response.type === 'lobby') {
+            setRoomList(response.data.waitingRooms);
+            console.log(response.data);
+          }
+          // console.log(response);
+        });
       });
+    };
+
+    // 구독 취소
+    return () => {
+      clientRef.current?.unsubscribe('/sub/lobby');
     };
   }, []);
 

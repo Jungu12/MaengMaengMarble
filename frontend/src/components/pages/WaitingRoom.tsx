@@ -45,6 +45,8 @@ const WaitingRoom = () => {
   const user = useRecoilValue(userState);
   const { roomId } = useParams();
   const client = useRef<StompJs.Client>();
+  const waitSub = useRef<StompJs.StompSubscription>();
+  const chatSub = useRef<StompJs.StompSubscription>();
   const [roomTitle, setRoomTitle] = useState('');
   const [inviteCode, setInviteCode] = useState('');
   const [userList, setUserList] = useState<ParticipantsType[]>([]);
@@ -78,6 +80,20 @@ const WaitingRoom = () => {
     });
   }, [roomId, user?.avatarId, user?.nickname, user?.userId]);
 
+  const handleKick = useCallback(
+    (nickName: string) => {
+      console.log('[강퇴]', nickName);
+
+      client.current?.publish({
+        destination: `/pub/waiting-rooms/kick/${roomId}`,
+        body: JSON.stringify({
+          outUser: nickName,
+        }),
+      });
+    },
+    [roomId]
+  );
+
   const handleExit = useCallback(() => {
     client.current?.publish({
       destination: `/pub/waiting-rooms/exit/${roomId}`,
@@ -87,8 +103,8 @@ const WaitingRoom = () => {
         characterId: user?.avatarId,
       }),
     });
-    // 소켓 연결 끊기
-    client.current?.deactivate();
+    // 구독 연결 끊기
+    waitSub.current?.unsubscribe();
     console.log('방에서 나갔습니다');
   }, [roomId, user?.avatarId, user?.nickname, user?.userId]);
 
@@ -111,21 +127,31 @@ const WaitingRoom = () => {
     client.current.onConnect = () => {
       if (client.current) {
         // 방 구독 하기
-        client.current.subscribe(`/sub/waiting-rooms/${roomId}`, (res) => {
-          const response: WSResponseType<RoomType> = JSON.parse(res.body);
-          if (response.type === 'waitingRoom') {
-            const { title, code, currentParticipants } = response.data;
-            setRoomTitle(title);
-            setInviteCode(code);
-            setUserList(currentParticipants);
+        waitSub.current = client.current.subscribe(
+          `/sub/waiting-rooms/${roomId}`,
+          (res) => {
+            const response: WSResponseType<RoomType> = JSON.parse(res.body);
+            if (response.type === 'waitingRoom') {
+              const { title, code, currentParticipants } = response.data;
+              setRoomTitle(title);
+              setInviteCode(code);
+              setUserList(currentParticipants);
+            }
+            // 모두 레디가 완료되고 게임 시작 버튼을 클릭한 경우
+            if (response.type === 'gameStart') {
+              console.log('게임 시작!!');
+              waitSub.current?.unsubscribe();
+              navigation(`/game-room/${roomId}`);
+            }
+
+            if (response.type === '방 폭파') {
+              console.log('방장 나감');
+              waitSub.current?.unsubscribe();
+              navigation(`/lobby`);
+            }
+            console.log(JSON.parse(res.body));
           }
-          // 모두 레디가 완료되고 게임 시작 버튼을 클릭한 경우
-          if (response.type === 'gameStart') {
-            console.log('게임 시작!!');
-            navigation(`/game-room/${roomId}`);
-          }
-          console.log(JSON.parse(res.body));
-        });
+        );
 
         // 방 정보 얻어오기
         client.current.publish({
@@ -136,14 +162,17 @@ const WaitingRoom = () => {
             characterId: user?.avatarId,
           }),
         });
-        client.current.subscribe(`/sub/chats/${roomId}`, (res) => {
-          const response: WSResponseType<ChatMessageType> = JSON.parse(
-            res.body
-          );
-          // 채팅 리스트 추가
-          setChatList((prev) => [...prev, response.data]);
-          console.log(JSON.parse(res.body));
-        });
+        chatSub.current = client.current.subscribe(
+          `/sub/chats/${roomId}`,
+          (res) => {
+            const response: WSResponseType<ChatMessageType> = JSON.parse(
+              res.body
+            );
+            // 채팅 리스트 추가
+            setChatList((prev) => [...prev, response.data]);
+            console.log(JSON.parse(res.body));
+          }
+        );
       }
     };
 
@@ -190,7 +219,6 @@ const WaitingRoom = () => {
           userList.map((user, index) => (
             <WaitingRoomCharaterCard
               key={index}
-              userId={user.userId}
               name={user.nickname}
               avaterUrl={
                 user.characterId > 0
@@ -202,6 +230,7 @@ const WaitingRoom = () => {
               manager={userList[0].userId}
               isClose={user.closed}
               animation={InnerAnimation}
+              handleKick={handleKick}
             />
           ))}
       </motion.div>

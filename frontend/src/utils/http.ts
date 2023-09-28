@@ -16,7 +16,7 @@ axios.defaults.baseURL = baseUrl;
 axios.defaults.withCredentials = true;
 authAxios.defaults.baseURL = baseUrl;
 authAxios.defaults.withCredentials = true;
-gameAxios.defaults.baseURL = 'http://172.30.1.22:8080/api/';
+gameAxios.defaults.baseURL = 'http://172.30.1.36:8080/api/';
 gameAxios.defaults.withCredentials = true;
 
 export const http = {
