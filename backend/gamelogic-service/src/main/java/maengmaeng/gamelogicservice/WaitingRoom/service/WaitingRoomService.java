@@ -149,16 +149,14 @@ public class WaitingRoomService {
         }
     }
 
-    public void kick(String roomCode, String outUser) throws JSONException {
+    public void kick(String roomCode, String outUser){
         WaitingRoom waitingRoom = waitingRoomRepository.getWaitingRoomNow(roomCode);
 
         List<CurrentParticipant> participants = waitingRoom.getCurrentParticipants();
 
-        JSONObject jsonObject = new JSONObject(outUser);
-        String kickUser = jsonObject.getString("outUser");
 
         for (CurrentParticipant participant : participants) {
-            if(participant.getNickname() != null && participant.getNickname().equals(kickUser)){
+            if(participant.getNickname() != null && participant.getNickname().equals(outUser)){
                 participant.setUserId(null);
                 participant.setNickname(null);
                 participant.setCharacterId(-1);
