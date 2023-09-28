@@ -66,6 +66,8 @@ dependencies {
 	// Spring Boot Configuration Processor 추가
 	annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
 
+	implementation 'org.json:json:20230227'
+
 }
 
 dependencyManagement {
