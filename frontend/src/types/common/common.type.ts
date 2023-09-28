@@ -19,8 +19,8 @@ export type DetailUserType = {
 };
 
 export type ParticipantsType = {
-  userId: string;
-  nickname: string;
+  userId: string | null;
+  nickname: string | null;
   characterId: number;
   ready: boolean;
   closed: boolean;
@@ -52,7 +52,11 @@ export type CharacterType = {
   avatarImageNoBg: string;
 };
 
+// export type SocketResponseType = {
+//   type: string;
+//   data:
+// }
 export type WSResponseType<T> = {
-  tpye: string;
+  type: string;
   data: T;
 };

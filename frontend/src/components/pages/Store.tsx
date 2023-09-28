@@ -5,16 +5,17 @@ import StoreCharacterCard from '@components/store/StoreCharacterCard';
 import StoreOwnerView from '@components/store/StoreOwnerView';
 import PurchaseModal from '@components/modal/PurchaseModal';
 import useToastList from '@hooks/useToastList';
-import { CharacterType } from '@/types/common/common.type';
 import { getStoreInfo, purchaseCharacter } from '@apis/storeApi';
-import { StoreInfoType } from '@/types/store/store.type';
+import { StoreCharacterType, StoreInfoType } from '@/types/store/store.type';
 import { ToastMessageState } from '@atom/toastAtom';
-import { useSetRecoilState } from 'recoil';
+import { useRecoilState, useSetRecoilState } from 'recoil';
+import { motion } from 'framer-motion';
+import { userState } from '@atom/userAtom';
 
 const Store = () => {
   const [isOpenPurchaseModal, setIsOpenPurchaseModal] = useState(false);
-  const [myMoney, setMyMoney] = useState(3000);
-  const [characterList, setCharacterList] = useState<CharacterType[]>([]);
+  const [user, setUser] = useRecoilState(userState);
+  const [characterList, setCharacterList] = useState<StoreCharacterType[]>([]);
   const [selectCid, setSelectCid] = useState(-1);
   const { show } = useToastList();
   const setToastMessage = useSetRecoilState(ToastMessageState);
@@ -55,7 +56,13 @@ const Store = () => {
     (cid: number) => {
       purchaseCharacter(cid)
         .then((res) => {
-          setMyMoney(res.point);
+          // setMyMoney(res.point);
+          if (!user) return;
+          setUser({
+            ...user,
+            point: res.point,
+          });
+
           setCharacterList(res.avatarList);
           setToastMessage((prev) => {
             return {
@@ -69,16 +76,31 @@ const Store = () => {
           toastFailPurchase();
         });
     },
-    [setToastMessage, show, toastFailPurchase]
+    [setToastMessage, setUser, show, toastFailPurchase, user]
   );
 
   useEffect(() => {
-    getStoreInfo().then((res: StoreInfoType) => {
-      console.log(res);
-      setMyMoney(res.point);
-      setCharacterList(res.avatarList);
-    });
-  }, []);
+    getStoreInfo()
+      .then((res: StoreInfoType) => {
+        console.log(res);
+        // setMyMoney(res.point);
+        if (!user) return;
+        setUser({
+          ...user,
+          point: res.point,
+        });
+        setCharacterList(
+          res.avatarList.sort(function (a, b) {
+            return a.avatarPrice - b.avatarPrice;
+          })
+        );
+      })
+      .catch(() => {
+        console.log('실패');
+      });
+  }, [setUser, user]);
+
+  if (!user) return;
 
   return (
     <>
@@ -88,13 +110,31 @@ const Store = () => {
         isOpenPurchaseModal={isOpenPurchaseModal}
         handlePurchaseModalClose={handlePurchaseModalClose}
       />
-      <div
+      <motion.div
         className='flex flex-row w-full h-full justify-between relative'
         style={{
           backgroundImage: `url(${images.store.background})`,
           backgroundSize: 'cover',
         }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
       >
+        <motion.div
+          className='absolute top-[45px] left-[45px] w-[70px] h-[70px] z-10'
+          whileHover={{ scale: 1.2 }}
+          whileTap={{ scale: 0.9 }}
+          transition={{ type: 'spring', stiffness: 400, damping: 17 }}
+        >
+          <button
+            onClick={() => {
+              window.history.back();
+            }}
+          >
+            <img src={images.icon.back} alt='뒤로가기 버튼' />
+          </button>
+        </motion.div>
+
         <StoreOwnerView />
 
         <div className='basis-2/3 flex flex-col h-full items-end justify-between py-[45px] pr-[45px] relative'>
@@ -105,7 +145,7 @@ const Store = () => {
               alt='포인트 아이콘'
             />
             <p className='text-[30px] font-bold text-text-100'>
-              {addComma(myMoney)}
+              {addComma(user.point)}
             </p>
           </div>
 
@@ -116,11 +156,11 @@ const Store = () => {
                   key={character.avatarId}
                   id={character.avatarId}
                   have={character.hasAvatar}
-                  img={character.avatarImageBg}
+                  img={character.avatarImage}
                   name={character.avatarName}
                   point={character.avatarPrice}
                   onClick={
-                    myMoney < character.avatarPrice
+                    user.point < character.avatarPrice
                       ? toastLessPoint
                       : handlePurchaseModalOpen
                   }
@@ -130,7 +170,7 @@ const Store = () => {
             </div>
           </div>
         </div>
-      </div>
+      </motion.div>
     </>
   );
 };

@@ -1,10 +1,20 @@
-import { ChatMessageType } from '@/types/common/common.type';
+import {
+  CharacterType,
+  ChatMessageType,
+  ParticipantsType,
+  WSResponseType,
+} from '@/types/common/common.type';
+import { RoomType } from '@/types/lobby/lobby.type';
+import { getCharacterList } from '@apis/userApi';
+
 import { userState } from '@atom/userAtom';
 import WaitingRoomCharaterCard from '@components/watingRoom/WaitingRoomCharaterCard';
 import WaitingRoomChatting from '@components/watingRoom/WaitingRoomChatting';
+import WaitingRoomHeader from '@components/watingRoom/WaitingRoomHeader';
 import { images } from '@constants/images';
 import * as StompJs from '@stomp/stompjs';
 import { activateClient, getClient } from '@utils/socket';
+import { findMyData } from '@utils/waitingRoom';
 import { motion } from 'framer-motion';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
@@ -31,44 +41,160 @@ const InnerAnimation = {
 };
 
 const WaitingRoom = () => {
-  const navigate = useNavigate();
+  const navigation = useNavigate();
   const user = useRecoilValue(userState);
   const { roomId } = useParams();
-  const isReady = true;
   const client = useRef<StompJs.Client>();
+  const waitSub = useRef<StompJs.StompSubscription>();
+  const chatSub = useRef<StompJs.StompSubscription>();
+  const [roomTitle, setRoomTitle] = useState('');
+  const [inviteCode, setInviteCode] = useState('');
+  const [userList, setUserList] = useState<ParticipantsType[]>([]);
   const [chatList, setChatList] = useState<ChatMessageType[]>([]);
+  const [characterList, setCharacterList] = useState<CharacterType[]>([]);
 
-  const onClickExitButton = useCallback(() => {
-    navigate(-1);
-  }, [navigate]);
+  const sendChatMessage = useCallback(
+    (msg: string) => {
+      console.log(msg);
+
+      client.current?.publish({
+        destination: `/pub/chats`,
+        body: JSON.stringify({
+          roomCode: roomId,
+          sender: user?.nickname,
+          message: msg,
+        }),
+      });
+    },
+    [roomId, user?.nickname]
+  );
+
+  const handleReady = useCallback(() => {
+    client.current?.publish({
+      destination: `/pub/waiting-rooms/ready/${roomId}`,
+      body: JSON.stringify({
+        userId: user?.userId,
+        nickname: user?.nickname,
+        characterId: user?.avatarId,
+      }),
+    });
+  }, [roomId, user?.avatarId, user?.nickname, user?.userId]);
+
+  const handleKick = useCallback(
+    (nickName: string) => {
+      console.log('[강퇴]', nickName);
+
+      client.current?.publish({
+        destination: `/pub/waiting-rooms/kick/${roomId}`,
+        body: JSON.stringify({
+          outUser: nickName,
+        }),
+      });
+    },
+    [roomId]
+  );
+
+  const handleExit = useCallback(() => {
+    client.current?.publish({
+      destination: `/pub/waiting-rooms/exit/${roomId}`,
+      body: JSON.stringify({
+        userId: user?.userId,
+        nickname: user?.nickname,
+        characterId: user?.avatarId,
+      }),
+    });
+    // 구독 연결 끊기
+    waitSub.current?.unsubscribe();
+    console.log('방에서 나갔습니다');
+  }, [roomId, user?.avatarId, user?.nickname, user?.userId]);
+
+  const handleGameStart = useCallback(() => {
+    console.log('게임 시작');
+
+    client.current?.publish({
+      destination: `/pub/waiting-rooms/start/${roomId}`,
+    });
+  }, [roomId]);
+
+  // 캐릭터 리스트 불러오기
+  useEffect(() => {
+    getCharacterList().then((res) => setCharacterList(res.data));
+  }, []);
 
   useEffect(() => {
     client.current = getClient();
     activateClient(client.current);
     client.current.onConnect = () => {
       if (client.current) {
-        client.current.subscribe(`/sub/waiting-rooms/${roomId}`, (res) => {
-          console.log(JSON.parse(res.body));
-        });
-        client.current.subscribe(`/sub/chats/${roomId}`, (res) => {
-          const newMsg: ChatMessageType = JSON.parse(res.body);
-          // 채팅 리스트 추가
-          setChatList((prev) => [...prev, newMsg]);
-          console.log(JSON.parse(res.body));
-        });
+        // 방 구독 하기
+        waitSub.current = client.current.subscribe(
+          `/sub/waiting-rooms/${roomId}`,
+          (res) => {
+            const response: WSResponseType<RoomType> = JSON.parse(res.body);
+            if (response.type === 'waitingRoom') {
+              const { title, code, currentParticipants } = response.data;
+              setRoomTitle(title);
+              setInviteCode(code);
+              setUserList(currentParticipants);
+            }
+            // 모두 레디가 완료되고 게임 시작 버튼을 클릭한 경우
+            if (response.type === 'gameStart') {
+              console.log('게임 시작!!');
+              waitSub.current?.unsubscribe();
+              navigation(`/game-room/${roomId}`);
+            }
+
+            if (response.type === '방 폭파') {
+              console.log('방장 나감');
+              waitSub.current?.unsubscribe();
+              navigation(`/lobby`);
+            }
+            console.log(JSON.parse(res.body));
+          }
+        );
+
+        // 방 정보 얻어오기
         client.current.publish({
-          destination: `/pub/lobby/${roomId}`,
+          destination: `/pub/waiting-rooms/${roomId}`,
           body: JSON.stringify({
-            userid: user?.userId,
+            userId: user?.userId,
             nickname: user?.nickname,
             characterId: user?.avatarId,
           }),
         });
+        chatSub.current = client.current.subscribe(
+          `/sub/chats/${roomId}`,
+          (res) => {
+            const response: WSResponseType<ChatMessageType> = JSON.parse(
+              res.body
+            );
+            // 채팅 리스트 추가
+            setChatList((prev) => [...prev, response.data]);
+            console.log(JSON.parse(res.body));
+          }
+        );
       }
     };
-  }, [roomId, user]);
 
-  if (!roomId) return;
+    // 연결 종료 시 로비로 이동 시킴
+    client.current.onDisconnect = () => {
+      navigation('/lobby');
+    };
+
+    // 방 나가기
+    return () => {
+      handleExit();
+    };
+  }, [
+    handleExit,
+    navigation,
+    roomId,
+    user?.avatarId,
+    user?.nickname,
+    user?.userId,
+  ]);
+
+  if (!user) return;
 
   return (
     <motion.div
@@ -81,79 +207,37 @@ const WaitingRoom = () => {
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
     >
-      <div className='flex items-center w-full h-[80px] border-b-2 border-white/80 bg-blue-400/40 shadow-2xl'>
-        <p className='font-extrabold text-[36px] text-white ml-[24px]'>
-          맹맹 시치 모여라~~
-        </p>
-        <div className='flex items-center'>
-          <img
-            className='w-[28px] h-[28px] ml-[80px]'
-            src={images.waitingRoom.mail}
-            alt='초대코드'
-          />
-          <span className='ml-[20px] text-white font-extrabold text-[20px]'>
-            12345
-          </span>
-          <motion.img
-            className='ml-[12px] w-[32px] h-[32px] cursor-pointer'
-            src={images.waitingRoom.copy}
-            alt='복사'
-            whileHover={{ scale: 1.2 }}
-            whileTap={{ scale: 0.9 }}
-          />
-        </div>
-        <button className='ml-auto mr-[12px]' onClick={onClickExitButton}>
-          <img
-            className='w-[56px] h-[56px] cursor-pointer'
-            src={images.waitingRoom.exit}
-            alt='나가기'
-          />
-        </button>
-      </div>
+      <WaitingRoomHeader title={roomTitle} code={inviteCode} />
       <motion.div
         initial='start'
         animate='end'
         variants={BoxAnimation}
         className='flex justify-around h-full'
       >
-        <WaitingRoomCharaterCard
-          name={'상근시치'}
-          avaterUrl={images.dummy.dummy1}
-          isReady={false}
-          isManager={true}
-          isClose={false}
-          animation={InnerAnimation}
-        />
-        <WaitingRoomCharaterCard
-          name={'215'}
-          avaterUrl={images.dummy.dummy2}
-          isReady={true}
-          isManager={false}
-          isClose={false}
-          animation={InnerAnimation}
-        />
-        <WaitingRoomCharaterCard
-          name={''}
-          avaterUrl={''}
-          isReady={false}
-          isManager={false}
-          isClose={true}
-          animation={InnerAnimation}
-        />
-        <WaitingRoomCharaterCard
-          name={'기므나'}
-          avaterUrl={images.dummy.dummy3}
-          isReady={false}
-          isManager={false}
-          isClose={false}
-          animation={InnerAnimation}
-        />
+        {characterList.length &&
+          userList.length &&
+          userList.map((user, index) => (
+            <WaitingRoomCharaterCard
+              key={index}
+              name={user.nickname}
+              avaterUrl={
+                user.characterId > 0
+                  ? characterList[user.characterId - 1].avatarImageNoBg
+                  : null
+              }
+              isReady={user.ready}
+              isManager={user.userId === userList[0].userId}
+              manager={userList[0].userId}
+              isClose={user.closed}
+              animation={InnerAnimation}
+              handleKick={handleKick}
+            />
+          ))}
       </motion.div>
       <div className='absolute bottom-[8px] left-[12px]'>
         <WaitingRoomChatting
-          client={client.current ? client.current : null}
-          roomId={roomId}
           chatList={chatList}
+          sendChatMessage={sendChatMessage}
         />
       </div>
       <motion.div
@@ -162,15 +246,27 @@ const WaitingRoom = () => {
         whileTap={{ scale: 0.9 }}
         transition={{ type: 'spring', stiffness: 400, damping: 17 }}
       >
-        <img
-          className='h-[100px]'
-          src={
-            isReady
-              ? images.waitingRoom.readyButton
-              : images.waitingRoom.cancelButton
-          }
-          alt='button'
-        />
+        {userList.length && userList[0].userId === user.userId ? (
+          <button onClick={handleGameStart}>
+            <img
+              className='h-[100px]'
+              src={images.waitingRoom.gameStartButton}
+              alt='게임시작 버튼'
+            />
+          </button>
+        ) : (
+          <button onClick={handleReady}>
+            <img
+              className='h-[100px]'
+              src={
+                findMyData(userList, user.userId)?.ready
+                  ? images.waitingRoom.cancelButton
+                  : images.waitingRoom.readyButton
+              }
+              alt='button'
+            />
+          </button>
+        )}
       </motion.div>
     </motion.div>
   );

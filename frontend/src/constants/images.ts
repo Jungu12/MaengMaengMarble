@@ -22,6 +22,8 @@ export const images = {
       'https://maeng.s3.ap-northeast-2.amazonaws.com/images/cancel-button.png',
     readyButton:
       'https://maeng.s3.ap-northeast-2.amazonaws.com/images/ready-button.png',
+    gameStartButton:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/game-start-button.png',
   },
   gameRoom: {
     background:
@@ -78,6 +80,7 @@ export const images = {
       'https://maeng.s3.ap-northeast-2.amazonaws.com/images/ic-registration-active.png',
     registrationInactive:
       'https://maeng.s3.ap-northeast-2.amazonaws.com/images/ic-registration-inactive.png',
+    back: 'https://maeng.s3.ap-northeast-2.amazonaws.com/images/icon-back.png',
   },
   button: {
     close: 'https://maeng.s3.ap-northeast-2.amazonaws.com/images/btn-close.png',
