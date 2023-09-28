@@ -3,10 +3,7 @@ package maengmaeng.gamelogicservice.gameRoom.domain;
 import maengmaeng.gamelogicservice.gameRoom.domain.db.*;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Component
 public class GameInfoMapper {
@@ -23,11 +20,11 @@ public class GameInfoMapper {
                 .asset(100000000)
                 .lands(new ArrayList<Integer>())
                 .alive(true)
-                .currentTurn(0)
+                .currentTurn(1)
                 .stopTradeCount(0)
                 .doubleCount(0)
                 .currentLap(0)
-                .stocks(new ArrayList<Map<String, Integer>>())
+                .stocks(new int[15])
                 .loan(0)
                 .cards(cards)
                 .currentLocation(0)
@@ -63,8 +60,8 @@ public class GameInfoMapper {
         return Info.builder()
                 .currentPlayer(currentPlayer)
                 .turnCount(turnCount)
-                .effectNews(new ArrayList<>())
-                .waitingNews(new ArrayList<>())
+                .effectNews(new ArrayDeque<>())
+                .waitingNews(new ArrayDeque<>())
                 .build();
     }
 

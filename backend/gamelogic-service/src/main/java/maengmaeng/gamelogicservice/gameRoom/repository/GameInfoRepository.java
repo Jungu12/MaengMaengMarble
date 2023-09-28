@@ -32,7 +32,7 @@ public class GameInfoRepository {
 
 
     /**
-    *  게임방 생성
+    *  게임 정보 저장
      * */
     public GameInfo createGameRoom(GameInfo gameInfo){
 

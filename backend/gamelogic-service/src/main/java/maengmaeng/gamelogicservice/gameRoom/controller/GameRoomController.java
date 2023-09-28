@@ -46,7 +46,7 @@ public class GameRoomController {
 
 		GameData gameData = GameData.builder()
 				.type("GAME_ROOM")
-				.data(ResponseDto.builder().type("startCard").data(cards).build())
+				.data(ResponseDto.builder().type("플레이순서").data(cards).build())
 				.roomCode(roomCode)
 				.build();
 
@@ -67,7 +67,7 @@ public class GameRoomController {
 		GameData gameData = GameData.builder()
 				.type("GAME_ROOM")
 				.roomCode(roomCode)
-				.data(ResponseDto.builder().type("player").data(players).build()).build();
+				.data(ResponseDto.builder().type("플레이어").data(players).build()).build();
 		redisPublisher.publish(gameRoomTopic,gameData);
 
 		for(Player player : players){
@@ -93,7 +93,7 @@ public class GameRoomController {
 
 		GameData gameData = GameData.builder()
 				.data(ResponseDto.builder()
-						.type("gameInfo")
+						.type("게임정보")
 						.data(gameInfo)
 						.build())
 				.roomCode(roomCode)
@@ -114,11 +114,52 @@ public class GameRoomController {
 				.type("GAME_ROOM")
 				.roomCode(roomCode)
 				.data(ResponseDto.builder()
-						.type("dice")
+						.type("주사위")
 						.data(dice)
 						.build())
 				.build();
+		// 주사위 눈  double 카운트 전송
+		redisPublisher.publish(gameRoomTopic,gameData);
 
+
+		// 한 바퀴를 돌았으면 플레이어 정보 전송
+//		if(dice.isLapCheck()){
+//			GameInfo gameInfo = gameRoomService.getInfo(roomCode);
+//			GameData gameData1 = GameData.builder()
+//					.type("GAME_ROOM")
+//					.roomCode(roomCode)
+//					.data(ResponseDto.builder().type("player").data(gameInfo.getPlayers()).build())
+//					.build();
+//			redisPublisher.publish(gameRoomTopic,gameData1);
+//
+//		}
+
+	}
+
+	/**
+	 * 맹맹지급
+	 *
+	 * */
+//	@MessageMapping("/game-rooms/maengmaeng/{roomCode}")
+//	public void maengMaeng(@DestinationVariable String roomCode){
+//
+//
+//	}
+
+	/**
+	 * 거래 정지에서 주사위 굴리기
+	 *
+	 * */
+	@MessageMapping("/game-rooms/stopTrade/{roomCode}")
+	public void stopTrade(@DestinationVariable String roomCode){
+		//TODO: 거래 정지일 때 주사위 굴리기
+
+		GameInfo gameInfo  = gameRoomService.getInfo(roomCode);
+		GameData gameData = GameData.builder()
+				.type("GAME_ROOM")
+				.roomCode(roomCode)
+				.data(ResponseDto.builder().build())
+				.build();
 		redisPublisher.publish(gameRoomTopic,gameData);
 
 	}
@@ -137,12 +178,6 @@ public class GameRoomController {
 
 
 	}
-
-
-
-
-
-
 
 
 
