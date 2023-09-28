@@ -258,11 +258,58 @@ public class GameRoomService {
     /**
      * 총자산 계산
      * */
-//    public Long calculateAsset(Player player){
-//        //TODO: asset 계산
-//
-//
-//    }
+    public Long calculateAsset(Player player,List<Stock> stocks, List<Land> lands){
+        //TODO: asset 계산
+        long asset =0;
+        long stockMoney = 0;
+        // 소유중인 주식 가격 구하기
+        int[] playerStock = player.getStocks();
+        for(int i=1;i<playerStock.length;i++){
+            // 주식의 현재 가격 저장
+            stockMoney += playerStock[i] * stocks.get(i-1).getCurrentCost();
+
+        }
+        asset += stockMoney;
+        long landMoney =0;
+        // 소유 중인 땅 가격 구하기
+        List<Integer> landIdx = player.getLands();
+        for(int idx: landIdx){
+            // 소유중인 나라 가져와서
+            Land land = lands.get(idx);
+            // 땅, 건물을 어떤것을 가지고 있는지 확인 후 가격 계산
+
+            boolean[] check= land.getBuildings();
+
+            for(int i=0;i<check.length;i++){
+                // 땅 가지고 있을 때
+                if(i==0 && check[i]){
+                    landMoney += 10000* land.getCurrentLandPrice();
+
+                }
+                if(i==1 && check[i]){
+                    landMoney += 10000 * land.getCurrentBuildingPrices()[0];
+
+                }
+                if(i==2 && check[i]){
+                    landMoney += 10000 * land.getCurrentBuildingPrices()[1];
+
+                }
+                if(i==3 && check[i]){
+                    landMoney += 10000 * land.getCurrentBuildingPrices()[2];
+
+                }
+
+            }
+
+        }
+
+
+        asset += landMoney;
+
+        return  asset;
+
+
+    }
 
 
     /**

@@ -45,6 +45,7 @@ public class GameInfoMapper {
                 .buildingPrices(buildingPrices)
                 .fees(fees)
                 .currentLandPrice(dbCountry.getLandPrice())
+                .currentBuildingPrices(buildingPrices)
                 .buildings(buildings)
                 .currentFees(fees)
                 .owner(-1)

@@ -19,6 +19,7 @@ public class Land implements Serializable {
 	private int[] buildingPrices;
 	private int[] fees;
 	private int currentLandPrice;
+	private int [] currentBuildingPrices;
 	private boolean [] buildings;
 	private int[] currentFees;
 	private int owner;
