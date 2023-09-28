@@ -74,10 +74,7 @@ public class UserService {
         List<Relation> relationList = relationRepository.findAllByToId(user.getNickname());
         System.out.println(relationList.size());
         for(Relation relation : relationList){
-            System.out.println("여기들어옴?");
-            System.out.println("relation.getToId : " + relation.getToId());
             relation.setToId(newNickname);
-            System.out.println("newNickname : " + newNickname);
             relationRepository.save(relation);
         }
 
