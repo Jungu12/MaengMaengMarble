@@ -9,7 +9,6 @@ import maengmaeng.gamelogicservice.gameRoom.domain.dto.PlayerSeq;
 import maengmaeng.gamelogicservice.gameRoom.service.GameRoomService;
 import maengmaeng.gamelogicservice.global.dto.GameData;
 import maengmaeng.gamelogicservice.global.dto.ResponseDto;
-import maengmaeng.gamelogicservice.waitingRoom.service.WaitingRoomService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.listener.ChannelTopic;
@@ -28,7 +27,6 @@ public class GameRoomController {
 	private final RedisPublisher redisPublisher;
 	private final GameRoomService gameRoomService;
 	private final Logger logger = LoggerFactory.getLogger(getClass());
-	private final WaitingRoomService waitingRoomService;
 	private final ChannelTopic gameRoomTopic;
 
 
