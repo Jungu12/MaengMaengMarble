@@ -39,7 +39,7 @@ const RoomInfoCard = ({ room }: RoomInfoProps) => {
   }, [currentNum, totalNum, setToastMessage, show, navigation, room.code]);
 
   return (
-    <div className='flex flex-col w-full p-6 bg-primary-100 rounded-[40px]'>
+    <div className='flex flex-col w-full h-fit p-6 bg-primary-100 rounded-[40px]'>
       <p className='text-2xl font-extrabold text-text-100'>{room.title}</p>
       <div className='flex flex-row items-center mt-5 justify-between'>
         <p className='text-xl font-bold text-text-50'>

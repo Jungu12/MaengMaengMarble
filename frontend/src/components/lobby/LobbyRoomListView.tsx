@@ -22,7 +22,7 @@ const LobbyRoomListView = ({
 
   return (
     <div className='flex flex-[3] flex-col h-full w-full p-12 justify-between bg-white bg-opacity-50 rounded-[40px] overflow-auto'>
-      <div className='grid grid-cols-2 gap-10 place-content-between pr-[20px] w-full h-full relative scrollbar'>
+      <div className='grid grid-cols-2 gap-10 place-content-start pr-[20px] w-full h-full relative scrollbar'>
         {roomList.length > 1
           ? roomList
               .sort((a, b) => {
