@@ -41,21 +41,21 @@ public class LobbyService {
             .createdTime(createRoomCreatedTime())
             .build();
 
-        CurrentParticipant currentParticipant = CurrentParticipant.builder()
-            .userId(roomInfo.getUserInfo().getUserId())
-            .nickname(roomInfo.getUserInfo().getNickname())
-            .characterId(roomInfo.getUserInfo().getCharacterId())
-            .closed(false)
-            .ready(false)
-            .build();
+//        CurrentParticipant currentParticipant = CurrentParticipant.builder()
+//            .userId(roomInfo.getUserInfo().getUserId())
+//            .nickname(roomInfo.getUserInfo().getNickname())
+//            .characterId(roomInfo.getUserInfo().getCharacterId())
+//            .closed(false)
+//            .ready(false)
+//            .build();
 
         //방장을 CurrentParticipants에 추가
-        waitingRoom.addCurrentParticipants(currentParticipant);
+//        waitingRoom.addCurrentParticipants(currentParticipant);
 
-        int currentParticipants = waitingRoom.getCurrentParticipants().size();
+        int currentParticipants = 1;
         int maxParticipants = roomInfo.getMaxParticipants();
 
-        for (int cnt = 0; cnt < maxParticipants - 1; cnt++) {
+        for (int cnt = 0; cnt < maxParticipants ; cnt++) {
             CurrentParticipant empty = CurrentParticipant.builder().build();
 
             waitingRoom.addCurrentParticipants(empty);
