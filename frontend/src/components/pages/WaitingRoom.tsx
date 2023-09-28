@@ -182,11 +182,6 @@ const WaitingRoom = () => {
     client.current.onDisconnect = () => {
       navigation('/lobby');
     };
-
-    // 방 나가기
-    return () => {
-      handleExit();
-    };
   }, [
     handleExit,
     navigation,
@@ -196,6 +191,13 @@ const WaitingRoom = () => {
     user?.userId,
     userList,
   ]);
+
+  useEffect(() => {
+    // 방 나가기
+    return () => {
+      handleExit();
+    };
+  }, [handleExit]);
 
   if (!user) return;
 
