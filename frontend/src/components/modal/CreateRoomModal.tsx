@@ -5,8 +5,10 @@ import PeopleRadioButton from '../lobby/PeopleRadioButton';
 import CModal from '@components/common/CModal';
 import { createRoom } from '@apis/lobbyApi';
 import { useNavigate } from 'react-router-dom';
-import { useRecoilValue } from 'recoil';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
 import { userState } from '@atom/userAtom';
+import useToastList from '@hooks/useToastList';
+import { ToastMessageState } from '@atom/toastAtom';
 
 type CreateRoomModalProps = {
   isOpenCreateRoomModal: boolean;
@@ -23,6 +25,9 @@ const CreateRoomModal = ({
   const [roomName, setRoomName] = useState('');
   // 인원수 체크 관리
   const [selectedOption, setSelectedOption] = useState('2');
+  const { show } = useToastList();
+  const setToastMessage = useSetRecoilState(ToastMessageState);
+
   const onChange = (event: React.FormEvent<HTMLInputElement>) => {
     const { currentTarget: roomName } = event;
     if (roomName.value.length <= 12) {
@@ -34,22 +39,32 @@ const CreateRoomModal = ({
 
     if (!user) return;
 
-    createRoom(
-      {
-        userId: user?.userId,
-        nickname: user?.nickname,
-        characterId: user?.avatarId,
-      },
-      roomName,
-      selectedOption
-    )
-      .then((res) => {
-        console.log(res);
-        navigation(`/waiting-room/${res.roomCode}`);
-      })
-      .catch(() => {
-        // 에러 토스트메시지 출력
+    if (roomName.length <= 0) {
+      setToastMessage((prev) => {
+        return {
+          ...prev,
+          error: '방제목을 입력하세요.',
+        };
       });
+      show('error');
+    } else {
+      createRoom(
+        {
+          userId: user?.userId,
+          nickname: user?.nickname,
+          characterId: user?.avatarId,
+        },
+        roomName,
+        selectedOption
+      )
+        .then((res) => {
+          console.log(res);
+          navigation(`/waiting-room/${res.roomCode}`);
+        })
+        .catch(() => {
+          // 에러 토스트메시지 출력
+        });
+    }
     console.log(roomName);
   };
 
