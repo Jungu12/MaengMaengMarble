@@ -41,21 +41,19 @@ public class GameRoomService {
      * */
     public GameStart setStart(String roomCode, int playerCnt){
 
-        int[] cards = new int[playerCnt];
+        StartCard[] cards = new StartCard[playerCnt];
         for(int i=0;i<playerCnt;i++){
-            cards[i] = i+1;
+            cards[i] = StartCard.builder().seq(i+1).selected(false).build();
         }
         Random random = new Random();
-
-        // 배열을 뒤에서부터 앞으로 순회하면서 무작위로 요소를 선택하여 섞음
         for (int i = cards.length - 1; i > 0; i--) {
-            int randomIndex = random.nextInt(i + 1);
-
-            // 요소 교환
-            int temp = cards[i];
-            cards[i] = cards[randomIndex];
-            cards[randomIndex] = temp;
+            int j = random.nextInt(i + 1); // 0부터 i까지 무작위 인덱스 선택
+            // i와 j 위치의 요소 교환
+            StartCard temp = cards[i];
+            cards[i] = cards[j];
+            cards[j] = temp;
         }
+
         List<DbCountry> dbCountryList = dbCountryRespository.findAll();
 
         List<News> platinumNews = dbNewsRepository.findByNewsType("Platinum").stream().map(gameInfoMapper::toRedisNews).collect(Collectors.toList());
@@ -78,6 +76,7 @@ public class GameRoomService {
                 .goldenKeys(gameInfoMapper.toRedisGoldenKeys(bronze,diamond,platinum))
                 .stocks(stockList)
                 .newsInfo(NewsInfo.builder().bronze(bronzeNews).diamond(diamondNews).platinum(platinumNews).build())
+                .seqCards(cards)
                 .build();
 
         gameInfoRepository.createGameRoom(gameInfo);
@@ -89,15 +88,18 @@ public class GameRoomService {
 
     /**
      * 플레이어 게임 순서 세팅*/
-    public Player[] setPlayer(String roomCode, PlayerSeq playerSeq){
+    public StartCard[] setPlayer(String roomCode, PlayerSeq playerSeq){
 
         GameInfo gameInfo = getInfo(roomCode);
+        StartCard[] startCards = gameInfo.getSeqCards();
         Player[] players = gameInfo.getPlayers();
         int playerNum = gameInfo.getInfo().getPlayerCnt();
 
         Player player = gameInfoMapper.toReidsPlayer(playerSeq.getUserId(), playerSeq.getNickname());
-        if(players[playerSeq.getPlayerCnt()-1] ==null){
+        if(players[playerSeq.getPlayerCnt()-1] ==null && !startCards[playerSeq.getPlayerCnt()-1].isSelected()){
             players[playerSeq.getPlayerCnt()-1] = player;
+            startCards[playerSeq.getPlayerCnt()-1].setSelected(true);
+
             if(playerSeq.getPlayerCnt()==1){
                 Info info = Info.builder()
                         .currentPlayer(players[0].getNickname())
@@ -108,10 +110,11 @@ public class GameRoomService {
                         .build();
                 gameInfo.setInfo(info);
             }
+            gameInfo.setSeqCards(startCards);
         }
 
         gameInfoRepository.createGameRoom(gameInfo);
-        return  players;
+        return  gameInfo.getSeqCards();
     }
 
     /**

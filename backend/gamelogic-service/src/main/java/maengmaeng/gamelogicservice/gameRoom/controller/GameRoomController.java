@@ -2,6 +2,7 @@ package maengmaeng.gamelogicservice.gameRoom.controller;
 
 import maengmaeng.gamelogicservice.gameRoom.domain.GameInfo;
 import maengmaeng.gamelogicservice.gameRoom.domain.Player;
+import maengmaeng.gamelogicservice.gameRoom.domain.StartCard;
 import maengmaeng.gamelogicservice.gameRoom.domain.dto.Dice;
 import maengmaeng.gamelogicservice.gameRoom.domain.dto.GameStart;
 import maengmaeng.gamelogicservice.gameRoom.domain.dto.PlayerCount;
@@ -58,24 +59,24 @@ public class GameRoomController {
 	public void setPlayer(@DestinationVariable String roomCode , PlayerSeq playerSeq){
 		System.out.println("setPlayer");
 
-		Player[] players = gameRoomService.setPlayer(roomCode, playerSeq);
+		StartCard[] startCards = gameRoomService.setPlayer(roomCode, playerSeq);
 		GameInfo gameInfo = gameRoomService.getInfo(roomCode);
 		int num = gameInfo.getInfo().getPlayerCnt();
-		int cnt =0;
 		GameData gameData = GameData.builder()
 				.type("GAME_ROOM")
 				.roomCode(roomCode)
-				.data(ResponseDto.builder().type("플레이어").data(players).build()).build();
+				.data(ResponseDto.builder().type("플레이순서").data(startCards).build()).build();
 		redisPublisher.publish(gameRoomTopic,gameData);
+		boolean check = true;
 
-		for(Player player : players){
-			if(player !=null){
-				cnt++;
+		for(StartCard startCard : startCards){
+			if(startCard.isSelected() == false){
+				check = false;
 			}
 		}
-		if(cnt==num){
+		if(check){
 			System.out.println("게임 세팅 완료");
-			redisPublisher.publish(gameRoomTopic,GameData.builder().type("GAME_ROOM").roomCode(roomCode).data(ResponseDto.builder().type("message").data("모든 플레이어가 들어왔어요").build()).build());
+			redisPublisher.publish(gameRoomTopic,GameData.builder().type("GAME_ROOM").roomCode(roomCode).data(ResponseDto.builder().type("초기게임정보").data(gameInfo).build()).build());
 		}
 
 	}
