@@ -36,7 +36,7 @@ const GameRoom = () => {
         userId: user?.userId,
         nickname: user?.nickname,
         characterId: user?.avatarId,
-        playerCnt: index,
+        playerCnt: index + 1,
       }),
     });
     // updatedOrderList[index].selected = !updatedOrderList[index].selected;
