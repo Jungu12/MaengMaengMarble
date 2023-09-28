@@ -10,9 +10,14 @@ import MyPageModal from '@components/modal/MyPageModal';
 import InviteModal from '@components/modal/InviteModal';
 import { motion } from 'framer-motion';
 import { getRooms } from '@apis/lobbyApi';
-import { useRecoilValue } from 'recoil';
-import { userState } from '@atom/userAtom';
 import { RoomType } from '@/types/lobby/lobby.type';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
+import { userState } from '@atom/userAtom';
+import MyFriendSideBar from '@components/sidebar/MyFriendSideBar';
+import { getFriendlist } from '@apis/friendApi';
+import { FriendType } from '@/types/friend/friend.type';
+import { ToastMessageState } from '@atom/toastAtom';
+import useToastList from '@hooks/useToastList';
 import { WSResponseType } from '@/types/common/common.type';
 
 const Lobby = () => {
@@ -21,7 +26,11 @@ const Lobby = () => {
   const [isOpenCreateRoomModal, setIsOpenCreateRoomModal] = useState(false);
   const [isOpenMyPageModal, setIsOpenMyPageModal] = useState(false);
   const [isOpenInviteModal, setIsOpenInviteModal] = useState(false);
+  const [isOpenFriendSideBar, setIsOpenFriendSideBar] = useState(false);
   const [roomList, setRoomList] = useState<RoomType[]>([]);
+  const [friendList, setFriendList] = useState<FriendType[]>([]);
+  const { show } = useToastList();
+  const setToastMessage = useSetRecoilState(ToastMessageState);
 
   const onClickCreateRoomButton = useCallback(() => {
     setIsOpenCreateRoomModal((prev) => !prev);
@@ -45,6 +54,14 @@ const Lobby = () => {
 
   const handleInviteModal = useCallback(() => {
     setIsOpenInviteModal(false);
+  }, []);
+
+  const onClickFriendButton = useCallback(() => {
+    setIsOpenFriendSideBar((prev) => !prev);
+  }, []);
+
+  const handleFriendSideBarClose = useCallback(() => {
+    setIsOpenFriendSideBar(false);
   }, []);
 
   // 소켓 연결
@@ -74,6 +91,22 @@ const Lobby = () => {
     };
   }, []);
 
+  useEffect(() => {
+    getFriendlist()
+      .then((res) => {
+        setFriendList(res);
+      })
+      .catch(() => {
+        setToastMessage((prev) => {
+          return {
+            ...prev,
+            error: '친구목록을 불러오는데 실패하였습니다.',
+          };
+        });
+        show('error');
+      });
+  }, [setToastMessage, show]);
+
   return (
     <>
       <InviteModal
@@ -88,6 +121,12 @@ const Lobby = () => {
         isOpenCreateRoomModal={isOpenMyPageModal}
         handleMyPageModalClose={handleMyPageModalClose}
       />
+      <MyFriendSideBar
+        friendList={friendList}
+        isOpenFriendSideBar={isOpenFriendSideBar}
+        handleFriendSideBarClose={handleFriendSideBarClose}
+      />
+
       <motion.div
         className='flex flex-col w-full h-full relative p-[45px] overflow-auto'
         style={{
@@ -98,7 +137,7 @@ const Lobby = () => {
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
       >
-        <LobbyHeader />
+        <LobbyHeader onClickFriendButton={onClickFriendButton} />
 
         <div className='flex flex-1 flex-row w-full items-center justify-between mt-5 overflow-auto'>
           {user && (

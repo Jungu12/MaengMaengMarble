@@ -1,6 +1,5 @@
 import { UserType } from '@/types/common/common.type';
 import { RoomType } from '@/types/lobby/lobby.type';
-
 import { gameHttp } from '@utils/http';
 
 // 추후 gameHttp -> http로 변경해야함.

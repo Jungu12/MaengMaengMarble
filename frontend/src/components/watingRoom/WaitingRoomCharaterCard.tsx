@@ -1,7 +1,6 @@
 import { userState } from '@atom/userAtom';
 import { images } from '@constants/images';
 import { motion } from 'framer-motion';
-import { useCallback, useEffect } from 'react';
 import { useRecoilValue } from 'recoil';
 
 type Props = {

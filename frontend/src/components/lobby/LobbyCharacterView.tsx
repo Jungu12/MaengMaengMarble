@@ -26,6 +26,8 @@ const LobbyCharacterView = ({
         </button>
       </div>
       <img
+        // src={images.default.character}
+        // className='max-w-full'
         src={img}
         alt='캐릭터 뷰'
         style={{

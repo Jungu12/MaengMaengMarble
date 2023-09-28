@@ -6,7 +6,8 @@ import * as StompJs from '@stomp/stompjs';
  */
 export const getClient = () => {
   const client = new StompJs.Client({
-    brokerURL: 'ws://172.30.1.36:8080/api/maeng',
+    // brokerURL: 'ws://192.168.100.64:8080/api/maeng',
+    brokerURL: 'ws://j9d207.p.ssafy.io:8081/api/maeng',
     // brokerURL: 'ws://172.30.1.55:8080/api/maeng',
     connectHeaders: {
       login: '',
