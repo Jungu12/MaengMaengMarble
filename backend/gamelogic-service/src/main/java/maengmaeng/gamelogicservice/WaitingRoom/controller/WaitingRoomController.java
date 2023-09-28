@@ -8,14 +8,16 @@ import maengmaeng.gamelogicservice.lobby.service.LobbyService;
 import maengmaeng.gamelogicservice.util.RedisPublisher;
 import maengmaeng.gamelogicservice.waitingRoom.domain.WaitingRoom;
 import maengmaeng.gamelogicservice.global.dto.GameData;
+import maengmaeng.gamelogicservice.waitingRoom.domain.dto.OutUser;
 import maengmaeng.gamelogicservice.waitingRoom.domain.dto.UserInfo;
 import maengmaeng.gamelogicservice.waitingRoom.service.WaitingRoomService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.configurationprocessor.json.JSONException;
+
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.stereotype.Controller;
 
@@ -149,11 +151,11 @@ public class WaitingRoomController {
 
     }
 
-    // 어차피 프론트에서 방장만 퇴장가능하니까 해당부분을 따로 내가 확인해줘야하는가?
+
     @MessageMapping("/waiting-rooms/kick/{roomCode}")
-    public void kick(@DestinationVariable String roomCode, String outUser) throws JSONException {
+    public void kick(@DestinationVariable String roomCode, @Payload OutUser outUser){
         // 유저가 kick 눌러서 내보내기
-        waitingRoomService.kick(roomCode,outUser);
+        waitingRoomService.kick(roomCode,outUser.getOutUser());
 
         WaitingRoom waitingRoom = waitingRoomService.getWaitingRoomNow(roomCode);
 
