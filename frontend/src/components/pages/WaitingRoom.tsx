@@ -141,7 +141,9 @@ const WaitingRoom = () => {
             if (response.type === 'gameStart') {
               console.log('게임 시작!!');
               waitSub.current?.unsubscribe();
-              navigation(`/game-room/${roomId}`);
+              navigation(`/game-room/${roomId}`, {
+                state: { userList: userList },
+              });
             }
 
             if (response.type === '방 폭파') {
@@ -192,6 +194,7 @@ const WaitingRoom = () => {
     user?.avatarId,
     user?.nickname,
     user?.userId,
+    userList,
   ]);
 
   if (!user) return;

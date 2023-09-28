@@ -5,13 +5,16 @@ import { AnimatePresence, motion, useAnimation } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
 import * as StompJs from '@stomp/stompjs';
 import { activateClient, getClient } from '@utils/socket';
-import { useParams } from 'react-router-dom';
-import { WSResponseType } from '@/types/common/common.type';
+import { useLocation, useParams } from 'react-router-dom';
+import { ParticipantsType, WSResponseType } from '@/types/common/common.type';
 import { TurnListType } from '@/types/gameRoom/game.type';
 import { useRecoilValue } from 'recoil';
 import { userState } from '@atom/userAtom';
+import { currentParticipantsNum } from '@utils/lobby';
 
 const GameRoom = () => {
+  const location = useLocation();
+  const state = location.state as { userList: ParticipantsType[] };
   const user = useRecoilValue(userState);
   const client = useRef<StompJs.Client>();
   const gameSub = useRef<StompJs.StompSubscription>();
@@ -101,8 +104,19 @@ const GameRoom = () => {
           console.log(JSON.parse(res.body));
         }
       );
+      console.log('[참가 인원]', currentParticipantsNum(state.userList));
+
+      // 방장인 경우 게임 시작 알리기
+      if (user?.userId === state.userList[0].userId) {
+        client.current?.publish({
+          destination: `/pub/game-rooms/start/${gameId}`,
+          body: JSON.stringify({
+            cnt: currentParticipantsNum(state.userList).toString(),
+          }),
+        });
+      }
     };
-  }, [gameId]);
+  }, [gameId, state.userList, user?.userId]);
 
   if (!isGameStart) {
     return (
