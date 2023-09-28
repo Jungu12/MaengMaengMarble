@@ -59,11 +59,13 @@ dependencies {
 	implementation 'io.jsonwebtoken:jjwt-jackson:0.11.5'
 
 	// @ConfigurationProperties 사용을 위함
-	annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
 
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 	//embedded-redis 사용을 위함
 	implementation group: 'it.ozimov', name: 'embedded-redis', version: '0.7.1'
+	// Spring Boot Configuration Processor 추가
+	annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
+
 }
 
 dependencyManagement {
