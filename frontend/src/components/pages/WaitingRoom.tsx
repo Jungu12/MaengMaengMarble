@@ -188,33 +188,33 @@ const WaitingRoom = () => {
     user?.userId,
   ]);
 
-  useEffect(() => {
-    let subTemp: StompJs.StompSubscription;
-    if (!client.current) return;
+  // useEffect(() => {
+  //   let subTemp: StompJs.StompSubscription;
+  //   if (!client.current) return;
 
-    client.current.onConnect = () => {
-      if (!client.current) return;
-      subTemp = client.current.subscribe(
-        `/sub/waiting-rooms/${roomId}`,
-        (res) => {
-          const response: WSResponseType<RoomType> = JSON.parse(res.body);
+  //   client.current.onConnect = () => {
+  //     if (!client.current) return;
+  //     subTemp = client.current.subscribe(
+  //       `/sub/waiting-rooms/${roomId}`,
+  //       (res) => {
+  //         const response: WSResponseType<RoomType> = JSON.parse(res.body);
 
-          // 모두 레디가 완료되고 게임 시작 버튼을 클릭한 경우
-          if (response.type === 'gameStart') {
-            console.log('게임 시작!!');
-            waitSub.current?.unsubscribe();
-            navigation(`/game-room/${roomId}`, {
-              state: { userList: userList },
-            });
-          }
-        }
-      );
-    };
+  //         // 모두 레디가 완료되고 게임 시작 버튼을 클릭한 경우
+  //         if (response.type === 'gameStart') {
+  //           console.log('게임 시작!!');
+  //           waitSub.current?.unsubscribe();
+  //           navigation(`/game-room/${roomId}`, {
+  //             state: { userList: userList },
+  //           });
+  //         }
+  //       }
+  //     );
+  //   };
 
-    return () => {
-      subTemp.unsubscribe();
-    };
-  }, [navigation, roomId, userList]);
+  //   return () => {
+  //     subTemp.unsubscribe();
+  //   };
+  // }, [navigation, roomId, userList]);
 
   if (!user) return;
 
