@@ -44,9 +44,9 @@ const WaitingRoomChatting = ({ chatList, sendChatMessage }: Props) => {
         className='px-[8px] mt-[12px] w-[400px] h-[48px] rounded-lg border-2 border-white bg-opacity-50 bg-white focus:border-[#3AA1FF] outline-none'
         placeholder='플레이어들에게 하고 싶은 말을 적어주세요!'
         onKeyDown={(e) => {
-          if (e.key === 'Enter') {
+          if (e.key === 'Enter' && !e.nativeEvent.isComposing) {
             if (input === '') return;
-
+            e.preventDefault();
             sendChatMessage(input);
             setInput('');
           }

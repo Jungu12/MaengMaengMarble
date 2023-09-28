@@ -10,4 +10,5 @@ export type RoomType = {
   title: string;
   currentParticipants: ParticipantsType[];
   code: string;
+  createdTime: string;
 };

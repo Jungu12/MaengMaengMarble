@@ -1,8 +1,8 @@
 /* eslint-disable import/named */
-import { ResponseAccessTokenType } from '@/types/common/auth.type';
+// import { ResponseAccessTokenType } from '@/types/common/auth.type';
 import { accessTokenState } from '@atom/userAtom';
 import { loginUrl } from '@constants/baseUrl';
-import { authAxios, http } from '@utils/http';
+import { authAxios } from '@utils/http';
 // eslint-disable-next-line import/named
 import {
   AxiosError,
@@ -11,12 +11,12 @@ import {
   InternalAxiosRequestConfig,
 } from 'axios';
 import { useEffect } from 'react';
-import { useRecoilState } from 'recoil';
+import { useRecoilValue } from 'recoil';
 
 export const useAxiosInterceptor = () => {
-  const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
+  // const [accessToken, setAccessToken] = useRecoilState(accessTokenState);
+  const accessToken = useRecoilValue(accessTokenState);
 
-  //
   const errorHandler = (error: AxiosError) => {
     console.log('errInterceptor!', error);
     if (error.response?.status === 401) {
