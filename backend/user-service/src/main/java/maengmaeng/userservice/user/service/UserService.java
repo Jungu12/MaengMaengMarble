@@ -3,6 +3,8 @@ package maengmaeng.userservice.user.service;
 import lombok.RequiredArgsConstructor;
 import maengmaeng.userservice.exception.ExceptionCode;
 import maengmaeng.userservice.exception.UserException;
+import maengmaeng.userservice.relation.domain.Relation;
+import maengmaeng.userservice.relation.repository.RelationRepository;
 import maengmaeng.userservice.user.domain.Avatar;
 import maengmaeng.userservice.user.domain.User;
 import maengmaeng.userservice.user.domain.UserAvatar;
@@ -25,6 +27,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final UserAvatarRepository userAvatarRepository;
     private final AvatarRepository avatarRepository;
+    private final RelationRepository relationRepository;
 
     // 내 정보 조회(get)
     public UserDetail findUser(String userId) {
@@ -66,6 +69,16 @@ public class UserService {
         // 새 닉네임이 이미 사용중인지 확인
         if (userRepository.existsByNickname(newNickname)) {
             throw new UserException(ExceptionCode.NICKNAME_ALREADY_IN_USE);
+        }
+
+        List<Relation> relationList = relationRepository.findAllByToId(user.getNickname());
+        System.out.println(relationList.size());
+        for(Relation relation : relationList){
+            System.out.println("여기들어옴?");
+            System.out.println("relation.getToId : " + relation.getToId());
+            relation.setToId(newNickname);
+            System.out.println("newNickname : " + newNickname);
+            relationRepository.save(relation);
         }
 
         // 닉네임 변경

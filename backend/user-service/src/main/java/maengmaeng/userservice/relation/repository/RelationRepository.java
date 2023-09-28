@@ -17,5 +17,7 @@ public interface RelationRepository extends JpaRepository<Relation, Long> {
 
     List<Relation> findAllByFromId(String from);
 
+    List<Relation> findAllByToId(String nickname);
+
 
 }

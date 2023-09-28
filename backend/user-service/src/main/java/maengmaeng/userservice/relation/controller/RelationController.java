@@ -35,15 +35,15 @@ public class RelationController {
         to : 내가 친구요청 하는 사람
      */
     @PostMapping("")
-    public ResponseEntity<Void> addRelation(@AuthenticationPrincipal String loginUser, @RequestBody Map<String, String> to){
+    public ResponseEntity<String> addRelation(@AuthenticationPrincipal String loginUser, @RequestBody Map<String, String> to){
         relationService.addRelation(loginUser,to.get("to"));
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok("success");
     }
 
 
     @DeleteMapping("")
-    public ResponseEntity<Void> deleteRelation(@AuthenticationPrincipal String loginUser, @RequestBody Map<String, String> to){
-        relationService.deleteRelation(loginUser,to.get("to"));
+    public ResponseEntity<Void> deleteRelation(@AuthenticationPrincipal String loginUser, @RequestParam String to){
+        relationService.deleteRelation(loginUser,to);
         return ResponseEntity.ok().build();
     }
 

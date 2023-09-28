@@ -22,6 +22,10 @@ public class Relation {
     private String fromId;
     private String toId;
 
+    public void setToId(String toId){
+        this.toId = toId;
+    }
+
 
 
 

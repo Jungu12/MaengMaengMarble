@@ -9,7 +9,7 @@ public class RelationException extends RuntimeException {
     private final ExceptionCode exceptionCode;
 
     public String getMessage() {
-        return "[Relation] " + exceptionCode.getMessage();
+        return exceptionCode.getMessage();
     }
 
     public HttpStatus getHttpStatus() {

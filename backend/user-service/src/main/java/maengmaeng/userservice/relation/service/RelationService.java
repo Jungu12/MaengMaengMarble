@@ -43,9 +43,9 @@ public class RelationService {
         if (relationRepository.existsByFromIdAndToId(loginUser, to)) {
             throw new RelationException(ExceptionCode.ALREADY_REQUESTED);
         }
-        // 닉네임을 가진 사용작 없는 경우
+        // 닉네임을 가진 사용자가 없는 경우
         if(!userRepository.existsByNickname(to)){
-            throw new RelationException(ExceptionCode.USER_NOT_FOUND);
+            throw new RelationException(ExceptionCode.RELATION_USER_NOT_FOUND);
         }
 
 
