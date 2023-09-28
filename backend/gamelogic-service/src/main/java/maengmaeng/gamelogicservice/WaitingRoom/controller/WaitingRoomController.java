@@ -6,9 +6,11 @@ import maengmaeng.gamelogicservice.global.dto.ResponseDto;
 import maengmaeng.gamelogicservice.lobby.domain.dto.WaitingRoomListResponse;
 import maengmaeng.gamelogicservice.lobby.service.LobbyService;
 import maengmaeng.gamelogicservice.util.RedisPublisher;
+import maengmaeng.gamelogicservice.waitingRoom.domain.CurrentParticipant;
 import maengmaeng.gamelogicservice.waitingRoom.domain.WaitingRoom;
 import maengmaeng.gamelogicservice.global.dto.GameData;
 import maengmaeng.gamelogicservice.waitingRoom.domain.dto.UserInfo;
+import maengmaeng.gamelogicservice.waitingRoom.exception.WaitingRoomException;
 import maengmaeng.gamelogicservice.waitingRoom.service.WaitingRoomService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +19,7 @@ import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.stereotype.Controller;
 
+import java.util.Currency;
 import java.util.List;
 
 
@@ -31,6 +34,7 @@ public class WaitingRoomController {
     private final ChannelTopic lobbyTopic;
     private final LobbyService lobbyService;
     private final static String WAITINGROOM = "WAITING_ROOM";
+
     private final static String LOBBY = "LOBBY";
 
     @MessageMapping("/waiting-rooms/{roomCode}")
@@ -76,17 +80,21 @@ public class WaitingRoomController {
 
     @MessageMapping("/waiting-rooms/exit/{roomCode}")
     public void exit(@DestinationVariable String roomCode, UserInfo user){
-        // 유저가 exit 누른 것을 변경하기
-        waitingRoomService.exit(roomCode, user);
 
         // 현재 방의 게임데이터를 불러오기
         WaitingRoom waitingRoom = waitingRoomService.getWaitingRoomNow(roomCode);
 
+        int joinCnt = 0;
+        for(CurrentParticipant participant : waitingRoom.getCurrentParticipants()){
+            if(participant.getNickname()!=null){
+                joinCnt += 1;
+            }
+        }
 
         // 한명 남았는데 퇴장했을 때
-        logger.info("한명일때 waitingRoom 상태 : {}",waitingRoom);
-        if(waitingRoom==null){
+        if(joinCnt==1){
             // 한명일때 방이 사라지면 로비로 방이 없어졌다는 걸 알려주기 (로비로 전체 게임방 데이터 다시 전송)
+            waitingRoomService.removeWaitingRoom(roomCode);
             List<WaitingRoom> waitingRooms = lobbyService.findWaitingRooms();
 
             logger.info("{}", waitingRooms.get(0).getTitle());
@@ -99,9 +107,10 @@ public class WaitingRoomController {
             //구독자들에게 대기 방 전체 목록 pub
             redisPublisher.publish(lobbyTopic, gameData);
         }else {
-
+            waitingRoomService.exit(roomCode, user);
             // 여러명 남아있을때는 안에 들어있는 사람들 정보를 다 줘야한다
             // 현재 방의 최신 게임데이터 생성
+            waitingRoom = waitingRoomService.getWaitingRoomNow(roomCode);
             GameData gameData = GameData.builder()
                     .data(ResponseDto.builder().type("waitingRoom").data(waitingRoom).build())
                     .roomCode(roomCode)
@@ -110,6 +119,21 @@ public class WaitingRoomController {
 
 
             // WAITINGROOM topic에 gameData를 넣어서 발행하기 : 메세지를 redis topic에 발행
+            redisPublisher.publish(waitingRoomTopic, gameData);
+        }
+    }
+
+    @MessageMapping("/waiting-rooms/start/{roomCode}")
+    public void start(@DestinationVariable String roomCode){
+        boolean startPossible = waitingRoomService.start(roomCode);
+        if(startPossible){
+            WaitingRoom waitingRoom = waitingRoomService.getWaitingRoomNow(roomCode);
+            GameData gameData = GameData.builder()
+                    .data(ResponseDto.builder().type("waitingRoom").data(waitingRoom).build())
+                    .roomCode(roomCode)
+                    .type(WAITINGROOM)
+                    .build();
+
             redisPublisher.publish(waitingRoomTopic, gameData);
         }
     }
