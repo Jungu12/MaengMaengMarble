@@ -26,7 +26,7 @@ public class Player implements Serializable {
 	private int stopTradeCount;
 	private int doubleCount;
 	private int currentLap;
-	private List<Map<String, Integer>> stocks;
+	private int[] stocks;
 	private int loan;
 	private boolean[] cards;
 	private int currentLocation;

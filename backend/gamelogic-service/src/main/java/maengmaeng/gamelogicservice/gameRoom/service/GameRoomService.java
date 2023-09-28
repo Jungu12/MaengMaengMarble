@@ -9,10 +9,7 @@ import maengmaeng.gamelogicservice.gameRoom.domain.dto.PlayerSeq;
 import maengmaeng.gamelogicservice.gameRoom.repository.*;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -166,50 +163,31 @@ public class GameRoomService {
         if(currentIdx != -1){
             // 예외 처리
         }
-
+        // 주사위 굴리기
         Dice dice = getDice();
         Player curPlayer = players[currentIdx];
 
-
-        int currentLocation = curPlayer.getCurrentLocation();
-
         boolean checkTrade = false;
         // 더블 일 때
-        if(dice.getDice1() == dice.getDice2()){
+        if(dice.getDice1() == dice.getDice2()) {
             int doubleCount = curPlayer.getDoubleCount();
             doubleCount++;
-            if(doubleCount==3){
+            // 더블이 3번 나오면 거래정지 칸으로 이동 및 턴 종료
+            if (doubleCount >= 3) {
                 checkTrade = true;
+                //TODO:
 
             }
             curPlayer.setDoubleCount(doubleCount);
 
         }
-        // 다음 위치
-        int nextLocation = currentLocation + dice.getDice1() + dice.getDice2();
-        nextLocation = nextLocation % 32;
-        // 한바퀴 돌았음
-        if(currentLocation>nextLocation){
-            // 돈 바퀴 수 증가
-            int currentLap = curPlayer.getCurrentLap();
-            currentLap++;
-            curPlayer.setCurrentLap(currentLap);
-
-            // 이자를 줘서 money 저장
-            long money = Math.round(curPlayer.getMoney() * 1.15);
-            curPlayer.setMoney(money);
-            dice.setLapCheck(true);
-            // TODO: 배당금 관련 로직
-
-
-            // TODO: 대출금 관련 로직
-
-        }
-        curPlayer.setCurrentLocation(nextLocation);
 
         if(checkTrade){
-            // 거래 정지 칸으로 이동
+            // 거래 정지 칸으로 이동(한 바퀴 돌아서 거래정지로 가는 걸까??)
             curPlayer.setCurrentLocation(stopTrade);
+
+        } else{
+            Player player = move(curPlayer, dice.getDice1()+dice.getDice2());
 
         }
 
@@ -259,14 +237,60 @@ public class GameRoomService {
 //            return gameInfo;
         }
         // TODO: 더블이면 이동
+        Player player = move(curPlayer,dice.getDice1()+ dice.getDice2());
 
 
 
         return gameInfo;
     }
+    /**
+     * 맹맹 지급
+     * */
+//    public Player manegMaeng(Player player){
+//        // 맹맹: 보유 현금 * 0.15 + 배당금 - 대출 원금 * 0.24)
+//        long money = Math.round(player.getMoney() * 1.15);
+//        List<Map<Integer,Integer>> stock = player.getStocks();
+//        long dividends =
+//        Long maengManeg =
+//
+//    }
+
+    /**
+     * 총자산 계산
+     * */
+//    public Long calculateAsset(Player player){
+//        //TODO: asset 계산
+//
+//
+//    }
 
 
-    
+    /**
+     * 이동 로직
+     * */
+    public Player move(Player player, int move) {
+        int currentLocation = player.getCurrentLocation();
+        int nextLocation = (currentLocation + move) % 32;
+        //한 바퀴 돌았을 때
+        if(currentLocation<nextLocation){
+            int countLap = player.getCurrentLap()+1;
+            long money = Math.round(player.getMoney() * 1.15);
+            player.setMoney(money);
+            player.setCurrentLap(countLap);
+            // TODO: 배당금 관련 로직
+
+
+            // TODO: 대출금 관련 로직
+
+        }
+        player.setCurrentLocation(nextLocation);
+        return  player;
+
+
+
+    }
+
+
 
     /**
      * 턴을 종료하는 로직
