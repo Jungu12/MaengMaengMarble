@@ -96,10 +96,10 @@ const GameRoom = () => {
         (res) => {
           const response: WSResponseType<unknown> = JSON.parse(res.body);
           if (response.type === '플레이순서') {
-            const newOrderList = response.data as WSResponseType<
-              TurnListType[]
-            >;
-            setOrderList(newOrderList.data);
+            const newOrderList = response.data as WSResponseType<{
+              cards: TurnListType[];
+            }>;
+            setOrderList(newOrderList.data.cards);
           }
           console.log(JSON.parse(res.body));
         }
