@@ -175,18 +175,17 @@ public class GameRoomService {
             // 더블이 3번 나오면 거래정지 칸으로 이동 및 턴 종료
             if (doubleCount >= 3) {
                 checkTrade = true;
-                //TODO:
-
             }
             curPlayer.setDoubleCount(doubleCount);
 
         }
 
         if(checkTrade){
-            // 거래 정지 칸으로 이동(한 바퀴 돌아서 거래정지로 가는 걸까??)
+            // 거래정지 칸이면 바로
             curPlayer.setCurrentLocation(stopTrade);
-
+            // TODO: 턴 종료
         } else{
+
             Player player = move(curPlayer, dice.getDice1()+dice.getDice2());
 
         }
@@ -246,17 +245,47 @@ public class GameRoomService {
     /**
      * 맹맹 지급
      * */
-//    public Player manegMaeng(Player player){
-//        // 맹맹: 보유 현금 * 0.15 + 배당금 - 대출 원금 * 0.24)
-//        long money = Math.round(player.getMoney() * 1.15);
-//        List<Map<Integer,Integer>> stock = player.getStocks();
-//        long dividends =
-//        Long maengManeg =
-//
-//    }
+    public Player maengMaeng(Player player, List<Stock> stocks, List<Land> lands){
+        // 맹맹: 보유 현금 * 0.15 + 배당금 - 대출 원금 * 0.24)
+        long maengMaeng =0;
+        long money = Math.round(player.getMoney() * 0.15);
+        long dividends = 0;
+        long loan = Math.round(player.getLoan() *0.24);
+        int[] playerStock = player.getStocks();
+        // 배당금 구하기
+        for(int i=1;i<playerStock.length;i++){
+            dividends += playerStock[i] * stocks.get(i-1).getDividends();
+        }
+        maengMaeng = money+dividends -loan;
+        // 맹맹 >=0 이면 보유 현금 +
+        if(maengMaeng >=0){
+            long playerMoney = player.getMoney();
+            player.setMoney(playerMoney+maengMaeng);
+
+        } else{
+            // 맹맹이 음수일 때
+            // 맹맹이 보유자산 보다 많을 때?
+            if(maengMaeng > calculateMoney(player,stocks,lands) ){
+                //TODO: 파산 절차
+            } else {
+                if (player.getMoney() -maengMaeng>=0 ){
+                    // 보유 현금 -
+                    player.setMoney(player.getMoney()-maengMaeng);
+
+                } else{
+                    //TODO: 매각 절차
+                }
+            }
+
+
+        }
+        return player;
+
+
+    }
 
     /**
-     * 총자산 계산
+     *  플레이어 화면에 보여줄 총자산 계산
      * */
     public Long calculateAsset(Player player,List<Stock> stocks, List<Land> lands){
         //TODO: asset 계산
@@ -273,36 +302,28 @@ public class GameRoomService {
         long landMoney =0;
         // 소유 중인 땅 가격 구하기
         List<Integer> landIdx = player.getLands();
-        for(int idx: landIdx){
+        for(int idx: landIdx) {
             // 소유중인 나라 가져와서
             Land land = lands.get(idx);
             // 땅, 건물을 어떤것을 가지고 있는지 확인 후 가격 계산
-
-            boolean[] check= land.getBuildings();
-
-            for(int i=0;i<check.length;i++){
+            boolean[] check = land.getBuildings();
+            for (int i = 0; i < check.length; i++) {
                 // 땅 가지고 있을 때
-                if(i==0 && check[i]){
-                    landMoney += 10000* land.getCurrentLandPrice();
-
+                if (i == 0 && check[i]) {
+                    landMoney += 10000 * land.getCurrentLandPrice();
                 }
-                if(i==1 && check[i]){
+                if (i == 1 && check[i]) {
                     landMoney += 10000 * land.getCurrentBuildingPrices()[0];
-
                 }
-                if(i==2 && check[i]){
+                if (i == 2 && check[i]) {
                     landMoney += 10000 * land.getCurrentBuildingPrices()[1];
-
                 }
-                if(i==3 && check[i]){
+                if (i == 3 && check[i]) {
                     landMoney += 10000 * land.getCurrentBuildingPrices()[2];
-
                 }
-
             }
 
         }
-
 
         asset += landMoney;
 
@@ -310,6 +331,52 @@ public class GameRoomService {
 
 
     }
+    /**
+     * 파산 등에 사용할 자산 계산
+     */
+
+    public long calculateMoney(Player player, List<Stock> stocks, List<Land> lands){
+        long asset =0;
+        long stockMoney = 0;
+        // 소유중인 주식 가격 구하기
+        int[] playerStock = player.getStocks();
+        for(int i=1;i<playerStock.length;i++){
+            // 주식의 현재 가격 저장
+            stockMoney += playerStock[i] * stocks.get(i-1).getCurrentCost();
+
+        }
+        asset += stockMoney;
+        long landMoney =0;
+        // 소유 중인 땅 가격 구하기
+        List<Integer> landIdx = player.getLands();
+        for(int idx: landIdx) {
+            // 소유중인 나라 가져와서
+            Land land = lands.get(idx);
+            // 땅, 건물을 어떤것을 가지고 있는지 확인 후 가격 계산
+            boolean[] check = land.getBuildings();
+            for (int i = 0; i < check.length; i++) {
+                // 땅 가지고 있을 때
+                if (i == 0 && check[i]) {
+                    landMoney += 10000 * land.getCurrentLandPrice();
+                }
+                if (i == 1 && check[i]) {
+                    landMoney += 10000 * land.getCurrentBuildingPrices()[0];
+                }
+                if (i == 2 && check[i]) {
+                    landMoney += 10000 * land.getCurrentBuildingPrices()[1];
+                }
+                if (i == 3 && check[i]) {
+                    landMoney += 10000 * land.getCurrentBuildingPrices()[2];
+                }
+            }
+
+        }
+
+        asset += landMoney *0.7;
+
+        return  asset;
+    }
+
 
 
     /**
@@ -320,14 +387,7 @@ public class GameRoomService {
         int nextLocation = (currentLocation + move) % 32;
         //한 바퀴 돌았을 때
         if(currentLocation<nextLocation){
-            int countLap = player.getCurrentLap()+1;
-            long money = Math.round(player.getMoney() * 1.15);
-            player.setMoney(money);
-            player.setCurrentLap(countLap);
-            // TODO: 배당금 관련 로직
 
-
-            // TODO: 대출금 관련 로직
 
         }
         player.setCurrentLocation(nextLocation);
