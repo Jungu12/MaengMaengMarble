@@ -8,6 +8,6 @@ export type PostRoomType = {
 
 export type RoomType = {
   title: string;
-  currentParticipant: ParticipantsType[];
+  currentParticipants: ParticipantsType[];
   code: string;
 };
