@@ -7,6 +7,7 @@ import maengmaeng.gamelogicservice.gameRoom.domain.dto.Dice;
 import maengmaeng.gamelogicservice.gameRoom.domain.dto.GameStart;
 import maengmaeng.gamelogicservice.gameRoom.domain.dto.PlayerSeq;
 import maengmaeng.gamelogicservice.gameRoom.repository.*;
+import maengmaeng.gamelogicservice.global.dto.ResponseDto;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -95,7 +96,7 @@ public class GameRoomService {
         Player[] players = gameInfo.getPlayers();
         int playerNum = gameInfo.getInfo().getPlayerCnt();
 
-        Player player = gameInfoMapper.toReidsPlayer(playerSeq.getUserId(), playerSeq.getNickname());
+        Player player = gameInfoMapper.toReidsPlayer(playerSeq.getUserId(), playerSeq.getNickname(),playerSeq.getCharacterId());
         if(players[playerSeq.getPlayerCnt()-1] ==null && !startCards[playerSeq.getPlayerCnt()-1].isSelected()){
             players[playerSeq.getPlayerCnt()-1] = player;
             startCards[playerSeq.getPlayerCnt()-1].setSelected(true);
@@ -150,7 +151,7 @@ public class GameRoomService {
     /**
      * 주사위 굴리기.
     * */
-    public Dice rollDice(String roomCode){
+    public ResponseDto rollDice(String roomCode){
         // 게임 정보 가져오기
         GameInfo gameInfo = gameInfoRepository.getGameInfo(roomCode);
         Player[] players = gameInfo.getPlayers();
@@ -182,28 +183,42 @@ public class GameRoomService {
             curPlayer.setDoubleCount(doubleCount);
 
         }
+        ResponseDto responseDto = null;
+        int curLocation = curPlayer.getCurrentLocation();
 
         if(checkTrade){
-            // 거래정지 칸이면 바로
             curPlayer.setCurrentLocation(stopTrade);
-            // TODO: 턴 종료
-        } else{
+            // TODO: 거래정지
 
+            players[currentIdx] = curPlayer;
+            gameInfo.setPlayers(players);
+            gameInfoRepository.createGameRoom(gameInfo);
+            dice.setDoubleCount(curPlayer.getDoubleCount());
+            responseDto = ResponseDto.builder().type("거래정지").data(dice).build();
+
+
+        } else{
+            //
+            System.out.println("move 호출 전 " + curPlayer.getCurrentLocation());
             Player player = move(curPlayer, dice.getDice1()+dice.getDice2());
+            System.out.println("move 호출 뒤 " + curPlayer.getCurrentLocation());
+
+            // 한바퀴 돌았으면
+            if(curLocation >player.getCurrentLocation()){
+                System.out.println("한바퀴");
+                dice.setLapCheck(true);
+            }
+            players[currentIdx] =  player;
+            gameInfo.setPlayers(players);
+            gameInfoRepository.createGameRoom(gameInfo);
+            dice.setDoubleCount(curPlayer.getDoubleCount());
+
+            responseDto = ResponseDto.builder().type("주사위").data(dice).build();
 
         }
 
 
-        //TODO: 플레이어 관련 정보 REDIS에 다시 저장.
-        // 플레이어 정보 재설정
-        players[currentIdx] =  curPlayer;
-        gameInfo.setPlayers(players);
-        gameInfoRepository.createGameRoom(gameInfo);
-        dice.setDoubleCount(curPlayer.getDoubleCount());
-
-
-
-        return dice;
+        return responseDto;
     }
 
 
@@ -388,12 +403,8 @@ public class GameRoomService {
     public Player move(Player player, int move) {
         int currentLocation = player.getCurrentLocation();
         int nextLocation = (currentLocation + move) % 32;
-        //한 바퀴 돌았을 때
-        if(currentLocation<nextLocation){
-
-
-        }
         player.setCurrentLocation(nextLocation);
+        System.out.println(player.getCurrentLocation());
         return  player;
 
 

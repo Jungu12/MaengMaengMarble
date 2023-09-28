@@ -18,7 +18,6 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.stereotype.Controller;
 
 import lombok.RequiredArgsConstructor;
-// import maengmaeng.gamelogicservice.gameRoom.service.GameRoomService;
 import maengmaeng.gamelogicservice.util.RedisPublisher;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -69,6 +68,7 @@ public class GameRoomController {
 		redisPublisher.publish(gameRoomTopic,gameData);
 		boolean check = true;
 
+		// 모든 플레이어가 순서를 정했으면 게임정보 전송
 		for(StartCard startCard : startCards){
 			if(startCard.isSelected() == false){
 				check = false;
@@ -108,16 +108,12 @@ public class GameRoomController {
 	@MessageMapping("/game-rooms/roll/{roomCode}")
 	public void rollDice(@DestinationVariable String roomCode) {
 
-		Dice dice = gameRoomService.rollDice(roomCode);
+		ResponseDto responseDto = gameRoomService.rollDice(roomCode);
 		GameData gameData = GameData.builder()
 				.type("GAME_ROOM")
 				.roomCode(roomCode)
-				.data(ResponseDto.builder()
-						.type("주사위")
-						.data(dice)
-						.build())
+				.data(responseDto)
 				.build();
-		// 주사위 눈  double 카운트 전송
 		redisPublisher.publish(gameRoomTopic,gameData);
 	}
 
