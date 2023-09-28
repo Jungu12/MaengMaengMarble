@@ -99,9 +99,8 @@ const GameRoom = () => {
             const newOrderList = response as WSResponseType<{
               cards: TurnListType[];
             }>;
-            // setOrderList(newOrderList.data.cards);
-            setOrderList([]);
-            console.log(newOrderList);
+            console.log('[테스트]', newOrderList);
+            setOrderList(newOrderList.data.cards);
           }
           console.log(JSON.parse(res.body));
         }
