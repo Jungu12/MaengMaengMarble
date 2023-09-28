@@ -210,7 +210,7 @@ const WaitingRoom = () => {
     }
 
     return () => {
-      subTemp.unsubscribe();
+      if (subTemp) subTemp.unsubscribe();
     };
   }, [navigation, roomId, userList]);
 
