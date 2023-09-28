@@ -64,7 +64,8 @@ public class GameRoomController {
 		GameData gameData = GameData.builder()
 				.type("GAME_ROOM")
 				.roomCode(roomCode)
-				.data(ResponseDto.builder().type("플레이순서").data(startCards).build()).build();
+				.data(ResponseDto.builder().type("플레이순서").data(GameStart.builder().cards(startCards).build()).build())
+				.build();
 		redisPublisher.publish(gameRoomTopic,gameData);
 		boolean check = true;
 
