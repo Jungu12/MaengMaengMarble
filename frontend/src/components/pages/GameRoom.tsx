@@ -39,9 +39,9 @@ const GameRoom = () => {
         playerCnt: index,
       }),
     });
-    updatedOrderList[index].selected = !updatedOrderList[index].selected;
+    // updatedOrderList[index].selected = !updatedOrderList[index].selected;
     setCardChoice(true);
-    setOrderList(updatedOrderList);
+    // setOrderList(updatedOrderList);
   };
 
   useEffect(() => {
@@ -118,6 +118,10 @@ const GameRoom = () => {
       }
     };
   }, [gameId, state.userList, user?.userId]);
+
+  useEffect(() => {
+    console.log('[카드리스트 변경]', orderList);
+  }, [orderList]);
 
   if (!isGameStart) {
     return (
