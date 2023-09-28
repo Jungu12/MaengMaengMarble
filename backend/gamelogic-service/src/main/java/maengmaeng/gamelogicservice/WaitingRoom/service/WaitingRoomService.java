@@ -13,6 +13,8 @@ import maengmaeng.gamelogicservice.waitingRoom.exception.WaitingRoomException;
 import maengmaeng.gamelogicservice.waitingRoom.repository.WaitingRoomRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.configurationprocessor.json.JSONException;
+import org.springframework.boot.configurationprocessor.json.JSONObject;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.stereotype.Service;
@@ -37,16 +39,16 @@ public class WaitingRoomService {
         // 대기방(WaitingRoom) 정보에 사용자 추가하기
         WaitingRoom waitingRoom = waitingRoomRepository.getWaitingRoomNow(roomCode);
 
-        if(waitingRoom==null){
+        if (waitingRoom == null) {
             logger.info("해당 대기방이 없습니다.");
             throw new WaitingRoomException(ExceptionCode.WAITINGROOM_NOT_FOUND);
         }
 
         // 현재 참여자들 리스트를 돌면서 들어갈 자리가 있는지 확인
         boolean enterPossible = false;
-        for(CurrentParticipant participant : waitingRoom.getCurrentParticipants()){
+        for (CurrentParticipant participant : waitingRoom.getCurrentParticipants()) {
             // 참여가능한 경우 참가자배열을 돌면서 빈자리에 들어가기
-            if(participant.getNickname()==null && !participant.isClosed()){
+            if (participant.getNickname() == null && !participant.isClosed()) {
                 participant.setUserId(userInfo.getUserId());
                 participant.setNickname(userInfo.getNickname());
                 participant.setCharacterId(userInfo.getCharacterId());
@@ -58,7 +60,7 @@ public class WaitingRoomService {
         }
 
         // 참여할 수 없으면 메세지 전송
-        if(!enterPossible){
+        if (!enterPossible) {
             throw new WaitingRoomException(ExceptionCode.WAITINGROOM_FULLED);
         }
         saveWaitingRoom(waitingRoom);
@@ -110,13 +112,16 @@ public class WaitingRoomService {
 
     public boolean start(String roomCode) {
         WaitingRoom waitingRoom = waitingRoomRepository.getWaitingRoomNow(roomCode);
-        boolean startPossible = true;
-        for (CurrentParticipant participant : waitingRoom.getCurrentParticipants()) {
-            if (participant.getNickname()!=null && !participant.isReady()) {
-                startPossible = false;
-                logger.info("닉네임 {}가 ready를 하지않아서 start를 할 수 없음", participant.getNickname());
-                break;
+        // 인원 2명이상 있어야 시작
+        boolean startPossible = false;
+        int startCnt = 1;
+        for (int i = 1; i < waitingRoom.getCurrentParticipants().size(); i++) {
+            if (waitingRoom.getCurrentParticipants().get(i).getNickname() != null && waitingRoom.getCurrentParticipants().get(i).isReady()) {
+                startCnt += 1;
             }
+        }
+        if(startCnt >=2 ){
+            startPossible = true;
         }
 
 
@@ -127,12 +132,12 @@ public class WaitingRoomService {
         WaitingRoom waitingRoom = waitingRoomRepository.getWaitingRoomNow(roomCode);
         if (waitingRoom.getCurrentParticipants().size() == 1) {
             removeWaitingRoom(roomCode);
-        }else {
+        } else {
             List<CurrentParticipant> participants = waitingRoom.getCurrentParticipants();
 
             for (CurrentParticipant participant : participants) {
                 // 똑같은거 찾으면 null로
-                if (participant.getNickname()!=null && participant.getNickname().equals(user.getNickname())) {
+                if (participant.getNickname() != null && participant.getNickname().equals(user.getNickname())) {
                     participant.setCharacterId(-1);
                     participant.setUserId(null);
                     participant.setNickname(null);
@@ -144,13 +149,25 @@ public class WaitingRoomService {
         }
     }
 
-    public void kick(String roomCode, UserInfo user, String outUser) {
-        waitingRoomRepository.kick(roomCode, user, outUser);
+    public void kick(String roomCode, String outUser) throws JSONException {
+        WaitingRoom waitingRoom = waitingRoomRepository.getWaitingRoomNow(roomCode);
+
+        List<CurrentParticipant> participants = waitingRoom.getCurrentParticipants();
+
+        JSONObject jsonObject = new JSONObject(outUser);
+        String kickUser = jsonObject.getString("outUser");
+
+        for (CurrentParticipant participant : participants) {
+            if(participant.getNickname() != null && participant.getNickname().equals(kickUser)){
+                participant.setUserId(null);
+                participant.setNickname(null);
+                participant.setCharacterId(-1);
+                participant.setReady(false);
+                participant.setClosed(false);
+            }
+        }
+        waitingRoomRepository.saveWaitingRoom(waitingRoom);
     }
-
-
-
-
 
 
 }
