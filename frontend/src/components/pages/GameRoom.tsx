@@ -5,13 +5,16 @@ import { AnimatePresence, motion, useAnimation } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
 import * as StompJs from '@stomp/stompjs';
 import { activateClient, getClient } from '@utils/socket';
-import { useParams } from 'react-router-dom';
-import { WSResponseType } from '@/types/common/common.type';
+import { useLocation, useParams } from 'react-router-dom';
+import { ParticipantsType, WSResponseType } from '@/types/common/common.type';
 import { TurnListType } from '@/types/gameRoom/game.type';
 import { useRecoilValue } from 'recoil';
 import { userState } from '@atom/userAtom';
+import { currentParticipantsNum } from '@utils/lobby';
 
 const GameRoom = () => {
+  const location = useLocation();
+  const state = location.state as { userList: ParticipantsType[] };
   const user = useRecoilValue(userState);
   const client = useRef<StompJs.Client>();
   const gameSub = useRef<StompJs.StompSubscription>();
@@ -33,12 +36,12 @@ const GameRoom = () => {
         userId: user?.userId,
         nickname: user?.nickname,
         characterId: user?.avatarId,
-        playerCnt: index,
+        playerCnt: index + 1,
       }),
     });
-    updatedOrderList[index].selected = !updatedOrderList[index].selected;
+    // updatedOrderList[index].selected = !updatedOrderList[index].selected;
     setCardChoice(true);
-    setOrderList(updatedOrderList);
+    // setOrderList(updatedOrderList);
   };
 
   useEffect(() => {
@@ -89,22 +92,36 @@ const GameRoom = () => {
     activateClient(client.current);
     client.current.onConnect = () => {
       gameSub.current = client.current?.subscribe(
-        `
-        /sub/game-rooms/${gameId}
-      `,
+        `/sub/game-rooms/${gameId}`,
         (res) => {
           const response: WSResponseType<unknown> = JSON.parse(res.body);
           if (response.type === '플레이순서') {
-            const newOrderList = response.data as WSResponseType<
-              TurnListType[]
-            >;
-            setOrderList(newOrderList.data);
+            const newOrderList = response as WSResponseType<{
+              cards: TurnListType[];
+            }>;
+            console.log('[테스트]', newOrderList);
+            setOrderList(newOrderList.data.cards);
           }
           console.log(JSON.parse(res.body));
         }
       );
+      console.log('[참가 인원]', currentParticipantsNum(state.userList));
+
+      // 방장인 경우 게임 시작 알리기
+      if (user?.userId === state.userList[0].userId) {
+        client.current?.publish({
+          destination: `/pub/game-rooms/start/${gameId}`,
+          body: JSON.stringify({
+            cnt: currentParticipantsNum(state.userList).toString(),
+          }),
+        });
+      }
     };
-  }, [gameId]);
+  }, [gameId, state.userList, user?.userId]);
+
+  useEffect(() => {
+    console.log('[카드리스트 변경]', orderList);
+  }, [orderList]);
 
   if (!isGameStart) {
     return (
