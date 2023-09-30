@@ -9,6 +9,7 @@ import maengmaeng.gamelogicservice.gameRoom.domain.dto.PlayerSeq;
 import maengmaeng.gamelogicservice.gameRoom.repository.*;
 import maengmaeng.gamelogicservice.global.dto.ResponseDto;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -25,6 +26,7 @@ public class GameRoomService {
     private final DbNewsStockRepository dbNewsStockRepository;
     private final GameInfoRepository gameInfoRepository;
     private final GameInfoMapper gameInfoMapper;
+    private final AvatarRepository avatarRepository;
     private static final int stopTrade = 8;
     /**
      * 게임 정보  가져오기
@@ -89,14 +91,19 @@ public class GameRoomService {
 
     /**
      * 플레이어 게임 순서 세팅*/
+    @Transactional
     public StartCard[] setPlayer(String roomCode, PlayerSeq playerSeq){
 
         GameInfo gameInfo = getInfo(roomCode);
+        //
         StartCard[] startCards = gameInfo.getSeqCards();
+        //
         Player[] players = gameInfo.getPlayers();
         int playerNum = gameInfo.getInfo().getPlayerCnt();
+        Avatar avatar = avatarRepository.getReferenceById(playerSeq.getCharacterId());
 
-        Player player = gameInfoMapper.toReidsPlayer(playerSeq.getUserId(), playerSeq.getNickname(),playerSeq.getCharacterId());
+
+        Player player = gameInfoMapper.toReidsPlayer(playerSeq.getUserId(), playerSeq.getNickname(),playerSeq.getCharacterId(),avatar.getAvatarImageNoBg());
         if(players[playerSeq.getPlayerCnt()-1] ==null && !startCards[playerSeq.getPlayerCnt()-1].isSelected()){
             players[playerSeq.getPlayerCnt()-1] = player;
             startCards[playerSeq.getPlayerCnt()-1].setSelected(true);
@@ -194,7 +201,9 @@ public class GameRoomService {
             gameInfo.setPlayers(players);
             gameInfoRepository.createGameRoom(gameInfo);
             dice.setDoubleCount(curPlayer.getDoubleCount());
-            responseDto = ResponseDto.builder().type("거래정지").data(dice).build();
+            // 거래 정지 칸으로 이동
+            // 클라이언트에서 서버로 턴종료  호출
+            responseDto = ResponseDto.builder().type("거래정지칸도착").data(dice).build();
 
 
         } else{
@@ -208,7 +217,7 @@ public class GameRoomService {
                 System.out.println("한바퀴");
                 dice.setLapCheck(true);
             }
-            players[currentIdx] =  player;
+            players[currentIdx] = player;
             gameInfo.setPlayers(players);
             gameInfoRepository.createGameRoom(gameInfo);
             dice.setDoubleCount(curPlayer.getDoubleCount());

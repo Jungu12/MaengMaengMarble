@@ -18,6 +18,7 @@ public class Player implements Serializable {
 	private String playerId;
 	private String nickname;
 	private int avatarId;
+	private String avatarImage;
 	private long money;
 	private long asset;
 	private List<Integer> lands;

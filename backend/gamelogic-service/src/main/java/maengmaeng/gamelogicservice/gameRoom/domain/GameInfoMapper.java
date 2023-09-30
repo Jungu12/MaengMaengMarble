@@ -11,11 +11,12 @@ public class GameInfoMapper {
     /**
      * redisPlayer객체로 전환하는 Mapper
      * */
-    public Player toReidsPlayer(String id, String nickName,int avatarId){
+    public Player toReidsPlayer(String id, String nickName,int avatarId,String avatarImage){
         boolean[] cards = {false,false};
         return   Player.builder()
                 .playerId(id)
                 .avatarId(avatarId)
+                .avatarImage(avatarImage)
                 .nickname(nickName)
                 .money(100000000)
                 .asset(100000000)
