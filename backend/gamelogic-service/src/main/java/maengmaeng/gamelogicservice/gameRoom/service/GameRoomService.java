@@ -129,9 +129,7 @@ public class GameRoomService {
      * 현재 플레이어 인덱스 가져오기
      *
      * */
-    public int getPlayerIdx(String roomCode, String currentPlayer){
-        GameInfo gameInfo = gameInfoRepository.getGameInfo(roomCode);
-        Player[] players = gameInfo.getPlayers();
+    public int getPlayerIdx(Player[] players, String currentPlayer){
         int currentIdx=-1;
         for(int i=0;i< players.length;i++){
             if(players[i]!=null && players[i].isAlive() && players[i].getNickname().equals(currentPlayer)){
@@ -152,7 +150,7 @@ public class GameRoomService {
         // 주사위 2 던지기 (1부터 6까지)
         int dice2 = random.nextInt(6) + 1;
 
-        return Dice.builder().dice1(dice1).dice2(2).build();
+        return Dice.builder().dice1(dice1).dice2(dice2).build();
     }
 
     /**
@@ -208,9 +206,9 @@ public class GameRoomService {
 
         } else{
             //
-            System.out.println("move 호출 전 " + curPlayer.getCurrentLocation());
+//            System.out.println("move 호출 전 " + curPlayer.getCurrentLocation());
             Player player = move(curPlayer, dice.getDice1()+dice.getDice2());
-            System.out.println("move 호출 뒤 " + curPlayer.getCurrentLocation());
+//            System.out.println("move 호출 뒤 " + curPlayer.getCurrentLocation());
 
             // 한바퀴 돌았으면
             if(curLocation >player.getCurrentLocation()){
@@ -272,8 +270,14 @@ public class GameRoomService {
     /**
      * 맹맹 지급
      * */
-    public Player maengMaeng(Player player, List<Stock> stocks, List<Land> lands){
+    public ResponseDto maengMaeng(/*(Player player, List<Stock> stocks, List<Land> lands,*/ GameInfo gameInfo){
         // 맹맹: 보유 현금 * 0.15 + 배당금 - 대출 원금 * 0.24)
+
+        Player[] players = gameInfo.getPlayers();
+        int playerIdx = getPlayerIdx(players,gameInfo.getInfo().getCurrentPlayer());
+        Player player = players[playerIdx];
+        List<Land> lands = gameInfo.getLands();
+        List<Stock> stocks = gameInfo.getStocks();
         long maengMaeng =0;
         long money = Math.round(player.getMoney() * 0.15);
         long dividends = 0;
@@ -288,26 +292,34 @@ public class GameRoomService {
         if(maengMaeng >=0){
             long playerMoney = player.getMoney();
             player.setMoney(playerMoney+maengMaeng);
+            players[playerIdx] = player;
+            gameInfo.setPlayers(players);
+            gameInfoRepository.createGameRoom(gameInfo);
+            return ResponseDto.builder().type("맹맹지급").data(player).build();
 
         } else{
             // 맹맹이 음수일 때
             // 맹맹이 보유자산 보다 많을 때?
             if(maengMaeng > calculateMoney(player,stocks,lands) ){
                 //TODO: 파산 절차
+                return  ResponseDto.builder().type("파산").build();
+
             } else {
                 if (player.getMoney() -maengMaeng>=0 ){
                     // 보유 현금 -
                     player.setMoney(player.getMoney()-maengMaeng);
+                    players[playerIdx] = player;
+                    gameInfo.setPlayers(players);
+                    gameInfoRepository.createGameRoom(gameInfo);
+                    return ResponseDto.builder().type("맹맹지급").data(player).build();
 
                 } else{
                     //TODO: 매각 절차
+                    return ResponseDto.builder().type("매각시작").build();
                 }
             }
 
-
         }
-        return player;
-
 
     }
 

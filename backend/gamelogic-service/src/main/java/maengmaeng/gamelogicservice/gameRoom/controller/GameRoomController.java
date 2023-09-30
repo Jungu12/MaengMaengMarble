@@ -122,11 +122,19 @@ public class GameRoomController {
 	 * 맹맹지급
 	 *
 	 * */
-//	@MessageMapping("/game-rooms/maengmaeng/{roomCode}")
-//	public void maengMaeng(@DestinationVariable String roomCode){
-//
-//
-//	}
+	@MessageMapping("/game-rooms/maengmaeng/{roomCode}")
+	public void maengMaeng(@DestinationVariable String roomCode){
+
+		GameInfo gameInfo = gameRoomService.getInfo(roomCode);
+		ResponseDto responseDto = gameRoomService.maengMaeng(gameInfo);
+		GameData gameData = GameData.builder()
+				.type("GAME_ROOM")
+				.roomCode(roomCode)
+				.data(responseDto)
+				.build();
+		redisPublisher.publish(gameRoomTopic, gameData);
+
+	}
 
 	/**
 	 * 거래 정지에서 주사위 굴리기
@@ -146,7 +154,13 @@ public class GameRoomController {
 
 	}
 
+	/**
+	 * 이동후 로직
+	 * */
+	@MessageMapping("/game-rooms/afterMove/{roomCode}")
+	public void afterMove(@DestinationVariable String roomCode){
 
+	}
 
 
 	/**
@@ -155,6 +169,7 @@ public class GameRoomController {
 
 	@MessageMapping("/game-rooms/turn-end/{roomCode}")
 	public void endTurn(@DestinationVariable String roomCode) {
+
 
 
 
