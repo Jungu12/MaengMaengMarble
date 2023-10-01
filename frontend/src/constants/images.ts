@@ -204,4 +204,45 @@ export const images = {
     buttonGreen:
       'https://maeng.s3.ap-northeast-2.amazonaws.com/images/button-green.png',
   },
+  land: {
+    vietnam:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/landinfo/vietnam.png',
+    thailand:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/landinfo/thailand.png',
+    singapore:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/landinfo/singapore.png',
+    egypt:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/landinfo/egypt.png',
+    southAfrica:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/landinfo/southAfrica.png',
+    argentina:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/landinfo/argentina.png',
+    brazil:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/landinfo/brazil.png',
+    catarrh:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/landinfo/catarrh.png',
+    iran: 'https://maeng.s3.ap-northeast-2.amazonaws.com/images/landinfo/iran.png',
+    saudiArabia:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/landinfo/saudiArabia.png',
+    czech:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/landinfo/czech.png',
+    russia:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/landinfo/russia.png',
+    france:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/landinfo/france.png',
+    germany:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/landinfo/germany.png',
+    uk: 'https://maeng.s3.ap-northeast-2.amazonaws.com/images/landinfo/uk.png',
+    usa: 'https://maeng.s3.ap-northeast-2.amazonaws.com/images/landinfo/usa.png',
+    canada:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/landinfo/canada.png',
+    India:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/landinfo/india.png',
+    china:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/landinfo/china.png',
+    japan:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/landinfo/japan.png',
+    korea:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/landinfo/korea.png',
+  },
 };
