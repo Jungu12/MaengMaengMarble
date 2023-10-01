@@ -14,9 +14,8 @@ import javax.persistence.*;
 public class DbCountry {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "country_id")
-    private Long countryId;
+    private Integer countryId;
 
     @Column(name = "country_name")
     private String countryName;

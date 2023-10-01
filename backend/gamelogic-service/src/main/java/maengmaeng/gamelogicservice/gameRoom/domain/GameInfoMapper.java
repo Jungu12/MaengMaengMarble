@@ -11,20 +11,22 @@ public class GameInfoMapper {
     /**
      * redisPlayer객체로 전환하는 Mapper
      * */
-    public Player toReidsPlayer(String id, String nickName){
+    public Player toReidsPlayer(String id, String nickName,int avatarId,String avatarImage){
         boolean[] cards = {false,false};
         return   Player.builder()
                 .playerId(id)
+                .avatarId(avatarId)
+                .avatarImage(avatarImage)
                 .nickname(nickName)
                 .money(100000000)
                 .asset(100000000)
                 .lands(new ArrayList<Integer>())
                 .alive(true)
-                .currentTurn(0)
+                .currentTurn(1)
                 .stopTradeCount(0)
                 .doubleCount(0)
                 .currentLap(0)
-                .stocks(new ArrayList<Map<String, Integer>>())
+                .stocks(new int[15])
                 .loan(0)
                 .cards(cards)
                 .currentLocation(0)
@@ -35,8 +37,8 @@ public class GameInfoMapper {
      * */
     public Land toRedisLand(DbCountry dbCountry){
         int[] buildingPrices = { dbCountry.getVillaPrice(), dbCountry.getBuildingPrice(),dbCountry.getHotelPrice()};
-        int[] fees = {dbCountry.getVillaFee(),dbCountry.getBuildingFee(), dbCountry.getHotelPrice()};
-        boolean [] buildings = {false,false,false,false};
+        int[] fees = { dbCountry.getLandFee(), dbCountry.getVillaFee(),dbCountry.getBuildingFee(), dbCountry.getHotelPrice()};
+        boolean [] buildings = {false,false,false};
 
         return Land.builder()
                 .landId(dbCountry.getCountryId())
@@ -45,6 +47,7 @@ public class GameInfoMapper {
                 .buildingPrices(buildingPrices)
                 .fees(fees)
                 .currentLandPrice(dbCountry.getLandPrice())
+                .currentBuildingPrices(buildingPrices)
                 .buildings(buildings)
                 .currentFees(fees)
                 .owner(-1)

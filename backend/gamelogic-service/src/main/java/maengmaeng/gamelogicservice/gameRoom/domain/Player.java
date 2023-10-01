@@ -18,6 +18,7 @@ public class Player implements Serializable {
 	private String playerId;
 	private String nickname;
 	private int avatarId;
+	private String avatarImage;
 	private long money;
 	private long asset;
 	private List<Integer> lands;
@@ -26,7 +27,7 @@ public class Player implements Serializable {
 	private int stopTradeCount;
 	private int doubleCount;
 	private int currentLap;
-	private List<Map<String, Integer>> stocks;
+	private int[] stocks;
 	private int loan;
 	private boolean[] cards;
 	private int currentLocation;

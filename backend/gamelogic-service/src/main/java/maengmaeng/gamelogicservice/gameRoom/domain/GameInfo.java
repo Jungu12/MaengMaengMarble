@@ -19,8 +19,8 @@ public class GameInfo implements Serializable {
 	private Info info;
 	private GoldenKeys goldenKeys;
 	private NewsInfo newsInfo;
-
 	private List<Stock> stocks;
+	private StartCard[] seqCards;
 
 
 }
