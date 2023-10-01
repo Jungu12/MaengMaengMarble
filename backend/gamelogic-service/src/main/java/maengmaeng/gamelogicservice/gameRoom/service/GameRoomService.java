@@ -349,16 +349,16 @@ public class GameRoomService {
             for (int i = 0; i < check.length; i++) {
                 // 땅 가지고 있을 때
                 if (i == 0 && check[i]) {
-                    landMoney += 10000 * land.getCurrentLandPrice();
+                    landMoney += land.getCurrentLandPrice();
                 }
                 if (i == 1 && check[i]) {
-                    landMoney += 10000 * land.getCurrentBuildingPrices()[0];
+                    landMoney += land.getCurrentBuildingPrices()[0];
                 }
                 if (i == 2 && check[i]) {
-                    landMoney += 10000 * land.getCurrentBuildingPrices()[1];
+                    landMoney += land.getCurrentBuildingPrices()[1];
                 }
                 if (i == 3 && check[i]) {
-                    landMoney += 10000 * land.getCurrentBuildingPrices()[2];
+                    landMoney +=  land.getCurrentBuildingPrices()[2];
                 }
             }
 
@@ -396,16 +396,16 @@ public class GameRoomService {
             for (int i = 0; i < check.length; i++) {
                 // 땅 가지고 있을 때
                 if (i == 0 && check[i]) {
-                    landMoney += 10000 * land.getCurrentLandPrice();
+                    landMoney +=  land.getCurrentLandPrice();
                 }
                 if (i == 1 && check[i]) {
-                    landMoney += 10000 * land.getCurrentBuildingPrices()[0];
+                    landMoney +=  land.getCurrentBuildingPrices()[0];
                 }
                 if (i == 2 && check[i]) {
-                    landMoney += 10000 * land.getCurrentBuildingPrices()[1];
+                    landMoney +=  land.getCurrentBuildingPrices()[1];
                 }
                 if (i == 3 && check[i]) {
-                    landMoney += 10000 * land.getCurrentBuildingPrices()[2];
+                    landMoney +=  land.getCurrentBuildingPrices()[2];
                 }
             }
 
@@ -428,8 +428,105 @@ public class GameRoomService {
         System.out.println(player.getCurrentLocation());
         return  player;
 
+    }
 
+    /**
+     * 이동 후 로직
+     * */
+    public ResponseDto afterMove(String roomCode){
+        GameInfo gameInfo = getInfo(roomCode);
+        Player[] players = gameInfo.getPlayers();
+        int playerIdx = getPlayerIdx(players,gameInfo.getInfo().getCurrentPlayer());
+        // 현재 플레이어
+        Player curPlayer = players[playerIdx];
+        int currentLocation = curPlayer.getCurrentLocation();
+        /* 이동 후에 위치에 따라서 로직...*/
+        /**/
 
+        ResponseDto responseDto = null;
+
+        switch(currentLocation){
+            case 0:
+                // 시작지점
+                responseDto = ResponseDto.builder().type("시작지점").build();
+                break;
+            case 2:
+                // 세금 징수
+
+                responseDto = ResponseDto.builder().type("세금징수").build();
+
+                break;
+            case 4:
+            case 12:
+            case 20:
+            case 28:
+                // 황금 열쇠
+                responseDto= ResponseDto.builder().type("황금열쇠").build();
+                break;
+            case 8:
+                // 거래정지
+                responseDto = ResponseDto.builder().type("거래정지").build();
+                break;
+            case 10:
+                // 박진호
+                responseDto = ResponseDto.builder().type("박진호").build();
+                break;
+            case 16:
+                // 투자장
+                responseDto = ResponseDto.builder().type("거래장").build();
+                break;
+
+            case 18:
+                // Rush & Cash
+                responseDto = ResponseDto.builder().type("대출").build();
+                break;
+            case 24:
+                // 어디로든 문
+                //
+                if(gameInfo.getInfo().getDoorCheck()>0){
+                 responseDto = ResponseDto.builder().type("강준구의문단속적용어디로든문").build();
+                } else{
+                    responseDto = ResponseDto.builder().type("어디로든문").build();
+                }
+                break;
+            default :
+                // 일반 땅
+                // 땅이 내 땅인지 중립땅인지 다른 플레이어의 땅인지 판별
+                List<Land> lands = gameInfo.getLands();
+                if(lands.get(currentLocation).getOwner()==-1){
+                    // 중립 땅일 때
+                    responseDto = ResponseDto.builder().type("땅구매").build();
+                } else if(lands.get(currentLocation).getOwner()==playerIdx){
+                    // 내땅 일 때
+                    responseDto = ResponseDto.builder().type("건물구매").build();
+                } else {
+                    // 다른 플레이어의 소유 일 때
+                    // 통행료 계산
+                    long fees =  lands.get(currentLocation).getCurrentFees()[0];
+                    for (int i = 0; i < lands.get(currentLocation).getCurrentFees().length; i++) {
+                        if (lands.get(currentLocation).getBuildings()[i]) {
+                            fees += lands.get(currentLocation).getCurrentFees()[i + 1];
+                        }
+                    }
+                    long asset = calculateAsset(players[playerIdx],gameInfo.getStocks(),lands);
+                    if( fees<=players[playerIdx].getMoney()){
+                        // 현금으로 통행료 지급이 가능할 때
+                        responseDto = ResponseDto.builder().type("통행료지급").build();
+                    } else{
+                        // 현금으로 통행료 지급이 불가능 할 때
+                        if(asset>= fees){
+                            // 매각할 수 있으면
+                            responseDto = ResponseDto.builder().type("매각").build();
+                        } else{
+                            // 파산각이면
+                            responseDto = ResponseDto.builder().type("파산").build();
+                        }
+
+                    }
+                }
+        }
+
+        return responseDto;
     }
 
 

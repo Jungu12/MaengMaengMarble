@@ -71,7 +71,7 @@ public class GameRoomController {
 
 		// 모든 플레이어가 순서를 정했으면 게임정보 전송
 		for(StartCard startCard : startCards){
-			if(startCard.isSelected() == false){
+			if(!startCard.isSelected()){
 				check = false;
 			}
 		}
@@ -159,6 +159,17 @@ public class GameRoomController {
 	 * */
 	@MessageMapping("/game-rooms/afterMove/{roomCode}")
 	public void afterMove(@DestinationVariable String roomCode){
+		// 도착한 땅의 위치에 따라 행동 변환
+
+		ResponseDto responseDto = gameRoomService.afterMove(roomCode);
+		GameData gameData = GameData.builder()
+				.type("GAME_ROOM")
+				.roomCode(roomCode)
+				.data(responseDto)
+
+				.build();
+
+		redisPublisher.publish(gameRoomTopic,gameData);
 
 	}
 
