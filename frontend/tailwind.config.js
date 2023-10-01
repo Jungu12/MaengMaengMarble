@@ -8,6 +8,7 @@ export default {
           light100: '#FFFDF2',
           light200: '#FFFDF0',
           100: '#F7F4E5',
+          200: '#DEDAC2',
           300: '#FBB100',
           400: '#D69700',
           500: '#9C783E',
