@@ -13,13 +13,13 @@ import lombok.*;
 public class Land implements Serializable {
 	@Builder.Default
 	private static final long serialVersionUID = 207207207207L;;
-	private long landId;
+	private int landId;
 	private String name;
 	private int landPrice;
 	private int[] buildingPrices;
 	private int[] fees;
 	private int currentLandPrice;
-	private boolean [] buildings;
+	private boolean[] buildings;
 	private int[] currentFees;
 	private int owner;
 }

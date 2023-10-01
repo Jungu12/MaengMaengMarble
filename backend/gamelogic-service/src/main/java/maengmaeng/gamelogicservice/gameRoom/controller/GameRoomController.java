@@ -137,7 +137,35 @@ public class GameRoomController {
 
 	}
 
+	/**
+	 * 구매
+	 */
+	@MessageMapping("/game-rooms/purchase/{roomCode}")
+	public void purchaseLandAndBuildings(@DestinationVariable String roomCode, boolean[] purchasedBuildings) {
 
+		gameRoomService.purchaseAndUpdateGameInfo(roomCode, purchasedBuildings);
+	}
+
+	/**
+	 * 통행료 지불을 위해 매각
+	 */
+	@MessageMapping("/game-rooms/for-sale/{roomCode}")
+	public void forSale(@DestinationVariable String roomCode, int landId) {
+
+		gameRoomService.forSale(roomCode, landId);
+	}
+
+	/**
+	 * 통행료 지불
+	 */
+	@MessageMapping("/game-rooms/fee/{roomCode}")
+	public void payFee(@DestinationVariable String roomCode) {
+
+	}
+
+	/**
+	 * 파산
+	 */
 
 
 	/**
@@ -151,13 +179,5 @@ public class GameRoomController {
 
 
 	}
-
-
-
-
-
-
-
-
 
 }

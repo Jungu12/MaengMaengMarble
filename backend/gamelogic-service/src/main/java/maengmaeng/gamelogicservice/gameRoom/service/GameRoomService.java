@@ -211,7 +211,6 @@ public class GameRoomService {
 
         }
 
-
         //TODO: 플레이어 관련 정보 REDIS에 다시 저장.
 
         players[currentIdx] =  curPlayer;
@@ -223,6 +222,89 @@ public class GameRoomService {
 
         return dice;
     }
+
+    /**
+     * 토지 및 건물 구매
+     * @param roomCode
+     * @param purchasedBuildings : 길이 4의 boolean 배열, 순서대로 토지, 건물1, 건물2, 건물 3의 구매 여부를 담은 배열
+     */
+    public void purchaseAndUpdateGameInfo(String roomCode, boolean[] purchasedBuildings) {
+        // 게임 정보 가져오기
+        GameInfo gameInfo = gameInfoRepository.getGameInfo(roomCode);
+        Player[] players = gameInfo.getPlayers();
+        List<Land> lands = gameInfo.getLands();
+
+        String currentPlayer = gameInfo.getInfo().getCurrentPlayer();
+        int currentIdx = -1;
+        for (int i = 0; i < players.length; i++) {
+            if (players[i] != null && players[i].isAlive() && players[i].getNickname().equals(currentPlayer)) {
+                currentIdx = i;
+            }
+        }
+        if (currentIdx != -1) {
+            // 예외 처리
+        }
+
+        //현재 플레이어의 위치 가져오기
+        Player curPlayer = players[currentIdx];
+        Land curLand = gameInfo.getLands().get(curPlayer.getCurrentLocation());
+
+        int totalPay = 0;
+        int[] buildingPrices = curLand.getBuildingPrices();
+        for (int idx = 0; idx < purchasedBuildings.length; idx++) {
+            if (purchasedBuildings[idx]) {
+                totalPay += buildingPrices[idx];
+            }
+        }
+
+        curPlayer.setMoney(curPlayer.getMoney() - totalPay);
+        curLand.setOwner(currentIdx);
+        curLand.setBuildings(purchasedBuildings);
+
+        players[currentIdx] = curPlayer;
+        gameInfo.setPlayers(players);
+
+        lands.set(curLand.getLandId(), curLand);
+        gameInfo.setLands(lands);
+
+        gameInfoRepository.createGameRoom(gameInfo);
+
+        // TODO : 바뀐 정보 return 해 주는 로직 구현
+    }
+
+    /**
+     * 매각. 매각은 건물 단위가 아닌 토지 단위로 이루어진다.
+     * @param roomCode
+     * @param landId 매각하는 토지 ID
+     */
+    public void forSale(String roomCode, int landId) {
+        // 게임 정보 가져오기
+        GameInfo gameInfo = gameInfoRepository.getGameInfo(roomCode);
+        Player[] players = gameInfo.getPlayers();
+        List<Land> lands = gameInfo.getLands();
+
+        String currentPlayer = gameInfo.getInfo().getCurrentPlayer();
+        int currentIdx = -1;
+        for (int i = 0; i < players.length; i++) {
+            if (players[i] != null && players[i].isAlive() && players[i].getNickname().equals(currentPlayer)) {
+                currentIdx = i;
+            }
+        }
+        if (currentIdx != -1) {
+            // 예외 처리
+        }
+
+        int currentLandPrice  = 0;
+        Land saledLand = gameInfo.getLands().get(landId);
+        currentLandPrice += saledLand.getCurrentLandPrice();
+
+        for (int i = 0; i < saledLand.getBuildingPrices().length; i++) {
+            if (saledLand.getBuildings()[i]) {
+                currentLandPrice +=
+            }
+        }
+    }
+
     /**
      * 턴을 종료하는 로직
      * 1. 게임 정보를 가져오기
@@ -272,9 +354,6 @@ public class GameRoomService {
 //
 //
 //    }
-
-
-
 
 
 }
