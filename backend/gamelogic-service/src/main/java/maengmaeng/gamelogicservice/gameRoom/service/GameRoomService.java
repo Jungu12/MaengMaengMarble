@@ -21,9 +21,9 @@ public class GameRoomService {
     private final DbCountryRespository dbCountryRespository;
     private final DbNewsRepository dbNewsRepository;
     private final DbStockRepository dbStockRepository;
-    private final DbNewsCountryRepository dbNewsCountryRepository;
-    private final DbCardRepository dbCardRepository;
-    private final DbNewsStockRepository dbNewsStockRepository;
+//    private final DbNewsCountryRepository dbNewsCountryRepository;
+//    private final DbCardRepository dbCardRepository;
+//    private final DbNewsStockRepository dbNewsStockRepository;
     private final GameInfoRepository gameInfoRepository;
     private final GameInfoMapper gameInfoMapper;
     private final AvatarRepository avatarRepository;
@@ -203,24 +203,28 @@ public class GameRoomService {
             // 클라이언트에서 서버로 턴종료  호출
             responseDto = ResponseDto.builder().type("거래정지칸도착").data(dice).build();
 
+            //TODO: 플레이어 정보도 다시 줘야 할까??
+
 
         } else{
             //
-//            System.out.println("move 호출 전 " + curPlayer.getCurrentLocation());
             Player player = move(curPlayer, dice.getDice1()+dice.getDice2());
-//            System.out.println("move 호출 뒤 " + curPlayer.getCurrentLocation());
 
             // 한바퀴 돌았으면
             if(curLocation >player.getCurrentLocation()){
-                System.out.println("한바퀴");
                 dice.setLapCheck(true);
+                int currentLap = player.getCurrentLap()+1;
+
+                player.setCurrentLap(currentLap);
             }
             players[currentIdx] = player;
             gameInfo.setPlayers(players);
+
             gameInfoRepository.createGameRoom(gameInfo);
             dice.setDoubleCount(curPlayer.getDoubleCount());
 
             responseDto = ResponseDto.builder().type("주사위").data(dice).build();
+            //TODO: 플레이어 정보도 다시 줘야 할까??
 
         }
 
@@ -533,8 +537,65 @@ public class GameRoomService {
 
     /**
      * 턴을 종료하는 로직
-     * 1. 턴을 종료 후  다음 플레이어 확인(죽은 것도 생각)
-     * 2. 마지막 플레이어면 턴 count 올리고
+     * 1. 현재 플레이어의 turnCount올리기
+     * 2. 다음 플레이어 확인 for 문 순회
+     * 3. waiting news 확인해서 effect news 적용
+     * 4.
     * */
+    public ResponseDto endTurn(String roomCode){
+        GameInfo gameInfo = gameInfoRepository.getGameInfo(roomCode);
+        Player[] players = gameInfo.getPlayers();
+        int playerIdx = getPlayerIdx(players,gameInfo.getInfo().getCurrentPlayer());
+        Player currentPlayer = players[playerIdx];
+        // 현재 플레이어의 turnCount++
+        int currentTurn = currentPlayer.getCurrentTurn() +1;
+        currentPlayer.setCurrentTurn(currentTurn);
+
+        Info info = gameInfo.getInfo();
+//        int doorCheck = info.getDoorCheck();
+        // 턴을 넘기기 전에 현재 플레이어가 마지막 플레이어인지 확인.
+        // 2인 3인 이면
+        boolean isLastPlayer = false;
+        // 배열의 마지막 사람이면 무조건 제일 마지막 플레이어
+        if(info.getPlayerCnt() == playerIdx+1){
+            isLastPlayer = true;
+        } else{
+            // 마지막 까지 배열을 순회하면서 살아있는 사람이 없으면 마지막 플레이어.
+            for(int i= playerIdx ; i< info.getPlayerCnt();i++){
+                if(players[i].isAlive()){
+                    isLastPlayer = false;
+                    break;
+                }
+            }
+
+        }
+
+
+
+        if(isLastPlayer){
+            //TODO: 턴이 바뀔 때 수행되어야하는 로직 구현
+        }
+
+
+
+//        int nextPlayerIdx = -1;
+//        // 다음 플레이어 idx 구하는 로직
+//        for(int i=1;i<4;i++){
+//            if()
+//
+//        }
+
+
+
+
+
+
+
+
+
+        return null;
+    }
+
+
 
 }

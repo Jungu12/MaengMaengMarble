@@ -180,9 +180,15 @@ public class GameRoomController {
 
 	@MessageMapping("/game-rooms/turn-end/{roomCode}")
 	public void endTurn(@DestinationVariable String roomCode) {
+		ResponseDto responseDto = gameRoomService.endTurn(roomCode);
 
+		GameData gameData = GameData.builder()
+				.type("GAME_ROOM")
+				.roomCode(roomCode)
+				.data(responseDto)
+				.build();
 
-
+		redisPublisher.publish(gameRoomTopic,gameData);
 
 
 	}
