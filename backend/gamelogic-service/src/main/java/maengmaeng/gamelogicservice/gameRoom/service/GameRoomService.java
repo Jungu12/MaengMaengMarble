@@ -573,17 +573,26 @@ public class GameRoomService {
 
 
         if(isLastPlayer){
-            //TODO: 턴이 바뀔 때 수행되어야하는 로직 구현
+            //TODO: 턴이 바뀔 때 수행되어야하는 로직
+            //TODO: effectNews, waitingNews 관련 로직
         }
 
 
+        // 다음 플레이어
+        int nextPlayerIdx = -1;
+        // 다음 플레이어 idx 구하는 로직
+        for(int i=1;i<4;i++){
+            int idx = (playerIdx + i) % 4;
+            if(players[idx] !=null && players[idx].isAlive()){
+                nextPlayerIdx = idx;
+                break;
+            }
 
-//        int nextPlayerIdx = -1;
-//        // 다음 플레이어 idx 구하는 로직
-//        for(int i=1;i<4;i++){
-//            if()
-//
-//        }
+        }
+        if(nextPlayerIdx!=-1){
+            // 다음 플레이어 순서를 설정
+            info.setCurrentPlayer(players[nextPlayerIdx].getNickname());
+        }
 
 
 
