@@ -1,9 +1,9 @@
 import { CharacterType } from '@/types/common/common.type';
 import {
-  changeCharater,
+  changeCharacter,
   changeNickname,
   checkNickname,
-  getCharaterList,
+  getCharacterList,
 } from '@apis/userApi';
 import { ToastMessageState } from '@atom/toastAtom';
 import { userState } from '@atom/userAtom';
@@ -66,7 +66,7 @@ const MyPageModal = ({
     if (nickname !== user?.nickname) {
       changeNickname(nickname);
     }
-    changeCharater(seletedCharater);
+    changeCharacter(seletedCharater);
     if (user) {
       setUser({
         ...user,
@@ -104,7 +104,7 @@ const MyPageModal = ({
 
   // 캐릭터 리스트 불러오기
   useEffect(() => {
-    getCharaterList().then((res) => {
+    getCharacterList().then((res) => {
       setCharaterList(res.data);
     });
     if (user) {

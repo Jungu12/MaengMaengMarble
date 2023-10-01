@@ -18,6 +18,7 @@ import { getFriendlist } from '@apis/friendApi';
 import { FriendType } from '@/types/friend/friend.type';
 import { ToastMessageState } from '@atom/toastAtom';
 import useToastList from '@hooks/useToastList';
+import { WSResponseType } from '@/types/common/common.type';
 
 const Lobby = () => {
   const clientRef = useRef<StompJs.Client>();
@@ -65,6 +66,32 @@ const Lobby = () => {
 
   // 소켓 연결
   useEffect(() => {
+    clientRef.current = getClient();
+    activateClient(clientRef.current);
+    clientRef.current.onConnect = () => {
+      getRooms().then((res: { waitingRooms: RoomType[] }) => {
+        console.log(res.waitingRooms);
+        setRoomList(res.waitingRooms);
+        clientRef.current?.subscribe('/sub/lobby', (res) => {
+          const response: WSResponseType<{ waitingRooms: RoomType[] }> =
+            JSON.parse(res.body);
+
+          if (response.type === 'lobby') {
+            setRoomList(response.data.waitingRooms);
+            console.log(response.data);
+          }
+          // console.log(response);
+        });
+      });
+    };
+
+    // 구독 취소
+    return () => {
+      clientRef.current?.unsubscribe('/sub/lobby');
+    };
+  }, []);
+
+  useEffect(() => {
     getFriendlist()
       .then((res) => {
         setFriendList(res);
@@ -78,15 +105,6 @@ const Lobby = () => {
         });
         show('error');
       });
-
-    clientRef.current = getClient();
-    activateClient(clientRef.current);
-    clientRef.current.onConnect = () => {
-      getRooms().then((res: { waitingRooms: RoomType[] }) => {
-        console.log(res.waitingRooms);
-        setRoomList(res.waitingRooms);
-      });
-    };
   }, [setToastMessage, show]);
 
   return (
