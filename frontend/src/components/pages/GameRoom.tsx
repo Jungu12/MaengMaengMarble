@@ -12,6 +12,7 @@ import { TurnListType } from '@/types/gameRoom/game.type';
 import { useRecoilValue } from 'recoil';
 import { userState } from '@atom/userAtom';
 import { currentParticipantsNum } from '@utils/lobby';
+import LandInfoModal from '@components/gameRoom/LandInfoModal';
 
 const GameRoom = () => {
   const location = useLocation();
@@ -28,9 +29,20 @@ const GameRoom = () => {
   const [position, setPosition] = useState(7);
   const controls = useAnimation();
   const [isOpenNews, setIsOpenNews] = useState(false);
+  const [isOpenLandInfo, setIsOpenLandInfo] = useState(false);
+  const [landValue, setLandValue] = useState(0);
 
   const handleNews = useCallback(() => {
     setIsOpenNews((prev) => !prev);
+  }, []);
+
+  const handleLandInfo = useCallback(() => {
+    setIsOpenLandInfo((prev) => !prev);
+  }, []);
+
+  const onClickLand = useCallback((value: number) => {
+    handleLandInfo();
+    setLandValue(value);
   }, []);
 
   const flipCard = (index: number) => {
@@ -87,97 +99,102 @@ const GameRoom = () => {
   }, [position]);
 
   // 임시 코드 (지워야함)
-  useEffect(() => {
-    setIsGameStart(false);
-    setPosition(7);
-  }, []);
+  // useEffect(() => {
+  //   setIsGameStart(false);
+  //   setPosition(7);
+  // }, []);
 
-  // 소켓 연결
-  useEffect(() => {
-    client.current = getClient();
-    activateClient(client.current);
-    client.current.onConnect = () => {
-      gameSub.current = client.current?.subscribe(
-        `/sub/game-rooms/${gameId}`,
-        (res) => {
-          const response: WSResponseType<unknown> = JSON.parse(res.body);
-          if (response.type === '플레이순서') {
-            const newOrderList = response as WSResponseType<{
-              cards: TurnListType[];
-            }>;
-            console.log('[테스트]', newOrderList);
-            setOrderList(newOrderList.data.cards);
-          }
-          console.log(JSON.parse(res.body));
-        }
-      );
-      console.log('[참가 인원]', currentParticipantsNum(state.userList));
+  // // 소켓 연결
+  // useEffect(() => {
+  //   client.current = getClient();
+  //   activateClient(client.current);
+  //   client.current.onConnect = () => {
+  //     gameSub.current = client.current?.subscribe(
+  //       `/sub/game-rooms/${gameId}`,
+  //       (res) => {
+  //         const response: WSResponseType<unknown> = JSON.parse(res.body);
+  //         if (response.type === '플레이순서') {
+  //           const newOrderList = response as WSResponseType<{
+  //             cards: TurnListType[];
+  //           }>;
+  //           console.log('[테스트]', newOrderList);
+  //           setOrderList(newOrderList.data.cards);
+  //         }
+  //         console.log(JSON.parse(res.body));
+  //       }
+  //     );
+  //     console.log('[참가 인원]', currentParticipantsNum(state.userList));
 
-      // 방장인 경우 게임 시작 알리기
-      if (user?.userId === state.userList[0].userId) {
-        client.current?.publish({
-          destination: `/pub/game-rooms/start/${gameId}`,
-          body: JSON.stringify({
-            cnt: currentParticipantsNum(state.userList).toString(),
-          }),
-        });
-      }
-    };
-  }, [gameId, state.userList, user?.userId]);
+  //     // 방장인 경우 게임 시작 알리기
+  //     if (user?.userId === state.userList[0].userId) {
+  //       client.current?.publish({
+  //         destination: `/pub/game-rooms/start/${gameId}`,
+  //         body: JSON.stringify({
+  //           cnt: currentParticipantsNum(state.userList).toString(),
+  //         }),
+  //       });
+  //     }
+  //   };
+  // }, [gameId, state.userList, user?.userId]);
 
-  useEffect(() => {
-    console.log('[카드리스트 변경]', orderList);
-  }, [orderList]);
+  // useEffect(() => {
+  //   console.log('[카드리스트 변경]', orderList);
+  // }, [orderList]);
 
-  if (!isGameStart) {
-    return (
-      <div
-        className='flex flex-col w-full h-full min-h-[700px] overflow-hidden relative items-center'
-        style={{
-          backgroundImage: `url(${images.gameRoom.background})`,
-          backgroundSize: 'cover',
-        }}
-      >
-        <div className='text-[white] text-3xl mt-[120px]'>
-          카드를 선택해주세요.
-        </div>
-        <div className='flex w-full items-center justify-around mb-auto mt-[100px]'>
-          <AnimatePresence>
-            {orderList &&
-              orderList.map((item, index) => (
-                <motion.button
-                  key={item.seq}
-                  initial={{ opacity: 0, rotateY: 0 }}
-                  animate={{ opacity: 1, rotateY: item.selected ? 0 : 180 }}
-                  exit={{ opacity: 0, rotateY: 0 }}
-                  onClick={() => flipCard(index)}
-                >
-                  <motion.div
-                    className={`h-[340px] w-[220px] rounded-[8px] flex justify-center items-center ${
-                      item.selected ? 'bg-[#e6e6e6] text-4xl font-bold' : ''
-                    }`}
-                    style={{
-                      backgroundImage: item.selected
-                        ? 'none'
-                        : `url(${images.gameRoom.cardBack})`,
-                      backgroundSize: 'cover',
-                      filter: 'drop-shadow(5px 5px 5px #000)',
-                    }}
-                    whileHover={{ scale: item.selected ? 1.0 : 1.1 }}
-                  >
-                    {item.selected ? `${item.seq} 등` : ''}
-                  </motion.div>
-                </motion.button>
-              ))}
-          </AnimatePresence>
-        </div>
-      </div>
-    );
-  }
+  // if (!isGameStart) {
+  //   return (
+  //     <div
+  //       className='flex flex-col w-full h-full min-h-[700px] overflow-hidden relative items-center'
+  //       style={{
+  //         backgroundImage: `url(${images.gameRoom.background})`,
+  //         backgroundSize: 'cover',
+  //       }}
+  //     >
+  //       <div className='text-[white] text-3xl mt-[120px]'>
+  //         카드를 선택해주세요.
+  //       </div>
+  //       <div className='flex w-full items-center justify-around mb-auto mt-[100px]'>
+  //         <AnimatePresence>
+  //           {orderList &&
+  //             orderList.map((item, index) => (
+  //               <motion.button
+  //                 key={item.seq}
+  //                 initial={{ opacity: 0, rotateY: 0 }}
+  //                 animate={{ opacity: 1, rotateY: item.selected ? 0 : 180 }}
+  //                 exit={{ opacity: 0, rotateY: 0 }}
+  //                 onClick={() => flipCard(index)}
+  //               >
+  //                 <motion.div
+  //                   className={`h-[340px] w-[220px] rounded-[8px] flex justify-center items-center ${
+  //                     item.selected ? 'bg-[#e6e6e6] text-4xl font-bold' : ''
+  //                   }`}
+  //                   style={{
+  //                     backgroundImage: item.selected
+  //                       ? 'none'
+  //                       : `url(${images.gameRoom.cardBack})`,
+  //                     backgroundSize: 'cover',
+  //                     filter: 'drop-shadow(5px 5px 5px #000)',
+  //                   }}
+  //                   whileHover={{ scale: item.selected ? 1.0 : 1.1 }}
+  //                 >
+  //                   {item.selected ? `${item.seq} 등` : ''}
+  //                 </motion.div>
+  //               </motion.button>
+  //             ))}
+  //         </AnimatePresence>
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
   return (
     <>
       <NewsCardModal isOpen={isOpenNews} handleNews={handleNews} />
+      <LandInfoModal
+        landId={landValue}
+        isOpen={isOpenLandInfo}
+        handleLandInfo={handleLandInfo}
+      />
       <div
         className='flex flex-col w-full h-full min-h-[700px] overflow-hidden relative'
         style={{
@@ -203,6 +220,7 @@ const GameRoom = () => {
               value={7}
               width={60}
               height={90}
+              onClickArea={onClickLand}
             />
             <MapArea
               src={images.map.egypt}
@@ -210,6 +228,7 @@ const GameRoom = () => {
               value={6}
               width={60}
               height={90}
+              onClickArea={onClickLand}
             />
             <MapArea
               src={images.map.singapore}
@@ -217,6 +236,7 @@ const GameRoom = () => {
               value={5}
               width={60}
               height={90}
+              onClickArea={onClickLand}
             />
             <MapArea
               src={images.map.goldKey1}
@@ -231,6 +251,7 @@ const GameRoom = () => {
               value={3}
               width={60}
               height={90}
+              onClickArea={onClickLand}
             />
             <MapArea
               src={images.map.revenue}
@@ -245,6 +266,7 @@ const GameRoom = () => {
               value={1}
               width={60}
               height={90}
+              onClickArea={onClickLand}
             />
             <MapArea
               src={images.map.start}
@@ -262,6 +284,7 @@ const GameRoom = () => {
               value={15}
               width={90}
               height={60}
+              onClickArea={onClickLand}
             />
             <MapArea
               src={images.map.iran}
@@ -269,6 +292,7 @@ const GameRoom = () => {
               value={14}
               width={90}
               height={60}
+              onClickArea={onClickLand}
             />
             <MapArea
               src={images.map.catarrh}
@@ -276,6 +300,7 @@ const GameRoom = () => {
               value={13}
               width={90}
               height={60}
+              onClickArea={onClickLand}
             />
             <MapArea
               src={images.map.goldKey2}
@@ -290,6 +315,7 @@ const GameRoom = () => {
               value={11}
               width={90}
               height={60}
+              onClickArea={onClickLand}
             />
             <MapArea
               src={images.map.macau}
@@ -304,6 +330,7 @@ const GameRoom = () => {
               value={9}
               width={90}
               height={60}
+              onClickArea={onClickLand}
             />
           </div>
           {/* 윗줄 */}
@@ -321,6 +348,7 @@ const GameRoom = () => {
               value={17}
               width={60}
               height={90}
+              onClickArea={onClickLand}
             />
             <MapArea
               src={images.map.rushAndCash}
@@ -335,6 +363,7 @@ const GameRoom = () => {
               value={19}
               width={60}
               height={90}
+              onClickArea={onClickLand}
             />
             <MapArea
               src={images.map.goldKey3}
@@ -349,6 +378,7 @@ const GameRoom = () => {
               value={21}
               width={60}
               height={90}
+              onClickArea={onClickLand}
             />
             <MapArea
               src={images.map.germany}
@@ -356,6 +386,7 @@ const GameRoom = () => {
               value={22}
               width={60}
               height={90}
+              onClickArea={onClickLand}
             />
             <MapArea
               src={images.map.uk}
@@ -363,6 +394,7 @@ const GameRoom = () => {
               value={23}
               width={60}
               height={90}
+              onClickArea={onClickLand}
             />
             <MapArea
               src={images.map.anywhere}
@@ -380,6 +412,7 @@ const GameRoom = () => {
               value={25}
               width={90}
               height={60}
+              onClickArea={onClickLand}
             />
             <MapArea
               src={images.map.canada}
@@ -387,6 +420,7 @@ const GameRoom = () => {
               value={26}
               width={90}
               height={60}
+              onClickArea={onClickLand}
             />
             <MapArea
               src={images.map.India}
@@ -394,6 +428,7 @@ const GameRoom = () => {
               value={27}
               width={90}
               height={60}
+              onClickArea={onClickLand}
             />
             <MapArea
               src={images.map.goldKey4}
@@ -408,6 +443,7 @@ const GameRoom = () => {
               value={29}
               width={90}
               height={60}
+              onClickArea={onClickLand}
             />
             <MapArea
               src={images.map.japan}
@@ -415,6 +451,7 @@ const GameRoom = () => {
               value={30}
               width={90}
               height={60}
+              onClickArea={onClickLand}
             />
             <MapArea
               src={images.map.korea}
@@ -422,6 +459,7 @@ const GameRoom = () => {
               value={31}
               width={90}
               height={60}
+              onClickArea={onClickLand}
             />
           </div>
           {/* 캐릭터 */}

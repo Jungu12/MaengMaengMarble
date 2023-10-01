@@ -20,10 +20,15 @@ export default {
           50: '#9A978F',
           100: '#5F594B',
           hint: 'rgba(95, 89, 75, 0.7)',
+          minus: '#81B0FF',
+          plus: '#FF7575',
         },
         secondary: {
           100: '#0BC7B9',
           200: '#28B1A6',
+        },
+        third: {
+          100: '#AB1100',
         },
         greyScale: {
           white: '#ffffff',

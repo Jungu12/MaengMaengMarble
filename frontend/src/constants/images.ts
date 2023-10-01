@@ -32,6 +32,8 @@ export const images = {
       'https://maeng.s3.ap-northeast-2.amazonaws.com/images/card-front.png',
     cardBack:
       'https://maeng.s3.ap-northeast-2.amazonaws.com/images/card-back.png',
+    flagbackground:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/bg-flag.png',
   },
   dummy: {
     dummy1: 'https://maeng.s3.ap-northeast-2.amazonaws.com/images/dummy1.png',
@@ -281,7 +283,7 @@ export const images = {
     canada:
       'https://maeng.s3.ap-northeast-2.amazonaws.com/images/flag/canada.png',
     India:
-      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/flag/india.png',
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/flag/India.png',
     china:
       'https://maeng.s3.ap-northeast-2.amazonaws.com/images/flag/china.png',
     japan:
