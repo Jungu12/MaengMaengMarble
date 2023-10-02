@@ -130,7 +130,7 @@ public class GameRoomService {
 					.playerCnt(playerNum)
 					.turnCount(1)
 					.effectNews(new LinkedList<>())
-					.waitingNews(new PriorityQueue<>((o1, o2) -> o1.getTurn() - o2.getTurn()))
+					.waitingNews(new PriorityQueue<WaitingNews>(/*(o1, o2) -> o1.getTurn() - o2.getTurn()*/))
 					.build();
 				gameInfo.setInfo(info);
 			}
