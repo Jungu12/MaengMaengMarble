@@ -170,6 +170,19 @@ public class WaitingRoomService {
     }
 
 
+    public void changeState(String roomCode, int num){
+        // 전체 정보 받기
+        WaitingRoom waitingRoom = waitingRoomRepository.getWaitingRoomNow(roomCode);
+
+        // n번째 사용자 closed true로 변경하기
+        waitingRoom.getCurrentParticipants().get(num-1).setClosed(!waitingRoom.getCurrentParticipants().get(num-1).isClosed());
+
+        waitingRoomRepository.saveWaitingRoom(waitingRoom);
+    }
+
+
+
+
 }
 
 
