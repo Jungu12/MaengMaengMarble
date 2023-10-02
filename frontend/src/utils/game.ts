@@ -67,6 +67,15 @@ export const moveCharacter = async (
   return cur;
 };
 
+export const BUILDING_TYPE = {
+  땅값: '땅값',
+  별장: '별장',
+  빌딩: '빌딩',
+  호텔: '호텔',
+} as const;
+
+export type BuildingType = keyof typeof BUILDING_TYPE;
+
 export const addAmountUnit = (money: number): string => {
   let unit = '';
   if (money >= 1000000000000) {
@@ -81,14 +90,8 @@ export const addAmountUnit = (money: number): string => {
     unit = `${unit} ${Math.trunc(money / 10000)}만`;
     money = money % 10000;
   }
-  if (money > 0) {
-    unit = `${unit} ${money}`;
-  }
-  if (unit === '' && money === 0) {
-    unit = `0`;
-  }
 
-  return `${unit}원`;
+  return unit;
 };
 
 export const calCurrentFees = (landInfo: LandType): number => {

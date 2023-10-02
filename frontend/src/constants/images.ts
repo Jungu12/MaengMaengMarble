@@ -34,6 +34,8 @@ export const images = {
       'https://maeng.s3.ap-northeast-2.amazonaws.com/images/card-back.png',
     flagbackground:
       'https://maeng.s3.ap-northeast-2.amazonaws.com/images/bg-flag.png',
+    buildingbackground:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/bg-building.png',
   },
   dummy: {
     dummy1: 'https://maeng.s3.ap-northeast-2.amazonaws.com/images/dummy1.png',

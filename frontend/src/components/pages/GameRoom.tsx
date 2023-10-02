@@ -13,6 +13,7 @@ import { useRecoilValue } from 'recoil';
 import { userState } from '@atom/userAtom';
 import { currentParticipantsNum } from '@utils/lobby';
 import LandInfoModal from '@components/gameRoom/LandInfoModal';
+import ConstructionModal from '@components/gameRoom/ConstructionModal';
 
 const GameRoom = () => {
   const location = useLocation();
@@ -30,7 +31,8 @@ const GameRoom = () => {
   const controls = useAnimation();
   const [isOpenNews, setIsOpenNews] = useState(false);
   const [isOpenLandInfo, setIsOpenLandInfo] = useState(false);
-  const [landValue, setLandValue] = useState(0);
+  const [isOpenConstruction, setIsOpenConstruction] = useState(false);
+  const [landValue, setLandValue] = useState(25);
 
   const handleNews = useCallback(() => {
     setIsOpenNews((prev) => !prev);
@@ -40,10 +42,17 @@ const GameRoom = () => {
     setIsOpenLandInfo((prev) => !prev);
   }, []);
 
-  const onClickLand = useCallback((value: number) => {
-    handleLandInfo();
-    setLandValue(value);
+  const handleConstruction = useCallback(() => {
+    setIsOpenConstruction((prev) => !prev);
   }, []);
+
+  const onClickLand = useCallback(
+    (value: number) => {
+      handleLandInfo();
+      setLandValue(value);
+    },
+    [handleLandInfo]
+  );
 
   const flipCard = (index: number) => {
     const updatedOrderList = [...orderList];
@@ -194,6 +203,11 @@ const GameRoom = () => {
         landId={landValue}
         isOpen={isOpenLandInfo}
         handleLandInfo={handleLandInfo}
+      />
+      <ConstructionModal
+        landId={landValue}
+        isOpen={isOpenConstruction}
+        handleConstruction={handleConstruction}
       />
       <div
         className='flex flex-col w-full h-full min-h-[700px] overflow-hidden relative'
