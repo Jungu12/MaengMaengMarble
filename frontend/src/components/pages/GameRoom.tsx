@@ -14,6 +14,7 @@ import { userState } from '@atom/userAtom';
 import { currentParticipantsNum } from '@utils/lobby';
 import LandInfoModal from '@components/gameRoom/LandInfoModal';
 import ConstructionModal from '@components/gameRoom/ConstructionModal';
+import LoansModal from '@components/gameRoom/LoansModal';
 
 const GameRoom = () => {
   const location = useLocation();
@@ -32,6 +33,7 @@ const GameRoom = () => {
   const [isOpenNews, setIsOpenNews] = useState(false);
   const [isOpenLandInfo, setIsOpenLandInfo] = useState(false);
   const [isOpenConstruction, setIsOpenConstruction] = useState(false);
+  const [isOpenLoans, setIsOpenLoans] = useState(false);
   const [landValue, setLandValue] = useState(25);
 
   const handleNews = useCallback(() => {
@@ -44,6 +46,10 @@ const GameRoom = () => {
 
   const handleConstruction = useCallback(() => {
     setIsOpenConstruction((prev) => !prev);
+  }, []);
+
+  const handleLoans = useCallback(() => {
+    setIsOpenLoans((prev) => !prev);
   }, []);
 
   const onClickLand = useCallback(
@@ -209,6 +215,7 @@ const GameRoom = () => {
         isOpen={isOpenConstruction}
         handleConstruction={handleConstruction}
       />
+      <LoansModal isOpen={isOpenLoans} handleLoans={handleLoans} />
       <div
         className='flex flex-col w-full h-full min-h-[700px] overflow-hidden relative'
         style={{

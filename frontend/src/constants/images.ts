@@ -36,6 +36,8 @@ export const images = {
       'https://maeng.s3.ap-northeast-2.amazonaws.com/images/bg-flag.png',
     buildingbackground:
       'https://maeng.s3.ap-northeast-2.amazonaws.com/images/bg-building.png',
+    rushandcash:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/rush-and-cash.png',
   },
   dummy: {
     dummy1: 'https://maeng.s3.ap-northeast-2.amazonaws.com/images/dummy1.png',
@@ -90,6 +92,8 @@ export const images = {
       'https://maeng.s3.ap-northeast-2.amazonaws.com/images/ic-registration-inactive.png',
     back: 'https://maeng.s3.ap-northeast-2.amazonaws.com/images/icon-back.png',
     dice: 'https://maeng.s3.ap-northeast-2.amazonaws.com/images/icon-dice.png',
+    up: 'https://maeng.s3.ap-northeast-2.amazonaws.com/images/icon-up.png',
+    down: 'https://maeng.s3.ap-northeast-2.amazonaws.com/images/icon-down.png',
   },
   button: {
     gameclose:
