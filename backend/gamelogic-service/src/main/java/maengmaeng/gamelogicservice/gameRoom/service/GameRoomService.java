@@ -216,12 +216,11 @@ public class GameRoomService {
             gameInfo.setPlayers(players);
             gameInfoRepository.createGameRoom(gameInfo);
             dice.setDoubleCount(curPlayer.getDoubleCount());
-            // 거래 정지 칸으로 이동
+            dice.setPlayers(players);
+			// 거래 정지 칸으로 이동
             // 클라이언트에서 서버로 턴종료  호출
+
             responseDto = ResponseDto.builder().type("거래정지칸도착").data(dice).build();
-
-            //TODO: 플레이어 정보도 다시 줘야 할까??
-
 
         } else{
             //
@@ -239,9 +238,9 @@ public class GameRoomService {
 
             gameInfoRepository.createGameRoom(gameInfo);
             dice.setDoubleCount(curPlayer.getDoubleCount());
+			dice.setPlayers(players);
 
             responseDto = ResponseDto.builder().type("주사위").data(dice).build();
-            //TODO: 플레이어 정보도 다시 줘야 할까??
 
         }
 
@@ -768,7 +767,7 @@ public class GameRoomService {
     /**
      * 맹맹 지급
      * */
-    public ResponseDto maengMaeng(/*(Player player, List<Stock> stocks, List<Land> lands,*/ GameInfo gameInfo){
+    public ResponseDto maengMaeng(GameInfo gameInfo){
         // 맹맹: 보유 현금 * 0.15 + 배당금 - 대출 원금 * 0.24)
 
         Player[] players = gameInfo.getPlayers();
@@ -1065,13 +1064,10 @@ public class GameRoomService {
 
         }
 
-
-
         if(isLastPlayer){
             //TODO: 턴이 바뀔 때 수행되어야하는 로직
             //TODO: effectNews, waitingNews 관련 로직
         }
-
 
         // 다음 플레이어
         int nextPlayerIdx = -1;
@@ -1088,13 +1084,6 @@ public class GameRoomService {
             // 다음 플레이어 순서를 설정
             info.setCurrentPlayer(players[nextPlayerIdx].getNickname());
         }
-
-
-
-
-
-
-
 
 
         return null;
