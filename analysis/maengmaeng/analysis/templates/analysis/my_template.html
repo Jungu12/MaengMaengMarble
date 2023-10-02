@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <h1>전적 기록</h1>
+
+    <p>게임 수 : {{ game_count }}</p>
+    <p>승/패(승률) : {{ win_count }} / {{ loss_count }} ({{ win_rate }} %)</p>
+    <p>평균 등수 : #{{ rating_average }}</p>
+    <p>자산 : {{ asset_average }}(원)</p>
+    <p>땅 개수 : {{ land_count }}</p>
+    <p>주식 수 : {{ stock_count }}</p>
+    <p>주식 자산 : {{ stock_average }}(원)</p>
+    <p>대출 횟수 : {{ loan_count }}</p>
+    <p>어디로든문 이용 횟수 : {{ door_count }}</p>
+    <p>24k 황금열쇠 이용 횟수 : {{ key_count }}</p>
+    <p>천사카드 사용 횟수 : {{ angel_count }}</p>
+    <p>생존 턴 : {{ turn_count }}</p>
+
+    <canvas id="ratingChart" width="450px" height="230px"></canvas>
+    <script>
+        var ratings = {{ rating|safe }};
+        var labels = Array.from({length: ratings.length}, (_, i) => '#' + (i + 1));
+        
+        // JavaScript에서 ratings 데이터를 사용하여 막대 그래프 생성
+        var ctx = document.getElementById('ratingChart').getContext('2d');
+        var ratingChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Rating',
+                    data: ratings,
+                    backgroundColor: function (context) {
+                        var index = context.dataIndex;
+                        if (index === 0) {
+                            return 'rgba(51, 150, 244, 0.8)'; // 1등은 초록색
+                        } else if (index === 1) {
+                            return 'rgba(47, 168, 156, 0.8)'; // 2등은 파란색
+                        } else if (index === 2) {
+                            return 'rgba(47, 158, 156, 0.8)'; // 3등은 파란색
+                        } else {
+                            return 'rgba(169, 169, 169, 1)'; // 나머지는 회색
+                        }
+                    },
+                    borderColor: function (context) {
+                        var index = context.dataIndex;
+                        if (index === 0) {
+                            return 'rgba(51, 150, 244, 0.8)'; // 1등은 초록색
+                        } else if (index === 1) {
+                            return 'rgba(47, 168, 156, 0.8)'; // 2등은 파란색
+                        } else if (index === 2) {
+                            return 'rgba(47, 158, 156, 0.8)'; // 3등은 파란색
+                        } else {
+                            return 'rgba(169, 169, 169, 1)'; // 나머지는 회색
+                        }
+                    },
+                    borderWidth: 1,
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        stepSize: 1 // y축 값의 간격을 1로 설정
+                    }
+                }
+            }
+        });
+
+    </script>
+    
+</body>
+</html>
