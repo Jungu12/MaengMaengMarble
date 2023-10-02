@@ -3,10 +3,7 @@ package maengmaeng.gamelogicservice.gameRoom.controller;
 import maengmaeng.gamelogicservice.gameRoom.domain.GameInfo;
 import maengmaeng.gamelogicservice.gameRoom.domain.Player;
 import maengmaeng.gamelogicservice.gameRoom.domain.StartCard;
-import maengmaeng.gamelogicservice.gameRoom.domain.dto.Dice;
-import maengmaeng.gamelogicservice.gameRoom.domain.dto.GameStart;
-import maengmaeng.gamelogicservice.gameRoom.domain.dto.PlayerCount;
-import maengmaeng.gamelogicservice.gameRoom.domain.dto.PlayerSeq;
+import maengmaeng.gamelogicservice.gameRoom.domain.dto.*;
 import maengmaeng.gamelogicservice.gameRoom.service.GameRoomService;
 import maengmaeng.gamelogicservice.global.dto.GameData;
 import maengmaeng.gamelogicservice.global.dto.ResponseDto;
@@ -246,6 +243,24 @@ public class GameRoomController {
 				.roomCode(roomCode)
 				.data(responseDto)
 
+				.build();
+
+		redisPublisher.publish(gameRoomTopic,gameData);
+
+	}
+
+	/**
+	 * 어디로든 문 (강준구의 문단속 적용 X)
+	 * */
+
+	@MessageMapping("/game-rooms/door/{roomCode}")
+	public void door(@DestinationVariable String roomCode, Door door){
+		ResponseDto responseDto = gameRoomService.door(roomCode, door);
+
+		GameData gameData = GameData.builder()
+				.type("GAME_ROOM")
+				.roomCode(roomCode)
+				.data(responseDto)
 				.build();
 
 		redisPublisher.publish(gameRoomTopic,gameData);

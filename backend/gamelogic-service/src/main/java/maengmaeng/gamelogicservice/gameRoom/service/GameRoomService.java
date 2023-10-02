@@ -3,13 +3,7 @@ package maengmaeng.gamelogicservice.gameRoom.service;
 import lombok.AllArgsConstructor;
 import maengmaeng.gamelogicservice.gameRoom.domain.*;
 import maengmaeng.gamelogicservice.gameRoom.domain.db.*;
-import maengmaeng.gamelogicservice.gameRoom.domain.dto.AfterMoveResponse;
-import maengmaeng.gamelogicservice.gameRoom.domain.dto.Dice;
-import maengmaeng.gamelogicservice.gameRoom.domain.dto.GameStart;
-import maengmaeng.gamelogicservice.gameRoom.domain.dto.GoldenKeysLandsResponse;
-import maengmaeng.gamelogicservice.gameRoom.domain.dto.GoldenKeysPlayersResponse;
-import maengmaeng.gamelogicservice.gameRoom.domain.dto.NewsResponse;
-import maengmaeng.gamelogicservice.gameRoom.domain.dto.PlayerSeq;
+import maengmaeng.gamelogicservice.gameRoom.domain.dto.*;
 import maengmaeng.gamelogicservice.gameRoom.repository.*;
 import maengmaeng.gamelogicservice.global.dto.ResponseDto;
 
@@ -26,9 +20,9 @@ public class GameRoomService {
 	private final DbCountryRespository dbCountryRespository;
 	private final DbNewsRepository dbNewsRepository;
 	private final DbStockRepository dbStockRepository;
-//	private final DbNewsCountryRepository dbNewsCountryRepository;
-//	private final DbCardRepository dbCardRepository;
-//	private final DbNewsStockRepository dbNewsStockRepository;
+	private final DbNewsCountryRepository dbNewsCountryRepository;
+	private final DbCardRepository dbCardRepository;
+	private final DbNewsStockRepository dbNewsStockRepository;
 	private final GameInfoRepository gameInfoRepository;
 	private final GameInfoMapper gameInfoMapper;
 	private final AvatarRepository avatarRepository;
@@ -843,6 +837,7 @@ public class GameRoomService {
 
         }
 
+
     }
 
 
@@ -1052,6 +1047,50 @@ public class GameRoomService {
         return responseDto;
     }
 
+	/**
+	 * 어디로든 문 (강준구의 문단속 적용 X)
+	 * */
+	public ResponseDto door(String roomCode, Door door){
+		GameInfo gameInfo = gameInfoRepository.getGameInfo(roomCode);
+		Player[] players = gameInfo.getPlayers();
+		int playerIdx = getPlayerIdx(players,gameInfo.getInfo().getCurrentPlayer());
+		Player currentPlayer = players[playerIdx];
+		// 현재 위치
+		int currentLocation = currentPlayer.getCurrentLocation();
+		// player가 지정한 위치
+		int nextLocation = door.getLandId();
+
+		// 1바퀴 돌았을 때
+		if(currentLocation>nextLocation){
+			// 돈 바퀴 수 증가
+			int currentLap = currentPlayer.getCurrentLap();
+			currentPlayer.setCurrentLap(currentLap+1);
+			currentPlayer.setCurrentLocation(nextLocation);
+			players[playerIdx] = currentPlayer;
+			gameInfo.setPlayers(players);
+			gameInfoRepository.createGameRoom(gameInfo);
+			return ResponseDto.builder()
+					.type("맹맹지급")
+					.data(DoorResponse.builder().lapCheck(true)
+							.players(players)
+						.build())
+					.build();
+
+		} else {
+			currentPlayer.setCurrentLocation(nextLocation);
+			players[playerIdx] = currentPlayer;
+			gameInfo.setPlayers(players);
+			gameInfoRepository.createGameRoom(gameInfo);
+			return ResponseDto.builder()
+					.type("이동후로직")
+					.data(DoorResponse.builder().lapCheck(false)
+							.players(players)
+							.build())
+					.build();
+
+
+		}
+	}
 
 
     /**
