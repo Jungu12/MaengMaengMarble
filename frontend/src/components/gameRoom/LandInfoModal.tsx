@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { images } from '@constants/images';
-import { useMemo } from 'react';
+import { useMemo, useRef, useCallback, useEffect } from 'react';
 import { lands } from '@components/gameRoom/LandDummy';
 import {
   addAmountUnit,
@@ -20,6 +20,39 @@ const LandInfoModal = ({ landId, isOpen, handleLandInfo }: Props) => {
   const landInfo = useMemo(() => lands[landId], [landId]);
   const fee = useMemo(() => calCurrentFees(landInfo), [landInfo]);
 
+  const modalRef = useRef<HTMLDivElement>(null);
+
+  const modalOutSideClick = (
+    e: React.MouseEvent<HTMLDivElement, MouseEvent>
+  ) => {
+    if (modalRef.current === e.target) {
+      handleLandInfo();
+    }
+  };
+
+  const handleEscKey = useCallback(
+    (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        // ESC 키가 눌렸을 때 실행할 동작을 여기에 추가
+        handleLandInfo();
+        // 예를 들어 모달을 닫는 함수를 호출하거나 다른 동작을 수행할 수 있습니다.
+      }
+    },
+    [handleLandInfo]
+  );
+
+  // 컴포넌트가 마운트될 때 이벤트 리스너 추가
+  useEffect(() => {
+    if (isOpen) {
+      window.addEventListener('keydown', handleEscKey);
+    }
+
+    // 컴포넌트가 언마운트될 때 이벤트 리스너 제거
+    return () => {
+      window.removeEventListener('keydown', handleEscKey);
+    };
+  }, [handleEscKey, isOpen]);
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -28,6 +61,9 @@ const LandInfoModal = ({ landId, isOpen, handleLandInfo }: Props) => {
           style={{
             zIndex: 100,
           }}
+          ref={modalRef}
+          onClick={(e) => modalOutSideClick(e)}
+          aria-hidden='true'
         >
           <motion.div
             initial={{
