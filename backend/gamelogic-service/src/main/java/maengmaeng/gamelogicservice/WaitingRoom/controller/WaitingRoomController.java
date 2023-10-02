@@ -8,15 +8,18 @@ import maengmaeng.gamelogicservice.lobby.service.LobbyService;
 import maengmaeng.gamelogicservice.util.RedisPublisher;
 import maengmaeng.gamelogicservice.waitingRoom.domain.WaitingRoom;
 import maengmaeng.gamelogicservice.global.dto.GameData;
+
 import maengmaeng.gamelogicservice.waitingRoom.domain.dto.ChangeStateRequest;
+import maengmaeng.gamelogicservice.waitingRoom.domain.dto.OutUser;
 import maengmaeng.gamelogicservice.waitingRoom.domain.dto.UserInfo;
 import maengmaeng.gamelogicservice.waitingRoom.service.WaitingRoomService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.configurationprocessor.json.JSONException;
+
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.stereotype.Controller;
 
@@ -151,10 +154,11 @@ public class WaitingRoomController {
 
     }
 
+
     @MessageMapping("/waiting-rooms/kick/{roomCode}")
-    public void kick(@DestinationVariable String roomCode, String outUser) throws JSONException {
+    public void kick(@DestinationVariable String roomCode, @Payload OutUser outUser){
         // 유저가 kick 눌러서 내보내기
-        waitingRoomService.kick(roomCode,outUser);
+        waitingRoomService.kick(roomCode,outUser.getOutUser());
 
         WaitingRoom waitingRoom = waitingRoomService.getWaitingRoomNow(roomCode);
 

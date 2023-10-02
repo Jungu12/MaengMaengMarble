@@ -7,7 +7,9 @@ import maengmaeng.gamelogicservice.gameRoom.domain.dto.Dice;
 import maengmaeng.gamelogicservice.gameRoom.domain.dto.GameStart;
 import maengmaeng.gamelogicservice.gameRoom.domain.dto.PlayerSeq;
 import maengmaeng.gamelogicservice.gameRoom.repository.*;
+import maengmaeng.gamelogicservice.global.dto.ResponseDto;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -24,6 +26,7 @@ public class GameRoomService {
     private final DbNewsStockRepository dbNewsStockRepository;
     private final GameInfoRepository gameInfoRepository;
     private final GameInfoMapper gameInfoMapper;
+    private final AvatarRepository avatarRepository;
     private static final int stopTrade = 8;
     /**
      * 게임 정보  가져오기
@@ -41,21 +44,19 @@ public class GameRoomService {
      * */
     public GameStart setStart(String roomCode, int playerCnt){
 
-        int[] cards = new int[playerCnt];
+        StartCard[] cards = new StartCard[playerCnt];
         for(int i=0;i<playerCnt;i++){
-            cards[i] = i+1;
+            cards[i] = StartCard.builder().seq(i+1).selected(false).build();
         }
         Random random = new Random();
-
-        // 배열을 뒤에서부터 앞으로 순회하면서 무작위로 요소를 선택하여 섞음
         for (int i = cards.length - 1; i > 0; i--) {
-            int randomIndex = random.nextInt(i + 1);
-
-            // 요소 교환
-            int temp = cards[i];
-            cards[i] = cards[randomIndex];
-            cards[randomIndex] = temp;
+            int j = random.nextInt(i + 1); // 0부터 i까지 무작위 인덱스 선택
+            // i와 j 위치의 요소 교환
+            StartCard temp = cards[i];
+            cards[i] = cards[j];
+            cards[j] = temp;
         }
+
         List<DbCountry> dbCountryList = dbCountryRespository.findAll();
 
         List<News> platinumNews = dbNewsRepository.findByNewsType("Platinum").stream().map(gameInfoMapper::toRedisNews).collect(Collectors.toList());
@@ -78,6 +79,7 @@ public class GameRoomService {
                 .goldenKeys(gameInfoMapper.toRedisGoldenKeys(bronze,diamond,platinum))
                 .stocks(stockList)
                 .newsInfo(NewsInfo.builder().bronze(bronzeNews).diamond(diamondNews).platinum(platinumNews).build())
+                .seqCards(cards)
                 .build();
 
         gameInfoRepository.createGameRoom(gameInfo);
@@ -89,15 +91,23 @@ public class GameRoomService {
 
     /**
      * 플레이어 게임 순서 세팅*/
-    public Player[] setPlayer(String roomCode, PlayerSeq playerSeq){
+    @Transactional
+    public StartCard[] setPlayer(String roomCode, PlayerSeq playerSeq){
 
         GameInfo gameInfo = getInfo(roomCode);
+        //
+        StartCard[] startCards = gameInfo.getSeqCards();
+        //
         Player[] players = gameInfo.getPlayers();
         int playerNum = gameInfo.getInfo().getPlayerCnt();
+        Avatar avatar = avatarRepository.getReferenceById(playerSeq.getCharacterId());
 
-        Player player = gameInfoMapper.toReidsPlayer(playerSeq.getUserId(), playerSeq.getNickname());
-        if(players[playerSeq.getPlayerCnt()-1] ==null){
+
+        Player player = gameInfoMapper.toReidsPlayer(playerSeq.getUserId(), playerSeq.getNickname(),playerSeq.getCharacterId(),avatar.getAvatarImageNoBg());
+        if(players[playerSeq.getPlayerCnt()-1] ==null && !startCards[playerSeq.getPlayerCnt()-1].isSelected()){
             players[playerSeq.getPlayerCnt()-1] = player;
+            startCards[playerSeq.getPlayerCnt()-1].setSelected(true);
+
             if(playerSeq.getPlayerCnt()==1){
                 Info info = Info.builder()
                         .currentPlayer(players[0].getNickname())
@@ -108,19 +118,18 @@ public class GameRoomService {
                         .build();
                 gameInfo.setInfo(info);
             }
+            gameInfo.setSeqCards(startCards);
         }
 
         gameInfoRepository.createGameRoom(gameInfo);
-        return  players;
+        return  gameInfo.getSeqCards();
     }
 
     /**
      * 현재 플레이어 인덱스 가져오기
      *
      * */
-    public int getPlayerIdx(String roomCode, String currentPlayer){
-        GameInfo gameInfo = gameInfoRepository.getGameInfo(roomCode);
-        Player[] players = gameInfo.getPlayers();
+    public int getPlayerIdx(Player[] players, String currentPlayer){
         int currentIdx=-1;
         for(int i=0;i< players.length;i++){
             if(players[i]!=null && players[i].isAlive() && players[i].getNickname().equals(currentPlayer)){
@@ -141,13 +150,13 @@ public class GameRoomService {
         // 주사위 2 던지기 (1부터 6까지)
         int dice2 = random.nextInt(6) + 1;
 
-        return Dice.builder().dice1(dice1).dice2(2).build();
+        return Dice.builder().dice1(dice1).dice2(dice2).build();
     }
 
     /**
      * 주사위 굴리기.
     * */
-    public Dice rollDice(String roomCode){
+    public ResponseDto rollDice(String roomCode){
         // 게임 정보 가져오기
         GameInfo gameInfo = gameInfoRepository.getGameInfo(roomCode);
         Player[] players = gameInfo.getPlayers();
@@ -175,33 +184,48 @@ public class GameRoomService {
             // 더블이 3번 나오면 거래정지 칸으로 이동 및 턴 종료
             if (doubleCount >= 3) {
                 checkTrade = true;
-                //TODO:
-
             }
             curPlayer.setDoubleCount(doubleCount);
 
         }
+        ResponseDto responseDto = null;
+        int curLocation = curPlayer.getCurrentLocation();
 
         if(checkTrade){
-            // 거래 정지 칸으로 이동(한 바퀴 돌아서 거래정지로 가는 걸까??)
             curPlayer.setCurrentLocation(stopTrade);
+            // TODO: 거래정지
+
+            players[currentIdx] = curPlayer;
+            gameInfo.setPlayers(players);
+            gameInfoRepository.createGameRoom(gameInfo);
+            dice.setDoubleCount(curPlayer.getDoubleCount());
+            // 거래 정지 칸으로 이동
+            // 클라이언트에서 서버로 턴종료  호출
+            responseDto = ResponseDto.builder().type("거래정지칸도착").data(dice).build();
+
 
         } else{
+            //
+//            System.out.println("move 호출 전 " + curPlayer.getCurrentLocation());
             Player player = move(curPlayer, dice.getDice1()+dice.getDice2());
+//            System.out.println("move 호출 뒤 " + curPlayer.getCurrentLocation());
+
+            // 한바퀴 돌았으면
+            if(curLocation >player.getCurrentLocation()){
+                System.out.println("한바퀴");
+                dice.setLapCheck(true);
+            }
+            players[currentIdx] = player;
+            gameInfo.setPlayers(players);
+            gameInfoRepository.createGameRoom(gameInfo);
+            dice.setDoubleCount(curPlayer.getDoubleCount());
+
+            responseDto = ResponseDto.builder().type("주사위").data(dice).build();
 
         }
 
 
-        //TODO: 플레이어 관련 정보 REDIS에 다시 저장.
-        // 플레이어 정보 재설정
-        players[currentIdx] =  curPlayer;
-        gameInfo.setPlayers(players);
-        gameInfoRepository.createGameRoom(gameInfo);
-        dice.setDoubleCount(curPlayer.getDoubleCount());
-
-
-
-        return dice;
+        return responseDto;
     }
 
 
@@ -246,23 +270,152 @@ public class GameRoomService {
     /**
      * 맹맹 지급
      * */
-//    public Player manegMaeng(Player player){
-//        // 맹맹: 보유 현금 * 0.15 + 배당금 - 대출 원금 * 0.24)
-//        long money = Math.round(player.getMoney() * 1.15);
-//        List<Map<Integer,Integer>> stock = player.getStocks();
-//        long dividends =
-//        Long maengManeg =
-//
-//    }
+    public ResponseDto maengMaeng(/*(Player player, List<Stock> stocks, List<Land> lands,*/ GameInfo gameInfo){
+        // 맹맹: 보유 현금 * 0.15 + 배당금 - 대출 원금 * 0.24)
+
+        Player[] players = gameInfo.getPlayers();
+        int playerIdx = getPlayerIdx(players,gameInfo.getInfo().getCurrentPlayer());
+        Player player = players[playerIdx];
+        List<Land> lands = gameInfo.getLands();
+        List<Stock> stocks = gameInfo.getStocks();
+        long maengMaeng =0;
+        long money = Math.round(player.getMoney() * 0.15);
+        long dividends = 0;
+        long loan = Math.round(player.getLoan() *0.24);
+        int[] playerStock = player.getStocks();
+        // 배당금 구하기
+        for(int i=1;i<playerStock.length;i++){
+            dividends += playerStock[i] * stocks.get(i-1).getDividends();
+        }
+        maengMaeng = money+dividends -loan;
+        // 맹맹 >=0 이면 보유 현금 +
+        if(maengMaeng >=0){
+            long playerMoney = player.getMoney();
+            player.setMoney(playerMoney+maengMaeng);
+            players[playerIdx] = player;
+            gameInfo.setPlayers(players);
+            gameInfoRepository.createGameRoom(gameInfo);
+            return ResponseDto.builder().type("맹맹지급").data(player).build();
+
+        } else{
+            // 맹맹이 음수일 때
+            // 맹맹이 보유자산 보다 많을 때?
+            if(maengMaeng > calculateMoney(player,stocks,lands) ){
+                //TODO: 파산 절차
+                return  ResponseDto.builder().type("파산").build();
+
+            } else {
+                if (player.getMoney() -maengMaeng>=0 ){
+                    // 보유 현금 -
+                    player.setMoney(player.getMoney()-maengMaeng);
+                    players[playerIdx] = player;
+                    gameInfo.setPlayers(players);
+                    gameInfoRepository.createGameRoom(gameInfo);
+                    return ResponseDto.builder().type("맹맹지급").data(player).build();
+
+                } else{
+                    //TODO: 매각 절차
+                    return ResponseDto.builder().type("매각시작").build();
+                }
+            }
+
+        }
+
+    }
 
     /**
-     * 총자산 계산
+     *  플레이어 화면에 보여줄 총자산 계산
      * */
-//    public Long calculateAsset(Player player){
-//        //TODO: asset 계산
-//
-//
-//    }
+    public Long calculateAsset(Player player,List<Stock> stocks, List<Land> lands){
+        //TODO: asset 계산
+        long asset =0;
+        long stockMoney = 0;
+        // 소유중인 주식 가격 구하기
+        int[] playerStock = player.getStocks();
+        for(int i=1;i<playerStock.length;i++){
+            // 주식의 현재 가격 저장
+            stockMoney += playerStock[i] * stocks.get(i-1).getCurrentCost();
+
+        }
+        asset += stockMoney;
+        long landMoney =0;
+        // 소유 중인 땅 가격 구하기
+        List<Integer> landIdx = player.getLands();
+        for(int idx: landIdx) {
+            // 소유중인 나라 가져와서
+            Land land = lands.get(idx);
+            // 땅, 건물을 어떤것을 가지고 있는지 확인 후 가격 계산
+            boolean[] check = land.getBuildings();
+            for (int i = 0; i < check.length; i++) {
+                // 땅 가지고 있을 때
+                if (i == 0 && check[i]) {
+                    landMoney += 10000 * land.getCurrentLandPrice();
+                }
+                if (i == 1 && check[i]) {
+                    landMoney += 10000 * land.getCurrentBuildingPrices()[0];
+                }
+                if (i == 2 && check[i]) {
+                    landMoney += 10000 * land.getCurrentBuildingPrices()[1];
+                }
+                if (i == 3 && check[i]) {
+                    landMoney += 10000 * land.getCurrentBuildingPrices()[2];
+                }
+            }
+
+        }
+
+        asset += landMoney;
+
+        return  asset;
+
+
+    }
+    /**
+     * 파산 등에 사용할 자산 계산
+     */
+
+    public long calculateMoney(Player player, List<Stock> stocks, List<Land> lands){
+        long asset =0;
+        long stockMoney = 0;
+        // 소유중인 주식 가격 구하기
+        int[] playerStock = player.getStocks();
+        for(int i=1;i<playerStock.length;i++){
+            // 주식의 현재 가격 저장
+            stockMoney += playerStock[i] * stocks.get(i-1).getCurrentCost();
+
+        }
+        asset += stockMoney;
+        long landMoney =0;
+        // 소유 중인 땅 가격 구하기
+        List<Integer> landIdx = player.getLands();
+        for(int idx: landIdx) {
+            // 소유중인 나라 가져와서
+            Land land = lands.get(idx);
+            // 땅, 건물을 어떤것을 가지고 있는지 확인 후 가격 계산
+            boolean[] check = land.getBuildings();
+            for (int i = 0; i < check.length; i++) {
+                // 땅 가지고 있을 때
+                if (i == 0 && check[i]) {
+                    landMoney += 10000 * land.getCurrentLandPrice();
+                }
+                if (i == 1 && check[i]) {
+                    landMoney += 10000 * land.getCurrentBuildingPrices()[0];
+                }
+                if (i == 2 && check[i]) {
+                    landMoney += 10000 * land.getCurrentBuildingPrices()[1];
+                }
+                if (i == 3 && check[i]) {
+                    landMoney += 10000 * land.getCurrentBuildingPrices()[2];
+                }
+            }
+
+        }
+
+        asset += landMoney *0.7;
+
+        return  asset;
+    }
+
 
 
     /**
@@ -271,19 +424,8 @@ public class GameRoomService {
     public Player move(Player player, int move) {
         int currentLocation = player.getCurrentLocation();
         int nextLocation = (currentLocation + move) % 32;
-        //한 바퀴 돌았을 때
-        if(currentLocation<nextLocation){
-            int countLap = player.getCurrentLap()+1;
-            long money = Math.round(player.getMoney() * 1.15);
-            player.setMoney(money);
-            player.setCurrentLap(countLap);
-            // TODO: 배당금 관련 로직
-
-
-            // TODO: 대출금 관련 로직
-
-        }
         player.setCurrentLocation(nextLocation);
+        System.out.println(player.getCurrentLocation());
         return  player;
 
 

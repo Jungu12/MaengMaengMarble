@@ -2,6 +2,7 @@ package maengmaeng.gamelogicservice.gameRoom.controller;
 
 import maengmaeng.gamelogicservice.gameRoom.domain.GameInfo;
 import maengmaeng.gamelogicservice.gameRoom.domain.Player;
+import maengmaeng.gamelogicservice.gameRoom.domain.StartCard;
 import maengmaeng.gamelogicservice.gameRoom.domain.dto.Dice;
 import maengmaeng.gamelogicservice.gameRoom.domain.dto.GameStart;
 import maengmaeng.gamelogicservice.gameRoom.domain.dto.PlayerCount;
@@ -9,7 +10,6 @@ import maengmaeng.gamelogicservice.gameRoom.domain.dto.PlayerSeq;
 import maengmaeng.gamelogicservice.gameRoom.service.GameRoomService;
 import maengmaeng.gamelogicservice.global.dto.GameData;
 import maengmaeng.gamelogicservice.global.dto.ResponseDto;
-import maengmaeng.gamelogicservice.waitingRoom.service.WaitingRoomService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.listener.ChannelTopic;
@@ -18,7 +18,6 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.stereotype.Controller;
 
 import lombok.RequiredArgsConstructor;
-// import maengmaeng.gamelogicservice.gameRoom.service.GameRoomService;
 import maengmaeng.gamelogicservice.util.RedisPublisher;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,7 +27,6 @@ public class GameRoomController {
 	private final RedisPublisher redisPublisher;
 	private final GameRoomService gameRoomService;
 	private final Logger logger = LoggerFactory.getLogger(getClass());
-	private final WaitingRoomService waitingRoomService;
 	private final ChannelTopic gameRoomTopic;
 
 
@@ -60,24 +58,26 @@ public class GameRoomController {
 	public void setPlayer(@DestinationVariable String roomCode , PlayerSeq playerSeq){
 		System.out.println("setPlayer");
 
-		Player[] players = gameRoomService.setPlayer(roomCode, playerSeq);
+		StartCard[] startCards = gameRoomService.setPlayer(roomCode, playerSeq);
 		GameInfo gameInfo = gameRoomService.getInfo(roomCode);
 		int num = gameInfo.getInfo().getPlayerCnt();
-		int cnt =0;
 		GameData gameData = GameData.builder()
 				.type("GAME_ROOM")
 				.roomCode(roomCode)
-				.data(ResponseDto.builder().type("플레이어").data(players).build()).build();
+				.data(ResponseDto.builder().type("플레이순서").data(GameStart.builder().cards(startCards).build()).build())
+				.build();
 		redisPublisher.publish(gameRoomTopic,gameData);
+		boolean check = true;
 
-		for(Player player : players){
-			if(player !=null){
-				cnt++;
+		// 모든 플레이어가 순서를 정했으면 게임정보 전송
+		for(StartCard startCard : startCards){
+			if(startCard.isSelected() == false){
+				check = false;
 			}
 		}
-		if(cnt==num){
+		if(check){
 			System.out.println("게임 세팅 완료");
-			redisPublisher.publish(gameRoomTopic,GameData.builder().type("GAME_ROOM").roomCode(roomCode).data(ResponseDto.builder().type("message").data("모든 플레이어가 들어왔어요").build()).build());
+			redisPublisher.publish(gameRoomTopic,GameData.builder().type("GAME_ROOM").roomCode(roomCode).data(ResponseDto.builder().type("초기게임정보").data(gameInfo).build()).build());
 		}
 
 	}
@@ -109,42 +109,32 @@ public class GameRoomController {
 	@MessageMapping("/game-rooms/roll/{roomCode}")
 	public void rollDice(@DestinationVariable String roomCode) {
 
-		Dice dice = gameRoomService.rollDice(roomCode);
+		ResponseDto responseDto = gameRoomService.rollDice(roomCode);
 		GameData gameData = GameData.builder()
 				.type("GAME_ROOM")
 				.roomCode(roomCode)
-				.data(ResponseDto.builder()
-						.type("주사위")
-						.data(dice)
-						.build())
+				.data(responseDto)
 				.build();
-		// 주사위 눈  double 카운트 전송
 		redisPublisher.publish(gameRoomTopic,gameData);
-
-
-		// 한 바퀴를 돌았으면 플레이어 정보 전송
-//		if(dice.isLapCheck()){
-//			GameInfo gameInfo = gameRoomService.getInfo(roomCode);
-//			GameData gameData1 = GameData.builder()
-//					.type("GAME_ROOM")
-//					.roomCode(roomCode)
-//					.data(ResponseDto.builder().type("player").data(gameInfo.getPlayers()).build())
-//					.build();
-//			redisPublisher.publish(gameRoomTopic,gameData1);
-//
-//		}
-
 	}
 
 	/**
 	 * 맹맹지급
 	 *
 	 * */
-//	@MessageMapping("/game-rooms/maengmaeng/{roomCode}")
-//	public void maengMaeng(@DestinationVariable String roomCode){
-//
-//
-//	}
+	@MessageMapping("/game-rooms/maengmaeng/{roomCode}")
+	public void maengMaeng(@DestinationVariable String roomCode){
+
+		GameInfo gameInfo = gameRoomService.getInfo(roomCode);
+		ResponseDto responseDto = gameRoomService.maengMaeng(gameInfo);
+		GameData gameData = GameData.builder()
+				.type("GAME_ROOM")
+				.roomCode(roomCode)
+				.data(responseDto)
+				.build();
+		redisPublisher.publish(gameRoomTopic, gameData);
+
+	}
 
 	/**
 	 * 거래 정지에서 주사위 굴리기
@@ -164,7 +154,13 @@ public class GameRoomController {
 
 	}
 
+	/**
+	 * 이동후 로직
+	 * */
+	@MessageMapping("/game-rooms/afterMove/{roomCode}")
+	public void afterMove(@DestinationVariable String roomCode){
 
+	}
 
 
 	/**
@@ -173,6 +169,7 @@ public class GameRoomController {
 
 	@MessageMapping("/game-rooms/turn-end/{roomCode}")
 	public void endTurn(@DestinationVariable String roomCode) {
+
 
 
 
