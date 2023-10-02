@@ -73,12 +73,12 @@ public class GameInfoMapper {
 	/**
 	 * redis GoldenKeys 객체로 변환하는  Mapper
 	 * */
-	public GoldenKeys toRedisGoldenKeys(int bronze, int silver, int platinum) {
+	public GoldenKeys toRedisGoldenKeys(int bronze, int diamond, int platinum) {
 
 		return GoldenKeys.builder()
-			.bronze(bronze)
-			.silver(silver)
-			.platinum(platinum)
+			.bronze(bronze / 3)
+			.platinum(platinum / 3)
+			.diamond(diamond / 3)
 			.newsBan(4)
 			.hurricane(4)
 			.angel(4)

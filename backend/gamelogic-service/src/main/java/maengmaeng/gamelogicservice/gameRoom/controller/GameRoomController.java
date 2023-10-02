@@ -197,7 +197,15 @@ public class GameRoomController {
 	@MessageMapping("/game-rooms/take-over/{roomCode}")
 	public void takeOver(@DestinationVariable String roomCode) {
 
-		gameRoomService.takeOver(roomCode);
+		ResponseDto responseDto = gameRoomService.takeOver(roomCode);
+
+		GameData gameData = GameData.builder()
+			.type("GAME_ROOM")
+			.roomCode(roomCode)
+			.data(responseDto)
+			.build();
+
+		redisPublisher.publish(gameRoomTopic, gameData);
 	}
 
 	/** 거래 정지에서 주사위 굴리기
@@ -215,6 +223,14 @@ public class GameRoomController {
 			.build();
 		redisPublisher.publish(gameRoomTopic, gameData);
 
+	}
+
+	/**
+	 * 황금 열쇠 고르기
+	 */
+	@MessageMapping("/game-rooms/golden-keys/{roomCode}")
+	public void chooseGoldenKeys(@DestinationVariable String roomCode) {
+		gameRoomService.chooseGoldenKeys(roomCode);
 	}
 
 	/**

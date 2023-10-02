@@ -6,11 +6,13 @@ import maengmaeng.gamelogicservice.gameRoom.domain.db.*;
 import maengmaeng.gamelogicservice.gameRoom.domain.dto.AfterMoveResponse;
 import maengmaeng.gamelogicservice.gameRoom.domain.dto.Dice;
 import maengmaeng.gamelogicservice.gameRoom.domain.dto.GameStart;
+import maengmaeng.gamelogicservice.gameRoom.domain.dto.GoldenKeysLandsResponse;
+import maengmaeng.gamelogicservice.gameRoom.domain.dto.GoldenKeysPlayersResponse;
+import maengmaeng.gamelogicservice.gameRoom.domain.dto.NewsResponse;
 import maengmaeng.gamelogicservice.gameRoom.domain.dto.PlayerSeq;
 import maengmaeng.gamelogicservice.gameRoom.repository.*;
 import maengmaeng.gamelogicservice.global.dto.ResponseDto;
 
-import org.apache.coyote.Response;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -128,7 +130,7 @@ public class GameRoomService {
 					.playerCnt(playerNum)
 					.turnCount(1)
 					.effectNews(new LinkedList<>())
-					.waitingNews(new LinkedList<WaitingNews>())
+					.waitingNews(new PriorityQueue<>((o1, o2) -> o1.getTurn() - o2.getTurn()))
 					.build();
 				gameInfo.setInfo(info);
 			}
@@ -487,6 +489,274 @@ public class GameRoomService {
 			.type("자유")
 			.data(AfterMoveResponse.builder().lands(gameInfo.getLands()).players(gameInfo.getPlayers()).build())
 			.build();
+	}
+
+	public ResponseDto chooseGoldenKeys(String roomCode) {
+		// 게임 정보 가져오기
+		GameInfo gameInfo = gameInfoRepository.getGameInfo(roomCode);
+		Player[] players = gameInfo.getPlayers();
+
+		String currentPlayer = gameInfo.getInfo().getCurrentPlayer();
+		int currentIdx = -1;
+		for (int i = 0; i < players.length; i++) {
+			if (players[i] != null && players[i].isAlive() && players[i].getNickname().equals(currentPlayer)) {
+				currentIdx = i;
+			}
+		}
+		if (currentIdx != -1) {
+			// 예외 처리
+		}
+
+		Player curPlayer = players[currentIdx];
+
+		Random random = new Random();
+		GoldenKeys goldenKeys = gameInfo.getGoldenKeys();
+		int totalProbability = goldenKeys.getBronze() + goldenKeys.getDiamond() + goldenKeys.getPlatinum() +
+			goldenKeys.getNewsBan() + goldenKeys.getHurricane() + goldenKeys.getAngel() +
+			goldenKeys.getKangJunGu() + goldenKeys.getLotto() + goldenKeys.getDoor() + goldenKeys.getEarthquake();
+
+		int randomValue = random.nextInt(totalProbability);
+		//황금 열쇠 종류
+		String cardType;
+		ResponseDto responseDto = ResponseDto.builder().build();
+
+		if (randomValue < goldenKeys.getBronze()) {
+			cardType = "브론즈";
+			goldenKeys.setBronze(goldenKeys.getBronze() - 1);
+
+			List<News> bronzes = gameInfo.getNewsInfo().getBronze();
+			//반환할 뉴스 3개
+			List<News> choosed = bronzes.subList(0, 2);
+
+			//선택 된 뉴스 삭제
+			for (int i = 0; i < 3; i++) {
+				bronzes.remove(0);
+			}
+
+			//gameInfo에 바뀐 뉴스 정보 업데이트
+			gameInfo.getNewsInfo().setBronze(bronzes);
+
+			responseDto = ResponseDto.builder()
+				.type(cardType)
+				.data(NewsResponse.builder().choosed(choosed).goldenKeys(goldenKeys).build())
+				.build();
+
+		} else if (randomValue < goldenKeys.getBronze() + goldenKeys.getPlatinum()) {
+			cardType = "플레티넘";
+			goldenKeys.setPlatinum(goldenKeys.getPlatinum() - 1);
+
+			List<News> platinums = gameInfo.getNewsInfo().getPlatinum();
+			//반환할 뉴스 3개
+			List<News> choosed = platinums.subList(0, 2);
+
+			//선택 된 뉴스 삭제
+			for (int i = 0; i < 3; i++) {
+				platinums.remove(0);
+			}
+
+			//gameInfo에 바뀐 뉴스 정보 업데이트
+			gameInfo.getNewsInfo().setPlatinum(platinums);
+
+			responseDto = ResponseDto.builder()
+				.type(cardType)
+				.data(NewsResponse.builder().choosed(choosed).goldenKeys(goldenKeys).build())
+				.build();
+
+		} else if (randomValue < goldenKeys.getBronze() + goldenKeys.getPlatinum() + goldenKeys.getDiamond()) {
+			cardType = "다이아몬드";
+			goldenKeys.setDiamond(goldenKeys.getDiamond() - 1);
+
+			List<News> diamonds = gameInfo.getNewsInfo().getDiamond();
+			//반환할 뉴스 3개
+			List<News> choosed = diamonds.subList(0, 2);
+
+			//선택 된 뉴스 삭제
+			for (int i = 0; i < 3; i++) {
+				diamonds.remove(0);
+			}
+
+			//gameInfo에 바뀐 뉴스 정보 업데이트
+			gameInfo.getNewsInfo().setDiamond(diamonds);
+
+			responseDto = ResponseDto.builder()
+				.type(cardType)
+				.data(NewsResponse.builder().choosed(choosed).goldenKeys(goldenKeys).build())
+				.build();
+
+		} else if (randomValue
+			< goldenKeys.getBronze() + goldenKeys.getPlatinum() + goldenKeys.getDiamond() + goldenKeys.getNewsBan()) {
+			cardType = "언론통제";
+			goldenKeys.setNewsBan(goldenKeys.getNewsBan() - 1);
+
+			//현재 플레이어의 카드 정보
+			boolean[] curPlayerCards = curPlayer.getCards();
+
+			//언론 통제 카드 보유 중으로 변경
+			curPlayerCards[1] = true;
+			curPlayer.setCards(curPlayerCards);
+
+			//gameInfo에 바뀐 정보 업데이트
+			players[currentIdx] = curPlayer;
+			gameInfo.setPlayers(players);
+
+			responseDto = ResponseDto.builder()
+				.type(cardType)
+				.data(GoldenKeysPlayersResponse.builder().players(players).goldenKeys(goldenKeys).build())
+				.build();
+
+		} else if (randomValue
+			< goldenKeys.getBronze() + goldenKeys.getPlatinum() + goldenKeys.getDiamond() + goldenKeys.getNewsBan()
+			+ goldenKeys.getHurricane()) {
+			cardType = "허리케인";
+			goldenKeys.setHurricane(goldenKeys.getHurricane() - 1);
+
+			List<Land> lands = gameInfo.getLands();
+
+			for (int i = 0; i < lands.size(); i++) {
+				Land curLand = lands.get(i);
+
+				// 내 땅이거나, 중립 땅이면 continue
+				if (curLand.getOwner() == (currentIdx) || curLand.getOwner() == -1) {
+					continue;
+				}
+
+				//제일 비싼 건물 하나 날리기
+				for (int j = 0; j < curLand.getBuildings().length; j++) {
+					boolean[] buildingInfo = curLand.getBuildings();
+
+					if (buildingInfo[buildingInfo.length - j - 1]) {
+						buildingInfo[buildingInfo.length - j - 1] = false;
+						curLand.setBuildings(buildingInfo);
+						lands.set(j, curLand);
+
+						break;
+					}
+				}
+			}
+
+			//gameInfo에 바뀐 땅 정보 업데이트
+			gameInfo.setLands(lands);
+
+			responseDto = ResponseDto.builder()
+				.type(cardType)
+				.data(GoldenKeysLandsResponse.builder().Lands(lands).goldenKeys(goldenKeys).build())
+				.build();
+
+		} else if (randomValue
+			< goldenKeys.getBronze() + goldenKeys.getPlatinum() + goldenKeys.getDiamond() + goldenKeys.getNewsBan()
+			+ goldenKeys.getHurricane() + goldenKeys.getAngel()) {
+			cardType = "천사";
+			goldenKeys.setAngel(goldenKeys.getAngel() - 1);
+
+			//현재 플레이어의 카드 정보
+			boolean[] curPlayerCards = curPlayer.getCards();
+
+			//천사 카드 보유 중으로 변경
+			curPlayerCards[0] = true;
+			curPlayer.setCards(curPlayerCards);
+
+			//gameInfo에 바뀐 정보 업데이트
+			players[currentIdx] = curPlayer;
+			gameInfo.setPlayers(players);
+
+			responseDto = ResponseDto.builder()
+				.type(cardType)
+				.data(GoldenKeysPlayersResponse.builder().players(players).goldenKeys(goldenKeys).build())
+				.build();
+
+		} else if (randomValue
+			< goldenKeys.getBronze() + goldenKeys.getPlatinum() + goldenKeys.getDiamond() + goldenKeys.getNewsBan()
+			+ goldenKeys.getHurricane() + goldenKeys.getAngel() + goldenKeys.getKangJunGu()) {
+			cardType = "강준구의 문단속";
+			goldenKeys.setKangJunGu(goldenKeys.getKangJunGu() - 1);
+
+			//gameInfo에 바뀐 정보 업데이트
+			players[currentIdx] = curPlayer;
+			gameInfo.setPlayers(players);
+
+			responseDto = ResponseDto.builder()
+				.type(cardType)
+				.data(GoldenKeysPlayersResponse.builder().players(players).goldenKeys(goldenKeys).build())
+				.build();
+		} else if (randomValue
+			< goldenKeys.getBronze() + goldenKeys.getPlatinum() + goldenKeys.getDiamond() + goldenKeys.getNewsBan()
+			+ goldenKeys.getHurricane() + goldenKeys.getAngel() +
+			goldenKeys.getKangJunGu() + goldenKeys.getLotto()) {
+			cardType = "복권 당첨";
+			goldenKeys.setLotto(goldenKeys.getLotto() - 1);
+
+			//현재 플레이어의 보유 현금의 * 10, 보유 자산도 업데이트
+			curPlayer.setAsset(curPlayer.getAsset() + curPlayer.getMoney() * 9);
+			curPlayer.setMoney(curPlayer.getMoney() * 10);
+
+			//gameInfo에 바뀐 정보 업데이트
+			players[currentIdx] = curPlayer;
+			gameInfo.setPlayers(players);
+
+			responseDto = ResponseDto.builder()
+				.type(cardType)
+				.data(GoldenKeysPlayersResponse.builder().players(players).goldenKeys(goldenKeys).build())
+				.build();
+		} else if (randomValue
+			< goldenKeys.getBronze() + goldenKeys.getPlatinum() + goldenKeys.getDiamond() + goldenKeys.getNewsBan()
+			+ goldenKeys.getHurricane() + goldenKeys.getAngel() +
+			goldenKeys.getKangJunGu() + goldenKeys.getLotto() + goldenKeys.getDoor()) {
+			cardType = "어디로든 문 초대권";
+			goldenKeys.setDoor(goldenKeys.getDoor() - 1);
+
+			//어디로든 문 위치로 이동
+			curPlayer.setCurrentLocation(24);
+
+			//gameInfo에 바뀐 정보 업데이트
+			players[currentIdx] = curPlayer;
+			gameInfo.setPlayers(players);
+
+			responseDto = ResponseDto.builder()
+				.type(cardType)
+				.data(GoldenKeysPlayersResponse.builder().players(players).goldenKeys(goldenKeys).build())
+				.build();
+		} else {
+			cardType = "지진";
+			goldenKeys.setEarthquake(goldenKeys.getEarthquake() - 1);
+
+			List<Land> lands = gameInfo.getLands();
+
+			for (int i = 0; i < lands.size(); i++) {
+				Land curLand = lands.get(i);
+
+				// 상대 땅이거나, 중립 땅이면 continue
+				if (curLand.getOwner() != (currentIdx) || curLand.getOwner() == -1) {
+					continue;
+				}
+
+				//제일 비싼 건물 하나 날리기
+				for (int j = 0; j < curLand.getBuildings().length; j++) {
+					boolean[] buildingInfo = curLand.getBuildings();
+
+					if (buildingInfo[buildingInfo.length - j - 1]) {
+						buildingInfo[buildingInfo.length - j - 1] = false;
+						curLand.setBuildings(buildingInfo);
+						lands.set(j, curLand);
+
+						break;
+					}
+				}
+			}
+
+			//gameInfo에 바뀐 땅 정보 업데이트
+			gameInfo.setLands(lands);
+
+			responseDto = ResponseDto.builder()
+				.type(cardType)
+				.data(GoldenKeysLandsResponse.builder().Lands(lands).goldenKeys(goldenKeys).build())
+				.build();
+		}
+
+		//Redis에 바뀐 정보 업데이트
+		gameInfo.setGoldenKeys(goldenKeys);
+		gameInfoRepository.createGameRoom(gameInfo);
+
+		return responseDto;
 	}
 
 	/**
