@@ -251,9 +251,9 @@ public class GameRoomService {
 	/**
 	 *  현재 칸이 거래 정지에 있고 player의 doubleCount가 3이 아닐 때 주사위 굴리기
 	 * */
-	public GameInfo stopTrade(String roomCode) {
-		GameInfo gameInfo = getInfo(roomCode);
+	public ResponseDto stopTrade(String roomCode) {
 		// 더블이면 탈출 or stopTradeCount 값이 3이면 탈출
+		GameInfo gameInfo = getInfo(roomCode);
 		Player[] players = gameInfo.getPlayers();
 
 		String currentPlayer = gameInfo.getInfo().getCurrentPlayer();
@@ -273,16 +273,41 @@ public class GameRoomService {
 
 		// 주사위 던지기
 		Dice dice = getDice();
-
+		int stopTradeCount = curPlayer.getStopTradeCount();
 		// TODO:  더블이 아니면 턴 종료
 		if (dice.getDice1() != dice.getDice2()) {
+			// 플레이어의 stopTradeCount 증가
+			stopTradeCount++;
+			curPlayer.setStopTradeCount(stopTradeCount);
+			players[currentIdx] = curPlayer;
+			dice.setPlayers(players);
+			gameInfo.setPlayers(players);
+			gameInfoRepository.createGameRoom(gameInfo);
+			return ResponseDto.builder().type("거래정지탈출실패").data(dice).build();
+		} else{
+			// TODO: 더블이면 이동
+			int curLocation = curPlayer.getCurrentLocation();
+			Player player = move(curPlayer, dice.getDice1() + dice.getDice2());
+			// 플레이어의 stopTradeCount값 0으로 초기화
+			player.setStopTradeCount(0);
+			// 한바퀴 돌았으면
+			if(curLocation >player.getCurrentLocation()){
+				dice.setLapCheck(true);
+				int currentLap = player.getCurrentLap()+1;
+				player.setCurrentLap(currentLap);
+			}
+			players[currentIdx] = player;
+			gameInfo.setPlayers(players);
+			gameInfoRepository.createGameRoom(gameInfo);
+			// 거래정지탈출 이후엔 더블이어도 한 번더 던질 수 없음
+			dice.setDoubleCount(0);
+			dice.setPlayers(players);
 
-			//            return gameInfo;
+			return ResponseDto.builder().type("거래정지탈출성공").data(dice).build();
+
 		}
-		// TODO: 더블이면 이동
-		Player player = move(curPlayer, dice.getDice1() + dice.getDice2());
 
-		return gameInfo;
+
 	}
 
 	/**
@@ -1044,6 +1069,7 @@ public class GameRoomService {
         // 현재 플레이어의 turnCount++
         int currentTurn = currentPlayer.getCurrentTurn() +1;
         currentPlayer.setCurrentTurn(currentTurn);
+		// 현제 플레이어의 doubleCount 초기화
 
         Info info = gameInfo.getInfo();
 //        int doorCheck = info.getDoorCheck();

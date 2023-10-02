@@ -88,7 +88,7 @@ public class GameRoomController {
 	}
 
 	/**
-	 * 초기 GameInfo 데이터 가져오기
+	 * GameInfo 데이터 가져오기
 	 * */
 	@MessageMapping("/game-rooms/get-info/{roomCode}")
 	public void setGame(@DestinationVariable String roomCode) {
@@ -213,13 +213,13 @@ public class GameRoomController {
 	 * */
 	@MessageMapping("/game-rooms/stopTrade/{roomCode}")
 	public void stopTrade(@DestinationVariable String roomCode) {
-		//TODO: 거래 정지일 때 주사위 굴리기
 
-		GameInfo gameInfo = gameRoomService.getInfo(roomCode);
+		ResponseDto responseDto = gameRoomService.stopTrade(roomCode);
+
 		GameData gameData = GameData.builder()
 			.type("GAME_ROOM")
 			.roomCode(roomCode)
-			.data(ResponseDto.builder().build())
+			.data(responseDto)
 			.build();
 		redisPublisher.publish(gameRoomTopic, gameData);
 
