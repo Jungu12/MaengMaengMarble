@@ -11,13 +11,13 @@ import lombok.*;
 @Setter
 public class GoldenKeys implements Serializable {
 	@Builder.Default
-	private static final long serialVersionUID = 207207207207L;;
-	// 남은 실버 카드
-	private int silver;
-	//남은 골드 카드
+	private static final long serialVersionUID = 207207207207L;
+	//남은 브론즈 카드
 	private int bronze;
 	//남은 플레 카드
 	private int platinum;
+	// 남은 다이아몬드 카드
+	private int diamond;
 	// 남은 언론 통제
 	private int newsBan;
 	// 남은 허리케인
