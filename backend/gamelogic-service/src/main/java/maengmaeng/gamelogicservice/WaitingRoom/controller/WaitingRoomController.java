@@ -8,6 +8,7 @@ import maengmaeng.gamelogicservice.lobby.service.LobbyService;
 import maengmaeng.gamelogicservice.util.RedisPublisher;
 import maengmaeng.gamelogicservice.waitingRoom.domain.WaitingRoom;
 import maengmaeng.gamelogicservice.global.dto.GameData;
+import maengmaeng.gamelogicservice.waitingRoom.domain.dto.ChangeStateRequest;
 import maengmaeng.gamelogicservice.waitingRoom.domain.dto.UserInfo;
 import maengmaeng.gamelogicservice.waitingRoom.service.WaitingRoomService;
 import org.slf4j.Logger;
@@ -20,6 +21,7 @@ import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.stereotype.Controller;
 
 import java.util.List;
+import java.util.Map;
 
 
 @Slf4j
@@ -149,7 +151,6 @@ public class WaitingRoomController {
 
     }
 
-    // 어차피 프론트에서 방장만 퇴장가능하니까 해당부분을 따로 내가 확인해줘야하는가?
     @MessageMapping("/waiting-rooms/kick/{roomCode}")
     public void kick(@DestinationVariable String roomCode, String outUser) throws JSONException {
         // 유저가 kick 눌러서 내보내기
@@ -181,6 +182,25 @@ public class WaitingRoomController {
 
 
         redisPublisher.publish(lobbyTopic, gameData);
+    }
+
+    @MessageMapping("/waiting-rooms/state/{roomCode}")
+    public void changeState(@DestinationVariable String roomCode, ChangeStateRequest num){
+        int th = num.getNum();
+        waitingRoomService.changeState(roomCode, th);
+
+        WaitingRoom waitingRoom = waitingRoomService.getWaitingRoomNow(roomCode);
+
+        GameData gameData = GameData.builder()
+                .data(ResponseDto.builder().type("waitingRoom").data(waitingRoom).build())
+                .roomCode(roomCode)
+                .type(WAITINGROOM)
+                .build();
+        redisPublisher.publish(waitingRoomTopic, gameData);
+
+        // 목록리스트에도 업데이트된 정보 보내기
+        roomList();
+
     }
 
 }
