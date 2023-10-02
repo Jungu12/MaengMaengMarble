@@ -230,7 +230,16 @@ public class GameRoomController {
 	 */
 	@MessageMapping("/game-rooms/golden-keys/{roomCode}")
 	public void chooseGoldenKeys(@DestinationVariable String roomCode) {
-		gameRoomService.chooseGoldenKeys(roomCode);
+
+		ResponseDto responseDto = gameRoomService.chooseGoldenKeys(roomCode);
+
+		GameData gameData = GameData.builder()
+			.type("GAME_ROOM")
+			.roomCode(roomCode)
+			.data(responseDto)
+			.build();
+
+		redisPublisher.publish(gameRoomTopic, gameData);
 	}
 
 	/**
