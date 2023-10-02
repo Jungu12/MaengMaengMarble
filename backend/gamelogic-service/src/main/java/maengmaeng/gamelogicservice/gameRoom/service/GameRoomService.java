@@ -1163,9 +1163,9 @@ public class GameRoomService {
         int currentTurn = currentPlayer.getCurrentTurn() +1;
         currentPlayer.setCurrentTurn(currentTurn);
 		// 현제 플레이어의 doubleCount 초기화
+		currentPlayer.setDoubleCount(0);
 
         Info info = gameInfo.getInfo();
-//        int doorCheck = info.getDoorCheck();
         // 턴을 넘기기 전에 현재 플레이어가 마지막 플레이어인지 확인.
         // 2인 3인 이면
         boolean isLastPlayer = false;
@@ -1183,9 +1183,42 @@ public class GameRoomService {
 
         }
 
-        if(isLastPlayer){
+
+		if(isLastPlayer){
             //TODO: 턴이 바뀔 때 수행되어야하는 로직
-            //TODO: effectNews, waitingNews 관련 로직
+            //TODO: effectNews, waitingNews, doorCheck
+			int turnCount = info.getTurnCount() + 1 ;
+			// 종료 조건 체크
+			if(turnCount ==31){
+
+				return  ResponseDto.builder().type("게임종료").build();
+			}
+			int doorCheck = info.getDoorCheck();
+			if(doorCheck>1){
+				doorCheck--;
+			}
+			// waitingNews가 비어있지 않을 때
+			Queue <News> effectNews = info.getEffectNews();
+			Queue <WaitingNews> waitingNews= info.getWaitingNews();
+			while(!waitingNews.isEmpty()){
+				// 적용 시킬 뉴스가 있으면
+				if(turnCount==waitingNews.peek().getTurn()){
+					// 이미 적용중인 뉴스가 3개라면 뉴스 한개 제거
+					if(effectNews.size()==3){
+						//TODO: 적용중인 뉴스 효과 제거도 해야함
+						effectNews.poll();
+					}
+					effectNews.offer(waitingNews.poll().getNews());
+				} else{
+					// 적용 시킬 뉴스 없으면
+					break;
+				}
+			}
+			info.setDoorCheck(doorCheck);
+			info.setTurnCount(turnCount);
+			info.setEffectNews(effectNews);
+			info.setWaitingNews(waitingNews);
+
         }
 
         // 다음 플레이어
@@ -1203,9 +1236,15 @@ public class GameRoomService {
             // 다음 플레이어 순서를 설정
             info.setCurrentPlayer(players[nextPlayerIdx].getNickname());
         }
+		gameInfo.setPlayers(players);
+		gameInfo.setInfo(info);
+		gameInfoRepository.createGameRoom(gameInfo);
 
 
-        return null;
+        return ResponseDto.builder().type("턴종료")
+				.data(EndTurnResponse.builder()
+						.info(info).stocks(gameInfo.getStocks()).players(players).lands(gameInfo.getLands()).build())
+				.build();
     }
 
 

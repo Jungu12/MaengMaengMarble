@@ -289,7 +289,7 @@ public class GameRoomController {
 	 * 턴 종료
 	 * */
 
-	@MessageMapping("/game-rooms/turn-end/{roomCode}")
+	@MessageMapping("/game-rooms/end-turn/{roomCode}")
 	public void endTurn(@DestinationVariable String roomCode) {
 		ResponseDto responseDto = gameRoomService.endTurn(roomCode);
 
