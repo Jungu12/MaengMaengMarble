@@ -268,6 +268,24 @@ public class GameRoomController {
 	}
 
 	/**
+	 * 어디로든 문 (강준구의 문단속 적용 O)
+	 * */
+
+	@MessageMapping("/game-rooms/jungu-door/{roomCode}")
+	public void junguDoor(@DestinationVariable String roomCode){
+		ResponseDto responseDto = gameRoomService.junguDoor(roomCode);
+
+		GameData gameData = GameData.builder()
+				.type("GAME_ROOM")
+				.roomCode(roomCode)
+				.data(responseDto)
+				.build();
+
+		redisPublisher.publish(gameRoomTopic,gameData);
+
+	}
+
+	/**
 	 * 턴 종료
 	 * */
 

@@ -1092,6 +1092,60 @@ public class GameRoomService {
 		}
 	}
 
+	/**
+	 * 어디로든 문 (강준구의 문단속 적용 O)
+	 * */
+	public ResponseDto junguDoor(String roomCode){
+		GameInfo gameInfo = gameInfoRepository.getGameInfo(roomCode);
+		Player[] players = gameInfo.getPlayers();
+		int playerIdx = getPlayerIdx(players,gameInfo.getInfo().getCurrentPlayer());
+		Player currentPlayer = players[playerIdx];
+		// 현재 위치
+		int currentLocation = currentPlayer.getCurrentLocation();
+		// 랜덤 위치
+		Random random = new Random();
+
+		// 랜덤으로 0부터 30까지의 수를 생성
+		int randomNumber = random.nextInt(31);
+
+		// 만약 생성된 수가 24라면 24를 제외하고 다시 랜덤 수를 생성
+		while (randomNumber == 24) {
+			randomNumber = random.nextInt(31);
+		}
+		int nextLocation = randomNumber;
+
+		// 1바퀴 돌았을 때
+		if(currentLocation>nextLocation){
+			// 돈 바퀴 수 증가
+			int currentLap = currentPlayer.getCurrentLap();
+			currentPlayer.setCurrentLap(currentLap+1);
+			currentPlayer.setCurrentLocation(nextLocation);
+			players[playerIdx] = currentPlayer;
+			gameInfo.setPlayers(players);
+			gameInfoRepository.createGameRoom(gameInfo);
+			return ResponseDto.builder()
+					.type("맹맹지급")
+					.data(DoorResponse.builder().lapCheck(true)
+							.players(players)
+							.build())
+					.build();
+
+		} else {
+			currentPlayer.setCurrentLocation(nextLocation);
+			players[playerIdx] = currentPlayer;
+			gameInfo.setPlayers(players);
+			gameInfoRepository.createGameRoom(gameInfo);
+			return ResponseDto.builder()
+					.type("이동후로직")
+					.data(DoorResponse.builder().lapCheck(false)
+							.players(players)
+							.build())
+					.build();
+
+
+		}
+	}
+
 
     /**
      * 턴을 종료하는 로직
