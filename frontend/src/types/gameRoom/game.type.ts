@@ -39,7 +39,7 @@ export type InfoType = {
   currentPlayer: string;
   playerCnt: number;
   turnCount: number;
-  effectNews: number[];
+  effectNews: NewsType[];
   waitingNews: number[];
   doorCheck: number;
 };

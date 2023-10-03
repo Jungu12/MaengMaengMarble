@@ -9,14 +9,12 @@ import WaitingRoom from '@pages/WaitingRoom';
 import { AnimatePresence } from 'framer-motion';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import PrivateRoutes from './PrivateRouter';
-import Test from '@pages/Test';
 
 const RootRouter = () => {
   return (
     <BrowserRouter>
       <AnimatePresence>
         <Routes>
-          <Route path='/test' element={<Test />}></Route>
           <Route path='/' element={<HomePage />}></Route>
           <Route path='/login' element={<LoginPage />}></Route>
           <Route element={<PrivateRoutes />}>
