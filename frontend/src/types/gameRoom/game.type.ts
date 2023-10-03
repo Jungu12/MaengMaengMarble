@@ -81,17 +81,19 @@ export type StockType = {
   dividends: number;
 };
 
+export type NewInfoType = {
+  bronze: NewsType[];
+  diamond: NewsType[];
+  platinum: NewsType[];
+};
+
 export type FullGameDataType = {
   roomCode: string;
   players: (PlayerType | null)[];
   lands: LandType[];
   info: InfoType;
   goldenKeys: GoldKeyType;
-  newsInfo: {
-    bronze: NewsType[];
-    diamond: NewsType[];
-    platinum: NewsType[];
-  };
+  newsInfo: NewInfoType;
   stocks: StockType[];
   seqCards: TurnListType[];
 };

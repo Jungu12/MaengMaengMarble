@@ -48,6 +48,10 @@ export const images = {
       'https://maeng.s3.ap-northeast-2.amazonaws.com/images/gameRoom/profile-purple-bg.png',
     profileBgGreen:
       'https://maeng.s3.ap-northeast-2.amazonaws.com/images/gameRoom/profile-green-bg.png',
+    angel:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/icon-angel.png',
+    mediaControl:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/icon-media-control.png',
   },
   dummy: {
     dummy1: 'https://maeng.s3.ap-northeast-2.amazonaws.com/images/dummy1.png',
