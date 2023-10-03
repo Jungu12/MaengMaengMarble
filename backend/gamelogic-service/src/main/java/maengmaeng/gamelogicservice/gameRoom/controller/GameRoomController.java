@@ -233,7 +233,7 @@ public class GameRoomController {
 	/**
 	 * 이동후 로직
 	 * */
-	@MessageMapping("/game-rooms/afterMove/{roomCode}")
+	@MessageMapping("/game-rooms/after-move/{roomCode}")
 	public void afterMove(@DestinationVariable String roomCode){
 		// 도착한 땅의 위치에 따라 행동 변환
 
