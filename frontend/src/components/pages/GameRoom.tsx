@@ -132,6 +132,313 @@ const GameRoom = () => {
         backgroundSize: 'cover',
       }}
     >
+      {/* 유저 정보 */}
+      <div className='flex flex-col w-full h-full relative'>
+        <div className='flex justify-between'>
+          <div className='flex w-[360px] h-[160px]'>
+            <div className='w-[120px] flex items-center justify-center overflow-hidden relative'>
+              <img
+                className='object-cover mt-[80px] z-[1]'
+                src={images.dummy.dummy1}
+                alt='player4'
+              />
+              <img
+                className='w-full h-full absolute object-fill'
+                src={images.gameRoom.profileBgRed}
+                alt='배경이미지'
+              />
+            </div>
+            <div className='flex flex-col w-[240px]'>
+              <div
+                className='text-white text-xl font-bold mt-[8px] pb-[8px] pl-[12px] relative'
+                style={{
+                  /* 테두리 스타일 설정 */
+                  borderBottom: '3px solid transparent',
+                  borderImage:
+                    'linear-gradient(to right, #790317, transparent)',
+                  borderImageSlice: '1',
+                  borderImageWidth: '0 0 2px 0',
+                  borderImageOutset: '0',
+                  borderImageRepeat: 'stretch',
+                }}
+              >
+                세상에서가장긴닉
+                <img
+                  src={images.gameRoom.rankRed}
+                  alt='등수'
+                  className='absolute right-[16px] top-[4px] w-[56px] h-[56px]'
+                />
+                <p
+                  className='absolute right-[32px] top-[16px]'
+                  style={{
+                    textShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
+                  }}
+                >
+                  1등
+                </p>
+              </div>
+              <div className='flex text-white mt-[24px] pl-[12px] overflow-hidden relative'>
+                <span className='text-xl font-semibold'>총자산</span>
+                <div className='flex-1 text-[#7492FF] text-[18px] font-medium ml-[12px] whitespace-nowrap'>
+                  <span>3200억 2000만원</span>
+                </div>
+              </div>
+              <div className='text-white pl-[12px] mt-[16px] overflow-hidden relative'>
+                <span className='text-xl font-semibold'>보유자산</span>
+                <span className='text-[#FFF59D] text-[18px] font-medium ml-[12px] whitespace-nowrap'>
+                  1200억 3000만원
+                </span>
+              </div>
+            </div>
+          </div>
+          <div
+            className='flex flex-1 text-white h-[48px] w-[500px] items-center mx-[80px] mt-[24px] overflow-hidden'
+            style={{
+              background: 'rgba(255, 255, 255, 0.20)',
+            }}
+          >
+            <div
+              className='h-full flex items-center justify-center px-[8px] text-[18px] font-semibold text-primary-light100'
+              style={{
+                background: 'rgba(255, 255, 255, 0.30)',
+              }}
+            >
+              NEWS
+            </div>
+            <div className='scroll-container overflow-hidden flex-1 font-medium text-[16px]'>
+              <motion.div
+                className='ml-[8px]'
+                initial={{ x: '100%' }} // 시작 위치 - 화면 오른쪽 밖
+                animate={{ x: '-100%' }} // 최종 위치 - 화면 왼쪽 밖
+                transition={{
+                  duration: 10, // 애니메이션 지속 시간 (조절 가능)
+                  repeat: Infinity, // 무한 반복
+                  repeatType: 'loop', // 반복 유형 설정
+                  ease: 'linear', // 선형 이동
+                }}
+              >
+                Your scrolling text goes here. Your scrolling text goes here.
+              </motion.div>
+            </div>
+          </div>
+          <div className='flex w-[360px] h-[160px]'>
+            <div className='flex flex-col w-[240px]'>
+              <div
+                className='text-white text-xl font-bold mt-[8px] pb-[8px] pr-[12px] text-right relative'
+                style={{
+                  /* 테두리 스타일 설정 */
+                  borderBottom: '3px solid transparent',
+                  borderImage: 'linear-gradient(to left, #055872, transparent)',
+                  borderImageSlice: '1',
+                  borderImageWidth: '0 0 2px 0',
+                  borderImageOutset: '0',
+                  borderImageRepeat: 'stretch',
+                }}
+              >
+                세상에서가장긴닉
+                <img
+                  src={images.gameRoom.rankBlue}
+                  alt='등수'
+                  className='absolute left-[16px] top-[4px] w-[56px] h-[56px]'
+                />
+                <p
+                  className='absolute left-[30px] top-[16px]'
+                  style={{
+                    textShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
+                  }}
+                >
+                  2등
+                </p>
+              </div>
+              <div className='flex text-white mt-[24px] pr-[12px] overflow-hidden relative'>
+                <span className='text-xl font-semibold mr-[12px]'>총자산</span>
+                <div className='flex-1 text-[#7492FF] text-[18px] font-medium whitespace-nowrap'>
+                  <span>3200억 2000만원</span>
+                </div>
+              </div>
+              <div className='flex text-white pr-[12px] mt-[16px] overflow-hidden relative'>
+                <span className='text-xl font-semibold mr-[12px]'>
+                  보유자산
+                </span>
+                <span className='text-[#FFF59D] text-[18px] font-medium whitespace-nowrap text-right'>
+                  1200억 3000만원
+                </span>
+              </div>
+            </div>
+            <div className='w-[120px] flex items-center justify-center overflow-hidden relative'>
+              <img
+                className='object-cover mt-[80px] z-[1]'
+                src={images.dummy.dummy1}
+                alt='player4'
+              />
+              <img
+                className='w-full h-full absolute'
+                src={images.gameRoom.profileBgBlue}
+                alt='배경이미지'
+              />
+            </div>
+          </div>
+        </div>
+        <div className='flex flex-1 justify-between my-[40px] mx-[20px]'>
+          {/* 채팅창 */}
+          <div className='flex flex-col h-full w-[320px]'>
+            <div
+              className='flex-1 mb-[12px] text-white p-[12px]'
+              style={{
+                borderRadius: '16px',
+                border: '1px solid rgba(0, 0, 0, 0.30)',
+                background: 'rgba(0, 0, 0, 0.25)',
+              }}
+            >
+              {/* 채팅 내용 */}
+            </div>
+            <input
+              className='h-[36px] px-[16px] text-white outline-none font-medium'
+              style={{
+                borderRadius: '16px',
+                border: '1px solid rgba(0, 0, 0, 0.30)',
+                background: 'rgba(0, 0, 0, 0.25)',
+              }}
+            />
+          </div>
+
+          {/* 보유주식정보창 */}
+          <div
+            className='bg-red-100 h-full w-[320px] p-[12px]'
+            style={{
+              borderRadius: '16px',
+              border: '1px solid rgba(255, 255, 255, 0.30)',
+              background: 'rgba(255, 255, 255, 0.25)',
+            }}
+          >
+            <div className='w-full h-[56px] bg-white rounded-[8px] opacity-[0.9] flex items-center'>
+              <p className='text-[18px] font-semibold mx-[12px]'>LG 화학</p>
+              <p className='text-[16px] font-medium'>3억 12만원</p>
+              <div className='flex flex-col ml-auto justify-center text-[#2F50FF] text-[14px] font-medium mr-[12px]'>
+                <p className='ml-auto'>-1억 215만원</p>
+                <p className='ml-auto'>-45%</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className='flex justify-between mt-auto'>
+          <div className='flex w-[360px] h-[160px]'>
+            <div className='w-[120px] flex items-center justify-center overflow-hidden relative'>
+              <img
+                className='object-cover mt-[80px] z-[1]'
+                src={images.dummy.dummy1}
+                alt='player4'
+              />
+              <img
+                className='w-full h-full absolute'
+                src={images.gameRoom.profileBgGreen}
+                alt='배경이미지'
+              />
+            </div>
+            <div className='flex flex-col w-[240px]'>
+              <div
+                className='text-white text-xl font-bold mt-[8px] pb-[8px] pl-[12px] relative'
+                style={{
+                  /* 테두리 스타일 설정 */
+                  borderBottom: '3px solid transparent',
+                  borderImage:
+                    'linear-gradient(to right, #7DAA98, transparent)',
+                  borderImageSlice: '1',
+                  borderImageWidth: '0 0 2px 0',
+                  borderImageOutset: '0',
+                  borderImageRepeat: 'stretch',
+                }}
+              >
+                세상에서가장긴닉
+                <img
+                  src={images.gameRoom.rankGreen}
+                  alt='등수'
+                  className='absolute right-[16px] top-[4px] w-[56px] h-[56px]'
+                />
+                <p
+                  className='absolute right-[30px] top-[16px]'
+                  style={{
+                    textShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
+                  }}
+                >
+                  3등
+                </p>
+              </div>
+              <div className='flex text-white mt-[24px] pl-[12px] overflow-hidden relative'>
+                <span className='text-xl font-semibold'>총자산</span>
+                <div className='flex-1 text-[#7492FF] text-[18px] font-medium ml-[12px] whitespace-nowrap'>
+                  <span>3200억 2000만원</span>
+                </div>
+              </div>
+              <div className='text-white pl-[12px] mt-[16px] overflow-hidden relative'>
+                <span className='text-xl font-semibold'>보유자산</span>
+                <span className='text-[#FFF59D] text-[18px] font-medium ml-[12px] whitespace-nowrap'>
+                  1200억 3000만원
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div className='flex w-[360px] h-[160px]'>
+            <div className='flex flex-col w-[240px]'>
+              <div
+                className='text-white text-xl font-bold mt-[8px] pb-[8px] pr-[12px] text-right relative'
+                style={{
+                  /* 테두리 스타일 설정 */
+                  borderBottom: '3px solid transparent',
+                  borderImage: 'linear-gradient(to left, #C7B0E3, transparent)',
+                  borderImageSlice: '1',
+                  borderImageWidth: '0 0 2px 0',
+                  borderImageOutset: '0',
+                  borderImageRepeat: 'stretch',
+                }}
+              >
+                세상에서가장긴닉
+                <img
+                  src={images.gameRoom.rankPurple}
+                  alt='등수'
+                  className='absolute left-[16px] top-[4px] w-[56px] h-[56px]'
+                />
+                <p
+                  className='absolute left-[28px] top-[16px]'
+                  style={{
+                    textShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
+                  }}
+                >
+                  4등
+                </p>
+              </div>
+              <div className='flex text-white mt-[24px] pr-[12px] overflow-hidden relative'>
+                <span className='text-xl font-semibold mr-[12px]'>총자산</span>
+                <div className='flex-1 text-[#7492FF] text-[18px] font-medium whitespace-nowrap'>
+                  <span>3200억 2000만원</span>
+                </div>
+              </div>
+              <div className='flex text-white pr-[12px] mt-[16px] overflow-hidden relative'>
+                <span className='text-xl font-semibold mr-[12px]'>
+                  보유자산
+                </span>
+                <span className='text-[#FFF59D] text-[18px] font-medium whitespace-nowrap text-right'>
+                  1200억 3000만원
+                </span>
+              </div>
+            </div>
+            <div className='w-[120px] flex items-center justify-center overflow-hidden relative'>
+              <img
+                className='object-cover mt-[80px] z-[1]'
+                src={images.dummy.dummy1}
+                alt='player4'
+              />
+              <img
+                className='w-full h-full absolute'
+                src={images.gameRoom.profileBgPurple}
+                alt='배경이미지'
+              />
+            </div>
+          </div>
+        </div>
+        <div className='flex'></div>
+      </div>
       {/* 게임맵 */}
       <div className='absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 mt-[40px] w-[640px] h-[640px] ]'>
         {/* 필드 타일 */}
