@@ -44,6 +44,8 @@ def playstyle(rating_average, asset_average, land_count, stock_average, loan_cou
     per_key = calculate_percentage(key_count, 6, 10)
     
     style = max(per_rating,per_angel,per_land,per_asset,per_stock,per_turn,per_land,per_loan,per_door,per_key)
+    if style == 0:
+        return
     if style == per_rating:
         return "리오넬 메시"
     elif style == per_asset:
@@ -62,6 +64,7 @@ def playstyle(rating_average, asset_average, land_count, stock_average, loan_cou
         return "에드윈 카스트로"
     elif style == per_key:
         return "루카스 호칸손"
+    
 
 def my_analysis_view(request, user_id):
     # 유저의 승리 횟수와 패배 횟수를 계산
