@@ -1,5 +1,13 @@
 import { AnimationControls } from 'framer-motion';
 
+/**
+ * 캐릭터를 이동시킨다.
+ * @param _playNum - 이동시킬 플레이어의 번호
+ * @param count - 이동 시킬 횟수
+ * @param cur - 현재 플레이어의 위치
+ * @param controls - 캐릭터 이동 애니메이션
+ * @returns 이동 후 캐릭터의 위치
+ */
 export const moveCharacter = async (
   _playNum: number,
   count: number,
