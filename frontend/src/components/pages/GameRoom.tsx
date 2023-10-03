@@ -1,16 +1,17 @@
 import MapArea from '@components/gameRoom/MapArea';
 import { images } from '@constants/images';
 import { moveCharacter } from '@utils/game';
-import { AnimatePresence, motion, useAnimation } from 'framer-motion';
+import { motion, useAnimation } from 'framer-motion';
 import { useEffect, useRef, useState } from 'react';
 import * as StompJs from '@stomp/stompjs';
 import { activateClient, getClient } from '@utils/socket';
 import { useLocation, useParams } from 'react-router-dom';
 import { ParticipantsType, WSResponseType } from '@/types/common/common.type';
-import { TurnListType } from '@/types/gameRoom/game.type';
+import { FullGameDataType, TurnListType } from '@/types/gameRoom/game.type';
 import { useRecoilValue } from 'recoil';
 import { userState } from '@atom/userAtom';
 import { currentParticipantsNum } from '@utils/lobby';
+import CardChoice from '@components/gameRoom/CardChoice';
 
 const GameRoom = () => {
   const location = useLocation();
@@ -20,29 +21,11 @@ const GameRoom = () => {
   const gameSub = useRef<StompJs.StompSubscription>();
   const { gameId } = useParams();
   const [isGameStart, setIsGameStart] = useState(false);
-  const [cardChoice, setCardChoice] = useState(false);
   const [orderList, setOrderList] = useState<TurnListType[]>([]);
   const [x, setX] = useState(0);
   const [y, setY] = useState(0);
   const [position, setPosition] = useState(7);
   const controls = useAnimation();
-
-  const flipCard = (index: number) => {
-    const updatedOrderList = [...orderList];
-    if (updatedOrderList[index].selected || cardChoice) return;
-    client.current?.publish({
-      destination: `/pub/game-rooms/set-player/${gameId}`,
-      body: JSON.stringify({
-        userId: user?.userId,
-        nickname: user?.nickname,
-        characterId: user?.avatarId,
-        playerCnt: index + 1,
-      }),
-    });
-    // updatedOrderList[index].selected = !updatedOrderList[index].selected;
-    setCardChoice(true);
-    // setOrderList(updatedOrderList);
-  };
 
   useEffect(() => {
     const cur = moveCharacter(1, 32, position, controls).then((res) => {
@@ -91,6 +74,16 @@ const GameRoom = () => {
     client.current = getClient();
     activateClient(client.current);
     client.current.onConnect = () => {
+      // 방장인 경우 게임 시작 알리기
+      if (user?.userId === state.userList[0].userId) {
+        client.current?.publish({
+          destination: `/pub/game-rooms/start/${gameId}`,
+          body: JSON.stringify({
+            cnt: currentParticipantsNum(state.userList).toString(),
+          }),
+        });
+      }
+
       gameSub.current = client.current?.subscribe(
         `/sub/game-rooms/${gameId}`,
         (res) => {
@@ -102,20 +95,16 @@ const GameRoom = () => {
             console.log('[테스트]', newOrderList);
             setOrderList(newOrderList.data.cards);
           }
+          if (response.type === '초기게임정보') {
+            // 유저 배치 등 초기 세팅하기
+            setIsGameStart(true);
+            const temp = response as WSResponseType<FullGameDataType>;
+            console.log('[게임시작데이터]', temp);
+          }
           console.log(JSON.parse(res.body));
         }
       );
       console.log('[참가 인원]', currentParticipantsNum(state.userList));
-
-      // 방장인 경우 게임 시작 알리기
-      if (user?.userId === state.userList[0].userId) {
-        client.current?.publish({
-          destination: `/pub/game-rooms/start/${gameId}`,
-          body: JSON.stringify({
-            cnt: currentParticipantsNum(state.userList).toString(),
-          }),
-        });
-      }
     };
   }, [gameId, state.userList, user?.userId]);
 
@@ -123,49 +112,15 @@ const GameRoom = () => {
     console.log('[카드리스트 변경]', orderList);
   }, [orderList]);
 
+  if (!gameId || !client.current) return;
+
   if (!isGameStart) {
     return (
-      <div
-        className='flex flex-col w-full h-full min-h-[700px] overflow-hidden relative items-center'
-        style={{
-          backgroundImage: `url(${images.gameRoom.background})`,
-          backgroundSize: 'cover',
-        }}
-      >
-        <div className='text-[white] text-3xl mt-[120px]'>
-          카드를 선택해주세요.
-        </div>
-        <div className='flex w-full items-center justify-around mb-auto mt-[100px]'>
-          <AnimatePresence>
-            {orderList &&
-              orderList.map((item, index) => (
-                <motion.button
-                  key={item.seq}
-                  initial={{ opacity: 0, rotateY: 0 }}
-                  animate={{ opacity: 1, rotateY: item.selected ? 0 : 180 }}
-                  exit={{ opacity: 0, rotateY: 0 }}
-                  onClick={() => flipCard(index)}
-                >
-                  <motion.div
-                    className={`h-[340px] w-[220px] rounded-[8px] flex justify-center items-center ${
-                      item.selected ? 'bg-[#e6e6e6] text-4xl font-bold' : ''
-                    }`}
-                    style={{
-                      backgroundImage: item.selected
-                        ? 'none'
-                        : `url(${images.gameRoom.cardBack})`,
-                      backgroundSize: 'cover',
-                      filter: 'drop-shadow(5px 5px 5px #000)',
-                    }}
-                    whileHover={{ scale: item.selected ? 1.0 : 1.1 }}
-                  >
-                    {item.selected ? `${item.seq} 등` : ''}
-                  </motion.div>
-                </motion.button>
-              ))}
-          </AnimatePresence>
-        </div>
-      </div>
+      <CardChoice
+        gameId={gameId}
+        client={client.current}
+        orderList={orderList}
+      />
     );
   }
 

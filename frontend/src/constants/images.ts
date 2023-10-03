@@ -32,6 +32,22 @@ export const images = {
       'https://maeng.s3.ap-northeast-2.amazonaws.com/images/card-front.png',
     cardBack:
       'https://maeng.s3.ap-northeast-2.amazonaws.com/images/card-back.png',
+    rankRed:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/gameRoom/ic-red-rank.png',
+    rankBlue:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/gameRoom/ic-blue-rank.png',
+    rankPurple:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/gameRoom/ic-purple-rank.png',
+    rankGreen:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/gameRoom/ic-green-rank.png',
+    profileBgRed:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/gameRoom/profile-red-bg.png',
+    profileBgBlue:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/gameRoom/profile-blue-bg.png',
+    profileBgPurple:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/gameRoom/profile-purple-bg.png',
+    profileBgGreen:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/gameRoom/profile-green-bg.png',
   },
   dummy: {
     dummy1: 'https://maeng.s3.ap-northeast-2.amazonaws.com/images/dummy1.png',
