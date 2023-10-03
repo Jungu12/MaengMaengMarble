@@ -15,7 +15,7 @@ public class DbCountry {
 
     @Id
     @Column(name = "country_id")
-    private Long countryId;
+    private Integer countryId;
 
     @Column(name = "country_name")
     private String countryName;

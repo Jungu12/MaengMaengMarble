@@ -8,10 +8,7 @@ import maengmaeng.gamelogicservice.gameRoom.domain.Player;
 @Getter
 @Setter
 @Builder
-public class Dice {
-    private Player[] players;
-    int dice1;
-    int dice2;
-    int doubleCount;
+public class DoorResponse {
     boolean lapCheck;
+    private Player[] players;
 }
