@@ -1190,7 +1190,6 @@ public class GameRoomService {
 			int turnCount = info.getTurnCount() + 1 ;
 			// 종료 조건 체크
 			if(turnCount ==31){
-
 				return  ResponseDto.builder().type("게임종료").build();
 			}
 			int doorCheck = info.getDoorCheck();
@@ -1246,6 +1245,17 @@ public class GameRoomService {
 						.info(info).stocks(gameInfo.getStocks()).players(players).lands(gameInfo.getLands()).build())
 				.build();
     }
+
+	/**
+	 * 게임 종료
+	 * */
+	public ResponseDto endGame(String roomCode){
+		//TODO: 게임 종료시 데이터 전송
+
+		return ResponseDto.builder().type("게임종료").build();
+
+
+	}
 
 
 

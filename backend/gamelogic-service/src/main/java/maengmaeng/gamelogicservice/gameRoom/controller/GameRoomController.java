@@ -304,4 +304,21 @@ public class GameRoomController {
 
 	}
 
+
+	/**
+	 * 게임 종료
+	 * */
+	@MessageMapping("/game-rooms/end-game/{roomCode}")
+	public void endGame(@DestinationVariable String roomCode){
+		ResponseDto responseDto = gameRoomService.endGame(roomCode);
+
+		GameData gameData = GameData.builder()
+				.type("GAME_ROOM")
+				.roomCode(roomCode)
+				.data(responseDto)
+				.build();
+
+		redisPublisher.publish(gameRoomTopic,gameData);
+	}
+
 }
