@@ -261,6 +261,9 @@ const GameMap = ({ playerList }: Props) => {
             className='h-[64px]'
             src={playerList[0].avatarImage}
             alt='캐릭터'
+            style={{
+              filter: 'drop-shadow(1px 1px 1px #000)',
+            }}
           />
         </motion.div>
       )}
@@ -277,6 +280,9 @@ const GameMap = ({ playerList }: Props) => {
             className='h-[64px]'
             src={playerList[1].avatarImage}
             alt='캐릭터'
+            style={{
+              filter: 'drop-shadow(1px 1px 1px #000)',
+            }}
           />
         </motion.div>
       )}
@@ -293,6 +299,9 @@ const GameMap = ({ playerList }: Props) => {
             className='h-[64px]'
             src={playerList[2].avatarImage}
             alt='캐릭터'
+            style={{
+              filter: 'drop-shadow(1px 1px 1px #000)',
+            }}
           />
         </motion.div>
       )}
@@ -309,6 +318,9 @@ const GameMap = ({ playerList }: Props) => {
             className='h-[64px]'
             src={playerList[3].avatarImage}
             alt='캐릭터'
+            style={{
+              filter: 'drop-shadow(1px 1px 1px #000)',
+            }}
           />
         </motion.div>
       )}
