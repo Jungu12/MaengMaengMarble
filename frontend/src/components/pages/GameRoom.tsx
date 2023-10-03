@@ -239,7 +239,9 @@ const GameRoom = () => {
                   ease: 'linear', // 선형 이동
                 }}
               >
-                {effectNewsToString(news) ?? '현재 적용중인 뉴스가 없습니다.'}
+                {news.length === 0
+                  ? '현재 적용중인 뉴스가 없습니다.'
+                  : effectNewsToString(news)}
               </motion.div>
             </div>
           </div>

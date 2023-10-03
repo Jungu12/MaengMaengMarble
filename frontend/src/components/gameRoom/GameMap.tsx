@@ -258,7 +258,7 @@ const GameMap = ({ playerList }: Props) => {
           }}
         >
           <img
-            className='w-[56px] h-[56px]'
+            className='h-[64px]'
             src={playerList[0].avatarImage}
             alt='캐릭터'
           />
@@ -274,7 +274,7 @@ const GameMap = ({ playerList }: Props) => {
           }}
         >
           <img
-            className='w-[56px] h-[56px]'
+            className='h-[64px]'
             src={playerList[1].avatarImage}
             alt='캐릭터'
           />
@@ -290,7 +290,7 @@ const GameMap = ({ playerList }: Props) => {
           }}
         >
           <img
-            className='w-[56px] h-[56px]'
+            className='h-[64px]'
             src={playerList[2].avatarImage}
             alt='캐릭터'
           />
@@ -306,7 +306,7 @@ const GameMap = ({ playerList }: Props) => {
           }}
         >
           <img
-            className='w-[56px] h-[56px]'
+            className='h-[64px]'
             src={playerList[3].avatarImage}
             alt='캐릭터'
           />
