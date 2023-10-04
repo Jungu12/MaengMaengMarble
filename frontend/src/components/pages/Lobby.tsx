@@ -12,10 +12,9 @@ import { motion } from 'framer-motion';
 import { getRooms } from '@apis/lobbyApi';
 import { RoomType } from '@/types/lobby/lobby.type';
 import { useRecoilValue, useSetRecoilState } from 'recoil';
-import { userState } from '@atom/userAtom';
+import { friendState, userState } from '@atom/userAtom';
 import MyFriendSideBar from '@components/sidebar/MyFriendSideBar';
 import { getFriendlist } from '@apis/friendApi';
-import { FriendType } from '@/types/friend/friend.type';
 import { ToastMessageState } from '@atom/toastAtom';
 import useToastList from '@hooks/useToastList';
 import { WSResponseType } from '@/types/common/common.type';
@@ -28,7 +27,7 @@ const Lobby = () => {
   const [isOpenInviteModal, setIsOpenInviteModal] = useState(false);
   const [isOpenFriendSideBar, setIsOpenFriendSideBar] = useState(false);
   const [roomList, setRoomList] = useState<RoomType[]>([]);
-  const [friendList, setFriendList] = useState<FriendType[]>([]);
+  const setFriendList = useSetRecoilState(friendState);
   const { show } = useToastList();
   const setToastMessage = useSetRecoilState(ToastMessageState);
 
@@ -105,7 +104,7 @@ const Lobby = () => {
         });
         show('error');
       });
-  }, [setToastMessage, show]);
+  }, [setFriendList, setToastMessage, show]);
 
   return (
     <>
@@ -122,7 +121,7 @@ const Lobby = () => {
         handleMyPageModalClose={handleMyPageModalClose}
       />
       <MyFriendSideBar
-        friendList={friendList}
+        // friendList={friendList}
         isOpenFriendSideBar={isOpenFriendSideBar}
         handleFriendSideBarClose={handleFriendSideBarClose}
       />

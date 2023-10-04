@@ -97,3 +97,18 @@ export type FullGameDataType = {
   stocks: StockType[];
   seqCards: TurnListType[];
 };
+
+export type TurnEndResponseType = {
+  players: (PlayerType | null)[];
+  lands: LandType[];
+  stocks: StockType[];
+  info: InfoType;
+};
+
+export type DiceResultType = {
+  players: (PlayerType | null)[];
+  dice1: 1 | 2 | 3 | 4 | 5 | 6;
+  dice2: 1 | 2 | 3 | 4 | 5 | 6;
+  doubleCount: number;
+  lapCheck: boolean;
+};

@@ -3,20 +3,25 @@ import FriendInfoCard from '@components/lobby/FriendInfoCard';
 import { useCallback, useState } from 'react';
 import { motion } from 'framer-motion';
 import CButton from '@components/common/CButton';
-import { FriendType } from '@/types/friend/friend.type';
+import useToastList from '@hooks/useToastList';
+import { useRecoilState, useSetRecoilState } from 'recoil';
+import { ToastMessageState } from '@atom/toastAtom';
+import { addFriend, getFriendlist } from '@apis/friendApi';
+import { friendState } from '@atom/userAtom';
 
 type MyFriendSideBarProps = {
-  friendList: FriendType[];
   isOpenFriendSideBar: boolean;
   handleFriendSideBarClose: () => void;
 };
 
 const MyFriendSideBar = ({
-  friendList,
   isOpenFriendSideBar,
   handleFriendSideBarClose,
 }: MyFriendSideBarProps) => {
   const [nickname, setNickname] = useState('');
+  const { show } = useToastList();
+  const setToastMessage = useSetRecoilState(ToastMessageState);
+  const [friendList, setFriendList] = useRecoilState(friendState);
 
   const onChange = (event: React.FormEvent<HTMLInputElement>) => {
     const { currentTarget: nickname } = event;
@@ -25,14 +30,50 @@ const MyFriendSideBar = ({
     }
   };
 
-  const onClickSearchNickname = useCallback(() => {
+  const onClickAddFriend = useCallback(() => {
+    if (nickname.length <= 0) {
+      setToastMessage((prev) => {
+        return {
+          ...prev,
+          error: '닉네임을 입력하세요.',
+        };
+      });
+      show('error');
+    } else {
+      addFriend(nickname)
+        .then(() => {
+          getFriendlist().then((res) => {
+            setFriendList(res);
+          });
+          setToastMessage((prev) => {
+            return {
+              ...prev,
+              success: '친구로 등록되었습니다.',
+            };
+          });
+          show('success');
+        })
+        .catch((res) => {
+          console.log(res);
+
+          setToastMessage((prev) => {
+            return {
+              ...prev,
+              error: '닉네임을 확인해주세요.',
+            };
+          });
+          show('error');
+        });
+    }
     console.log(nickname);
-  }, [nickname]);
+  }, [nickname, setFriendList, setToastMessage, show]);
 
   const handleClose = useCallback(() => {
     setNickname('');
     handleFriendSideBarClose();
   }, [handleFriendSideBarClose]);
+
+  if (!friendList) return;
 
   return (
     <CSideBar isOpen={isOpenFriendSideBar} handleClose={handleClose}>
@@ -68,7 +109,7 @@ const MyFriendSideBar = ({
             transition={{ type: 'spring', stiffness: 140, damping: 20 }}
             className='w-[80px] h-[50px] ml-[15px] mr-[6px] mb-[5px]'
           >
-            <CButton type='green' onClick={onClickSearchNickname} rounded={10}>
+            <CButton type='green' onClick={onClickAddFriend} rounded={10}>
               <p className='text-[16px] font-black text-primary-100'>
                 친구 추가
               </p>

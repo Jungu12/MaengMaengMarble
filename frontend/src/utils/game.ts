@@ -1,18 +1,15 @@
-import { NewsType, PlayerType } from '@/types/gameRoom/game.type';
+import { LandType, NewsType, PlayerType } from '@/types/gameRoom/game.type';
 import { AnimationControls } from 'framer-motion';
 import { images } from '@constants/images';
-import { LandType } from '@/types/gameRoom/game.type';
 
 /**
  * 캐릭터를 이동시킨다.
- * @param _playNum - 이동시킬 플레이어의 번호
  * @param count - 이동 시킬 횟수
  * @param cur - 현재 플레이어의 위치
  * @param controls - 캐릭터 이동 애니메이션
  * @returns 이동 후 캐릭터의 위치
  */
 export const moveCharacter = async (
-  _playNum: number,
   count: number,
   cur: number,
   controls: AnimationControls
@@ -74,6 +71,25 @@ export const moveCharacter = async (
     }
   }
   return cur;
+};
+
+/**
+ *
+ * @param players - 유저 리스트
+ * @param username - 본인 닉네임
+ * @returns - 본인 인덱스
+ */
+export const getPlayerIndex = (
+  players: (PlayerType | null)[],
+  username: string
+): number => {
+  let playerIndex = -1;
+
+  players.forEach((player, index) => {
+    if (player?.nickname === username) playerIndex = index;
+  });
+
+  return playerIndex;
 };
 
 export const BUILDING_TYPE = {
@@ -303,4 +319,25 @@ export const effectNewsToString = (curNews: NewsType[]): string => {
   });
 
   return result;
+};
+
+/**
+ * 땅 별로 적용해야하는 스타일 번호를 반환
+ * @param value 땅의 고유 ID
+ * @returns 적용해야할 스타일 타입 반환
+ */
+export const sortStyle = (value: number): number => {
+  if (value > 0 && value < 8) {
+    return 1;
+  }
+  if (value > 8 && value < 16) {
+    return 2;
+  }
+  if (value > 16 && value < 24) {
+    return 3;
+  }
+  if (value > 24 && value < 32) {
+    return 4;
+  }
+  return 0;
 };

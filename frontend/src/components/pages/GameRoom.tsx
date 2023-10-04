@@ -1,19 +1,25 @@
-import NewsCardModal from '@components/gameRoom/NewsCardModal';
 import { images } from '@constants/images';
 // import { moveCharacter } from '@utils/game';
-import { motion } from 'framer-motion';
-import { useEffect, useRef, useState, useCallback } from 'react';
+import {
+  calcRank,
+  effectNewsToString,
+  formatAsset,
+  getPlayerIndex,
+  moveCharacter,
+} from '@utils/game';
+import { motion, useAnimation } from 'framer-motion';
+import { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import * as StompJs from '@stomp/stompjs';
 import { activateClient, getClient } from '@utils/socket';
 import { useLocation, useParams } from 'react-router-dom';
 import { ParticipantsType, WSResponseType } from '@/types/common/common.type';
 import {
+  DiceResultType,
   FullGameDataType,
-  NewsType,
-  PlayerType,
+  TurnEndResponseType,
   TurnListType,
 } from '@/types/gameRoom/game.type';
-import { useRecoilValue } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import { userState } from '@atom/userAtom';
 import { currentParticipantsNum } from '@utils/lobby';
 // import LandInfoModal from '@components/gameRoom/LandInfoModal';
@@ -21,7 +27,14 @@ import { currentParticipantsNum } from '@utils/lobby';
 // import LoansModal from '@components/gameRoom/LoansModal';
 import CardChoice from '@components/gameRoom/CardChoice';
 import GameMap from '@components/gameRoom/GameMap';
-import { calcRank, effectNewsToString, formatAsset } from '@utils/game';
+import Dice from 'react-dice-roll';
+import ConstructionModal from '@components/gameRoom/ConstructionModal';
+import {
+  currentPlayerState,
+  landListState,
+  newsState,
+  playersState,
+} from '@atom/gameAtom';
 
 const GameRoom = () => {
   const location = useLocation();
@@ -30,101 +43,70 @@ const GameRoom = () => {
   const client = useRef<StompJs.Client>();
   const gameSub = useRef<StompJs.StompSubscription>();
   const { gameId } = useParams();
+  const [playerList, setPlayerList] = useRecoilState(playersState);
+  const [currentPlayer, setCurrentPlayer] = useRecoilState(currentPlayerState);
+  const [landList, setLandList] = useRecoilState(landListState);
+  const [news, setNews] = useRecoilState(newsState);
   const [isGameStart, setIsGameStart] = useState(false);
   const [orderList, setOrderList] = useState<TurnListType[]>([]);
-  // const [x, setX] = useState(0);
-  // const [y, setY] = useState(0);
-  // const [position, setPosition] = useState(7);
-  // const controls = useAnimation();
-  // const [isOpenNews, setIsOpenNews] = useState(false);
-  // const [isOpenLandInfo, setIsOpenLandInfo] = useState(false);
-  // const [isOpenConstruction, setIsOpenConstruction] = useState(false);
-  // const [isOpenLoans, setIsOpenLoans] = useState(false);
-  // const [landValue, setLandValue] = useState(25);
 
-  // const handleNews = useCallback(() => {
-  //   setIsOpenNews((prev) => !prev);
-  // }, []);
-
-  // const handleLandInfo = useCallback(() => {
-  //   setIsOpenLandInfo((prev) => !prev);
-  // }, []);
-
-  // const handleConstruction = useCallback(() => {
-  //   setIsOpenConstruction((prev) => !prev);
-  // }, []);
-
-  // const handleLoans = useCallback(() => {
-  //   setIsOpenLoans((prev) => !prev);
-  // }, []);
-
-  // const onClickLand = useCallback(
-  //   (value: number) => {
-  //     handleLandInfo();
-  //     setLandValue(value);
-  //   },
-  //   [handleLandInfo]
-  // );
-  const [playerList, setPlayerList] = useState<(PlayerType | null)[]>([]);
-  const [news, setNews] = useState<NewsType[]>([]);
-  const [currentPlayer, setCurrentPlayer] = useState('');
-  // const [isDiceRoll, setIsDiceRoll] = useState(false);
-  // const [position, setPosition] = useState(7);
-  // const controls = useAnimation();
-
-  // useEffect(() => {
-  //   const cur = moveCharacter(1, 32, position, controls).then((res) => {
-  //     console.log(res);
-  //     moveCharacter(1, 32, res, controls);
-  //   });
-  //   // 이동이 끝나면 position 저장
-  //   // setPosition(cur);
-  //   console.log('이동 끝', cur);
-  //   // setPosition(cur);
-  // }, [controls, position]);
-
-  // useEffect(() => {
-  //   // console.log('현위치 : ', position);
-
-  //   if (position >= 0 && position < 8) {
-  //     setX(position * -67);
-  //     setY(0);
-  //   }
-  //   if (position >= 8 && position < 16) {
-  //     setX(-67 * 8);
-  //     setY((position - 8) * 67);
-  //   }
-  //   if (position >= 16 && position < 24) {
-  //     setX((24 - position) * -67);
-  //     setY(67 * 8);
-  //   }
-  //   if (position >= 24 && position < 32) {
-  //     setX(0);
-  //     setY((32 - position) * 67);
-  //   }
-  // }, [position]);
-
-  // 임시 코드 (지워야함)
-  // useEffect(() => {
-  //   setIsGameStart(false);
-  //   setPosition(7);
-  // }, []);
+  const [dice1, setDice1] = useState<1 | 2 | 3 | 4 | 5 | 6>(1);
+  const [dice2, setDice2] = useState<1 | 2 | 3 | 4 | 5 | 6>(1);
+  const [isDiceRollButtonClick, setIsDiceRollButtonClick] = useState(false);
+  const [isDiceRoll, setIsDiceRoll] = useState(false);
+  const [doubleCnt, setDoubleCnt] = useState(0); // 현재 더블이 몇번 나왔는지 확인용도
+  const [reDice, setReDice] = useState(false); // 주사위를 더 던질 수 있는지 확인
+  const controls1 = useAnimation();
+  const controls2 = useAnimation();
+  const controls3 = useAnimation();
+  const controls4 = useAnimation();
+  const [seletedLandId, setSeletedLandId] = useState(0);
+  const [isOepnContrunction, setIsOepnContrunction] = useState(false);
+  const nowPalyerIdx = useMemo(
+    () => getPlayerIndex(playerList, currentPlayer),
+    [currentPlayer, playerList]
+  );
 
   // 주사위 던지기
   const handleDiceRoll = useCallback(() => {
+    if (isDiceRollButtonClick) return;
     client.current?.publish({
-      destination: `/pub/game-rooms/${gameId}`,
+      destination: `/pub/game-rooms/roll/${gameId}`,
+    });
+  }, [gameId, isDiceRollButtonClick]);
+
+  // 데이터 최신화
+  const updateInfo = useCallback(
+    (data: FullGameDataType | TurnEndResponseType) => {
+      setPlayerList(data.players);
+      setNews(data.info.effectNews);
+      setLandList(data.lands);
+      // TODO: 주식도 최신화 해야함
+    },
+    [setLandList, setNews, setPlayerList]
+  );
+
+  useEffect(() => {
+    console.log(reDice);
+  }, [reDice]);
+
+  // 턴 종료
+  const handleTurnEnd = useCallback(() => {
+    client.current?.publish({
+      destination: `/pub/game-rooms/end-turn/${gameId}`,
     });
   }, [gameId]);
 
   // 소켓 연결
   useEffect(() => {
+    let subTemp: StompJs.StompSubscription;
     client.current = getClient();
     activateClient(client.current);
     client.current.onConnect = () => {
       // 방장인 경우 게임 시작 알리기
+      if (!client.current) return;
       if (user?.userId === state.userList[0].userId) {
-        client.current?.publish({
+        client.current.publish({
           destination: `/pub/game-rooms/start/${gameId}`,
           body: JSON.stringify({
             cnt: currentParticipantsNum(state.userList).toString(),
@@ -132,39 +114,161 @@ const GameRoom = () => {
         });
       }
 
-      gameSub.current = client.current?.subscribe(
+      subTemp = client.current.subscribe(`/sub/game-rooms/${gameId}`, (res) => {
+        const response: WSResponseType<unknown> = JSON.parse(res.body);
+        if (response.type === '플레이순서') {
+          const newOrderList = response as WSResponseType<{
+            cards: TurnListType[];
+          }>;
+          console.log('[테스트]', newOrderList);
+          setOrderList(newOrderList.data.cards);
+        }
+        if (response.type === '초기게임정보') {
+          // 유저 배치 등 초기 세팅하기
+          setIsGameStart(true);
+          const temp = response as WSResponseType<FullGameDataType>;
+          console.log('[게임시작데이터]', temp);
+          setCurrentPlayer(temp.data.info.currentPlayer);
+          updateInfo(temp.data);
+        }
+      });
+    };
+
+    return () => {
+      subTemp.unsubscribe();
+    };
+  }, [gameId, setCurrentPlayer, state.userList, updateInfo, user?.userId]);
+
+  // 구독
+  useEffect(() => {
+    if (!client.current) return;
+    if (client.current.connected) {
+      gameSub.current = client.current.subscribe(
         `/sub/game-rooms/${gameId}`,
         (res) => {
           const response: WSResponseType<unknown> = JSON.parse(res.body);
-          if (response.type === '플레이순서') {
-            const newOrderList = response as WSResponseType<{
-              cards: TurnListType[];
-            }>;
-            console.log('[테스트]', newOrderList);
-            setOrderList(newOrderList.data.cards);
-          }
-          if (response.type === '초기게임정보') {
-            // 유저 배치 등 초기 세팅하기
-            setIsGameStart(true);
-            const temp = response as WSResponseType<FullGameDataType>;
-            console.log('[게임시작데이터]', temp);
-            setPlayerList(temp.data.players);
-            setNews(temp.data.info.effectNews);
-            setCurrentPlayer(temp.data.info.currentPlayer);
-          }
-          if (response.type === '주사위') {
+
+          if (response.type === '이동후로직') {
+            const diceResult = response as WSResponseType<DiceResultType>;
+            setIsDiceRollButtonClick(true);
             console.log('주사위 결과 나왔어요');
+            setDice1(diceResult.data.dice1);
+            setDice2(diceResult.data.dice2);
+            const idx = getPlayerIndex(playerList, currentPlayer);
+
+            setSeletedLandId(diceResult.data.players[idx]!.currentLocation);
+            // 더블이 나오는 경우 주사위 다시 던지기
+            if (doubleCnt < diceResult.data.doubleCount) {
+              setReDice(true);
+              setDoubleCnt(diceResult.data.doubleCount);
+            }
           }
+
+          if (response.type === '땅구매') {
+            console.log('[플레이어 정보]', playerList);
+
+            // 현재 플레이어만 보이게
+            if (currentPlayer === user?.nickname) {
+              console.log(seletedLandId);
+              setIsOepnContrunction(true);
+            }
+          }
+
+          if (response.type === '자유') {
+            const temp = response as WSResponseType<FullGameDataType>;
+            updateInfo(temp.data);
+            console.log('자유시간~~~');
+          }
+
+          if (response.type === '턴종료끝') {
+            const temp = response as WSResponseType<TurnEndResponseType>;
+            updateInfo(temp.data);
+            setCurrentPlayer(temp.data.info.currentPlayer);
+            setIsDiceRoll(false);
+            setIsDiceRollButtonClick(false);
+            setDoubleCnt(0);
+            setReDice(false);
+          }
+
           console.log(JSON.parse(res.body));
         }
       );
-      console.log('[참가 인원]', currentParticipantsNum(state.userList));
-    };
-  }, [gameId, state.userList, user?.userId]);
+    }
 
-  // useEffect(() => {
-  //   console.log('[카드리스트 변경]', orderList);
-  // }, [orderList]);
+    return () => {
+      gameSub.current?.unsubscribe();
+    };
+  }, [
+    currentPlayer,
+    doubleCnt,
+    gameId,
+    playerList,
+    seletedLandId,
+    setCurrentPlayer,
+    updateInfo,
+    user?.nickname,
+  ]);
+
+  useEffect(() => {
+    if (isDiceRollButtonClick && !isDiceRoll) {
+      const diceRef = document.querySelectorAll('._space3d');
+      const clickEvent = new MouseEvent('click', {
+        bubbles: true, // 이벤트가 버블링되도록 설정합니다.
+        cancelable: true, // 이벤트가 취소 가능하도록 설정합니다.
+        view: window, // 이벤트의 관련 뷰를 설정합니다.
+      });
+
+      diceRef[0].dispatchEvent(clickEvent);
+      setTimeout(() => {
+        diceRef[1].dispatchEvent(clickEvent);
+      }, 50);
+
+      setTimeout(() => {
+        setIsDiceRoll(true);
+        const idx = getPlayerIndex(playerList, currentPlayer);
+        // 캐릭터 이동 시작
+        if (user) {
+          let tempControls = controls1;
+          if (idx === 1) {
+            tempControls = controls2;
+          }
+          if (idx === 2) {
+            tempControls = controls3;
+          }
+          if (idx === 3) {
+            tempControls = controls4;
+          }
+          if (playerList[idx] !== null) {
+            moveCharacter(
+              dice1 + dice2,
+              playerList[idx]!.currentLocation,
+              tempControls
+            ).then(
+              // 도착 위치 호출
+              () => {
+                client.current?.publish({
+                  destination: `/pub/game-rooms/after-move/${gameId}`,
+                });
+              }
+            );
+          }
+        }
+      }, 3000);
+    }
+  }, [
+    controls1,
+    controls2,
+    controls3,
+    controls4,
+    currentPlayer,
+    dice1,
+    dice2,
+    gameId,
+    isDiceRoll,
+    isDiceRollButtonClick,
+    playerList,
+    user,
+  ]);
 
   if (!gameId || !client.current) return;
 
@@ -178,8 +282,27 @@ const GameRoom = () => {
     );
   }
 
+  // 건물 구매
+  const handleConstruction = (purchase: boolean[]) => {
+    console.log(purchase);
+
+    client.current?.publish({
+      destination: `/pub/game-rooms/purchase/${gameId}`,
+      body: JSON.stringify(purchase),
+    });
+    setIsOepnContrunction(false);
+  };
   return (
     <>
+      <ConstructionModal
+        isOpen={isOepnContrunction}
+        handleConstruction={handleConstruction}
+        handleClose={() => {
+          setIsOepnContrunction(false);
+        }}
+        land={landList[seletedLandId]}
+        player={playerList[nowPalyerIdx]}
+      />
       <div
         className='flex flex-col w-full h-full min-h-[700px] overflow-hidden relative'
         style={{
@@ -188,23 +311,45 @@ const GameRoom = () => {
         }}
       >
         {/* 주사위 버튼*/}
-        {currentPlayer === user?.nickname && (
-          <div
-            className='absolute bottom-[20%] left-[50%] text-5xl text-white z-[10] text-[24px] font-bold'
-            style={{
-              transform: 'translate(-50%, -50%)',
-            }}
-          >
-            <button
-              className='button-3d'
-              onClick={() => {
-                handleDiceRoll();
-              }}
+        {!isDiceRoll && (
+          <div className='absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-5xl text-white z-[10] text-[24px] font-bold flex flex-col justify-center items-center'>
+            <div
+              className='flex gap-[24px] mb-[80px]'
+              style={{ pointerEvents: 'none' }}
             >
-              주사위 굴리기
-            </button>
+              <Dice
+                cheatValue={dice1}
+                size={100}
+                faceBg='none'
+                onRoll={(value) => console.log(value)}
+              />
+              <Dice
+                cheatValue={dice2}
+                size={100}
+                faceBg='none'
+                onRoll={(value) => console.log(value)}
+              />
+            </div>
+            {currentPlayer === user?.nickname && (
+              <button
+                className='button-3d'
+                onClick={handleDiceRoll}
+                disabled={isDiceRoll}
+              >
+                주사위 굴리기
+              </button>
+            )}
           </div>
         )}
+        {/* 턴종료 버튼 */}
+        <div className='absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-5xl text-white z-[10] text-[24px] font-bold flex flex-col justify-center items-center'>
+          {
+            <button className='button-3d' onClick={handleTurnEnd}>
+              턴 종료{' '}
+              {`${user?.nickname} === ${currentPlayer} && ${!reDice} && ${isDiceRoll}`}
+            </button>
+          }
+        </div>
         {/* 유저 정보 */}
         <div className='flex flex-col w-full h-full relative'>
           <div className='flex justify-between'>
@@ -550,7 +695,7 @@ const GameRoom = () => {
                       총자산
                     </span>
                     <div className='flex-1 text-[#7492FF] text-[18px] font-medium whitespace-nowrap'>
-                      <span>{playerList[3].asset}</span>
+                      <span>{formatAsset(playerList[3].asset)}</span>
                     </div>
                   </div>
                   <div className='flex text-white pr-[12px] mt-[16px] overflow-hidden relative'>
@@ -558,7 +703,7 @@ const GameRoom = () => {
                       보유현금
                     </span>
                     <span className='text-[#FFF59D] text-[18px] font-medium whitespace-nowrap text-right'>
-                      {playerList[3].money}
+                      {formatAsset(playerList[3].money)}
                     </span>
                   </div>
                 </div>
@@ -596,7 +741,14 @@ const GameRoom = () => {
           </div>
         </div>
         {/* 게임맵 */}
-        <GameMap playerList={playerList} onClickLand={() => console.log(1)} />
+        <GameMap
+          playerList={playerList}
+          onClickLand={() => console.log(1)}
+          controls1={controls1}
+          controls2={controls2}
+          controls3={controls3}
+          controls4={controls4}
+        />
       </div>
     </>
   );

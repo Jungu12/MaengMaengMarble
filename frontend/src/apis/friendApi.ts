@@ -18,7 +18,5 @@ export async function addFriend(nickname: string): Promise<string> {
 }
 
 export async function deleteFreind(friendId: string): Promise<string> {
-  return authHttp.delete(`user-service/relation`, {
-    to: friendId,
-  });
+  return authHttp.delete(`user-service/relation?to=${friendId}`);
 }

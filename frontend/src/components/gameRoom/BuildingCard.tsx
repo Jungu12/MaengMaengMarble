@@ -2,14 +2,15 @@ import { motion } from 'framer-motion';
 import { images } from '@constants/images';
 import { BuildingType, addAmountUnit } from '@utils/game';
 import CCheckBox from '@components/common/CCheckBox';
+import { useEffect } from 'react';
 
 type Props = {
   type: BuildingType;
   price: number;
   width: number;
   height: number;
-  isChecked?: boolean;
-  handleCheck?: () => void;
+  isChecked?: boolean | null;
+  handleCheck?: (() => void) | null;
   leftTurn?: number;
 };
 
@@ -22,8 +23,19 @@ const BuildingCard = ({
   handleCheck,
   leftTurn,
 }: Props) => {
+  useEffect(() => {
+    console.log(type);
+    console.log(leftTurn);
+  }, [leftTurn, type]);
+
   return (
-    <button onClick={handleCheck}>
+    <button
+      onClick={
+        handleCheck == null || (leftTurn != null && leftTurn > 0)
+          ? () => {}
+          : handleCheck
+      }
+    >
       <motion.div
         className={`flex flex-col bg-primary-light200 rounded-[10px] p-[10px] border-primary-dark100 border-opacity-80 border-2 relative ${
           isChecked == null || (leftTurn != null && leftTurn > 0)
@@ -90,11 +102,11 @@ const BuildingCard = ({
             </div>
           )}
           {type != '땅값' &&
-            (leftTurn == null || leftTurn == 0) &&
+            (leftTurn == null || leftTurn <= 0) &&
             isChecked != null &&
             handleCheck != null && (
               <div className='absolute left-0 bottom-0 z-20'>
-                <CCheckBox isChecked={isChecked} handleChecked={handleCheck} />
+                <CCheckBox isChecked={isChecked} />
               </div>
             )}
         </div>
