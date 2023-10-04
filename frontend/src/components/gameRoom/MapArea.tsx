@@ -20,9 +20,9 @@ const MapArea = ({ height, width, src, alt, value, onClickArea }: Props) => {
     const type = sortStyle(value);
     if (type === 0) return '';
     if (type === 1) return 'top-[-20px] left-0';
-    if (type === 2) return 'bottom-[16px] right-[-34px] rotate-90';
+    if (type === 2) return 'bottom-[16px] right-[-24px] rotate-90';
     if (type === 3) return 'bottom-[-20px] left-0 scale-y-[-1]';
-    return 'bottom-[16px] left-[-34px] rotate-[-90deg]';
+    return 'bottom-[16px] left-[-24px] rotate-[-90deg]';
   }, [value]);
   const currentLand = useMemo(() => landList[value], [landList, value]);
   const ground = useMemo(() => {
