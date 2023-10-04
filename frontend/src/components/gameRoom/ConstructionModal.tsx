@@ -10,7 +10,8 @@ type Props = {
   player: PlayerType | null;
   land: LandType;
   isOpen: boolean;
-  handleConstruction: () => void;
+  handleConstruction: (purchase: boolean[]) => void;
+  handleClose: () => void;
 };
 
 const ConstructionModal = ({
@@ -18,6 +19,7 @@ const ConstructionModal = ({
   land,
   isOpen,
   handleConstruction,
+  handleClose,
 }: Props) => {
   const [isCheckedPension, setIsCheckedPension] = useState(land.buildings[1]);
   const [isCheckedBuilding, setIsCheckedBuilding] = useState(land.buildings[2]);
@@ -65,9 +67,21 @@ const ConstructionModal = ({
   }, []);
 
   const onClickPurchase = useCallback(() => {
-    handleConstruction();
+    handleConstruction([
+      land.buildings[0] ? false : true,
+      land.buildings[1] ? false : isCheckedPension,
+      land.buildings[2] ? false : isCheckedBuilding,
+      land.buildings[3] ? false : isCheckedHotel,
+    ]);
     console.log(totalPurchasePrice);
-  }, [handleConstruction, totalPurchasePrice]);
+  }, [
+    handleConstruction,
+    isCheckedBuilding,
+    isCheckedHotel,
+    isCheckedPension,
+    land.buildings,
+    totalPurchasePrice,
+  ]);
 
   return (
     <AnimatePresence>
@@ -124,7 +138,7 @@ const ConstructionModal = ({
                 <p className='text-primary-light100 font-bold text-[30px] '>
                   {land.name}
                 </p>
-                <button onClick={handleConstruction}>
+                <button onClick={handleClose}>
                   <img
                     className='w-[60px] h-[60px] '
                     src={images.button.gameclose}

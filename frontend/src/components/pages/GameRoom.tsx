@@ -302,11 +302,22 @@ const GameRoom = () => {
     );
   }
 
+  // 건물 구매
+  const handleConstruction = (purchase: boolean[]) => {
+    client.current?.publish({
+      destination: `/pub/game-rooms/purchase/${gameId}`,
+      body: JSON.stringify({
+        purchasedBuildings: purchase,
+      }),
+    });
+    setIsOepnContrunction(false);
+  };
   return (
     <>
       <ConstructionModal
         isOpen={isOepnContrunction}
-        handleConstruction={() => {
+        handleConstruction={handleConstruction}
+        handleClose={() => {
           setIsOepnContrunction(false);
         }}
         land={landList[seletedLandId]}
