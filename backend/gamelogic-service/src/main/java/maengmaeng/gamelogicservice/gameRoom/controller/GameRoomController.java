@@ -36,7 +36,7 @@ public class GameRoomController {
 	@MessageMapping("/game-rooms/start/{roomCode}")
 	public void setPlayer(@DestinationVariable String roomCode, PlayerCount playerCount) {
 		System.out.println(roomCode);
-
+		logger.info("roomCode = {}, " );
 		GameStart cards = gameRoomService.setStart(roomCode, playerCount.getCnt());
 
 		GameData gameData = GameData.builder()

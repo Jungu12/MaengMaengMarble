@@ -105,17 +105,16 @@ public class GameRoomService {
 	public StartCard[] setPlayer(String roomCode, PlayerSeq playerSeq) {
 
 		GameInfo gameInfo = getInfo(roomCode);
-		//
 		StartCard[] startCards = gameInfo.getSeqCards();
-		//
 		Player[] players = gameInfo.getPlayers();
 		int playerNum = gameInfo.getInfo().getPlayerCnt();
 		Avatar avatar = avatarRepository.getReferenceById(playerSeq.getCharacterId());
 		Player player = gameInfoMapper.toReidsPlayer(playerSeq.getUserId(), playerSeq.getNickname(),
 			playerSeq.getCharacterId(), avatar.getAvatarImageNoBg());
-		if (players[playerSeq.getPlayerCnt() - 1] == null && !startCards[playerSeq.getPlayerCnt() - 1].isSelected()) {
-			players[playerSeq.getPlayerCnt() - 1] = player;
-			startCards[playerSeq.getPlayerCnt() - 1].setSelected(true);
+		int seq = startCards[playerSeq.getPlayerCnt()].getSeq();
+		if (players[seq - 1] == null && !startCards[playerSeq.getPlayerCnt()].isSelected()) {
+			players[seq - 1] = player;
+			startCards[playerSeq.getPlayerCnt()].setSelected(true);
 
 			if (playerSeq.getPlayerCnt() == 1) {
 				Info info = Info.builder()
