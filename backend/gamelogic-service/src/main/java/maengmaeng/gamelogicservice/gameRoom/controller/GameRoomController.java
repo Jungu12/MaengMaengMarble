@@ -26,6 +26,7 @@ import com.google.common.collect.ForwardingMapEntry;
 @RequiredArgsConstructor
 @Controller
 public class GameRoomController {
+
     private final RedisPublisher redisPublisher;
     private final GameRoomService gameRoomService;
     private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -333,8 +334,23 @@ public class GameRoomController {
                 .build();
 
         redisPublisher.publish(gameRoomTopic, gameData);
-
     }
+
+	/**
+	 * 파산
+	 */
+	@MessageMapping("/game-rooms/bankruptcy/{roomCode}")
+	public void bankruptcy(@DestinationVariable String roomCode) {
+		ResponseDto responseDto = gameRoomService.bankruptcy(roomCode);
+
+		GameData gameData = GameData.builder()
+			.type("GAME_ROOM")
+			.roomCode(roomCode)
+			.data(responseDto)
+			.build();
+
+		redisPublisher.publish(gameRoomTopic, gameData);
+	}
 
     /**
      * 게임 종료
