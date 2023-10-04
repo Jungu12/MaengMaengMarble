@@ -259,6 +259,22 @@ public class GameRoomController {
 	}
 
 	/**
+	 * 파산
+	 */
+	@MessageMapping("/game-rooms/bankruptcy/{roomCode}")
+	public void bankruptcy(@DestinationVariable String roomCode) {
+		ResponseDto responseDto = gameRoomService.bankruptcy(roomCode);
+
+		GameData gameData = GameData.builder()
+			.type("GAME_ROOM")
+			.roomCode(roomCode)
+			.data(responseDto)
+			.build();
+
+		redisPublisher.publish(gameRoomTopic, gameData);
+	}
+
+	/**
 	 * 이동후 로직
 	 * */
 	@MessageMapping("/game-rooms/after-move/{roomCode}")
