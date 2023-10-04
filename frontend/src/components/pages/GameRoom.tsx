@@ -179,6 +179,7 @@ const GameRoom = () => {
             console.log('맹맹맴맹맹');
             // 현재 플레이어만 보이게
             if (currentPlayer === user?.nickname) {
+              console.log(seletedLandId);
               setIsOepnContrunction(true);
             }
           }
@@ -190,7 +191,14 @@ const GameRoom = () => {
     return () => {
       gameSub.current?.unsubscribe();
     };
-  }, [currentPlayer, doubleCnt, gameId, playerList]);
+  }, [
+    currentPlayer,
+    doubleCnt,
+    gameId,
+    playerList,
+    seletedLandId,
+    user?.nickname,
+  ]);
 
   useEffect(() => {
     if (isDiceRollButtonClick && !isDiceRoll) {
