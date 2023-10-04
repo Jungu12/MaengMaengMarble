@@ -13,6 +13,23 @@ const Test = () => {
         backgroundSize: 'cover',
       }}
     >
+      {/* 주사위 버튼*/}
+      <div
+        className='absolute bottom-[20%] left-[50%] text-5xl text-white z-[10] text-[24px] font-bold'
+        style={{
+          transform: 'translate(-50%, -50%)',
+        }}
+      >
+        <button
+          className='button-3d'
+          onClick={() => {
+            console.log('버튼 클릭');
+          }}
+        >
+          주사위 굴리기
+        </button>
+      </div>
+
       {/* 유저 정보 */}
       <div className='flex flex-col w-full h-full relative'>
         <div className='flex justify-between'>

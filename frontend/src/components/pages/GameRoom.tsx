@@ -29,6 +29,8 @@ const GameRoom = () => {
   const [orderList, setOrderList] = useState<TurnListType[]>([]);
   const [playerList, setPlayerList] = useState<(PlayerType | null)[]>([]);
   const [news, setNews] = useState<NewsType[]>([]);
+  const [currentPlayer, setCurrentPlayer] = useState('');
+  const [isDiceRoll, setIsDiceRoll] = useState(false);
   // const [position, setPosition] = useState(7);
   // const controls = useAnimation();
 
@@ -103,6 +105,7 @@ const GameRoom = () => {
             console.log('[게임시작데이터]', temp);
             setPlayerList(temp.data.players);
             setNews(temp.data.info.effectNews);
+            setCurrentPlayer(temp.data.info.currentPlayer);
           }
           console.log(JSON.parse(res.body));
         }
@@ -135,6 +138,24 @@ const GameRoom = () => {
         backgroundSize: 'cover',
       }}
     >
+      {/* 주사위 버튼*/}
+      {currentPlayer === user?.nickname && (
+        <div
+          className='absolute bottom-[20%] left-[50%] text-5xl text-white z-[10] text-[24px] font-bold'
+          style={{
+            transform: 'translate(-50%, -50%)',
+          }}
+        >
+          <button
+            className='button-3d'
+            onClick={() => {
+              console.log('버튼 클릭');
+            }}
+          >
+            주사위 굴리기
+          </button>
+        </div>
+      )}
       {/* 유저 정보 */}
       <div className='flex flex-col w-full h-full relative'>
         <div className='flex justify-between'>
