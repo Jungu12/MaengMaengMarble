@@ -168,6 +168,7 @@ const GameRoom = () => {
             setDice2(diceResult.data.dice2);
             setPlayerList(diceResult.data.players);
             const idx = getPlayerIndex(playerList, currentPlayer);
+            console.log('[현재 플레이어 최신]', diceResult.data.players);
             console.log('[현재 플레이어 인덱스]', idx);
             console.log('[맹맹]', playerList[idx]!.currentLocation);
 
@@ -181,6 +182,8 @@ const GameRoom = () => {
 
           if (response.type === '땅구매') {
             console.log('맹맹맴맹맹');
+            console.log('[플레이어 정보]', playerList);
+
             // 현재 플레이어만 보이게
             if (currentPlayer === user?.nickname) {
               console.log(seletedLandId);
