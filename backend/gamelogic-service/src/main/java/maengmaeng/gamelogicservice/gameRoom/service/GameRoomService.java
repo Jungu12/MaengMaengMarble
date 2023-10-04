@@ -1447,4 +1447,61 @@ public class GameRoomService {
 			.data(NewsApplyResponse.builder().lands(lands).stocks(stocks).info(info).build())
 			.build();
 	}
+
+	/**
+	 * 파산
+	 */
+	public ResponseDto bankruptcy(String roomCode) {
+		GameInfo gameInfo = getInfo(roomCode);
+		Player[] players = gameInfo.getPlayers();
+		List<Land> lands = gameInfo.getLands();
+
+		String currentPlayer = gameInfo.getInfo().getCurrentPlayer();
+		int currentIdx = -1;
+		// 현재 플레이어 인덱스 찾기
+		for (int i = 0; i < players.length; i++) {
+			if (players[i] != null && players[i].isAlive() && players[i].getNickname().equals(currentPlayer)) {
+				currentIdx = i;
+			}
+		}
+		Player curPlayer = players[currentIdx];
+
+		//플레이어 사망 처리
+		curPlayer.setAlive(false);
+		players[currentIdx] = curPlayer;
+
+		for (Land land : lands) {
+			if (land.getOwner() == currentIdx) {
+				land.setCurrentFees(land.getFees());
+				land.setCurrentBuildingPrices(land.getBuildingPrices());
+				land.setCurrentLandPrice(land.getLandPrice());
+				land.setBuildings(new boolean[] {false, false, false});
+				land.setOwner(-1);
+
+				lands.set(land.getLandId(), land);
+			}
+		}
+
+		int aliveCnt = 0;
+		for (int i = 0; i < players.length; i++) {
+			if (players[i].isAlive()) {
+				aliveCnt++;
+			}
+		}
+
+		gameInfo.setPlayers(players);
+		gameInfo.setLands(lands);
+
+		gameInfoRepository.createGameRoom(gameInfo);
+
+		ResponseDto responseDto = ResponseDto.builder().build();
+
+		if(aliveCnt == 1) {
+			responseDto = ResponseDto.builder().type("게임종료").build();
+		} else {
+			responseDto = ResponseDto.builder().type("턴종료").data(BankruptcyResponse.builder().lands(lands).players(players).build()).build();
+		}
+
+		return responseDto;
+	}
 }
