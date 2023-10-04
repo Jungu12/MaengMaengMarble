@@ -44,8 +44,7 @@ public class StockService {
         // 2. 플레이어가 가진 현금찾기
         long playerMoney = 0;
         for (Player player : gameInfo.getPlayers()) {
-            if (player.getNickname().equals(gameInfo.getInfo().getCurrentPlayer())) {
-            if (player!=null && player.getNickname().equals(playerSeq.getNickname())) {
+            if (player != null && player.getNickname().equals(gameInfo.getInfo().getCurrentPlayer())) {
                 playerMoney = player.getMoney();
                 nowPlayer = player;
                 break;
@@ -83,6 +82,7 @@ public class StockService {
 
     }
 
+
     public void sell(String roomCode, StockRequest stockRequest) {
         // 1. 현재 게임방 정보 불러오기
 
@@ -108,27 +108,27 @@ public class StockService {
         }
 
         // 3. 팔려는 주식이 현재 플레이어가 가지고 있는 주식인지 확인하기
-        if(nowPlayer.getStocks()[stockId] < stockRequest.getCnt()){
+        if (nowPlayer.getStocks()[stockId] < stockRequest.getCnt()) {
             throw new StockException(ExceptionCode.STOCK_NOT_SUFFICIENT);
         }
 
 
         // 3. 가지고 있으면 판매하기
         int[] newStocks = new int[nowPlayer.getStocks().length];
-        for(int i = 0 ; i < nowPlayer.getStocks().length; i++){
-            if(i==stockId){
+        for (int i = 0; i < nowPlayer.getStocks().length; i++) {
+            if (i == stockId) {
                 newStocks[i] = nowPlayer.getStocks()[i] - stockRequest.getCnt();
-            }else {
+            } else {
                 newStocks[i] = nowPlayer.getStocks()[i];
             }
         }
         nowPlayer.setStocks(newStocks);
-        nowPlayer.setMoney(nowPlayer.getMoney() + stockPrice*stockRequest.getCnt());
-        nowPlayer.setAsset(nowPlayer.getAsset() + stockPrice*stockRequest.getCnt());
-        nowPlayer.setMoney(nowPlayer.getMoney() + stockPrice*stockInfo.getCnt());
-        nowPlayer.setAsset(nowPlayer.getAsset() + stockPrice*stockInfo.getCnt());
+        nowPlayer.setMoney(nowPlayer.getMoney() + stockPrice * stockRequest.getCnt());
+        nowPlayer.setAsset(nowPlayer.getAsset() + stockPrice * stockRequest.getCnt());
+
 
         // 변경된 정보 다시 저장
         gameInfoRepository.createGameRoom(gameInfo);
     }
 }
+

@@ -31,9 +31,6 @@ public class StockController {
     @MessageMapping("/game-rooms/stock/purchase/{roomCode}")
     public void purchase(@DestinationVariable String roomCode, StockRequest stockRequest){
 
-        // 입력받은 사람이 주식 구매
-        logger.info("Controller : purchase()");
-        logger.info("roomCode : {} ",roomCode);
         stockService.purchase(roomCode,stockRequest);
 
 
@@ -41,7 +38,7 @@ public class StockController {
 
         Player chanegedPlayer = null;
         for(Player player : gameInfo.getPlayers()){
-            if(player.getNickname().equals(stockRequest.getPlayerSeq().getNickname())){
+            if(player.getNickname()!=null && player.getNickname().equals(gameInfo.getInfo().getCurrentPlayer())){
                 chanegedPlayer = player;
                 break;
             }
@@ -52,8 +49,6 @@ public class StockController {
         GameData gameData = GameData.builder()
                 .data(ResponseDto.builder()
                         .type("자유")
-                        .data(gameInfo)
-                        .type("주식 매수 후 정보")
                         .data(StockResponse.builder().player(chanegedPlayer).build())
                         .build())
                 .roomCode(roomCode)
@@ -64,7 +59,7 @@ public class StockController {
 
     }
 
-    @MessageMapping("/stock/sell/{roomCode}")
+    @MessageMapping("/game-rooms/stock/sell/{roomCode}")
     public void sell(@DestinationVariable String roomCode, StockRequest stockRequest){
         logger.info("CONTROLLER : sell()");
 
@@ -76,7 +71,7 @@ public class StockController {
 
         Player chanegedPlayer = null;
         for(Player player : gameInfo.getPlayers()){
-            if(player.getNickname().equals(stockRequest.getPlayerSeq().getNickname())){
+            if(player.getNickname()!=null && player.getNickname().equals(gameInfo.getInfo().getCurrentPlayer())){
                 chanegedPlayer = player;
                 break;
             }
@@ -86,10 +81,8 @@ public class StockController {
 
         GameData gameData = GameData.builder()
                 .data(ResponseDto.builder()
-                        .type("주식 매도(팔기) 후 정보")
-                        .data(StockResponse.builder().player(chanegedPlayer).build())
                         .type("자유")
-                        .data(gameInfo)
+                        .data(StockResponse.builder().player(chanegedPlayer).build())
                         .build())
                 .roomCode(roomCode)
                 .type("GAME_ROOM")
