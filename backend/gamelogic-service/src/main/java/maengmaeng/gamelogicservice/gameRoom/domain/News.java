@@ -14,10 +14,10 @@ import lombok.*;
 
 public class News implements Serializable {
 	@Builder.Default
-	private static final long serialVersionUID = 207207207207L;;
+	private static final long serialVersionUID = 207207207207L;
 	private long newsId;
 	private String imageUrl;
 	private String content;
-	private List<Map<String, Integer>> countryEffects;
-	private List<Map<String, Integer>> stockEffects;
+	private Map<Integer, Integer> countryEffects;
+	private Map<Integer, Integer> stockEffects;
 }
