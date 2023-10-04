@@ -17,16 +17,16 @@ import {
   FullGameDataType,
   LandType,
   NewsType,
-  PlayerType,
   TurnListType,
 } from '@/types/gameRoom/game.type';
-import { useRecoilValue } from 'recoil';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import { userState } from '@atom/userAtom';
 import { currentParticipantsNum } from '@utils/lobby';
 import CardChoice from '@components/gameRoom/CardChoice';
 import GameMap from '@components/gameRoom/GameMap';
 import Dice from 'react-dice-roll';
 import ConstructionModal from '@components/gameRoom/ConstructionModal';
+import { playersState } from '@atom/gameAtom';
 
 const GameRoom = () => {
   const location = useLocation();
@@ -35,9 +35,9 @@ const GameRoom = () => {
   const client = useRef<StompJs.Client>();
   const gameSub = useRef<StompJs.StompSubscription>();
   const { gameId } = useParams();
+  const [playerList, setPlayerList] = useRecoilState(playersState);
   const [isGameStart, setIsGameStart] = useState(false);
   const [orderList, setOrderList] = useState<TurnListType[]>([]);
-  const [playerList, setPlayerList] = useState<(PlayerType | null)[]>([]);
   const [landList, setLandList] = useState<LandType[]>([]);
   const [news, setNews] = useState<NewsType[]>([]);
   const [currentPlayer, setCurrentPlayer] = useState('');
@@ -146,7 +146,7 @@ const GameRoom = () => {
     return () => {
       subTemp.unsubscribe();
     };
-  }, [gameId, state.userList, user?.userId]);
+  }, [gameId, setPlayerList, state.userList, user?.userId]);
 
   // 구독
   useEffect(() => {
