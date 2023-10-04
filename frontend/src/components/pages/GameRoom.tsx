@@ -177,6 +177,10 @@ const GameRoom = () => {
 
           if (response.type === '땅구매') {
             console.log('맹맹맴맹맹');
+            // 현재 플레이어만 보이게
+            if (currentPlayer === user?.nickname) {
+              setIsOepnContrunction(true);
+            }
           }
           console.log(JSON.parse(res.body));
         }
