@@ -75,7 +75,7 @@ const GameRoom = () => {
   // 주사위 던지기
   const handleDiceRoll = useCallback(() => {
     client.current?.publish({
-      destination: `/pub/game-rooms/${gameId}`,
+      destination: `/pub/game-rooms/roll/${gameId}`,
     });
   }, [gameId]);
 
