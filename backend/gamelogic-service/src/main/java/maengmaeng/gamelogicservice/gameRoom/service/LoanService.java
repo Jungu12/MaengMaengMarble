@@ -34,6 +34,7 @@ public class LoanService {
             if (player.getNickname() != null && player.getNickname().equals(gameInfo.getInfo().getCurrentPlayer())) {
                 player.setLoan(player.getLoan() + loanRequest.getPrice());
                 player.setMoney(player.getMoney() + loanRequest.getPrice());
+                player.setAsset(player.getAsset() + loanRequest.getPrice());
                 break;
             }
         }
@@ -53,7 +54,10 @@ public class LoanService {
                 if (player.getMoney() >= loanRequest.getPrice()) {
                     player.setLoan(player.getLoan() - loanRequest.getPrice());
                     player.setMoney(player.getMoney() - loanRequest.getPrice());
+                    player.setAsset(player.getAsset() - loanRequest.getPrice());
                     break;
+                }else{
+                    throw new LoanException(ExceptionCode.LOAN_MONEY_SUFFICIENT);
                 }
             }
         }

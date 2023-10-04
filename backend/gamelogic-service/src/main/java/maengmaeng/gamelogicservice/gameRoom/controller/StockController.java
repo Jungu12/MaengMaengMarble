@@ -2,9 +2,11 @@ package maengmaeng.gamelogicservice.gameRoom.controller;
 
 import lombok.RequiredArgsConstructor;
 import maengmaeng.gamelogicservice.gameRoom.domain.GameInfo;
+import maengmaeng.gamelogicservice.gameRoom.domain.Player;
 import maengmaeng.gamelogicservice.gameRoom.domain.dto.PlayerSeq;
 import maengmaeng.gamelogicservice.gameRoom.domain.dto.StockInfo;
 import maengmaeng.gamelogicservice.gameRoom.domain.dto.StockRequest;
+import maengmaeng.gamelogicservice.gameRoom.domain.dto.StockResponse;
 import maengmaeng.gamelogicservice.gameRoom.service.GameRoomService;
 import maengmaeng.gamelogicservice.gameRoom.service.StockService;
 import maengmaeng.gamelogicservice.global.dto.GameData;
@@ -32,18 +34,26 @@ public class StockController {
 
         PlayerSeq playerSeq = stockRequest.getPlayerSeq();
         StockInfo stockInfo = stockRequest.getStockInfo();
-        // 입력받은 사람이 주식 구매
-        logger.info("Controller : purchase()");
-        logger.info("roomCode : {} ",roomCode);
+
         stockService.purchase(roomCode, playerSeq, stockInfo);
 
 
         GameInfo gameInfo = gameRoomService.getInfo(roomCode);
 
+        Player chanegedPlayer = null;
+        for(Player player : gameInfo.getPlayers()){
+            if(player.getNickname().equals(stockRequest.getPlayerSeq().getNickname())){
+                chanegedPlayer = player;
+                break;
+            }
+        }
+
+
+
         GameData gameData = GameData.builder()
                 .data(ResponseDto.builder()
                         .type("주식 매수 후 정보")
-                        .data(gameInfo)
+                        .data(StockResponse.builder().player(chanegedPlayer).build())
                         .build())
                 .roomCode(roomCode)
                 .type("GAME_ROOM")
@@ -65,10 +75,20 @@ public class StockController {
 
         GameInfo gameInfo = gameRoomService.getInfo(roomCode);
 
+        Player chanegedPlayer = null;
+        for(Player player : gameInfo.getPlayers()){
+            if(player.getNickname().equals(stockRequest.getPlayerSeq().getNickname())){
+                chanegedPlayer = player;
+                break;
+            }
+        }
+
+
+
         GameData gameData = GameData.builder()
                 .data(ResponseDto.builder()
                         .type("주식 매도(팔기) 후 정보")
-                        .data(gameInfo)
+                        .data(StockResponse.builder().player(chanegedPlayer).build())
                         .build())
                 .roomCode(roomCode)
                 .type("GAME_ROOM")
