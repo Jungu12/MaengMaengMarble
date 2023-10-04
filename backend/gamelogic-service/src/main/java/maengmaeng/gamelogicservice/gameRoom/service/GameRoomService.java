@@ -105,18 +105,16 @@ public class GameRoomService {
 	public StartCard[] setPlayer(String roomCode, PlayerSeq playerSeq) {
 
 		GameInfo gameInfo = getInfo(roomCode);
-		//
 		StartCard[] startCards = gameInfo.getSeqCards();
-		//
 		Player[] players = gameInfo.getPlayers();
 		int playerNum = gameInfo.getInfo().getPlayerCnt();
 		Avatar avatar = avatarRepository.getReferenceById(playerSeq.getCharacterId());
-
 		Player player = gameInfoMapper.toReidsPlayer(playerSeq.getUserId(), playerSeq.getNickname(),
 			playerSeq.getCharacterId(), avatar.getAvatarImageNoBg());
-		if (players[playerSeq.getPlayerCnt() - 1] == null && !startCards[playerSeq.getPlayerCnt() - 1].isSelected()) {
-			players[playerSeq.getPlayerCnt() - 1] = player;
-			startCards[playerSeq.getPlayerCnt() - 1].setSelected(true);
+		int seq = startCards[playerSeq.getPlayerCnt()].getSeq();
+		if (players[seq - 1] == null && !startCards[playerSeq.getPlayerCnt()].isSelected()) {
+			players[seq - 1] = player;
+			startCards[playerSeq.getPlayerCnt()].setSelected(true);
 
 			if (playerSeq.getPlayerCnt() == 1) {
 				Info info = Info.builder()
@@ -204,8 +202,6 @@ public class GameRoomService {
 
 		if (checkTrade) {
 			curPlayer.setCurrentLocation(stopTrade);
-			// TODO: 거래정지
-
 			players[currentIdx] = curPlayer;
 			gameInfo.setPlayers(players);
 			gameInfoRepository.createGameRoom(gameInfo);
@@ -267,7 +263,7 @@ public class GameRoomService {
 		// 주사위 던지기
 		Dice dice = getDice();
 		int stopTradeCount = curPlayer.getStopTradeCount();
-		// TODO:  더블이 아니면 턴 종료
+		// 더블이 아닐 때
 		if (dice.getDice1() != dice.getDice2()) {
 			// 플레이어의 stopTradeCount 증가
 			stopTradeCount++;
@@ -278,7 +274,7 @@ public class GameRoomService {
 			gameInfoRepository.createGameRoom(gameInfo);
 			return ResponseDto.builder().type("거래정지탈출실패").data(dice).build();
 		} else {
-			// TODO: 더블이면 이동
+			// 더블이면 이동
 			int curLocation = curPlayer.getCurrentLocation();
 			Player player = move(curPlayer, dice.getDice1() + dice.getDice2());
 			// 플레이어의 stopTradeCount값 0으로 초기화
@@ -786,7 +782,6 @@ public class GameRoomService {
 	 * */
 	public ResponseDto maengMaeng(GameInfo gameInfo) {
 		// 맹맹: 보유 현금 * 0.15 + 배당금 - 대출 원금 * 0.24)
-
 		Player[] players = gameInfo.getPlayers();
 		int playerIdx = getPlayerIdx(players, gameInfo.getInfo().getCurrentPlayer());
 		Player player = players[playerIdx];
@@ -806,18 +801,18 @@ public class GameRoomService {
 		if (maengMaeng >= 0) {
 			long playerMoney = player.getMoney();
 			player.setMoney(playerMoney + maengMaeng);
+			//TODO: asset 값 올리기
+			long playerAsset = player.getAsset();
+			player.setAsset(playerAsset + playerAsset);
 			players[playerIdx] = player;
 			gameInfo.setPlayers(players);
 			gameInfoRepository.createGameRoom(gameInfo);
 			return ResponseDto.builder().type("맹맹지급").data(player).build();
-
 		} else {
 			// 맹맹이 음수일 때
 			// 맹맹이 보유자산 보다 많을 때?
 			if (maengMaeng > calculateMoney(player, stocks, lands)) {
-				//TODO: 파산 절차
 				return ResponseDto.builder().type("파산").build();
-
 			} else {
 				if (player.getMoney() - maengMaeng >= 0) {
 					// 보유 현금 -
@@ -826,9 +821,7 @@ public class GameRoomService {
 					gameInfo.setPlayers(players);
 					gameInfoRepository.createGameRoom(gameInfo);
 					return ResponseDto.builder().type("맹맹지급").data(player).build();
-
 				} else {
-					//TODO: 매각 절차
 					return ResponseDto.builder().type("매각시작").build();
 				}
 			}
@@ -956,15 +949,13 @@ public class GameRoomService {
 		/**/
 
 		ResponseDto responseDto = null;
-
 		switch (currentLocation) {
 			case 0:
 				// 시작지점
-				responseDto = ResponseDto.builder().type("시작지점").build();
+				responseDto = ResponseDto.builder().type("자유").build();
 				break;
 			case 2:
 				// 세금 징수
-
 				responseDto = ResponseDto.builder().type("세금징수").build();
 
 				break;
@@ -987,19 +978,14 @@ public class GameRoomService {
 				// 투자장
 				responseDto = ResponseDto.builder().type("거래장").build();
 				break;
-
 			case 18:
 				// Rush & Cash
 				responseDto = ResponseDto.builder().type("대출").build();
 				break;
 			case 24:
 				// 어디로든 문
-				//
-				if (gameInfo.getInfo().getDoorCheck() > 0) {
-					responseDto = ResponseDto.builder().type("강준구의문단속적용어디로든문").build();
-				} else {
-					responseDto = ResponseDto.builder().type("어디로든문").build();
-				}
+				responseDto = ResponseDto.builder().type("자유").build();
+
 				break;
 			default:
 				// 일반 땅
@@ -1033,7 +1019,6 @@ public class GameRoomService {
 							// 파산각이면
 							responseDto = ResponseDto.builder().type("파산").build();
 						}
-
 					}
 				}
 		}
@@ -1155,10 +1140,8 @@ public class GameRoomService {
 		currentPlayer.setCurrentTurn(currentTurn);
 		// 현제 플레이어의 doubleCount 초기화
 		currentPlayer.setDoubleCount(0);
-
 		Info info = gameInfo.getInfo();
 		// 턴을 넘기기 전에 현재 플레이어가 마지막 플레이어인지 확인.
-		// 2인 3인 이면
 		boolean isLastPlayer = false;
 		// 배열의 마지막 사람이면 무조건 제일 마지막 플레이어
 		if (info.getPlayerCnt() == playerIdx + 1) {
@@ -1171,12 +1154,10 @@ public class GameRoomService {
 					break;
 				}
 			}
-
 		}
 
 		if (isLastPlayer) {
-			//TODO: 턴이 바뀔 때 수행되어야하는 로직
-			//TODO: effectNews, waitingNews, doorCheck
+			//턴이 바뀔 때 수행되어야하는 로직
 			int turnCount = info.getTurnCount() + 1;
 			// 종료 조건 체크
 			if (turnCount == 31) {
@@ -1195,7 +1176,10 @@ public class GameRoomService {
 					// 이미 적용중인 뉴스가 3개라면 뉴스 한개 제거
 					if (effectNews.size() == 3) {
 						//TODO: 적용중인 뉴스 효과 제거도 해야함
-						effectNews.poll();
+						// TODO: 뉴스효과 뺄 때 뉴스 효과 빼고 나서 asset
+						News news = effectNews.poll();
+						news.getCountryEffects();
+						news.getCountryEffects();
 					}
 					effectNews.offer(waitingNews.poll().getNews());
 				} else {
@@ -1231,7 +1215,11 @@ public class GameRoomService {
 
 		return ResponseDto.builder().type("턴종료")
 			.data(EndTurnResponse.builder()
-				.info(info).stocks(gameInfo.getStocks()).players(players).lands(gameInfo.getLands()).build())
+				.info(info)
+				.stocks(gameInfo.getStocks())
+				.players(players)
+				.lands(gameInfo.getLands())
+				.build())
 			.build();
 	}
 
@@ -1241,7 +1229,7 @@ public class GameRoomService {
 	public ResponseDto endGame(String roomCode) {
 		//TODO: 게임 종료시 데이터 전송
 
-		return ResponseDto.builder().type("게임종료").build();
+		return ResponseDto.builder().type("게임결과").build();
 
 	}
 
@@ -1301,22 +1289,28 @@ public class GameRoomService {
 
 					//좋은 효과
 					if (curEffect >= 0) {
-						currentLandPrice = curLand.getCurrentLandPrice() * (100 + curEffect) / 100;
+						currentLandPrice =
+							curLand.getCurrentLandPrice() * (100 + curEffect) / 100;
 						for (int i = 0; i < currentBuildingPrices.length; i++) {
-							currentBuildingPrices[i] = curLand.getCurrentBuildingPrices()[i] * (100 + curEffect) / 100;
+							currentBuildingPrices[i] =
+								curLand.getCurrentBuildingPrices()[i] * (100 + curEffect) / 100;
 						}
 						for (int i = 0; i < currentFees.length; i++) {
-							currentBuildingPrices[i] = curLand.getCurrentFees()[i] * (100 + curEffect) / 100;
+							currentBuildingPrices[i] =
+								curLand.getCurrentFees()[i] * (100 + curEffect) / 100;
 						}
 					}
 					//나쁜 효과
 					else {
-						currentLandPrice = curLand.getCurrentLandPrice() * (100 - curEffect) / 100;
+						currentLandPrice =
+							curLand.getCurrentLandPrice() * (100 - curEffect) / 100;
 						for (int i = 0; i < currentBuildingPrices.length; i++) {
-							currentBuildingPrices[i] = curLand.getCurrentBuildingPrices()[i] * (100 - curEffect) / 100;
+							currentBuildingPrices[i] =
+								curLand.getCurrentBuildingPrices()[i] * (100 - curEffect) / 100;
 						}
 						for (int i = 0; i < currentFees.length; i++) {
-							currentBuildingPrices[i] = curLand.getCurrentFees()[i] * (100 - curEffect) / 100;
+							currentBuildingPrices[i] =
+								curLand.getCurrentFees()[i] * (100 - curEffect) / 100;
 						}
 					}
 					//바뀐 정보 해당 땅에 업데이트
@@ -1346,7 +1340,8 @@ public class GameRoomService {
 				}
 			}
 		} else {
-			waitingNews.add(WaitingNews.builder().news(news).turn(info.getTurnCount() + 3).build());
+			waitingNews.add(
+				WaitingNews.builder().news(news).turn(info.getTurnCount() + 3).build());
 		}
 
 		info.setEffectNews(effectNews);

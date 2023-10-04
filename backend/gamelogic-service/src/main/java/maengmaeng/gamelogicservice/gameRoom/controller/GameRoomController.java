@@ -39,7 +39,7 @@ public class GameRoomController {
 	@MessageMapping("/game-rooms/start/{roomCode}")
 	public void setPlayer(@DestinationVariable String roomCode, PlayerCount playerCount) {
 		System.out.println(roomCode);
-
+		logger.info("roomCode = {}, " );
 		GameStart cards = gameRoomService.setStart(roomCode, playerCount.getCnt());
 
 		GameData gameData = GameData.builder()
@@ -211,7 +211,7 @@ public class GameRoomController {
 	/** 거래 정지에서 주사위 굴리기
 	 *
 	 * */
-	@MessageMapping("/game-rooms/stopTrade/{roomCode}")
+	@MessageMapping("/game-rooms/stop-trade/{roomCode}")
 	public void stopTrade(@DestinationVariable String roomCode) {
 
 		ResponseDto responseDto = gameRoomService.stopTrade(roomCode);

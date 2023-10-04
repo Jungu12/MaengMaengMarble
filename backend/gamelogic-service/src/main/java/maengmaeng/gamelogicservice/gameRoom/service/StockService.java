@@ -41,7 +41,7 @@ public class StockService {
         // 2. 플레이어가 가진 현금찾기
         long playerMoney = 0;
         for (Player player : gameInfo.getPlayers()) {
-            if (player.getNickname().equals(playerSeq.getNickname())) {
+            if (player!=null && player.getNickname().equals(playerSeq.getNickname())) {
                 playerMoney = player.getMoney();
                 nowPlayer = player;
                 break;
@@ -56,7 +56,8 @@ public class StockService {
         // 4. 플레이어가 구매 가능한 경우 : 플레이어돈 >= 주식가격
         if (playerMoney >= stockPrice) {
             nowPlayer.setMoney(nowPlayer.getMoney() - stockPrice);
-            logger.info("구매가능 구매슛");
+            nowPlayer.setAsset(nowPlayer.getAsset() - stockPrice);
+
             // 플레이어의 주식 목록에 추가하기
             int[] newStocks = new int[nowPlayer.getStocks().length];
 
@@ -118,6 +119,7 @@ public class StockService {
         }
         nowPlayer.setStocks(newStocks);
         nowPlayer.setMoney(nowPlayer.getMoney() + stockPrice*stockInfo.getCnt());
+        nowPlayer.setAsset(nowPlayer.getAsset() + stockPrice*stockInfo.getCnt());
 
         // 변경된 정보 다시 저장
         gameInfoRepository.createGameRoom(gameInfo);
