@@ -144,7 +144,7 @@ const GameRoom = () => {
   }, [gameId, state.userList, user?.userId]);
 
   useEffect(() => {
-    if (isDiceRollButtonClick && isDiceRoll) {
+    if (isDiceRollButtonClick && !isDiceRoll) {
       const diceRef = document.querySelectorAll('._space3d');
       const clickEvent = new MouseEvent('click', {
         bubbles: true, // 이벤트가 버블링되도록 설정합니다.
