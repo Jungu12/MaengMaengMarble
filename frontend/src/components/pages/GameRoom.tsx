@@ -3,7 +3,6 @@ import { images } from '@constants/images';
 // import { moveCharacter } from '@utils/game';
 import { motion } from 'framer-motion';
 import { useEffect, useRef, useState, useCallback } from 'react';
-import { calcRank, effectNewsToString, formatAsset } from '@utils/game';
 import * as StompJs from '@stomp/stompjs';
 import { activateClient, getClient } from '@utils/socket';
 import { useLocation, useParams } from 'react-router-dom';
@@ -17,11 +16,12 @@ import {
 import { useRecoilValue } from 'recoil';
 import { userState } from '@atom/userAtom';
 import { currentParticipantsNum } from '@utils/lobby';
-import LandInfoModal from '@components/gameRoom/LandInfoModal';
-import ConstructionModal from '@components/gameRoom/ConstructionModal';
-import LoansModal from '@components/gameRoom/LoansModal';
+// import LandInfoModal from '@components/gameRoom/LandInfoModal';
+// import ConstructionModal from '@components/gameRoom/ConstructionModal';
+// import LoansModal from '@components/gameRoom/LoansModal';
 import CardChoice from '@components/gameRoom/CardChoice';
 import GameMap from '@components/gameRoom/GameMap';
+import { calcRank, effectNewsToString, formatAsset } from '@utils/game';
 
 const GameRoom = () => {
   const location = useLocation();
@@ -36,37 +36,39 @@ const GameRoom = () => {
   // const [y, setY] = useState(0);
   // const [position, setPosition] = useState(7);
   // const controls = useAnimation();
-  const [isOpenNews, setIsOpenNews] = useState(false);
-  const [isOpenLandInfo, setIsOpenLandInfo] = useState(false);
-  const [isOpenConstruction, setIsOpenConstruction] = useState(false);
-  const [isOpenLoans, setIsOpenLoans] = useState(false);
-  const [landValue, setLandValue] = useState(25);
+  // const [isOpenNews, setIsOpenNews] = useState(false);
+  // const [isOpenLandInfo, setIsOpenLandInfo] = useState(false);
+  // const [isOpenConstruction, setIsOpenConstruction] = useState(false);
+  // const [isOpenLoans, setIsOpenLoans] = useState(false);
+  // const [landValue, setLandValue] = useState(25);
 
-  const handleNews = useCallback(() => {
-    setIsOpenNews((prev) => !prev);
-  }, []);
+  // const handleNews = useCallback(() => {
+  //   setIsOpenNews((prev) => !prev);
+  // }, []);
 
-  const handleLandInfo = useCallback(() => {
-    setIsOpenLandInfo((prev) => !prev);
-  }, []);
+  // const handleLandInfo = useCallback(() => {
+  //   setIsOpenLandInfo((prev) => !prev);
+  // }, []);
 
-  const handleConstruction = useCallback(() => {
-    setIsOpenConstruction((prev) => !prev);
-  }, []);
+  // const handleConstruction = useCallback(() => {
+  //   setIsOpenConstruction((prev) => !prev);
+  // }, []);
 
-  const handleLoans = useCallback(() => {
-    setIsOpenLoans((prev) => !prev);
-  }, []);
+  // const handleLoans = useCallback(() => {
+  //   setIsOpenLoans((prev) => !prev);
+  // }, []);
 
-  const onClickLand = useCallback(
-    (value: number) => {
-      handleLandInfo();
-      setLandValue(value);
-    },
-    [handleLandInfo]
-  );
+  // const onClickLand = useCallback(
+  //   (value: number) => {
+  //     handleLandInfo();
+  //     setLandValue(value);
+  //   },
+  //   [handleLandInfo]
+  // );
   const [playerList, setPlayerList] = useState<(PlayerType | null)[]>([]);
   const [news, setNews] = useState<NewsType[]>([]);
+  const [currentPlayer, setCurrentPlayer] = useState('');
+  // const [isDiceRoll, setIsDiceRoll] = useState(false);
   // const [position, setPosition] = useState(7);
   // const controls = useAnimation();
 
@@ -108,6 +110,13 @@ const GameRoom = () => {
   //   setPosition(7);
   // }, []);
 
+  // 주사위 던지기
+  const handleDiceRoll = useCallback(() => {
+    client.current?.publish({
+      destination: `/pub/game-rooms/${gameId}`,
+    });
+  }, [gameId]);
+
   // 소켓 연결
   useEffect(() => {
     client.current = getClient();
@@ -141,6 +150,10 @@ const GameRoom = () => {
             console.log('[게임시작데이터]', temp);
             setPlayerList(temp.data.players);
             setNews(temp.data.info.effectNews);
+            setCurrentPlayer(temp.data.info.currentPlayer);
+          }
+          if (response.type === '주사위') {
+            console.log('주사위 결과 나왔어요');
           }
           console.log(JSON.parse(res.body));
         }
@@ -167,19 +180,6 @@ const GameRoom = () => {
 
   return (
     <>
-      <NewsCardModal isOpen={isOpenNews} handleNews={handleNews} />
-      <LandInfoModal
-        landId={landValue}
-        isOpen={isOpenLandInfo}
-        handleLandInfo={handleLandInfo}
-      />
-      <ConstructionModal
-        landId={landValue}
-        isOpen={isOpenConstruction}
-        handleConstruction={handleConstruction}
-      />
-      <LoansModal isOpen={isOpenLoans} handleLoans={handleLoans} />
-
       <div
         className='flex flex-col w-full h-full min-h-[700px] overflow-hidden relative'
         style={{
@@ -187,6 +187,24 @@ const GameRoom = () => {
           backgroundSize: 'cover',
         }}
       >
+        {/* 주사위 버튼*/}
+        {currentPlayer === user?.nickname && (
+          <div
+            className='absolute bottom-[20%] left-[50%] text-5xl text-white z-[10] text-[24px] font-bold'
+            style={{
+              transform: 'translate(-50%, -50%)',
+            }}
+          >
+            <button
+              className='button-3d'
+              onClick={() => {
+                handleDiceRoll();
+              }}
+            >
+              주사위 굴리기
+            </button>
+          </div>
+        )}
         {/* 유저 정보 */}
         <div className='flex flex-col w-full h-full relative'>
           <div className='flex justify-between'>
@@ -578,7 +596,7 @@ const GameRoom = () => {
           </div>
         </div>
         {/* 게임맵 */}
-        <GameMap playerList={playerList} />
+        <GameMap playerList={playerList} onClickLand={() => console.log(1)} />
       </div>
     </>
   );

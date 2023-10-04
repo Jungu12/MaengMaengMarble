@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 
 type Props = {
   playerList: (PlayerType | null)[];
-  onClickLand: () => void;
+  onClickLand: (landId: number) => void;
 };
 
 const GameMap = ({ playerList, onClickLand }: Props) => {
@@ -276,7 +276,7 @@ const GameMap = ({ playerList, onClickLand }: Props) => {
           // animate={controls}
           className={`absolute`}
           style={{
-            bottom: `30px`,
+            bottom: `20px`,
             right: `20px`,
           }}
         >
@@ -295,7 +295,7 @@ const GameMap = ({ playerList, onClickLand }: Props) => {
           // animate={controls}
           className={`absolute`}
           style={{
-            bottom: `30px`,
+            bottom: `20px`,
             right: `20px`,
           }}
         >
@@ -314,7 +314,7 @@ const GameMap = ({ playerList, onClickLand }: Props) => {
           // animate={controls}
           className={`absolute`}
           style={{
-            bottom: `30px`,
+            bottom: `20px`,
             right: `20px`,
           }}
         >
@@ -333,7 +333,7 @@ const GameMap = ({ playerList, onClickLand }: Props) => {
           // animate={controls}
           className={`absolute`}
           style={{
-            bottom: `30px`,
+            bottom: `20px`,
             right: `20px`,
           }}
         >
