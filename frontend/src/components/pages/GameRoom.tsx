@@ -7,7 +7,7 @@ import {
   moveCharacter,
 } from '@utils/game';
 import { motion, useAnimation } from 'framer-motion';
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import * as StompJs from '@stomp/stompjs';
 import { activateClient, getClient } from '@utils/socket';
 import { useLocation, useParams } from 'react-router-dom';
@@ -53,6 +53,7 @@ const GameRoom = () => {
   const controls4 = useAnimation();
   const [seletedLandId, setSeletedLandId] = useState(0);
   const [isOepnContrunction, setIsOepnContrunction] = useState(false);
+  const diceSum = useMemo(() => dice1 + dice2, [dice1, dice2]);
 
   // useEffect(() => {
   //   const cur = moveCharacter(1, 32, position, controls).then((res) => {
@@ -167,6 +168,9 @@ const GameRoom = () => {
             setDice1(diceResult.data.dice1);
             setDice2(diceResult.data.dice2);
             const idx = getPlayerIndex(playerList, currentPlayer);
+            console.log('[현재 플레이어 인덱스]', idx);
+            console.log('[맹맹]', playerList[idx]!.currentLocation);
+
             setSeletedLandId(playerList[idx]!.currentLocation);
             // 더블이 나오는 경우 주사위 다시 던지기
             if (doubleCnt < diceResult.data.doubleCount) {
