@@ -68,7 +68,6 @@ const ConstructionModal = ({
 
   const onClickPurchase = useCallback(() => {
     handleConstruction([
-      land.buildings[0] ? false : true,
       land.buildings[1] ? false : isCheckedPension,
       land.buildings[2] ? false : isCheckedBuilding,
       land.buildings[3] ? false : isCheckedHotel,

@@ -102,7 +102,7 @@ const BuildingCard = ({
             </div>
           )}
           {type != '땅값' &&
-            (leftTurn == null || leftTurn == 0) &&
+            (leftTurn == null || leftTurn <= 0) &&
             isChecked != null &&
             handleCheck != null && (
               <div className='absolute left-0 bottom-0 z-20'>
