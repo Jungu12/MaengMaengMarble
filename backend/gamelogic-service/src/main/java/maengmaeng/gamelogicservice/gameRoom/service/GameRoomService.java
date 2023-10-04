@@ -114,22 +114,26 @@ public class GameRoomService {
 		int seq = startCards[playerSeq.getPlayerCnt()].getSeq();
 		if (players[seq - 1] == null && !startCards[playerSeq.getPlayerCnt()].isSelected()) {
 			players[seq - 1] = player;
+			System.out.println("순서 세팅" + players[seq-1].getNickname());
 			startCards[playerSeq.getPlayerCnt()].setSelected(true);
 
 			if (seq == 1) {
 				Info info = Info.builder()
-					.currentPlayer(players[0].getNickname())
+					.currentPlayer(players[seq-1].getNickname())
 					.playerCnt(playerNum)
 					.turnCount(1)
 					.effectNews(new LinkedList<>())
 					.waitingNews(new PriorityQueue<WaitingNews>(/*(o1, o2) -> o1.getTurn() - o2.getTurn()*/))
 					.build();
+				System.out.println("info 저장 :"+info.getCurrentPlayer());
 				gameInfo.setInfo(info);
 			}
 			gameInfo.setSeqCards(startCards);
 		}
 
 		gameInfoRepository.createGameRoom(gameInfo);
+
+		System.out.println("currentPlayer 저장 " +gameInfo.getInfo().getCurrentPlayer());
 		return gameInfo.getSeqCards();
 	}
 
