@@ -27,7 +27,7 @@ const SlotMachineModal = ({
   handleSlot,
 }: Props) => {
   const indexes = useMemo(() => [0, 0, 0], []);
-  const slotResult = useMemo(() => [0, 0, 0], []);
+  const [slotResult, setSlotResult] = useState([0, 0, 0]);
   const [bettingMoney, setBettingMoney] = useState(30000000);
   const [isClickBetting, setIsClickBetting] = useState(false);
   const { show } = useToastList();
@@ -110,9 +110,14 @@ const SlotMachineModal = ({
         const parkResult = response as WSResponseType<SlotType>;
         console.log('[박진호데이터]', parkResult);
         setPlayerList(parkResult.data.players);
-        slotResult[0] = parkResult.data.num[0];
-        slotResult[1] = parkResult.data.num[1];
-        slotResult[2] = parkResult.data.num[2];
+        setSlotResult([
+          parkResult.data.num[0],
+          parkResult.data.num[1],
+          parkResult.data.num[2],
+        ]);
+        // slotResult[0] = parkResult.data.num[0];
+        // slotResult[1] = parkResult.data.num[1];
+        // slotResult[2] = parkResult.data.num[2];
         console.log(slotResult);
       }
     });
