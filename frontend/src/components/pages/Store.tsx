@@ -56,7 +56,6 @@ const Store = () => {
     (cid: number) => {
       purchaseCharacter(cid)
         .then((res) => {
-          // setMyMoney(res.point);
           if (!user) return;
           setUser({
             ...user,
