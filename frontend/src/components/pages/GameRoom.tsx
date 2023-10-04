@@ -15,6 +15,7 @@ import { ParticipantsType, WSResponseType } from '@/types/common/common.type';
 import {
   DiceResultType,
   FullGameDataType,
+  LandType,
   NewsType,
   PlayerType,
   TurnListType,
@@ -25,6 +26,7 @@ import { currentParticipantsNum } from '@utils/lobby';
 import CardChoice from '@components/gameRoom/CardChoice';
 import GameMap from '@components/gameRoom/GameMap';
 import Dice from 'react-dice-roll';
+import ConstructionModal from '@components/gameRoom/ConstructionModal';
 
 const GameRoom = () => {
   const location = useLocation();
@@ -36,6 +38,7 @@ const GameRoom = () => {
   const [isGameStart, setIsGameStart] = useState(false);
   const [orderList, setOrderList] = useState<TurnListType[]>([]);
   const [playerList, setPlayerList] = useState<(PlayerType | null)[]>([]);
+  const [landList, setLandList] = useState<LandType[]>([]);
   const [news, setNews] = useState<NewsType[]>([]);
   const [currentPlayer, setCurrentPlayer] = useState('');
   const [dice1, setDice1] = useState<1 | 2 | 3 | 4 | 5 | 6>(1);
@@ -44,11 +47,12 @@ const GameRoom = () => {
   const [isDiceRoll, setIsDiceRoll] = useState(false);
   const [doubleCnt, setDoubleCnt] = useState(0); // 현재 더블이 몇번 나왔는지 확인용도
   const [reDice, setReDice] = useState(false); // 주사위를 더 던질 수 있는지 확인
-  // const [position, setPosition] = useState(7);
   const controls1 = useAnimation();
   const controls2 = useAnimation();
   const controls3 = useAnimation();
   const controls4 = useAnimation();
+  const [seletedLandId, setSeletedLandId] = useState(0);
+  const [isOepnContrunction, setIsOepnContrunction] = useState(false);
 
   // useEffect(() => {
   //   const cur = moveCharacter(1, 32, position, controls).then((res) => {
@@ -134,7 +138,9 @@ const GameRoom = () => {
             setPlayerList(temp.data.players);
             setNews(temp.data.info.effectNews);
             setCurrentPlayer(temp.data.info.currentPlayer);
+            setLandList(temp.data.lands);
           }
+
           if (
             response.type === '주사위' ||
             response.type === '거래정지칸도착'
@@ -144,18 +150,31 @@ const GameRoom = () => {
             console.log('주사위 결과 나왔어요');
             setDice1(diceResult.data.dice1);
             setDice2(diceResult.data.dice2);
+            const idx = getPlayerIndex(playerList, currentPlayer);
+            setSeletedLandId(playerList[idx]!.currentLocation);
             // 더블이 나오는 경우 주사위 다시 던지기
             if (doubleCnt < diceResult.data.doubleCount) {
               setReDice(true);
               setDoubleCnt(diceResult.data.doubleCount);
             }
           }
+
+          if (response.type === '땅구매') {
+            console.log('맹맹맴맹맹');
+          }
           console.log(JSON.parse(res.body));
         }
       );
       console.log('[참가 인원]', currentParticipantsNum(state.userList));
     };
-  }, [doubleCnt, gameId, state.userList, user?.userId]);
+  }, [
+    currentPlayer,
+    doubleCnt,
+    gameId,
+    playerList,
+    state.userList,
+    user?.userId,
+  ]);
 
   useEffect(() => {
     if (isDiceRollButtonClick && !isDiceRoll) {
@@ -234,6 +253,13 @@ const GameRoom = () => {
 
   return (
     <>
+      <ConstructionModal
+        isOpen={isOepnContrunction}
+        handleConstruction={() => {
+          setIsOepnContrunction(false);
+        }}
+        land={landList[seletedLandId]}
+      />
       <div
         className='flex flex-col w-full h-full min-h-[700px] overflow-hidden relative'
         style={{
