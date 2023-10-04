@@ -159,14 +159,14 @@ public class GameRoomService {
 	public Dice getDice() {
 		Random random = new Random();
 
-		// 주사위 1 던지기 (1부터 6까지)
-		int dice1 = random.nextInt(6) + 1;
+		// // 주사위 1 던지기 (1부터 6까지)
+		// int dice1 = random.nextInt(6) + 1;
+		//
+		// // 주사위 2 던지기 (1부터 6까지)
+		// int dice2 = random.nextInt(6) + 1;
 
-		// 주사위 2 던지기 (1부터 6까지)
-		int dice2 = random.nextInt(6) + 1;
-
-		// int dice1 = 5;
-		// int dice2 = 5;
+		int dice1 = 5;
+		int dice2 = 5;
 
 		return Dice.builder().dice1(dice1).dice2(dice2).build();
 	}
