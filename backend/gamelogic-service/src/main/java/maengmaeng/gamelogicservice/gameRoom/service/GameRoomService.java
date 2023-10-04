@@ -134,6 +134,8 @@ public class GameRoomService {
 		gameInfoRepository.createGameRoom(gameInfo);
 
 		System.out.println("currentPlayer 저장 " +gameInfo.getInfo().getCurrentPlayer());
+
+
 		return gameInfo.getSeqCards();
 	}
 
@@ -173,6 +175,7 @@ public class GameRoomService {
 		// 게임 정보 가져오기
 		GameInfo gameInfo = gameInfoRepository.getGameInfo(roomCode);
 		Player[] players = gameInfo.getPlayers();
+		System.out.println(gameInfo.getInfo().getCurrentPlayer());
 
 		String currentPlayer = gameInfo.getInfo().getCurrentPlayer();
 

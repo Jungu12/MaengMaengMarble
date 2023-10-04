@@ -21,7 +21,7 @@ public class TestController {
     @RequestMapping("test")
     public ResponseEntity<?> test(){
 
-        GameInfo info = gameRoomService.getInfo("1234");
+        GameInfo info = gameRoomService.getInfo("55c0a28a-09a2-4778-a126-689a0ff181a7");
         return ResponseEntity.ok().body(info);
 
     }
