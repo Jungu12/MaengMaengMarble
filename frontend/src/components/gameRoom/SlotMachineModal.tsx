@@ -106,7 +106,7 @@ const SlotMachineModal = ({
 
     client?.subscribe(`/sub/game-rooms/${gameId}`, (res) => {
       const response: WSResponseType<unknown> = JSON.parse(res.body);
-      if (response.type === '박진호') {
+      if (response.type === '박진호 끝') {
         const parkResult = response as WSResponseType<SlotType>;
         console.log('[박진호데이터]', parkResult);
         setPlayerList(parkResult.data.players);
