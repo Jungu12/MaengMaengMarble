@@ -21,6 +21,8 @@ import maengmaeng.gamelogicservice.util.RedisPublisher;
 
 import org.springframework.transaction.annotation.Transactional;
 
+import com.google.common.collect.ForwardingMapEntry;
+
 @RequiredArgsConstructor
 @Controller
 public class GameRoomController {
@@ -69,8 +71,8 @@ public class GameRoomController {
 		boolean check = true;
 
 		// 모든 플레이어가 순서를 정했으면 게임정보 전송
-		for(StartCard startCard : startCards){
-			if(!startCard.isSelected()){
+		for (StartCard startCard : startCards) {
+			if (!startCard.isSelected()) {
 				check = false;
 			}
 		}
@@ -244,26 +246,34 @@ public class GameRoomController {
 	 * 뉴스 세개 중 하나 골라서 적용 시키기
 	 */
 	@MessageMapping("/game-rooms/news/{roomCode}")
-	public void applyNews(@DestinationVariable String roomCode, News news) {
-		gameRoomService.applyNews(news);
+	public void applyNews(@DestinationVariable String roomCode, News news, String type) {
+		ResponseDto responseDto = gameRoomService.applyNews(roomCode, news, type);
+
+		GameData gameData = GameData.builder()
+			.type("GAME_ROOM")
+			.roomCode(roomCode)
+			.data(responseDto)
+			.build();
+
+		redisPublisher.publish(gameRoomTopic, gameData);
 	}
 
 	/**
 	 * 이동후 로직
 	 * */
 	@MessageMapping("/game-rooms/after-move/{roomCode}")
-	public void afterMove(@DestinationVariable String roomCode){
+	public void afterMove(@DestinationVariable String roomCode) {
 		// 도착한 땅의 위치에 따라 행동 변환
 
 		ResponseDto responseDto = gameRoomService.afterMove(roomCode);
 		GameData gameData = GameData.builder()
-				.type("GAME_ROOM")
-				.roomCode(roomCode)
-				.data(responseDto)
+			.type("GAME_ROOM")
+			.roomCode(roomCode)
+			.data(responseDto)
 
-				.build();
+			.build();
 
-		redisPublisher.publish(gameRoomTopic,gameData);
+		redisPublisher.publish(gameRoomTopic, gameData);
 
 	}
 
@@ -272,16 +282,16 @@ public class GameRoomController {
 	 * */
 
 	@MessageMapping("/game-rooms/door/{roomCode}")
-	public void door(@DestinationVariable String roomCode, Door door){
+	public void door(@DestinationVariable String roomCode, Door door) {
 		ResponseDto responseDto = gameRoomService.door(roomCode, door);
 
 		GameData gameData = GameData.builder()
-				.type("GAME_ROOM")
-				.roomCode(roomCode)
-				.data(responseDto)
-				.build();
+			.type("GAME_ROOM")
+			.roomCode(roomCode)
+			.data(responseDto)
+			.build();
 
-		redisPublisher.publish(gameRoomTopic,gameData);
+		redisPublisher.publish(gameRoomTopic, gameData);
 
 	}
 
@@ -290,16 +300,16 @@ public class GameRoomController {
 	 * */
 
 	@MessageMapping("/game-rooms/jungu-door/{roomCode}")
-	public void junguDoor(@DestinationVariable String roomCode){
+	public void junguDoor(@DestinationVariable String roomCode) {
 		ResponseDto responseDto = gameRoomService.junguDoor(roomCode);
 
 		GameData gameData = GameData.builder()
-				.type("GAME_ROOM")
-				.roomCode(roomCode)
-				.data(responseDto)
-				.build();
+			.type("GAME_ROOM")
+			.roomCode(roomCode)
+			.data(responseDto)
+			.build();
 
-		redisPublisher.publish(gameRoomTopic,gameData);
+		redisPublisher.publish(gameRoomTopic, gameData);
 
 	}
 
@@ -312,31 +322,29 @@ public class GameRoomController {
 		ResponseDto responseDto = gameRoomService.endTurn(roomCode);
 
 		GameData gameData = GameData.builder()
-				.type("GAME_ROOM")
-				.roomCode(roomCode)
-				.data(responseDto)
-				.build();
+			.type("GAME_ROOM")
+			.roomCode(roomCode)
+			.data(responseDto)
+			.build();
 
-		redisPublisher.publish(gameRoomTopic,gameData);
-
+		redisPublisher.publish(gameRoomTopic, gameData);
 
 	}
-
 
 	/**
 	 * 게임 종료
 	 * */
 	@MessageMapping("/game-rooms/end-game/{roomCode}")
-	public void endGame(@DestinationVariable String roomCode){
+	public void endGame(@DestinationVariable String roomCode) {
 		ResponseDto responseDto = gameRoomService.endGame(roomCode);
 
 		GameData gameData = GameData.builder()
-				.type("GAME_ROOM")
-				.roomCode(roomCode)
-				.data(responseDto)
-				.build();
+			.type("GAME_ROOM")
+			.roomCode(roomCode)
+			.data(responseDto)
+			.build();
 
-		redisPublisher.publish(gameRoomTopic,gameData);
+		redisPublisher.publish(gameRoomTopic, gameData);
 	}
 
 }

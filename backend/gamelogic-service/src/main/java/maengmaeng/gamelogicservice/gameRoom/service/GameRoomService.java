@@ -164,83 +164,82 @@ public class GameRoomService {
 		return Dice.builder().dice1(dice1).dice2(dice2).build();
 	}
 
-    /**
-     * 주사위 굴리기.
-     * */
-    public ResponseDto rollDice(String roomCode){
-        // 게임 정보 가져오기
-        GameInfo gameInfo = gameInfoRepository.getGameInfo(roomCode);
-        Player[] players = gameInfo.getPlayers();
+	/**
+	 * 주사위 굴리기.
+	 * */
+	public ResponseDto rollDice(String roomCode) {
+		// 게임 정보 가져오기
+		GameInfo gameInfo = gameInfoRepository.getGameInfo(roomCode);
+		Player[] players = gameInfo.getPlayers();
 
-        String currentPlayer = gameInfo.getInfo().getCurrentPlayer();
-        int currentIdx =-1;
-        // 현재 플레이어 인덱스 찾기
-        for(int i=0;i< players.length;i++){
-            if(players[i]!=null && players[i].isAlive() && players[i].getNickname().equals(currentPlayer)){
-                currentIdx = i;
-            }
-        }
-        if(currentIdx != -1){
-            // 예외 처리
-        }
-        // 주사위 굴리기
-        Dice dice = getDice();
-        Player curPlayer = players[currentIdx];
+		String currentPlayer = gameInfo.getInfo().getCurrentPlayer();
+		int currentIdx = -1;
+		// 현재 플레이어 인덱스 찾기
+		for (int i = 0; i < players.length; i++) {
+			if (players[i] != null && players[i].isAlive() && players[i].getNickname().equals(currentPlayer)) {
+				currentIdx = i;
+			}
+		}
+		if (currentIdx != -1) {
+			// 예외 처리
+		}
+		// 주사위 굴리기
+		Dice dice = getDice();
+		Player curPlayer = players[currentIdx];
 
-        boolean checkTrade = false;
-        // 더블 일 때
-        if(dice.getDice1() == dice.getDice2()) {
-            int doubleCount = curPlayer.getDoubleCount();
-            doubleCount++;
-            // 더블이 3번 나오면 거래정지 칸으로 이동 및 턴 종료
-            if (doubleCount >= 3) {
-                checkTrade = true;
-            }
-            curPlayer.setDoubleCount(doubleCount);
+		boolean checkTrade = false;
+		// 더블 일 때
+		if (dice.getDice1() == dice.getDice2()) {
+			int doubleCount = curPlayer.getDoubleCount();
+			doubleCount++;
+			// 더블이 3번 나오면 거래정지 칸으로 이동 및 턴 종료
+			if (doubleCount >= 3) {
+				checkTrade = true;
+			}
+			curPlayer.setDoubleCount(doubleCount);
 
-        }
-        ResponseDto responseDto = null;
-        int curLocation = curPlayer.getCurrentLocation();
+		}
+		ResponseDto responseDto = null;
+		int curLocation = curPlayer.getCurrentLocation();
 
-        if(checkTrade){
-            curPlayer.setCurrentLocation(stopTrade);
-            // TODO: 거래정지
+		if (checkTrade) {
+			curPlayer.setCurrentLocation(stopTrade);
+			// TODO: 거래정지
 
-            players[currentIdx] = curPlayer;
-            gameInfo.setPlayers(players);
-            gameInfoRepository.createGameRoom(gameInfo);
-            dice.setDoubleCount(curPlayer.getDoubleCount());
-            dice.setPlayers(players);
+			players[currentIdx] = curPlayer;
+			gameInfo.setPlayers(players);
+			gameInfoRepository.createGameRoom(gameInfo);
+			dice.setDoubleCount(curPlayer.getDoubleCount());
+			dice.setPlayers(players);
 			// 거래 정지 칸으로 이동
-            // 클라이언트에서 서버로 턴종료  호출
+			// 클라이언트에서 서버로 턴종료  호출
 
-            responseDto = ResponseDto.builder().type("거래정지칸도착").data(dice).build();
+			responseDto = ResponseDto.builder().type("거래정지칸도착").data(dice).build();
 
-        } else{
-            //
-            Player player = move(curPlayer, dice.getDice1()+dice.getDice2());
+		} else {
+			//
+			Player player = move(curPlayer, dice.getDice1() + dice.getDice2());
 
-            // 한바퀴 돌았으면
-            if(curLocation >player.getCurrentLocation()){
-                dice.setLapCheck(true);
-                int currentLap = player.getCurrentLap()+1;
+			// 한바퀴 돌았으면
+			if (curLocation > player.getCurrentLocation()) {
+				dice.setLapCheck(true);
+				int currentLap = player.getCurrentLap() + 1;
 
-                player.setCurrentLap(currentLap);
-            }
-            players[currentIdx] = player;
-            gameInfo.setPlayers(players);
+				player.setCurrentLap(currentLap);
+			}
+			players[currentIdx] = player;
+			gameInfo.setPlayers(players);
 
-            gameInfoRepository.createGameRoom(gameInfo);
-            dice.setDoubleCount(curPlayer.getDoubleCount());
+			gameInfoRepository.createGameRoom(gameInfo);
+			dice.setDoubleCount(curPlayer.getDoubleCount());
 			dice.setPlayers(players);
 
-            responseDto = ResponseDto.builder().type("주사위").data(dice).build();
+			responseDto = ResponseDto.builder().type("주사위").data(dice).build();
 
-        }
+		}
 
-
-        return responseDto;
-    }
+		return responseDto;
+	}
 
 	/**
 	 *  현재 칸이 거래 정지에 있고 player의 doubleCount가 3이 아닐 때 주사위 굴리기
@@ -278,16 +277,16 @@ public class GameRoomService {
 			gameInfo.setPlayers(players);
 			gameInfoRepository.createGameRoom(gameInfo);
 			return ResponseDto.builder().type("거래정지탈출실패").data(dice).build();
-		} else{
+		} else {
 			// TODO: 더블이면 이동
 			int curLocation = curPlayer.getCurrentLocation();
 			Player player = move(curPlayer, dice.getDice1() + dice.getDice2());
 			// 플레이어의 stopTradeCount값 0으로 초기화
 			player.setStopTradeCount(0);
 			// 한바퀴 돌았으면
-			if(curLocation >player.getCurrentLocation()){
+			if (curLocation > player.getCurrentLocation()) {
 				dice.setLapCheck(true);
-				int currentLap = player.getCurrentLap()+1;
+				int currentLap = player.getCurrentLap() + 1;
 				player.setCurrentLap(currentLap);
 			}
 			players[currentIdx] = player;
@@ -300,7 +299,6 @@ public class GameRoomService {
 			return ResponseDto.builder().type("거래정지탈출성공").data(dice).build();
 
 		}
-
 
 	}
 
@@ -783,158 +781,154 @@ public class GameRoomService {
 		return responseDto;
 	}
 
-    /**
-     * 맹맹 지급
-     * */
-    public ResponseDto maengMaeng(GameInfo gameInfo){
-        // 맹맹: 보유 현금 * 0.15 + 배당금 - 대출 원금 * 0.24)
+	/**
+	 * 맹맹 지급
+	 * */
+	public ResponseDto maengMaeng(GameInfo gameInfo) {
+		// 맹맹: 보유 현금 * 0.15 + 배당금 - 대출 원금 * 0.24)
 
-        Player[] players = gameInfo.getPlayers();
-        int playerIdx = getPlayerIdx(players,gameInfo.getInfo().getCurrentPlayer());
-        Player player = players[playerIdx];
-        List<Land> lands = gameInfo.getLands();
-        List<Stock> stocks = gameInfo.getStocks();
-        long maengMaeng =0;
-        long money = Math.round(player.getMoney() * 0.15);
-        long dividends = 0;
-        long loan = Math.round(player.getLoan() *0.24);
-        int[] playerStock = player.getStocks();
-        // 배당금 구하기
-        for(int i=1;i<playerStock.length;i++){
-            dividends += playerStock[i] * stocks.get(i-1).getDividends();
-        }
-        maengMaeng = money+dividends -loan;
-        // 맹맹 >=0 이면 보유 현금 +
-        if(maengMaeng >=0){
-            long playerMoney = player.getMoney();
-            player.setMoney(playerMoney+maengMaeng);
-            players[playerIdx] = player;
-            gameInfo.setPlayers(players);
-            gameInfoRepository.createGameRoom(gameInfo);
-            return ResponseDto.builder().type("맹맹지급").data(player).build();
+		Player[] players = gameInfo.getPlayers();
+		int playerIdx = getPlayerIdx(players, gameInfo.getInfo().getCurrentPlayer());
+		Player player = players[playerIdx];
+		List<Land> lands = gameInfo.getLands();
+		List<Stock> stocks = gameInfo.getStocks();
+		long maengMaeng = 0;
+		long money = Math.round(player.getMoney() * 0.15);
+		long dividends = 0;
+		long loan = Math.round(player.getLoan() * 0.24);
+		int[] playerStock = player.getStocks();
+		// 배당금 구하기
+		for (int i = 1; i < playerStock.length; i++) {
+			dividends += playerStock[i] * stocks.get(i - 1).getDividends();
+		}
+		maengMaeng = money + dividends - loan;
+		// 맹맹 >=0 이면 보유 현금 +
+		if (maengMaeng >= 0) {
+			long playerMoney = player.getMoney();
+			player.setMoney(playerMoney + maengMaeng);
+			players[playerIdx] = player;
+			gameInfo.setPlayers(players);
+			gameInfoRepository.createGameRoom(gameInfo);
+			return ResponseDto.builder().type("맹맹지급").data(player).build();
 
-        } else{
-            // 맹맹이 음수일 때
-            // 맹맹이 보유자산 보다 많을 때?
-            if(maengMaeng > calculateMoney(player,stocks,lands) ){
-                //TODO: 파산 절차
-                return  ResponseDto.builder().type("파산").build();
+		} else {
+			// 맹맹이 음수일 때
+			// 맹맹이 보유자산 보다 많을 때?
+			if (maengMaeng > calculateMoney(player, stocks, lands)) {
+				//TODO: 파산 절차
+				return ResponseDto.builder().type("파산").build();
 
-            } else {
-                if (player.getMoney() -maengMaeng>=0 ){
-                    // 보유 현금 -
-                    player.setMoney(player.getMoney()-maengMaeng);
-                    players[playerIdx] = player;
-                    gameInfo.setPlayers(players);
-                    gameInfoRepository.createGameRoom(gameInfo);
-                    return ResponseDto.builder().type("맹맹지급").data(player).build();
+			} else {
+				if (player.getMoney() - maengMaeng >= 0) {
+					// 보유 현금 -
+					player.setMoney(player.getMoney() - maengMaeng);
+					players[playerIdx] = player;
+					gameInfo.setPlayers(players);
+					gameInfoRepository.createGameRoom(gameInfo);
+					return ResponseDto.builder().type("맹맹지급").data(player).build();
 
-                } else{
-                    //TODO: 매각 절차
-                    return ResponseDto.builder().type("매각시작").build();
-                }
-            }
+				} else {
+					//TODO: 매각 절차
+					return ResponseDto.builder().type("매각시작").build();
+				}
+			}
 
-        }
+		}
 
+	}
 
-    }
+	/**
+	 *  플레이어 화면에 보여줄 총자산 계산
+	 * */
+	public Long calculateAsset(Player player, List<Stock> stocks, List<Land> lands) {
+		//TODO: asset 계산
+		long asset = 0;
+		long stockMoney = 0;
+		// 소유중인 주식 가격 구하기
+		int[] playerStock = player.getStocks();
+		for (int i = 1; i < playerStock.length; i++) {
+			// 주식의 현재 가격 저장
+			stockMoney += playerStock[i] * stocks.get(i - 1).getCurrentCost();
 
+		}
+		asset += stockMoney;
+		long landMoney = 0;
+		// 소유 중인 땅 가격 구하기
+		List<Integer> landIdx = player.getLands();
+		for (int idx : landIdx) {
+			// 소유중인 나라 가져와서
+			Land land = lands.get(idx);
+			// 땅, 건물을 어떤것을 가지고 있는지 확인 후 가격 계산
+			boolean[] check = land.getBuildings();
+			for (int i = 0; i < check.length; i++) {
+				// 땅 가지고 있을 때
+				if (i == 0 && check[i]) {
+					landMoney += land.getCurrentLandPrice();
+				}
+				if (i == 1 && check[i]) {
+					landMoney += land.getCurrentBuildingPrices()[0];
+				}
+				if (i == 2 && check[i]) {
+					landMoney += land.getCurrentBuildingPrices()[1];
+				}
+				if (i == 3 && check[i]) {
+					landMoney += land.getCurrentBuildingPrices()[2];
+				}
+			}
 
-    /**
-     *  플레이어 화면에 보여줄 총자산 계산
-     * */
-    public Long calculateAsset(Player player,List<Stock> stocks, List<Land> lands){
-        //TODO: asset 계산
-        long asset =0;
-        long stockMoney = 0;
-        // 소유중인 주식 가격 구하기
-        int[] playerStock = player.getStocks();
-        for(int i=1;i<playerStock.length;i++){
-            // 주식의 현재 가격 저장
-            stockMoney += playerStock[i] * stocks.get(i-1).getCurrentCost();
+		}
 
-        }
-        asset += stockMoney;
-        long landMoney =0;
-        // 소유 중인 땅 가격 구하기
-        List<Integer> landIdx = player.getLands();
-        for(int idx: landIdx) {
-            // 소유중인 나라 가져와서
-            Land land = lands.get(idx);
-            // 땅, 건물을 어떤것을 가지고 있는지 확인 후 가격 계산
-            boolean[] check = land.getBuildings();
-            for (int i = 0; i < check.length; i++) {
-                // 땅 가지고 있을 때
-                if (i == 0 && check[i]) {
-                    landMoney += land.getCurrentLandPrice();
-                }
-                if (i == 1 && check[i]) {
-                    landMoney += land.getCurrentBuildingPrices()[0];
-                }
-                if (i == 2 && check[i]) {
-                    landMoney += land.getCurrentBuildingPrices()[1];
-                }
-                if (i == 3 && check[i]) {
-                    landMoney +=  land.getCurrentBuildingPrices()[2];
-                }
-            }
+		asset += landMoney;
 
-        }
+		return asset;
 
-        asset += landMoney;
-
-        return  asset;
-
-
-    }
-
+	}
 
 	/**
 	 * 파산 등에 사용할 자산 계산
 	 */
 
-    public long calculateMoney(Player player, List<Stock> stocks, List<Land> lands){
-        long asset =0;
-        long stockMoney = 0;
-        // 소유중인 주식 가격 구하기
-        int[] playerStock = player.getStocks();
-        for(int i=1;i<playerStock.length;i++){
-            // 주식의 현재 가격 저장
-            stockMoney += playerStock[i] * stocks.get(i-1).getCurrentCost();
+	public long calculateMoney(Player player, List<Stock> stocks, List<Land> lands) {
+		long asset = 0;
+		long stockMoney = 0;
+		// 소유중인 주식 가격 구하기
+		int[] playerStock = player.getStocks();
+		for (int i = 1; i < playerStock.length; i++) {
+			// 주식의 현재 가격 저장
+			stockMoney += playerStock[i] * stocks.get(i - 1).getCurrentCost();
 
-        }
-        asset += stockMoney;
-        long landMoney =0;
-        // 소유 중인 땅 가격 구하기
-        List<Integer> landIdx = player.getLands();
-        for(int idx: landIdx) {
-            // 소유중인 나라 가져와서
-            Land land = lands.get(idx);
-            // 땅, 건물을 어떤것을 가지고 있는지 확인 후 가격 계산
-            boolean[] check = land.getBuildings();
-            for (int i = 0; i < check.length; i++) {
-                // 땅 가지고 있을 때
-                if (i == 0 && check[i]) {
-                    landMoney +=  land.getCurrentLandPrice();
-                }
-                if (i == 1 && check[i]) {
-                    landMoney +=  land.getCurrentBuildingPrices()[0];
-                }
-                if (i == 2 && check[i]) {
-                    landMoney +=  land.getCurrentBuildingPrices()[1];
-                }
-                if (i == 3 && check[i]) {
-                    landMoney +=  land.getCurrentBuildingPrices()[2];
-                }
-            }
+		}
+		asset += stockMoney;
+		long landMoney = 0;
+		// 소유 중인 땅 가격 구하기
+		List<Integer> landIdx = player.getLands();
+		for (int idx : landIdx) {
+			// 소유중인 나라 가져와서
+			Land land = lands.get(idx);
+			// 땅, 건물을 어떤것을 가지고 있는지 확인 후 가격 계산
+			boolean[] check = land.getBuildings();
+			for (int i = 0; i < check.length; i++) {
+				// 땅 가지고 있을 때
+				if (i == 0 && check[i]) {
+					landMoney += land.getCurrentLandPrice();
+				}
+				if (i == 1 && check[i]) {
+					landMoney += land.getCurrentBuildingPrices()[0];
+				}
+				if (i == 2 && check[i]) {
+					landMoney += land.getCurrentBuildingPrices()[1];
+				}
+				if (i == 3 && check[i]) {
+					landMoney += land.getCurrentBuildingPrices()[2];
+				}
+			}
 
-        }
+		}
 
-        asset += landMoney *0.7;
+		asset += landMoney * 0.7;
 
-        return asset;
-    }
+		return asset;
+	}
 
 	/**
 	 * 이동 로직
@@ -948,112 +942,112 @@ public class GameRoomService {
 
 	}
 
-    /**
-     * 이동 후 로직
-     * */
-    public ResponseDto afterMove(String roomCode){
-        GameInfo gameInfo = getInfo(roomCode);
-        Player[] players = gameInfo.getPlayers();
-        int playerIdx = getPlayerIdx(players,gameInfo.getInfo().getCurrentPlayer());
-        // 현재 플레이어
-        Player curPlayer = players[playerIdx];
-        int currentLocation = curPlayer.getCurrentLocation();
-        /* 이동 후에 위치에 따라서 로직...*/
-        /**/
+	/**
+	 * 이동 후 로직
+	 * */
+	public ResponseDto afterMove(String roomCode) {
+		GameInfo gameInfo = getInfo(roomCode);
+		Player[] players = gameInfo.getPlayers();
+		int playerIdx = getPlayerIdx(players, gameInfo.getInfo().getCurrentPlayer());
+		// 현재 플레이어
+		Player curPlayer = players[playerIdx];
+		int currentLocation = curPlayer.getCurrentLocation();
+		/* 이동 후에 위치에 따라서 로직...*/
+		/**/
 
-        ResponseDto responseDto = null;
+		ResponseDto responseDto = null;
 
-        switch(currentLocation){
-            case 0:
-                // 시작지점
-                responseDto = ResponseDto.builder().type("시작지점").build();
-                break;
-            case 2:
-                // 세금 징수
+		switch (currentLocation) {
+			case 0:
+				// 시작지점
+				responseDto = ResponseDto.builder().type("시작지점").build();
+				break;
+			case 2:
+				// 세금 징수
 
-                responseDto = ResponseDto.builder().type("세금징수").build();
+				responseDto = ResponseDto.builder().type("세금징수").build();
 
-                break;
-            case 4:
-            case 12:
-            case 20:
-            case 28:
-                // 황금 열쇠
-                responseDto= ResponseDto.builder().type("황금열쇠").build();
-                break;
-            case 8:
-                // 거래정지
-                responseDto = ResponseDto.builder().type("거래정지").build();
-                break;
-            case 10:
-                // 박진호
-                responseDto = ResponseDto.builder().type("박진호").build();
-                break;
-            case 16:
-                // 투자장
-                responseDto = ResponseDto.builder().type("거래장").build();
-                break;
+				break;
+			case 4:
+			case 12:
+			case 20:
+			case 28:
+				// 황금 열쇠
+				responseDto = ResponseDto.builder().type("황금열쇠").build();
+				break;
+			case 8:
+				// 거래정지
+				responseDto = ResponseDto.builder().type("거래정지").build();
+				break;
+			case 10:
+				// 박진호
+				responseDto = ResponseDto.builder().type("박진호").build();
+				break;
+			case 16:
+				// 투자장
+				responseDto = ResponseDto.builder().type("거래장").build();
+				break;
 
-            case 18:
-                // Rush & Cash
-                responseDto = ResponseDto.builder().type("대출").build();
-                break;
-            case 24:
-                // 어디로든 문
-                //
-                if(gameInfo.getInfo().getDoorCheck()>0){
-                    responseDto = ResponseDto.builder().type("강준구의문단속적용어디로든문").build();
-                } else{
-                    responseDto = ResponseDto.builder().type("어디로든문").build();
-                }
-                break;
-            default :
-                // 일반 땅
-                // 땅이 내 땅인지 중립땅인지 다른 플레이어의 땅인지 판별
-                List<Land> lands = gameInfo.getLands();
-                if(lands.get(currentLocation).getOwner()==-1){
-                    // 중립 땅일 때
-                    responseDto = ResponseDto.builder().type("땅구매").build();
-                } else if(lands.get(currentLocation).getOwner()==playerIdx){
-                    // 내땅 일 때
-                    responseDto = ResponseDto.builder().type("건물구매").build();
-                } else {
-                    // 다른 플레이어의 소유 일 때
-                    // 통행료 계산
-                    long fees =  lands.get(currentLocation).getCurrentFees()[0];
-                    for (int i = 0; i < lands.get(currentLocation).getCurrentFees().length; i++) {
-                        if (lands.get(currentLocation).getBuildings()[i]) {
-                            fees += lands.get(currentLocation).getCurrentFees()[i + 1];
-                        }
-                    }
-                    long asset = calculateAsset(players[playerIdx],gameInfo.getStocks(),lands);
-                    if( fees<=players[playerIdx].getMoney()){
-                        // 현금으로 통행료 지급이 가능할 때
-                        responseDto = ResponseDto.builder().type("통행료지급").build();
-                    } else{
-                        // 현금으로 통행료 지급이 불가능 할 때
-                        if(asset>= fees){
-                            // 매각할 수 있으면
-                            responseDto = ResponseDto.builder().type("매각").build();
-                        } else{
-                            // 파산각이면
-                            responseDto = ResponseDto.builder().type("파산").build();
-                        }
+			case 18:
+				// Rush & Cash
+				responseDto = ResponseDto.builder().type("대출").build();
+				break;
+			case 24:
+				// 어디로든 문
+				//
+				if (gameInfo.getInfo().getDoorCheck() > 0) {
+					responseDto = ResponseDto.builder().type("강준구의문단속적용어디로든문").build();
+				} else {
+					responseDto = ResponseDto.builder().type("어디로든문").build();
+				}
+				break;
+			default:
+				// 일반 땅
+				// 땅이 내 땅인지 중립땅인지 다른 플레이어의 땅인지 판별
+				List<Land> lands = gameInfo.getLands();
+				if (lands.get(currentLocation).getOwner() == -1) {
+					// 중립 땅일 때
+					responseDto = ResponseDto.builder().type("땅구매").build();
+				} else if (lands.get(currentLocation).getOwner() == playerIdx) {
+					// 내땅 일 때
+					responseDto = ResponseDto.builder().type("건물구매").build();
+				} else {
+					// 다른 플레이어의 소유 일 때
+					// 통행료 계산
+					long fees = lands.get(currentLocation).getCurrentFees()[0];
+					for (int i = 0; i < lands.get(currentLocation).getCurrentFees().length; i++) {
+						if (lands.get(currentLocation).getBuildings()[i]) {
+							fees += lands.get(currentLocation).getCurrentFees()[i + 1];
+						}
+					}
+					long asset = calculateAsset(players[playerIdx], gameInfo.getStocks(), lands);
+					if (fees <= players[playerIdx].getMoney()) {
+						// 현금으로 통행료 지급이 가능할 때
+						responseDto = ResponseDto.builder().type("통행료지급").build();
+					} else {
+						// 현금으로 통행료 지급이 불가능 할 때
+						if (asset >= fees) {
+							// 매각할 수 있으면
+							responseDto = ResponseDto.builder().type("매각").build();
+						} else {
+							// 파산각이면
+							responseDto = ResponseDto.builder().type("파산").build();
+						}
 
-                    }
-                }
-        }
+					}
+				}
+		}
 
-        return responseDto;
-    }
+		return responseDto;
+	}
 
 	/**
 	 * 어디로든 문 (강준구의 문단속 적용 X)
 	 * */
-	public ResponseDto door(String roomCode, Door door){
+	public ResponseDto door(String roomCode, Door door) {
 		GameInfo gameInfo = gameInfoRepository.getGameInfo(roomCode);
 		Player[] players = gameInfo.getPlayers();
-		int playerIdx = getPlayerIdx(players,gameInfo.getInfo().getCurrentPlayer());
+		int playerIdx = getPlayerIdx(players, gameInfo.getInfo().getCurrentPlayer());
 		Player currentPlayer = players[playerIdx];
 		// 현재 위치
 		int currentLocation = currentPlayer.getCurrentLocation();
@@ -1061,20 +1055,20 @@ public class GameRoomService {
 		int nextLocation = door.getLandId();
 
 		// 1바퀴 돌았을 때
-		if(currentLocation>nextLocation){
+		if (currentLocation > nextLocation) {
 			// 돈 바퀴 수 증가
 			int currentLap = currentPlayer.getCurrentLap();
-			currentPlayer.setCurrentLap(currentLap+1);
+			currentPlayer.setCurrentLap(currentLap + 1);
 			currentPlayer.setCurrentLocation(nextLocation);
 			players[playerIdx] = currentPlayer;
 			gameInfo.setPlayers(players);
 			gameInfoRepository.createGameRoom(gameInfo);
 			return ResponseDto.builder()
-					.type("맹맹지급")
-					.data(DoorResponse.builder().lapCheck(true)
-							.players(players)
-						.build())
-					.build();
+				.type("맹맹지급")
+				.data(DoorResponse.builder().lapCheck(true)
+					.players(players)
+					.build())
+				.build();
 
 		} else {
 			currentPlayer.setCurrentLocation(nextLocation);
@@ -1082,12 +1076,11 @@ public class GameRoomService {
 			gameInfo.setPlayers(players);
 			gameInfoRepository.createGameRoom(gameInfo);
 			return ResponseDto.builder()
-					.type("이동후로직")
-					.data(DoorResponse.builder().lapCheck(false)
-							.players(players)
-							.build())
-					.build();
-
+				.type("이동후로직")
+				.data(DoorResponse.builder().lapCheck(false)
+					.players(players)
+					.build())
+				.build();
 
 		}
 	}
@@ -1095,10 +1088,10 @@ public class GameRoomService {
 	/**
 	 * 어디로든 문 (강준구의 문단속 적용 O)
 	 * */
-	public ResponseDto junguDoor(String roomCode){
+	public ResponseDto junguDoor(String roomCode) {
 		GameInfo gameInfo = gameInfoRepository.getGameInfo(roomCode);
 		Player[] players = gameInfo.getPlayers();
-		int playerIdx = getPlayerIdx(players,gameInfo.getInfo().getCurrentPlayer());
+		int playerIdx = getPlayerIdx(players, gameInfo.getInfo().getCurrentPlayer());
 		Player currentPlayer = players[playerIdx];
 		// 현재 위치
 		int currentLocation = currentPlayer.getCurrentLocation();
@@ -1115,20 +1108,20 @@ public class GameRoomService {
 		int nextLocation = randomNumber;
 
 		// 1바퀴 돌았을 때
-		if(currentLocation>nextLocation){
+		if (currentLocation > nextLocation) {
 			// 돈 바퀴 수 증가
 			int currentLap = currentPlayer.getCurrentLap();
-			currentPlayer.setCurrentLap(currentLap+1);
+			currentPlayer.setCurrentLap(currentLap + 1);
 			currentPlayer.setCurrentLocation(nextLocation);
 			players[playerIdx] = currentPlayer;
 			gameInfo.setPlayers(players);
 			gameInfoRepository.createGameRoom(gameInfo);
 			return ResponseDto.builder()
-					.type("맹맹지급")
-					.data(DoorResponse.builder().lapCheck(true)
-							.players(players)
-							.build())
-					.build();
+				.type("맹맹지급")
+				.data(DoorResponse.builder().lapCheck(true)
+					.players(players)
+					.build())
+				.build();
 
 		} else {
 			currentPlayer.setCurrentLocation(nextLocation);
@@ -1136,79 +1129,76 @@ public class GameRoomService {
 			gameInfo.setPlayers(players);
 			gameInfoRepository.createGameRoom(gameInfo);
 			return ResponseDto.builder()
-					.type("이동후로직")
-					.data(DoorResponse.builder().lapCheck(false)
-							.players(players)
-							.build())
-					.build();
-
+				.type("이동후로직")
+				.data(DoorResponse.builder().lapCheck(false)
+					.players(players)
+					.build())
+				.build();
 
 		}
 	}
 
-
-    /**
-     * 턴을 종료하는 로직
-     * 1. 현재 플레이어의 turnCount올리기
-     * 2. 다음 플레이어 확인 for 문 순회
-     * 3. waiting news 확인해서 effect news 적용
-     * 4.
-     * */
-    public ResponseDto endTurn(String roomCode){
-        GameInfo gameInfo = gameInfoRepository.getGameInfo(roomCode);
-        Player[] players = gameInfo.getPlayers();
-        int playerIdx = getPlayerIdx(players,gameInfo.getInfo().getCurrentPlayer());
-        Player currentPlayer = players[playerIdx];
-        // 현재 플레이어의 turnCount++
-        int currentTurn = currentPlayer.getCurrentTurn() +1;
-        currentPlayer.setCurrentTurn(currentTurn);
+	/**
+	 * 턴을 종료하는 로직
+	 * 1. 현재 플레이어의 turnCount올리기
+	 * 2. 다음 플레이어 확인 for 문 순회
+	 * 3. waiting news 확인해서 effect news 적용
+	 * 4.
+	 * */
+	public ResponseDto endTurn(String roomCode) {
+		GameInfo gameInfo = gameInfoRepository.getGameInfo(roomCode);
+		Player[] players = gameInfo.getPlayers();
+		int playerIdx = getPlayerIdx(players, gameInfo.getInfo().getCurrentPlayer());
+		Player currentPlayer = players[playerIdx];
+		// 현재 플레이어의 turnCount++
+		int currentTurn = currentPlayer.getCurrentTurn() + 1;
+		currentPlayer.setCurrentTurn(currentTurn);
 		// 현제 플레이어의 doubleCount 초기화
 		currentPlayer.setDoubleCount(0);
 
-        Info info = gameInfo.getInfo();
-        // 턴을 넘기기 전에 현재 플레이어가 마지막 플레이어인지 확인.
-        // 2인 3인 이면
-        boolean isLastPlayer = false;
-        // 배열의 마지막 사람이면 무조건 제일 마지막 플레이어
-        if(info.getPlayerCnt() == playerIdx+1){
-            isLastPlayer = true;
-        } else{
-            // 마지막 까지 배열을 순회하면서 살아있는 사람이 없으면 마지막 플레이어.
-            for(int i= playerIdx ; i< info.getPlayerCnt();i++){
-                if(players[i].isAlive()){
-                    isLastPlayer = false;
-                    break;
-                }
-            }
+		Info info = gameInfo.getInfo();
+		// 턴을 넘기기 전에 현재 플레이어가 마지막 플레이어인지 확인.
+		// 2인 3인 이면
+		boolean isLastPlayer = false;
+		// 배열의 마지막 사람이면 무조건 제일 마지막 플레이어
+		if (info.getPlayerCnt() == playerIdx + 1) {
+			isLastPlayer = true;
+		} else {
+			// 마지막 까지 배열을 순회하면서 살아있는 사람이 없으면 마지막 플레이어.
+			for (int i = playerIdx; i < info.getPlayerCnt(); i++) {
+				if (players[i].isAlive()) {
+					isLastPlayer = false;
+					break;
+				}
+			}
 
-        }
+		}
 
-
-		if(isLastPlayer){
-            //TODO: 턴이 바뀔 때 수행되어야하는 로직
-            //TODO: effectNews, waitingNews, doorCheck
-			int turnCount = info.getTurnCount() + 1 ;
+		if (isLastPlayer) {
+			//TODO: 턴이 바뀔 때 수행되어야하는 로직
+			//TODO: effectNews, waitingNews, doorCheck
+			int turnCount = info.getTurnCount() + 1;
 			// 종료 조건 체크
-			if(turnCount ==31){
-				return  ResponseDto.builder().type("게임종료").build();
+			if (turnCount == 31) {
+				return ResponseDto.builder().type("게임종료").build();
 			}
 			int doorCheck = info.getDoorCheck();
-			if(doorCheck>1){
+			if (doorCheck > 1) {
 				doorCheck--;
 			}
 			// waitingNews가 비어있지 않을 때
-			Queue <News> effectNews = info.getEffectNews();
-			Queue <WaitingNews> waitingNews= info.getWaitingNews();
-			while(!waitingNews.isEmpty()){
+			Queue<News> effectNews = info.getEffectNews();
+			Queue<WaitingNews> waitingNews = info.getWaitingNews();
+			while (!waitingNews.isEmpty()) {
 				// 적용 시킬 뉴스가 있으면
-				if(turnCount==waitingNews.peek().getTurn()){
+				if (turnCount == waitingNews.peek().getTurn()) {
 					// 이미 적용중인 뉴스가 3개라면 뉴스 한개 제거
-					if(effectNews.size()==3){
+					if (effectNews.size() == 3) {
 						//TODO: 적용중인 뉴스 효과 제거도 해야함
 						effectNews.poll();
 					}
 					effectNews.offer(waitingNews.poll().getNews());
-				} else{
+				} else {
 					// 적용 시킬 뉴스 없으면
 					break;
 				}
@@ -1218,45 +1208,159 @@ public class GameRoomService {
 			info.setEffectNews(effectNews);
 			info.setWaitingNews(waitingNews);
 
-        }
+		}
 
-        // 다음 플레이어
-        int nextPlayerIdx = -1;
-        // 다음 플레이어 idx 구하는 로직
-        for(int i=1;i<4;i++){
-            int idx = (playerIdx + i) % 4;
-            if(players[idx] !=null && players[idx].isAlive()){
-                nextPlayerIdx = idx;
-                break;
-            }
+		// 다음 플레이어
+		int nextPlayerIdx = -1;
+		// 다음 플레이어 idx 구하는 로직
+		for (int i = 1; i < 4; i++) {
+			int idx = (playerIdx + i) % 4;
+			if (players[idx] != null && players[idx].isAlive()) {
+				nextPlayerIdx = idx;
+				break;
+			}
 
-        }
-        if(nextPlayerIdx!=-1){
-            // 다음 플레이어 순서를 설정
-            info.setCurrentPlayer(players[nextPlayerIdx].getNickname());
-        }
+		}
+		if (nextPlayerIdx != -1) {
+			// 다음 플레이어 순서를 설정
+			info.setCurrentPlayer(players[nextPlayerIdx].getNickname());
+		}
 		gameInfo.setPlayers(players);
 		gameInfo.setInfo(info);
 		gameInfoRepository.createGameRoom(gameInfo);
 
-
-        return ResponseDto.builder().type("턴종료")
-				.data(EndTurnResponse.builder()
-						.info(info).stocks(gameInfo.getStocks()).players(players).lands(gameInfo.getLands()).build())
-				.build();
-    }
+		return ResponseDto.builder().type("턴종료")
+			.data(EndTurnResponse.builder()
+				.info(info).stocks(gameInfo.getStocks()).players(players).lands(gameInfo.getLands()).build())
+			.build();
+	}
 
 	/**
 	 * 게임 종료
 	 * */
-	public ResponseDto endGame(String roomCode){
+	public ResponseDto endGame(String roomCode) {
 		//TODO: 게임 종료시 데이터 전송
 
 		return ResponseDto.builder().type("게임종료").build();
 
-
 	}
 
+	/**
+	 * 선택한 뉴스 적용
+	 */
+	public ResponseDto applyNews(String roomCode, News news, String type) {
+		// 게임 정보 가져오기
+		GameInfo gameInfo = gameInfoRepository.getGameInfo(roomCode);
+		List<Land> lands = gameInfo.getLands();
+		List<Stock> stocks = gameInfo.getStocks();
+		Info info = gameInfo.getInfo();
 
+		Queue<News> effectNews = info.getEffectNews();
+		Queue<WaitingNews> waitingNews = info.getWaitingNews();
 
+		if (!type.equals("다이아몬드")) {
+			if (effectNews.size() == 3) {
+				effectNews.poll();
+			}
+			effectNews.add(news);
+			// TODO : 땅 값 바뀌면 주식과 플레이어 총 자산이 변경 된다. 구현해라 ~
+
+			Map<Integer, Integer> effectedCountries = new HashMap<>();
+			Map<Integer, Integer> effectedStocks = new HashMap<>();
+			for (News curNews : effectNews) {
+				effectedCountries.putAll(curNews.getCountryEffects());
+				effectedStocks.putAll(curNews.getStockEffects());
+			}
+
+			//뉴스에 의해 변동 된 땅 값 초기화
+			for (Map.Entry<Integer, Integer> entry : effectedCountries.entrySet()) {
+				Land curLand = lands.get(entry.getKey());
+				curLand.setCurrentBuildingPrices(curLand.getBuildingPrices());
+				curLand.setCurrentLandPrice(curLand.getLandPrice());
+				curLand.setCurrentFees(curLand.getFees());
+			}
+
+			//뉴스에 의해 변동 된 주식 가격 초기화
+			for (Map.Entry<Integer, Integer> entry : effectedStocks.entrySet()) {
+				Stock curStock = stocks.get(entry.getKey());
+				curStock.setCurrentCost(curStock.getCost());
+			}
+
+			//현재 적용중인 뉴스 List를 돌면서 해당 뉴스가 끼치는 영향을 적용
+			for (News curNews : effectNews) {
+				Map<Integer, Integer> curEffectedCountries = curNews.getCountryEffects();
+				Map<Integer, Integer> curEffectedStocks = curNews.getStockEffects();
+
+				for (Map.Entry<Integer, Integer> entry : curEffectedCountries.entrySet()) {
+					Land curLand = lands.get(entry.getKey());
+					int curEffect = entry.getValue();
+
+					int currentLandPrice = 0;
+					int[] currentBuildingPrices = new int[3];
+					int[] currentFees = new int[4];
+
+					//좋은 효과
+					if (curEffect >= 0) {
+						currentLandPrice = curLand.getCurrentLandPrice() * (100 + curEffect) / 100;
+						for (int i = 0; i < currentBuildingPrices.length; i++) {
+							currentBuildingPrices[i] = curLand.getCurrentBuildingPrices()[i] * (100 + curEffect) / 100;
+						}
+						for (int i = 0; i < currentFees.length; i++) {
+							currentBuildingPrices[i] = curLand.getCurrentFees()[i] * (100 + curEffect) / 100;
+						}
+					}
+					//나쁜 효과
+					else {
+						currentLandPrice = curLand.getCurrentLandPrice() * (100 - curEffect) / 100;
+						for (int i = 0; i < currentBuildingPrices.length; i++) {
+							currentBuildingPrices[i] = curLand.getCurrentBuildingPrices()[i] * (100 - curEffect) / 100;
+						}
+						for (int i = 0; i < currentFees.length; i++) {
+							currentBuildingPrices[i] = curLand.getCurrentFees()[i] * (100 - curEffect) / 100;
+						}
+					}
+					//바뀐 정보 해당 땅에 업데이트
+					curLand.setCurrentLandPrice(currentLandPrice);
+					curLand.setCurrentBuildingPrices(currentBuildingPrices);
+					curLand.setCurrentFees(currentFees);
+					lands.set(entry.getKey(), curLand);
+				}
+
+				for (Map.Entry<Integer, Integer> entry : curEffectedCountries.entrySet()) {
+					Stock curStocks = stocks.get(entry.getKey());
+					int curEffect = entry.getValue();
+
+					int currentCost = 0;
+
+					//좋은 효과
+					if (curEffect >= 0) {
+						currentCost = curStocks.getCurrentCost() * (100 + curEffect) / 100;
+					}
+					//나쁜 효과
+					else {
+						currentCost = curStocks.getCurrentCost() * (100 - curEffect) / 100;
+					}
+					//바뀐 정보 해당 땅에 업데이트
+					curStocks.setCurrentCost(currentCost);
+					stocks.set(entry.getKey(), curStocks);
+				}
+			}
+		} else {
+			waitingNews.add(WaitingNews.builder().news(news).turn(info.getTurnCount() + 3).build());
+		}
+
+		info.setEffectNews(effectNews);
+		info.setWaitingNews(waitingNews);
+
+		gameInfo.setLands(lands);
+		gameInfo.setStocks(stocks);
+		gameInfo.setInfo(info);
+
+		gameInfoRepository.createGameRoom(gameInfo);
+
+		return ResponseDto.builder()
+			.type("자유")
+			.data(NewsApplyResponse.builder().lands(lands).stocks(stocks).info(info).build())
+			.build();
+	}
 }
