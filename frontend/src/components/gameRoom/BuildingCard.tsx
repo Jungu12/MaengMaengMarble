@@ -8,8 +8,8 @@ type Props = {
   price: number;
   width: number;
   height: number;
-  isChecked?: boolean;
-  handleCheck?: () => void;
+  isChecked?: boolean | null;
+  handleCheck?: (() => void) | null;
   leftTurn?: number;
 };
 
@@ -23,7 +23,13 @@ const BuildingCard = ({
   leftTurn,
 }: Props) => {
   return (
-    <button onClick={handleCheck}>
+    <button
+      onClick={
+        handleCheck == null || (leftTurn != null && leftTurn > 0)
+          ? () => {}
+          : handleCheck
+      }
+    >
       <motion.div
         className={`flex flex-col bg-primary-light200 rounded-[10px] p-[10px] border-primary-dark100 border-opacity-80 border-2 relative ${
           isChecked == null || (leftTurn != null && leftTurn > 0)
@@ -94,7 +100,7 @@ const BuildingCard = ({
             isChecked != null &&
             handleCheck != null && (
               <div className='absolute left-0 bottom-0 z-20'>
-                <CCheckBox isChecked={isChecked} handleChecked={handleCheck} />
+                <CCheckBox isChecked={isChecked} />
               </div>
             )}
         </div>

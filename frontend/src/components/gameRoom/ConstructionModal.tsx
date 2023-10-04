@@ -4,28 +4,49 @@ import { addAmountUnit, landColor, landNationalFlag } from '@utils/game';
 import { images } from '@constants/images';
 import BuildingCard from './BuildingCard';
 import CButton from '@components/common/CButton';
-import { LandType } from '@/types/gameRoom/game.type';
+import { LandType, PlayerType } from '@/types/gameRoom/game.type';
 
 type Props = {
+  player: PlayerType | null;
   land: LandType;
   isOpen: boolean;
   handleConstruction: () => void;
 };
 
-const ConstructionModal = ({ land, isOpen, handleConstruction }: Props) => {
-  const [isCheckedPension, setIsCheckedPension] = useState(false);
-  const [isCheckedBuilding, setIsCheckedBuilding] = useState(false);
-  const [isCheckedHotel, setIsCheckedHotel] = useState(false);
+const ConstructionModal = ({
+  player,
+  land,
+  isOpen,
+  handleConstruction,
+}: Props) => {
+  const [isCheckedPension, setIsCheckedPension] = useState(land.buildings[1]);
+  const [isCheckedBuilding, setIsCheckedBuilding] = useState(land.buildings[2]);
+  const [isCheckedHotel, setIsCheckedHotel] = useState(land.buildings[3]);
   const totalPurchasePrice = useMemo(
     () =>
-      land.currentLandPrice +
-      (isCheckedPension ? land.currentBuildingPrices[0] : 0) +
-      (isCheckedBuilding ? land.currentBuildingPrices[1] : 0) +
-      (isCheckedHotel ? land.currentBuildingPrices[2] : 0),
+      land.buildings[0]
+        ? 0
+        : land.currentLandPrice +
+          (land.buildings[1]
+            ? 0
+            : isCheckedPension
+            ? land.currentBuildingPrices[0]
+            : 0) +
+          (land.buildings[2]
+            ? 0
+            : isCheckedBuilding
+            ? land.currentBuildingPrices[1]
+            : 0) +
+          (land.buildings[3]
+            ? 0
+            : isCheckedHotel
+            ? land.currentBuildingPrices[2]
+            : 0),
     [
       isCheckedBuilding,
       isCheckedHotel,
       isCheckedPension,
+      land.buildings,
       land.currentBuildingPrices,
       land.currentLandPrice,
     ]
@@ -124,25 +145,26 @@ const ConstructionModal = ({ land, isOpen, handleConstruction }: Props) => {
                 price={land.currentBuildingPrices[0]}
                 width={150}
                 height={190}
-                isChecked={isCheckedPension}
-                handleCheck={handleCheckPension}
+                isChecked={land.buildings[1] ? null : isCheckedPension}
+                handleCheck={land.buildings[1] ? null : handleCheckPension}
               />
               <BuildingCard
                 type='빌딩'
                 price={land.currentBuildingPrices[1]}
                 width={150}
                 height={190}
-                isChecked={isCheckedBuilding}
-                handleCheck={handleCheckBuilding}
+                isChecked={land.buildings[2] ? null : isCheckedBuilding}
+                handleCheck={land.buildings[2] ? null : handleCheckBuilding}
+                leftTurn={player ? player.currentLap - 1 : 0}
               />
               <BuildingCard
                 type='호텔'
                 price={land.currentBuildingPrices[2]}
                 width={150}
                 height={190}
-                isChecked={isCheckedHotel}
-                handleCheck={handleCheckHotel}
-                leftTurn={2}
+                isChecked={land.buildings[3] ? null : isCheckedHotel}
+                handleCheck={land.buildings[3] ? null : handleCheckHotel}
+                leftTurn={player ? player.currentLap - 2 : 0}
               />
             </div>
 
