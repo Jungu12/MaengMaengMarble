@@ -101,7 +101,7 @@ const SlotMachineModal = ({
 
     client?.publish({
       destination: `/pub/game-rooms/parkjinho/${gameId}`,
-      body: JSON.stringify(bettingMoney),
+      body: JSON.stringify({ bettingMoney: bettingMoney }),
     });
 
     client?.subscribe(`/sub/game-rooms/${gameId}`, (res) => {
