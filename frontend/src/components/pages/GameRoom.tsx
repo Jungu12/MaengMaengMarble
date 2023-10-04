@@ -301,9 +301,7 @@ const GameRoom = () => {
   const handleConstruction = (purchase: boolean[]) => {
     client.current?.publish({
       destination: `/pub/game-rooms/purchase/${gameId}`,
-      body: JSON.stringify({
-        purchasedBuildings: purchase,
-      }),
+      body: JSON.stringify(purchase),
     });
     setIsOepnContrunction(false);
   };

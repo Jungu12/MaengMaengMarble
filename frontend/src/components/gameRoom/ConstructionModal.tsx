@@ -169,7 +169,7 @@ const ConstructionModal = ({
                 height={190}
                 isChecked={land.buildings[2] ? null : isCheckedBuilding}
                 handleCheck={land.buildings[2] ? null : handleCheckBuilding}
-                leftTurn={player ? player.currentLap - 1 : 0}
+                leftTurn={player ? 1 - player.currentLap : 0}
               />
               <BuildingCard
                 type='호텔'
@@ -178,7 +178,7 @@ const ConstructionModal = ({
                 height={190}
                 isChecked={land.buildings[3] ? null : isCheckedHotel}
                 handleCheck={land.buildings[3] ? null : handleCheckHotel}
-                leftTurn={player ? player.currentLap - 2 : 0}
+                leftTurn={player ? 2 - player.currentLap : 0}
               />
             </div>
 
