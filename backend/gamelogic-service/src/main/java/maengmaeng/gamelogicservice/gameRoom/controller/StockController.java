@@ -3,7 +3,6 @@ package maengmaeng.gamelogicservice.gameRoom.controller;
 import lombok.RequiredArgsConstructor;
 import maengmaeng.gamelogicservice.gameRoom.domain.GameInfo;
 import maengmaeng.gamelogicservice.gameRoom.domain.dto.PlayerSeq;
-import maengmaeng.gamelogicservice.gameRoom.domain.dto.StockInfo;
 import maengmaeng.gamelogicservice.gameRoom.domain.dto.StockRequest;
 import maengmaeng.gamelogicservice.gameRoom.service.GameRoomService;
 import maengmaeng.gamelogicservice.gameRoom.service.StockService;
@@ -30,19 +29,17 @@ public class StockController {
     @MessageMapping("/stock/purchase/{roomCode}")
     public void purchase(@DestinationVariable String roomCode, StockRequest stockRequest){
 
-        PlayerSeq playerSeq = stockRequest.getPlayerSeq();
-        StockInfo stockInfo = stockRequest.getStockInfo();
         // 입력받은 사람이 주식 구매
         logger.info("Controller : purchase()");
         logger.info("roomCode : {} ",roomCode);
-        stockService.purchase(roomCode, playerSeq, stockInfo);
+        stockService.purchase(roomCode,stockRequest);
 
 
         GameInfo gameInfo = gameRoomService.getInfo(roomCode);
 
         GameData gameData = GameData.builder()
                 .data(ResponseDto.builder()
-                        .type("주식 매수 후 정보")
+                        .type("자유")
                         .data(gameInfo)
                         .build())
                 .roomCode(roomCode)
@@ -56,18 +53,16 @@ public class StockController {
     @MessageMapping("/stock/sell/{roomCode}")
     public void sell(@DestinationVariable String roomCode, StockRequest stockRequest){
         logger.info("CONTROLLER : sell()");
-        PlayerSeq playerSeq = stockRequest.getPlayerSeq();
-        StockInfo stockInfo = stockRequest.getStockInfo();
 
         // 입력받은 사람이 주식 매도
-        stockService.sell(roomCode, playerSeq, stockInfo);
+        stockService.sell(roomCode,stockRequest);
 
 
         GameInfo gameInfo = gameRoomService.getInfo(roomCode);
 
         GameData gameData = GameData.builder()
                 .data(ResponseDto.builder()
-                        .type("주식 매도(팔기) 후 정보")
+                        .type("자유")
                         .data(gameInfo)
                         .build())
                 .roomCode(roomCode)
