@@ -166,6 +166,7 @@ const GameRoom = () => {
             console.log('주사위 결과 나왔어요');
             setDice1(diceResult.data.dice1);
             setDice2(diceResult.data.dice2);
+            setPlayerList(diceResult.data.players);
             const idx = getPlayerIndex(playerList, currentPlayer);
             console.log('[현재 플레이어 인덱스]', idx);
             console.log('[맹맹]', playerList[idx]!.currentLocation);
