@@ -41,7 +41,7 @@ public class StockService {
         // 2. 플레이어가 가진 현금찾기
         long playerMoney = 0;
         for (Player player : gameInfo.getPlayers()) {
-            if (player.getNickname().equals(playerSeq.getNickname())) {
+            if (player!=null && player.getNickname().equals(playerSeq.getNickname())) {
                 playerMoney = player.getMoney();
                 nowPlayer = player;
                 break;

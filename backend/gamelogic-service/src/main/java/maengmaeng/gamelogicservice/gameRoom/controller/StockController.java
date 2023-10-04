@@ -29,7 +29,7 @@ public class StockController {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final ChannelTopic gameRoomTopic;
 
-    @MessageMapping("/stock/purchase/{roomCode}")
+    @MessageMapping("/game-rooms/stock/purchase/{roomCode}")
     public void purchase(@DestinationVariable String roomCode, StockRequest stockRequest){
 
         PlayerSeq playerSeq = stockRequest.getPlayerSeq();
@@ -63,9 +63,9 @@ public class StockController {
 
     }
 
-    @MessageMapping("/stock/sell/{roomCode}")
+    @MessageMapping("/game-rooms/stock/sell/{roomCode}")
     public void sell(@DestinationVariable String roomCode, StockRequest stockRequest){
-        logger.info("CONTROLLER : sell()");
+
         PlayerSeq playerSeq = stockRequest.getPlayerSeq();
         StockInfo stockInfo = stockRequest.getStockInfo();
 
