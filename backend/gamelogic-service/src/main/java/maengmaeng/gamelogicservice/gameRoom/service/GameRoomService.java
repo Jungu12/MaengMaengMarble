@@ -171,13 +171,17 @@ public class GameRoomService {
 		Player[] players = gameInfo.getPlayers();
 
 		String currentPlayer = gameInfo.getInfo().getCurrentPlayer();
+
 		int currentIdx = -1;
 		// 현재 플레이어 인덱스 찾기
 		for (int i = 0; i < players.length; i++) {
 			if (players[i] != null && players[i].isAlive() && players[i].getNickname().equals(currentPlayer)) {
 				currentIdx = i;
+				break;
 			}
 		}
+		System.out.println(currentPlayer);
+		System.out.println(currentIdx);
 		if (currentIdx != -1) {
 			// 예외 처리
 
