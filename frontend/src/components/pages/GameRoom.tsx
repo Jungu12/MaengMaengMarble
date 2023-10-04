@@ -170,7 +170,10 @@ const GameRoom = () => {
             const idx = getPlayerIndex(playerList, currentPlayer);
             console.log('[현재 플레이어 최신]', diceResult.data.players);
             console.log('[현재 플레이어 인덱스]', idx);
-            console.log('[맹맹]', playerList[idx]!.currentLocation);
+            console.log(
+              '[맹맹]',
+              diceResult.data.players[idx]!.currentLocation
+            );
 
             setSeletedLandId(playerList[idx]!.currentLocation);
             // 더블이 나오는 경우 주사위 다시 던지기
