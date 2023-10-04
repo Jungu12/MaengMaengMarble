@@ -16,7 +16,7 @@ const MapArea = ({ height, width, src, alt, value, onClickArea }: Props) => {
   }, [onClickArea, value]);
 
   return (
-    <button onClick={onClick}>
+    <button onClick={onClick} className='relative'>
       <img
         src={src}
         alt={alt}
@@ -25,6 +25,7 @@ const MapArea = ({ height, width, src, alt, value, onClickArea }: Props) => {
           height: `${height}px`,
         }}
       />
+      <img className='absolute top-0 left-0' src={''} alt={''} />
     </button>
   );
 };
