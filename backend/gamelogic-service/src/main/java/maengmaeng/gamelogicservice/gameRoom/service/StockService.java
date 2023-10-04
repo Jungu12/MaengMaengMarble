@@ -45,6 +45,7 @@ public class StockService {
         long playerMoney = 0;
         for (Player player : gameInfo.getPlayers()) {
             if (player.getNickname().equals(gameInfo.getInfo().getCurrentPlayer())) {
+            if (player!=null && player.getNickname().equals(playerSeq.getNickname())) {
                 playerMoney = player.getMoney();
                 nowPlayer = player;
                 break;
@@ -124,6 +125,8 @@ public class StockService {
         nowPlayer.setStocks(newStocks);
         nowPlayer.setMoney(nowPlayer.getMoney() + stockPrice*stockRequest.getCnt());
         nowPlayer.setAsset(nowPlayer.getAsset() + stockPrice*stockRequest.getCnt());
+        nowPlayer.setMoney(nowPlayer.getMoney() + stockPrice*stockInfo.getCnt());
+        nowPlayer.setAsset(nowPlayer.getAsset() + stockPrice*stockInfo.getCnt());
 
         // 변경된 정보 다시 저장
         gameInfoRepository.createGameRoom(gameInfo);
