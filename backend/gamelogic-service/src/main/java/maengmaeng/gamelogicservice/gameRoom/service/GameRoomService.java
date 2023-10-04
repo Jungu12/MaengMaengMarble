@@ -1203,7 +1203,7 @@ public class GameRoomService {
 						// TODO: 뉴스효과 뺄 때 뉴스 효과 빼고 나서 asset
 						News news= effectNews.poll();
 						news.getCountryEffects();
-						news.getCountryEffects()
+						news.getCountryEffects();
 					}
 					effectNews.offer(waitingNews.poll().getNews());
 				} else{
