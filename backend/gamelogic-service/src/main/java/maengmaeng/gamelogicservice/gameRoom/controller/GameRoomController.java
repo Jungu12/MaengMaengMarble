@@ -38,10 +38,8 @@ public class GameRoomController {
 	@Transactional
 	@MessageMapping("/game-rooms/start/{roomCode}")
 	public void setPlayer(@DestinationVariable String roomCode, PlayerCount playerCount) {
-		System.out.println(roomCode);
-		logger.info("roomCode = {}, " );
+		logger.info("setPlayer(), roomCode = {}, PlayerCnt, = {}", roomCode,playerCount.getCnt() );
 		GameStart cards = gameRoomService.setStart(roomCode, playerCount.getCnt());
-
 		GameData gameData = GameData.builder()
 			.type("GAME_ROOM")
 			.data(ResponseDto.builder().type("플레이순서").data(cards).build())
@@ -57,7 +55,7 @@ public class GameRoomController {
 	 * */
 	@MessageMapping("/game-rooms/set-player/{roomCode}")
 	public void setPlayer(@DestinationVariable String roomCode, PlayerSeq playerSeq) {
-		System.out.println("setPlayer");
+		logger.info("setPlayer(), roomCode = {}, userId = {}, nickname = {}, characterId ={}, playerCnt = {}",roomCode,playerSeq.getUserId(), playerSeq.getNickname(), playerSeq.getCharacterId(), playerSeq.getPlayerCnt());
 
 		StartCard[] startCards = gameRoomService.setPlayer(roomCode, playerSeq);
 		GameInfo gameInfo = gameRoomService.getInfo(roomCode);
