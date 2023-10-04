@@ -6,19 +6,33 @@ import useToastList from '@hooks/useToastList';
 import { ToastMessageState } from '@atom/toastAtom';
 import { useSetRecoilState } from 'recoil';
 import { addAmountUnit } from '@utils/game';
+import * as StompJs from '@stomp/stompjs';
+import { WSResponseType } from '@/types/common/common.type';
+import { SlotType } from '@/types/gameRoom/game.type';
+import { playersState } from '@atom/gameAtom';
 
 type Props = {
-  slotResult: [number, number, number];
+  client: StompJs.Client;
+  gameId: string;
+  // slotResult: [number, number, number];
   isOpen: boolean;
   handleSlot: () => void;
 };
 
-const SlotMachineModal = ({ slotResult, isOpen, handleSlot }: Props) => {
+const SlotMachineModal = ({
+  client,
+  gameId,
+  // slotResult,
+  isOpen,
+  handleSlot,
+}: Props) => {
   const indexes = useMemo(() => [0, 0, 0], []);
+  const slotResult = useMemo(() => [0, 0, 0], []);
   const [bettingMoney, setBettingMoney] = useState(30000000);
   const [isClickBetting, setIsClickBetting] = useState(false);
   const { show } = useToastList();
   const setToastMessage = useSetRecoilState(ToastMessageState);
+  const setPlayerList = useSetRecoilState(playersState);
 
   const increaseMoney = useCallback(() => {
     if (bettingMoney === 30000000) {
@@ -84,6 +98,24 @@ const SlotMachineModal = ({ slotResult, isOpen, handleSlot }: Props) => {
 
   const rollSlot = useCallback(async () => {
     setIsClickBetting(true);
+
+    client?.publish({
+      destination: `/pub/game-rooms/parkjinho/${gameId}`,
+      body: JSON.stringify(bettingMoney),
+    });
+
+    client?.subscribe(`/sub/game-rooms/${gameId}`, (res) => {
+      const response: WSResponseType<unknown> = JSON.parse(res.body);
+      if (response.type === '박진호') {
+        const parkResult = response as WSResponseType<SlotType>;
+        console.log('[박진호데이터]', parkResult);
+        setPlayerList(parkResult.data.players);
+        slotResult[0] = parkResult.data.num[0];
+        slotResult[1] = parkResult.data.num[1];
+        slotResult[2] = parkResult.data.num[2];
+      }
+    });
+
     const slotList = document.querySelectorAll(
       '.slot'
     ) as NodeListOf<HTMLElement>;
@@ -131,12 +163,18 @@ const SlotMachineModal = ({ slotResult, isOpen, handleSlot }: Props) => {
       }
     });
     handleSlot();
-  }, [handleSlot, indexes, roll, setToastMessage, show]);
-
-  // const startBetting = useCallback(async () => {
-  //   await rollSlot();
-  //   handleSlot();
-  // }, [handleSlot, rollSlot]);
+  }, [
+    bettingMoney,
+    client,
+    gameId,
+    handleSlot,
+    indexes,
+    roll,
+    setPlayerList,
+    setToastMessage,
+    show,
+    slotResult,
+  ]);
 
   return (
     <AnimatePresence>

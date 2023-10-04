@@ -35,6 +35,7 @@ import {
   newsState,
   playersState,
 } from '@atom/gameAtom';
+import SlotMachineModal from '@components/gameRoom/SlotMachineModal';
 
 const GameRoom = () => {
   const location = useLocation();
@@ -62,6 +63,8 @@ const GameRoom = () => {
   const controls4 = useAnimation();
   const [seletedLandId, setSeletedLandId] = useState(0);
   const [isOepnContrunction, setIsOepnContrunction] = useState(false);
+  const [isOpenSlot, setIsOpenSlot] = useState(false);
+  // const slotResult = useMemo(() => [0, 0, 0], []);
   const nowPalyerIdx = useMemo(
     () => getPlayerIndex(playerList, currentPlayer),
     [currentPlayer, playerList]
@@ -171,6 +174,15 @@ const GameRoom = () => {
             if (currentPlayer === user?.nickname) {
               console.log(seletedLandId);
               setIsOepnContrunction(true);
+            }
+          }
+
+          if (response.type === '박진호') {
+            console.log('박진호가 왔어요~~');
+
+            // 현재 플레이어만 보이게
+            if (currentPlayer === user?.nickname) {
+              setIsOpenSlot(true);
             }
           }
 
@@ -302,6 +314,14 @@ const GameRoom = () => {
         }}
         land={landList[seletedLandId]}
         player={playerList[nowPalyerIdx]}
+      />
+      <SlotMachineModal
+        client={client.current}
+        gameId={gameId}
+        isOpen={isOpenSlot}
+        handleSlot={() => {
+          setIsOpenSlot(false);
+        }}
       />
       <div
         className='flex flex-col w-full h-full min-h-[700px] overflow-hidden relative'

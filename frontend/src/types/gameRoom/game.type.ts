@@ -112,3 +112,8 @@ export type DiceResultType = {
   doubleCount: number;
   lapCheck: boolean;
 };
+
+export type SlotType = {
+  players: (PlayerType | null)[];
+  num: number[];
+};
