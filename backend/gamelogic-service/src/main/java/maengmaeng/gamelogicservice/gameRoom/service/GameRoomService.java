@@ -1192,7 +1192,7 @@ public class GameRoomService {
 					if (effectNews.size() == 3) {
 						//TODO: 적용중인 뉴스 효과 제거도 해야함
 						// TODO: 뉴스효과 뺄 때 뉴스 효과 빼고 나서 asset
-						News news = effectNews.poll();
+						effectNews.poll();
 
 					}
 					effectNews.offer(waitingNews.poll().getNews());
@@ -1311,11 +1311,15 @@ public class GameRoomService {
 			// 다음 플레이어 순서를 설정
 			info.setCurrentPlayer(players[nextPlayerIdx].getNickname());
 		}
+		gameInfo.setLands(lands);
+		gameInfo.setStocks(stocks);
 		gameInfo.setPlayers(players);
 		gameInfo.setInfo(info);
 		gameInfoRepository.createGameRoom(gameInfo);
 
-		return ResponseDto.builder().type("턴종료")
+
+
+		return ResponseDto.builder().type("턴종료끝")
 			.data(EndTurnResponse.builder()
 				.info(info)
 				.stocks(gameInfo.getStocks())
