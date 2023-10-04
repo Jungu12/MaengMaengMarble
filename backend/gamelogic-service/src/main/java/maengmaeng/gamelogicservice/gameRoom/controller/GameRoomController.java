@@ -208,7 +208,7 @@ public class GameRoomController {
 	/** 거래 정지에서 주사위 굴리기
 	 *
 	 * */
-	@MessageMapping("/game-rooms/stopTrade/{roomCode}")
+	@MessageMapping("/game-rooms/stop-trade/{roomCode}")
 	public void stopTrade(@DestinationVariable String roomCode) {
 
 		ResponseDto responseDto = gameRoomService.stopTrade(roomCode);
