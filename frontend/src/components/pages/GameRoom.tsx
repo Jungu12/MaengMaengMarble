@@ -181,12 +181,6 @@ const GameRoom = () => {
             setDice1(diceResult.data.dice1);
             setDice2(diceResult.data.dice2);
             const idx = getPlayerIndex(playerList, currentPlayer);
-            console.log('[현재 플레이어 최신]', diceResult.data.players);
-            console.log('[현재 플레이어 인덱스]', idx);
-            console.log(
-              '[맹맹]',
-              diceResult.data.players[idx]!.currentLocation
-            );
 
             setSeletedLandId(diceResult.data.players[idx]!.currentLocation);
             // 더블이 나오는 경우 주사위 다시 던지기
@@ -226,6 +220,7 @@ const GameRoom = () => {
     gameId,
     playerList,
     seletedLandId,
+    updateInfo,
     user?.nickname,
   ]);
 

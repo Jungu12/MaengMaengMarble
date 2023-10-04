@@ -58,10 +58,12 @@ const MapArea = ({ height, width, src, alt, value, onClickArea }: Props) => {
     return images.building.purplehotel;
   }, [landList, value]);
   const onlyGround = useMemo(() => {
+    let buildingExist = false;
     currentLand.buildings.forEach((building) => {
-      if (building) return false;
+      if (building) buildingExist = true;
     });
 
+    if (buildingExist) return false;
     if (currentLand.owner === -1) return false;
 
     return true;
