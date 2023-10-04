@@ -1,7 +1,16 @@
+import { NewsType, PlayerType } from '@/types/gameRoom/game.type';
 import { AnimationControls } from 'framer-motion';
 import { images } from '@constants/images';
 import { LandType } from '@/types/gameRoom/game.type';
 
+/**
+ * 캐릭터를 이동시킨다.
+ * @param _playNum - 이동시킬 플레이어의 번호
+ * @param count - 이동 시킬 횟수
+ * @param cur - 현재 플레이어의 위치
+ * @param controls - 캐릭터 이동 애니메이션
+ * @returns 이동 후 캐릭터의 위치
+ */
 export const moveCharacter = async (
   _playNum: number,
   count: number,
@@ -76,6 +85,11 @@ export const BUILDING_TYPE = {
 
 export type BuildingType = keyof typeof BUILDING_TYPE;
 
+/**
+ * number타입에 현금단위를 더해 반환한다.
+ * @param money - 자산
+ * @returns 단위를 추가한 자산 string
+ */
 export const addAmountUnit = (money: number): string => {
   let unit = '';
   if (money >= 1000000000000) {
@@ -93,7 +107,11 @@ export const addAmountUnit = (money: number): string => {
 
   return unit;
 };
-
+/**
+ * 해당 땅의 전체 통행료를 계산한다.
+ * @param landInfo - 해당 땅의 정보
+ * @returns 해당 땅의 통행료
+ */
 export const calCurrentFees = (landInfo: LandType): number => {
   let fee = 0;
 
@@ -103,7 +121,11 @@ export const calCurrentFees = (landInfo: LandType): number => {
 
   return fee;
 };
-
+/**
+ * 땅 색상을 반환한다.
+ * @param landId - 땅 id
+ * @returns 해당 땅의 색상
+ */
 export const landColor = (landId: number): string => {
   if (landId <= 5) return '#82AC40';
   else if (landId <= 7) return '#33A44A';
@@ -114,7 +136,11 @@ export const landColor = (landId: number): string => {
   else if (landId <= 26) return '#F47A2D';
   else return '#ED3B37';
 };
-
+/**
+ * 땅 국기 이미지를 반환한다.
+ * @param landId - 땅 id
+ * @returns 해당 땅의 국기 이미지
+ */
 export const landNationalFlag = (landId: number): string => {
   switch (landId) {
     case 1:
@@ -163,7 +189,11 @@ export const landNationalFlag = (landId: number): string => {
       return images.flag.korea;
   }
 };
-
+/**
+ * 땅 랜드마크 이미지 을 반환한다.
+ * @param landId - 땅 id
+ * @returns 해당 땅의 랜드마크 이미지
+ */
 export const landLandMarksImage = (landId: number): string => {
   switch (landId) {
     case 1:
@@ -211,4 +241,66 @@ export const landLandMarksImage = (landId: number): string => {
     default:
       return images.land.korea;
   }
+};
+/**
+ * 플레이어의 총자산 순위를 계산한다.
+ * @param players - 게임진행중인 플레이어들
+ * @param index - 현재 플레이어의 번호
+ * @returns 플레이어의 총 자산 순위
+ */
+export const calcRank = (players: (PlayerType | null)[], index: number) => {
+  let rank = 1;
+  const currentPlayer = players[index];
+
+  if (currentPlayer === null || currentPlayer === undefined) {
+    return -1;
+  }
+
+  for (let i = 0; i < players.length; i++) {
+    const otherPlayer = players[i];
+
+    if (otherPlayer === null || otherPlayer === undefined || i === index) {
+      // 다른 플레이어가 null, undefined이거나 현재 플레이어와 같은 경우 건너뜁니다.
+      continue;
+    }
+
+    if (otherPlayer.asset > currentPlayer.asset) {
+      rank++;
+    }
+  }
+
+  return rank;
+};
+
+/**
+ * 현재 돈을 받아서 ..억 ..만원 단위로 변환시켜준다.
+ * @param asset - 자산
+ * @returns 억 만원 단위로 변환한 문자열
+ */
+export const formatAsset = (asset: number): string => {
+  if (isNaN(asset) || asset < 0) {
+    return '잘못된 입력';
+  }
+
+  const billion = Math.floor(asset / 1e8);
+  const million = Math.floor((asset - billion * 1e8) / 1e4);
+
+  if (billion > 0 && million > 0) {
+    return `${billion}억 ${million}만원`;
+  } else if (billion > 0) {
+    return `${billion}억원`;
+  } else if (million > 0) {
+    return `${million}만원`;
+  } else {
+    return '0원';
+  }
+};
+
+export const effectNewsToString = (curNews: NewsType[]): string => {
+  let result = '';
+  curNews.forEach((news) => {
+    result += news.content + ' ';
+  });
+
+  return result;
 };
