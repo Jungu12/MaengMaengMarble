@@ -35,7 +35,7 @@ const LobbyRoomListView = ({
         </div>
       ) : (
         <div className='w-full h-full flex justify-center items-center text-3xl text-text-100 font-bold'>
-          현재 방이 없습니다. ಥ_ಥ
+          방 만들어줘 ಥ_ಥ
         </div>
       )}
       <div className='flex flex-row h-[18px] items-center justify-between mt-[40px]'>
