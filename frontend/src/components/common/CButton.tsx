@@ -6,6 +6,7 @@ type Props = {
   height?: number;
   rounded?: number;
   onClick?: () => void;
+  isDisable?: boolean;
   children: React.ReactNode;
 };
 
@@ -14,6 +15,7 @@ const CButton = ({
   width,
   height,
   onClick,
+  isDisable,
   children,
   rounded,
 }: Props) => {
@@ -29,6 +31,7 @@ const CButton = ({
       }}
     >
       <button
+        disabled={isDisable ? true : false}
         onClick={onClick}
         className={`z-[1] w-full h-full absolute ${
           rounded && `rounded-[${rounded}px]`

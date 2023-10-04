@@ -9,6 +9,7 @@ import WaitingRoom from '@pages/WaitingRoom';
 import { AnimatePresence } from 'framer-motion';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import PrivateRoutes from './PrivateRouter';
+import ModalTest from '@pages/ModalTest';
 
 const RootRouter = () => {
   return (
@@ -16,6 +17,7 @@ const RootRouter = () => {
       <AnimatePresence>
         <Routes>
           <Route path='/' element={<HomePage />}></Route>
+          <Route path='/test' element={<ModalTest />}></Route>
           <Route path='/login' element={<LoginPage />}></Route>
           <Route element={<PrivateRoutes />}>
             <Route

@@ -58,6 +58,10 @@ export const images = {
       'https://maeng.s3.ap-northeast-2.amazonaws.com/images/icon-angel.png',
     mediaControl:
       'https://maeng.s3.ap-northeast-2.amazonaws.com/images/icon-media-control.png',
+    slotmachine:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/img-slot-machineillust.png.png',
+    sloticon:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/img-slot-images.png',
   },
   dummy: {
     dummy1: 'https://maeng.s3.ap-northeast-2.amazonaws.com/images/dummy1.png',
