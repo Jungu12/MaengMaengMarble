@@ -320,3 +320,24 @@ export const effectNewsToString = (curNews: NewsType[]): string => {
 
   return result;
 };
+
+/**
+ * 땅 별로 적용해야하는 스타일 번호를 반환
+ * @param value 땅의 고유 ID
+ * @returns 적용해야할 스타일 타입 반환
+ */
+export const sortStyle = (value: number): number => {
+  if (value > 0 && value < 8) {
+    return 1;
+  }
+  if (value > 8 && value < 16) {
+    return 2;
+  }
+  if (value > 16 && value < 24) {
+    return 3;
+  }
+  if (value > 24 && value < 32) {
+    return 4;
+  }
+  return 0;
+};

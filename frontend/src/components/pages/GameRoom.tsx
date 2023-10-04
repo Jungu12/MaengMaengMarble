@@ -15,7 +15,6 @@ import { ParticipantsType, WSResponseType } from '@/types/common/common.type';
 import {
   DiceResultType,
   FullGameDataType,
-  LandType,
   NewsType,
   TurnListType,
 } from '@/types/gameRoom/game.type';
@@ -26,7 +25,11 @@ import CardChoice from '@components/gameRoom/CardChoice';
 import GameMap from '@components/gameRoom/GameMap';
 import Dice from 'react-dice-roll';
 import ConstructionModal from '@components/gameRoom/ConstructionModal';
-import { playersState } from '@atom/gameAtom';
+import {
+  currentPlayerState,
+  landListState,
+  playersState,
+} from '@atom/gameAtom';
 
 const GameRoom = () => {
   const location = useLocation();
@@ -36,11 +39,13 @@ const GameRoom = () => {
   const gameSub = useRef<StompJs.StompSubscription>();
   const { gameId } = useParams();
   const [playerList, setPlayerList] = useRecoilState(playersState);
+  const [currentPlayer, setCurrentPlayer] = useRecoilState(currentPlayerState);
+  const [landList, setLandList] = useRecoilState(landListState);
   const [isGameStart, setIsGameStart] = useState(false);
   const [orderList, setOrderList] = useState<TurnListType[]>([]);
-  const [landList, setLandList] = useState<LandType[]>([]);
+
   const [news, setNews] = useState<NewsType[]>([]);
-  const [currentPlayer, setCurrentPlayer] = useState('');
+
   const [dice1, setDice1] = useState<1 | 2 | 3 | 4 | 5 | 6>(1);
   const [dice2, setDice2] = useState<1 | 2 | 3 | 4 | 5 | 6>(1);
   const [isDiceRollButtonClick, setIsDiceRollButtonClick] = useState(false);
@@ -146,7 +151,14 @@ const GameRoom = () => {
     return () => {
       subTemp.unsubscribe();
     };
-  }, [gameId, setPlayerList, state.userList, user?.userId]);
+  }, [
+    gameId,
+    setCurrentPlayer,
+    setLandList,
+    setPlayerList,
+    state.userList,
+    user?.userId,
+  ]);
 
   // 구독
   useEffect(() => {
@@ -157,10 +169,7 @@ const GameRoom = () => {
         (res) => {
           const response: WSResponseType<unknown> = JSON.parse(res.body);
 
-          if (
-            response.type === '주사위' ||
-            response.type === '거래정지칸도착'
-          ) {
+          if (response.type === '이동후로직') {
             const diceResult = response as WSResponseType<DiceResultType>;
             setIsDiceRollButtonClick(true);
             console.log('주사위 결과 나왔어요');
