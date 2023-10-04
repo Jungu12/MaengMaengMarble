@@ -2,6 +2,7 @@ import { PlayerType } from '@/types/gameRoom/game.type';
 import MapArea from './MapArea';
 import { images } from '@constants/images';
 import { AnimationControls, motion } from 'framer-motion';
+import { useState, useEffect } from 'react';
 
 type Props = {
   playerList: (PlayerType | null)[];
@@ -20,6 +21,111 @@ const GameMap = ({
   controls3,
   controls4,
 }: Props) => {
+  const [player1X, setPlayer1X] = useState(0);
+  const [player1Y, setPlayer1Y] = useState(0);
+  const [player2X, setPlayer2X] = useState(0);
+  const [player2Y, setPlayer2Y] = useState(0);
+  const [player3X, setPlayer3X] = useState(0);
+  const [player3Y, setPlayer3Y] = useState(0);
+  const [player4X, setPlayer4X] = useState(0);
+  const [player4Y, setPlayer4Y] = useState(0);
+
+  // 플레이어 초기 위치 세팅
+  useEffect(() => {
+    if (playerList[0]) {
+      const position = playerList[0].currentLocation;
+      if (position >= 0 && position < 8) {
+        setPlayer1X(position * -67);
+        setPlayer1Y(0);
+      }
+      if (position >= 8 && position < 16) {
+        setPlayer1X(-67 * 8);
+        setPlayer1Y((position - 8) * 67);
+      }
+      if (position >= 16 && position < 24) {
+        setPlayer1X((24 - position) * -67);
+        setPlayer1Y(67 * 8);
+      }
+      if (position >= 24 && position < 32) {
+        setPlayer1X(0);
+        setPlayer1Y((32 - position) * 67);
+      }
+      controls1.set({
+        x: 0,
+        y: 0,
+      });
+    }
+    if (playerList[1]) {
+      const position = playerList[1].currentLocation;
+      if (position >= 0 && position < 8) {
+        setPlayer2X(position * -67);
+        setPlayer2Y(0);
+      }
+      if (position >= 8 && position < 16) {
+        setPlayer2X(-67 * 8);
+        setPlayer2Y((position - 8) * 67);
+      }
+      if (position >= 16 && position < 24) {
+        setPlayer2X((24 - position) * -67);
+        setPlayer2Y(67 * 8);
+      }
+      if (position >= 24 && position < 32) {
+        setPlayer2X(0);
+        setPlayer2Y((32 - position) * 67);
+      }
+      controls2.set({
+        x: 0,
+        y: 0,
+      });
+    }
+    if (playerList[2]) {
+      const position = playerList[2].currentLocation;
+      if (position >= 0 && position < 8) {
+        setPlayer3X(position * -67);
+        setPlayer3Y(0);
+      }
+      if (position >= 8 && position < 16) {
+        setPlayer3X(-67 * 8);
+        setPlayer3Y((position - 8) * 67);
+      }
+      if (position >= 16 && position < 24) {
+        setPlayer3X((24 - position) * -67);
+        setPlayer3Y(67 * 8);
+      }
+      if (position >= 24 && position < 32) {
+        setPlayer3X(0);
+        setPlayer3Y((32 - position) * 67);
+      }
+      controls3.set({
+        x: 0,
+        y: 0,
+      });
+    }
+    if (playerList[3]) {
+      const position = playerList[3].currentLocation;
+      if (position >= 0 && position < 8) {
+        setPlayer4X(position * -67);
+        setPlayer4Y(0);
+      }
+      if (position >= 8 && position < 16) {
+        setPlayer4X(-67 * 8);
+        setPlayer4Y((position - 8) * 67);
+      }
+      if (position >= 16 && position < 24) {
+        setPlayer4X((24 - position) * -67);
+        setPlayer4Y(67 * 8);
+      }
+      if (position >= 24 && position < 32) {
+        setPlayer4X(0);
+        setPlayer4Y((32 - position) * 67);
+      }
+      controls4.set({
+        x: 0,
+        y: 0,
+      });
+    }
+  }, [controls1, controls2, controls3, controls4, playerList]);
+
   return (
     <div className='absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 mt-[40px] w-[640px] h-[640px] ]'>
       {/* 필드 타일 */}
@@ -287,8 +393,8 @@ const GameMap = ({
           animate={controls1}
           className={`absolute`}
           style={{
-            bottom: `20px`,
-            right: `20px`,
+            bottom: `${20 + player1Y}px`,
+            right: `${20 - player1X}px`,
           }}
         >
           <img
@@ -306,8 +412,8 @@ const GameMap = ({
           animate={controls2}
           className={`absolute`}
           style={{
-            bottom: `20px`,
-            right: `20px`,
+            bottom: `${20 + player2Y}px`,
+            right: `${20 - player2X}px`,
           }}
         >
           <img
@@ -325,8 +431,8 @@ const GameMap = ({
           animate={controls3}
           className={`absolute`}
           style={{
-            bottom: `20px`,
-            right: `20px`,
+            bottom: `${20 + player3Y}px`,
+            right: `${20 - player3X}px`,
           }}
         >
           <img
@@ -344,8 +450,8 @@ const GameMap = ({
           animate={controls4}
           className={`absolute`}
           style={{
-            bottom: `20px`,
-            right: `20px`,
+            bottom: `${20 + player4Y}px`,
+            right: `${20 - player4X}px`,
           }}
         >
           <img

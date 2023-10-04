@@ -343,12 +343,11 @@ const GameRoom = () => {
         )}
         {/* 턴종료 버튼 */}
         <div className='absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-5xl text-white z-[10] text-[24px] font-bold flex flex-col justify-center items-center'>
-          {
+          {user?.nickname === currentPlayer && !reDice && isDiceRoll && (
             <button className='button-3d' onClick={handleTurnEnd}>
-              턴 종료{' '}
-              {`${user?.nickname} === ${currentPlayer} && ${!reDice} && ${isDiceRoll}`}
+              턴 종료
             </button>
-          }
+          )}
         </div>
         {/* 유저 정보 */}
         <div className='flex flex-col w-full h-full relative'>
