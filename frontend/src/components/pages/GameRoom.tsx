@@ -152,7 +152,7 @@ const GameRoom = () => {
 
       setTimeout(() => {
         setIsDiceRoll(true);
-      }, 5000);
+      }, 3000);
     }
   }, [isDiceRollButtonClick]);
 
@@ -179,12 +179,7 @@ const GameRoom = () => {
       >
         {/* 주사위 버튼*/}
         {currentPlayer === user?.nickname && !isDiceRoll && (
-          <div
-            className='absolute bottom-[25%] left-[50%] text-5xl text-white z-[10] text-[24px] font-bold'
-            style={{
-              transform: 'translate(-50%, -50%)',
-            }}
-          >
+          <div className='absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-5xl text-white z-[10] text-[24px] font-bold flex flex-col justify-center items-center'>
             <div
               className='flex gap-[24px] mb-[80px]'
               style={{ pointerEvents: 'none' }}

@@ -16,7 +16,7 @@ const CardChoice = ({ gameId, orderList, client }: Props) => {
   const user = useRecoilValue(userState);
   const [cardChoice, setCardChoice] = useState(false);
 
-  const flipCard = (index: number, seq: number) => {
+  const flipCard = (index: number) => {
     const updatedOrderList = [...orderList];
     if (updatedOrderList[index].selected || cardChoice) return;
     client.publish({
@@ -25,7 +25,7 @@ const CardChoice = ({ gameId, orderList, client }: Props) => {
         userId: user?.userId,
         nickname: user?.nickname,
         characterId: user?.avatarId,
-        playerCnt: seq,
+        playerCnt: index,
       }),
     });
     // updatedOrderList[index].selected = !updatedOrderList[index].selected;
@@ -53,7 +53,7 @@ const CardChoice = ({ gameId, orderList, client }: Props) => {
                 initial={{ opacity: 0, rotateY: 0 }}
                 animate={{ opacity: 1, rotateY: item.selected ? 0 : 180 }}
                 exit={{ opacity: 0, rotateY: 0 }}
-                onClick={() => flipCard(index, item.seq)}
+                onClick={() => flipCard(index)}
               >
                 <motion.div
                   className={`h-[340px] w-[220px] rounded-[8px] flex justify-center items-center ${
