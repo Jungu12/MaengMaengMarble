@@ -1,6 +1,11 @@
+import { deleteFreind, getFriendlist } from '@apis/friendApi';
+import { ToastMessageState } from '@atom/toastAtom';
+import { friendState } from '@atom/userAtom';
 import CButton from '@components/common/CButton';
+import useToastList from '@hooks/useToastList';
 import { motion } from 'framer-motion';
 import { useCallback } from 'react';
+import { useSetRecoilState } from 'recoil';
 
 type FriendInfoProps = {
   id: string;
@@ -14,9 +19,36 @@ const FriendInfoCard = ({
   name,
   img, // onClickDeleteButton,
 }: FriendInfoProps) => {
+  const { show } = useToastList();
+  const setToastMessage = useSetRecoilState(ToastMessageState);
+  const setFriendList = useSetRecoilState(friendState);
+
   const onClickDelete = useCallback(() => {
+    deleteFreind(id)
+      .then(() => {
+        getFriendlist().then((res) => {
+          setFriendList(res);
+        });
+        setToastMessage((prev) => {
+          return {
+            ...prev,
+            success: '삭제되었습니다.',
+          };
+        });
+        show('success');
+      })
+      .catch(() => {
+        setToastMessage((prev) => {
+          return {
+            ...prev,
+            error: '삭제를 실패하였습니다.',
+          };
+        });
+        show('error');
+      });
+
     console.log(id);
-  }, [id]);
+  }, [id, setFriendList, setToastMessage, show]);
 
   return (
     <div className='flex flex-row w-full h-fit items-center px-[30px] py-[10px] bg-primary-500 rounded-[20px] shadow-md'>

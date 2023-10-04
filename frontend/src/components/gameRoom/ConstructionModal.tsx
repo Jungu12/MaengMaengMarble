@@ -1,34 +1,33 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { useMemo, useState, useCallback } from 'react';
-import { lands } from '@components/gameRoom/LandDummy';
 import { addAmountUnit, landColor, landNationalFlag } from '@utils/game';
 import { images } from '@constants/images';
 import BuildingCard from './BuildingCard';
 import CButton from '@components/common/CButton';
+import { LandType } from '@/types/gameRoom/game.type';
 
 type Props = {
-  landId: number;
+  land: LandType;
   isOpen: boolean;
   handleConstruction: () => void;
 };
 
-const ConstructionModal = ({ landId, isOpen, handleConstruction }: Props) => {
-  const landInfo = useMemo(() => lands[landId], [landId]);
+const ConstructionModal = ({ land, isOpen, handleConstruction }: Props) => {
   const [isCheckedPension, setIsCheckedPension] = useState(false);
   const [isCheckedBuilding, setIsCheckedBuilding] = useState(false);
   const [isCheckedHotel, setIsCheckedHotel] = useState(false);
   const totalPurchasePrice = useMemo(
     () =>
-      landInfo.currentLandPrice +
-      (isCheckedPension ? landInfo.currentBuildingPrices[0] : 0) +
-      (isCheckedBuilding ? landInfo.currentBuildingPrices[1] : 0) +
-      (isCheckedHotel ? landInfo.currentBuildingPrices[2] : 0),
+      land.currentLandPrice +
+      (isCheckedPension ? land.currentBuildingPrices[0] : 0) +
+      (isCheckedBuilding ? land.currentBuildingPrices[1] : 0) +
+      (isCheckedHotel ? land.currentBuildingPrices[2] : 0),
     [
       isCheckedBuilding,
       isCheckedHotel,
       isCheckedPension,
-      landInfo.currentBuildingPrices,
-      landInfo.currentLandPrice,
+      land.currentBuildingPrices,
+      land.currentLandPrice,
     ]
   );
 
@@ -47,7 +46,7 @@ const ConstructionModal = ({ landId, isOpen, handleConstruction }: Props) => {
   const onClickPurchase = useCallback(() => {
     handleConstruction();
     console.log(totalPurchasePrice);
-  }, [totalPurchasePrice]);
+  }, [handleConstruction, totalPurchasePrice]);
 
   return (
     <AnimatePresence>
@@ -85,7 +84,7 @@ const ConstructionModal = ({ landId, isOpen, handleConstruction }: Props) => {
               <div
                 className='w-full h-[70px] rounded-tr-[15px] rounded-br-[15px] absolute left-0 z-0'
                 style={{
-                  backgroundColor: `${landColor(landInfo.landId)}`,
+                  backgroundColor: `${landColor(land.landId)}`,
                   boxShadow:
                     '0px -1.39534px 2.79068px 0px #68634F inset, 0px -1.39534px 2.79068px 0px #68634F inset, 1.39534px -1.39534px 6.97669px 0px #68634F inset',
                 }}
@@ -98,11 +97,11 @@ const ConstructionModal = ({ landId, isOpen, handleConstruction }: Props) => {
               <div className='flex flex-row w-full absolute items-center justify-between left-[15px] pr-[15px] z-10'>
                 <img
                   className='w-[90px] h-[90px]'
-                  src={landNationalFlag(landInfo.landId)}
+                  src={landNationalFlag(land.landId)}
                   alt='국기 사진'
                 />
                 <p className='text-primary-light100 font-bold text-[30px] '>
-                  {landInfo.name}
+                  {land.name}
                 </p>
                 <button onClick={handleConstruction}>
                   <img
@@ -116,13 +115,13 @@ const ConstructionModal = ({ landId, isOpen, handleConstruction }: Props) => {
             <div className='flex flex-row w-full space-x-[15px] items-center justify-between px-[30px] mb-[20px]'>
               <BuildingCard
                 type='땅값'
-                price={landInfo.currentLandPrice}
+                price={land.currentLandPrice}
                 width={150}
                 height={190}
               />
               <BuildingCard
                 type='별장'
-                price={landInfo.currentBuildingPrices[0]}
+                price={land.currentBuildingPrices[0]}
                 width={150}
                 height={190}
                 isChecked={isCheckedPension}
@@ -130,7 +129,7 @@ const ConstructionModal = ({ landId, isOpen, handleConstruction }: Props) => {
               />
               <BuildingCard
                 type='빌딩'
-                price={landInfo.currentBuildingPrices[1]}
+                price={land.currentBuildingPrices[1]}
                 width={150}
                 height={190}
                 isChecked={isCheckedBuilding}
@@ -138,7 +137,7 @@ const ConstructionModal = ({ landId, isOpen, handleConstruction }: Props) => {
               />
               <BuildingCard
                 type='호텔'
-                price={landInfo.currentBuildingPrices[2]}
+                price={land.currentBuildingPrices[2]}
                 width={150}
                 height={190}
                 isChecked={isCheckedHotel}

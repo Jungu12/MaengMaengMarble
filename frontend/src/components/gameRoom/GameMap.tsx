@@ -1,14 +1,25 @@
 import { PlayerType } from '@/types/gameRoom/game.type';
 import MapArea from './MapArea';
 import { images } from '@constants/images';
-import { motion } from 'framer-motion';
+import { AnimationControls, motion } from 'framer-motion';
 
 type Props = {
   playerList: (PlayerType | null)[];
   onClickLand: (landId: number) => void;
+  controls1: AnimationControls;
+  controls2: AnimationControls;
+  controls3: AnimationControls;
+  controls4: AnimationControls;
 };
 
-const GameMap = ({ playerList, onClickLand }: Props) => {
+const GameMap = ({
+  playerList,
+  onClickLand,
+  controls1,
+  controls2,
+  controls3,
+  controls4,
+}: Props) => {
   return (
     <div className='absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 mt-[40px] w-[640px] h-[640px] ]'>
       {/* 필드 타일 */}
@@ -273,7 +284,7 @@ const GameMap = ({ playerList, onClickLand }: Props) => {
       {/* 캐릭터 */}
       {playerList[0] && (
         <motion.div
-          // animate={controls}
+          animate={controls1}
           className={`absolute`}
           style={{
             bottom: `20px`,
@@ -292,7 +303,7 @@ const GameMap = ({ playerList, onClickLand }: Props) => {
       )}
       {playerList[1] && (
         <motion.div
-          // animate={controls}
+          animate={controls2}
           className={`absolute`}
           style={{
             bottom: `20px`,
@@ -311,7 +322,7 @@ const GameMap = ({ playerList, onClickLand }: Props) => {
       )}
       {playerList[2] && (
         <motion.div
-          // animate={controls}
+          animate={controls3}
           className={`absolute`}
           style={{
             bottom: `20px`,
@@ -330,7 +341,7 @@ const GameMap = ({ playerList, onClickLand }: Props) => {
       )}
       {playerList[3] && (
         <motion.div
-          // animate={controls}
+          animate={controls4}
           className={`absolute`}
           style={{
             bottom: `20px`,

@@ -123,18 +123,15 @@ const MyPageModal = ({
   }, [isOpenCreateRoomModal, user]);
 
   useEffect(() => {
-    if (nickname.length < 2) {
+    if (nickname.length < 2 || nickname.length > 8) {
       setIsError(true);
-      setErrorMsg('닉네임은 2 ~ 12자 사이로 입력해야합니다.');
-      console.log('맹');
-
+      setErrorMsg('닉네임은 2 ~ 8자 사이로 입력해야합니다.');
       return;
     }
 
-    if (nickname.length > 0 && nickname.length <= 20) {
+    if (nickname.length > 1 && nickname.length <= 8) {
       setIsError(false);
       setErrorMsg('');
-      console.log('맹맹');
     }
 
     // 중복 닉네임 체크

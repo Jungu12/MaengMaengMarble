@@ -17,24 +17,27 @@ const LobbyRoomListView = ({
   onClickInviteButton,
   onClickCreateRoomButton,
 }: CreateRoomModalProps) => {
-  // TODO 방 목록 없을 때 로딩 보여주기
-  if (!roomList.length) return;
-
   return (
     <div className='flex flex-[3] flex-col h-full w-full p-12 justify-between bg-white bg-opacity-50 rounded-[40px] overflow-auto'>
-      <div className='grid grid-cols-2 gap-10 place-content-between pr-[20px] w-full h-full relative scrollbar'>
-        {roomList.length > 1
-          ? roomList
-              .sort((a, b) => {
-                const dateA = formatStringToDate(a.createdTime);
-                const dateB = formatStringToDate(b.createdTime);
-                return dateB.getTime() - dateA.getTime();
-              })
-              .map((room) => <RoomInfoCard room={room} key={room.code} />)
-          : roomList.map((room) => (
-              <RoomInfoCard room={room} key={room.code} />
-            ))}
-      </div>
+      {roomList.length > 0 ? (
+        <div className='grid grid-cols-2 gap-10 place-content-start pr-[20px] w-full h-full relative scrollbar'>
+          {roomList.length > 1
+            ? roomList
+                .sort((a, b) => {
+                  const dateA = formatStringToDate(a.createdTime);
+                  const dateB = formatStringToDate(b.createdTime);
+                  return dateB.getTime() - dateA.getTime();
+                })
+                .map((room) => <RoomInfoCard room={room} key={room.code} />)
+            : roomList.map((room) => (
+                <RoomInfoCard room={room} key={room.code} />
+              ))}
+        </div>
+      ) : (
+        <div className='w-full h-full flex justify-center items-center text-3xl text-text-100 font-bold'>
+          방 만들어줘 ಥ_ಥ
+        </div>
+      )}
       <div className='flex flex-row h-[18px] items-center justify-between mt-[40px]'>
         <button
           onClick={onClickInviteButton}
