@@ -222,7 +222,7 @@ public class GameRoomService {
 			// 거래 정지 칸으로 이동
 			// 클라이언트에서 서버로 턴종료  호출
 
-			responseDto = ResponseDto.builder().type("턴종료").data(dice).build();
+			responseDto = ResponseDto.builder().type("주사위턴종료").data(dice).build();
 
 		} else {
 			//
@@ -234,15 +234,26 @@ public class GameRoomService {
 				int currentLap = player.getCurrentLap() + 1;
 
 				player.setCurrentLap(currentLap);
+				players[currentIdx] = player;
+				gameInfo.setPlayers(players);
+
+				gameInfoRepository.createGameRoom(gameInfo);
+				dice.setDoubleCount(curPlayer.getDoubleCount());
+				dice.setPlayers(players);
+				responseDto = ResponseDto.builder().type("주사위맹맹지급").data(dice).build();
+
+			} else{
+				players[currentIdx] = player;
+				gameInfo.setPlayers(players);
+
+				gameInfoRepository.createGameRoom(gameInfo);
+				dice.setDoubleCount(curPlayer.getDoubleCount());
+				dice.setPlayers(players);
+				responseDto = ResponseDto.builder().type("주사위이동후로직").data(dice).build();
+
 			}
-			players[currentIdx] = player;
-			gameInfo.setPlayers(players);
 
-			gameInfoRepository.createGameRoom(gameInfo);
-			dice.setDoubleCount(curPlayer.getDoubleCount());
-			dice.setPlayers(players);
 
-			responseDto = ResponseDto.builder().type("이동후로직").data(dice).build();
 
 		}
 
@@ -284,7 +295,7 @@ public class GameRoomService {
 			dice.setPlayers(players);
 			gameInfo.setPlayers(players);
 			gameInfoRepository.createGameRoom(gameInfo);
-			return ResponseDto.builder().type("턴종료").data(dice).build();
+			return ResponseDto.builder().type("거래정지턴종료").data(dice).build();
 		} else {
 			// 더블이면 이동
 			int curLocation = curPlayer.getCurrentLocation();
@@ -304,7 +315,7 @@ public class GameRoomService {
 			dice.setDoubleCount(0);
 			dice.setPlayers(players);
 
-			return ResponseDto.builder().type("이동후로직").data(dice).build();
+			return ResponseDto.builder().type("거래정지이동후로직").data(dice).build();
 
 		}
 
@@ -833,7 +844,7 @@ public class GameRoomService {
 			players[playerIdx] = player;
 			gameInfo.setPlayers(players);
 			gameInfoRepository.createGameRoom(gameInfo);
-			return ResponseDto.builder().type("이동후로직").data(player).build();
+			return ResponseDto.builder().type("맹맹지급이동후로직").data(player).build();
 		} else {
 			// 맹맹이 음수일 때
 			// 맹맹이 보유자산 보다 많을 때?
@@ -847,7 +858,7 @@ public class GameRoomService {
 					players[playerIdx] = player;
 					gameInfo.setPlayers(players);
 					gameInfoRepository.createGameRoom(gameInfo);
-					return ResponseDto.builder().type("이동후로직").data(player).build();
+					return ResponseDto.builder().type("맹맹지급이동후로직").data(player).build();
 				} else {
 					return ResponseDto.builder().type("매각").build();
 				}
@@ -978,7 +989,7 @@ public class GameRoomService {
 		switch (currentLocation) {
 			case 0:
 				// 시작지점
-				responseDto = ResponseDto.builder().type("자유").build();
+				responseDto = ResponseDto.builder().type("자유").data(gameInfo).build();
 				break;
 			case 2:
 				// 세금 징수
@@ -994,7 +1005,7 @@ public class GameRoomService {
 				break;
 			case 8:
 				// 거래정지
-				responseDto = ResponseDto.builder().type("턴종료").build();
+				responseDto = ResponseDto.builder().type("이동후턴종료").build();
 				break;
 			case 10:
 				// 박진호
@@ -1027,7 +1038,7 @@ public class GameRoomService {
 					// 다른 플레이어의 소유 일 때
 					// 통행료 계산
 					long fees = lands.get(currentLocation).getCurrentFees()[0];
-					for (int i = 0; i < lands.get(currentLocation).getCurrentFees().length; i++) {
+					for (int i = 0; i < lands.get(currentLocation).getBuildings().length; i++) {
 						if (lands.get(currentLocation).getBuildings()[i]) {
 							fees += lands.get(currentLocation).getCurrentFees()[i + 1];
 						}
@@ -1075,7 +1086,7 @@ public class GameRoomService {
 			gameInfo.setPlayers(players);
 			gameInfoRepository.createGameRoom(gameInfo);
 			return ResponseDto.builder()
-				.type("맹맹지급")
+				.type("어디로든문맹맹지급")
 				.data(DoorResponse.builder().lapCheck(true)
 					.players(players)
 					.build())
@@ -1087,7 +1098,7 @@ public class GameRoomService {
 			gameInfo.setPlayers(players);
 			gameInfoRepository.createGameRoom(gameInfo);
 			return ResponseDto.builder()
-				.type("이동후로직")
+				.type("어디로든문이동후로직")
 				.data(DoorResponse.builder().lapCheck(false)
 					.players(players)
 					.build())
@@ -1128,7 +1139,7 @@ public class GameRoomService {
 			gameInfo.setPlayers(players);
 			gameInfoRepository.createGameRoom(gameInfo);
 			return ResponseDto.builder()
-				.type("맹맹지급")
+				.type("어디로든문맹맹지급")
 				.data(DoorResponse.builder().lapCheck(true)
 					.players(players)
 					.build())
@@ -1140,7 +1151,7 @@ public class GameRoomService {
 			gameInfo.setPlayers(players);
 			gameInfoRepository.createGameRoom(gameInfo);
 			return ResponseDto.builder()
-				.type("이동후로직")
+				.type("어디로든문이동후로직")
 				.data(DoorResponse.builder().lapCheck(false)
 					.players(players)
 					.build())
@@ -1531,7 +1542,7 @@ public class GameRoomService {
 		if(aliveCnt == 1) {
 			responseDto = ResponseDto.builder().type("게임종료").build();
 		} else {
-			responseDto = ResponseDto.builder().type("턴종료").data(BankruptcyResponse.builder().lands(lands).players(players).build()).build();
+			responseDto = ResponseDto.builder().type("파산턴종료").data(BankruptcyResponse.builder().lands(lands).players(players).build()).build();
 		}
 
 		return responseDto;
