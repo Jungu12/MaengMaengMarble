@@ -113,6 +113,7 @@ const SlotMachineModal = ({
         slotResult[0] = parkResult.data.num[0];
         slotResult[1] = parkResult.data.num[1];
         slotResult[2] = parkResult.data.num[2];
+        console.log(slotResult);
       }
     });
 
