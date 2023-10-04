@@ -106,45 +106,56 @@ const GameRoom = () => {
 
   // 소켓 연결
   useEffect(() => {
+    let subTemp: StompJs.StompSubscription;
     client.current = getClient();
     activateClient(client.current);
     client.current.onConnect = () => {
       // 방장인 경우 게임 시작 알리기
+      if (!client.current) return;
       if (user?.userId === state.userList[0].userId) {
-        client.current?.publish({
+        client.current.publish({
           destination: `/pub/game-rooms/start/${gameId}`,
           body: JSON.stringify({
             cnt: currentParticipantsNum(state.userList).toString(),
           }),
         });
       }
+
+      subTemp = client.current.subscribe(`/sub/game-rooms/${gameId}`, (res) => {
+        const response: WSResponseType<unknown> = JSON.parse(res.body);
+        if (response.type === '플레이순서') {
+          const newOrderList = response as WSResponseType<{
+            cards: TurnListType[];
+          }>;
+          console.log('[테스트]', newOrderList);
+          setOrderList(newOrderList.data.cards);
+        }
+        if (response.type === '초기게임정보') {
+          // 유저 배치 등 초기 세팅하기
+          setIsGameStart(true);
+          const temp = response as WSResponseType<FullGameDataType>;
+          console.log('[게임시작데이터]', temp);
+          setPlayerList(temp.data.players);
+          setNews(temp.data.info.effectNews);
+          setCurrentPlayer(temp.data.info.currentPlayer);
+          setLandList(temp.data.lands);
+        }
+      });
+    };
+
+    return () => {
+      subTemp.unsubscribe();
     };
   }, [gameId, state.userList, user?.userId]);
 
   // 구독
   useEffect(() => {
-    if (client.current?.connected) {
-      gameSub.current = client.current?.subscribe(
+    if (!client.current) return;
+    if (client.current.connected) {
+      gameSub.current = client.current.subscribe(
         `/sub/game-rooms/${gameId}`,
         (res) => {
           const response: WSResponseType<unknown> = JSON.parse(res.body);
-          if (response.type === '플레이순서') {
-            const newOrderList = response as WSResponseType<{
-              cards: TurnListType[];
-            }>;
-            console.log('[테스트]', newOrderList);
-            setOrderList(newOrderList.data.cards);
-          }
-          if (response.type === '초기게임정보') {
-            // 유저 배치 등 초기 세팅하기
-            setIsGameStart(true);
-            const temp = response as WSResponseType<FullGameDataType>;
-            console.log('[게임시작데이터]', temp);
-            setPlayerList(temp.data.players);
-            setNews(temp.data.info.effectNews);
-            setCurrentPlayer(temp.data.info.currentPlayer);
-            setLandList(temp.data.lands);
-          }
 
           if (
             response.type === '주사위' ||

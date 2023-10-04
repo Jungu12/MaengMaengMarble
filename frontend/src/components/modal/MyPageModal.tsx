@@ -123,7 +123,7 @@ const MyPageModal = ({
   }, [isOpenCreateRoomModal, user]);
 
   useEffect(() => {
-    if (nickname.length < 2 && nickname.length > 8) {
+    if (nickname.length < 2 || nickname.length > 8) {
       setIsError(true);
       setErrorMsg('닉네임은 2 ~ 8자 사이로 입력해야합니다.');
       return;
