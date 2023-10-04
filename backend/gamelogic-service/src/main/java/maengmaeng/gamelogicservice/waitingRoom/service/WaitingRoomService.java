@@ -120,7 +120,15 @@ public class WaitingRoomService {
                 startCnt += 1;
             }
         }
-        if(startCnt >=2 ){
+        int realperson = 0;
+        for(CurrentParticipant participant : waitingRoom.getCurrentParticipants()){
+            if(participant.getNickname()!=null){
+                realperson++;
+            }
+        }
+        if(startCnt < 2 ){
+            startPossible = false;
+        }else if(startCnt == realperson){
             startPossible = true;
         }
 
