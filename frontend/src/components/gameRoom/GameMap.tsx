@@ -253,7 +253,7 @@ const GameMap = ({ playerList }: Props) => {
           // animate={controls}
           className={`absolute`}
           style={{
-            bottom: `30px`,
+            bottom: `20px`,
             right: `20px`,
           }}
         >
@@ -272,7 +272,7 @@ const GameMap = ({ playerList }: Props) => {
           // animate={controls}
           className={`absolute`}
           style={{
-            bottom: `30px`,
+            bottom: `20px`,
             right: `20px`,
           }}
         >
@@ -291,7 +291,7 @@ const GameMap = ({ playerList }: Props) => {
           // animate={controls}
           className={`absolute`}
           style={{
-            bottom: `30px`,
+            bottom: `20px`,
             right: `20px`,
           }}
         >
@@ -310,7 +310,7 @@ const GameMap = ({ playerList }: Props) => {
           // animate={controls}
           className={`absolute`}
           style={{
-            bottom: `30px`,
+            bottom: `20px`,
             right: `20px`,
           }}
         >

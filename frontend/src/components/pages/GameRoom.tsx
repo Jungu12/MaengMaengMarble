@@ -1,7 +1,7 @@
 import { images } from '@constants/images';
 import { calcRank, effectNewsToString, formatAsset } from '@utils/game';
 import { motion } from 'framer-motion';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import * as StompJs from '@stomp/stompjs';
 import { activateClient, getClient } from '@utils/socket';
 import { useLocation, useParams } from 'react-router-dom';
@@ -72,6 +72,13 @@ const GameRoom = () => {
   //   setPosition(7);
   // }, []);
 
+  // 주사위 던지기
+  const handleDiceRoll = useCallback(() => {
+    client.current?.publish({
+      destination: `/pub/game-rooms/${gameId}`,
+    });
+  }, [gameId]);
+
   // 소켓 연결
   useEffect(() => {
     client.current = getClient();
@@ -106,6 +113,9 @@ const GameRoom = () => {
             setPlayerList(temp.data.players);
             setNews(temp.data.info.effectNews);
             setCurrentPlayer(temp.data.info.currentPlayer);
+          }
+          if (response.type === '주사위') {
+            console.log('주사위 결과 나왔어요');
           }
           console.log(JSON.parse(res.body));
         }
@@ -149,7 +159,7 @@ const GameRoom = () => {
           <button
             className='button-3d'
             onClick={() => {
-              console.log('버튼 클릭');
+              handleDiceRoll();
             }}
           >
             주사위 굴리기
