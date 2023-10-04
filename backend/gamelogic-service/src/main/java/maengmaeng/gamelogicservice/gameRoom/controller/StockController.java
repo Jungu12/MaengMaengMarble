@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import maengmaeng.gamelogicservice.gameRoom.domain.GameInfo;
 import maengmaeng.gamelogicservice.gameRoom.domain.Player;
 import maengmaeng.gamelogicservice.gameRoom.domain.dto.PlayerSeq;
-import maengmaeng.gamelogicservice.gameRoom.domain.dto.StockInfo;
 import maengmaeng.gamelogicservice.gameRoom.domain.dto.StockRequest;
 import maengmaeng.gamelogicservice.gameRoom.domain.dto.StockResponse;
 import maengmaeng.gamelogicservice.gameRoom.service.GameRoomService;
@@ -32,17 +31,14 @@ public class StockController {
     @MessageMapping("/game-rooms/stock/purchase/{roomCode}")
     public void purchase(@DestinationVariable String roomCode, StockRequest stockRequest){
 
-        PlayerSeq playerSeq = stockRequest.getPlayerSeq();
-        StockInfo stockInfo = stockRequest.getStockInfo();
-
-        stockService.purchase(roomCode, playerSeq, stockInfo);
+        stockService.purchase(roomCode,stockRequest);
 
 
         GameInfo gameInfo = gameRoomService.getInfo(roomCode);
 
         Player chanegedPlayer = null;
         for(Player player : gameInfo.getPlayers()){
-            if(player.getNickname().equals(stockRequest.getPlayerSeq().getNickname())){
+            if(player.getNickname()!=null && player.getNickname().equals(gameInfo.getInfo().getCurrentPlayer())){
                 chanegedPlayer = player;
                 break;
             }
@@ -52,7 +48,7 @@ public class StockController {
 
         GameData gameData = GameData.builder()
                 .data(ResponseDto.builder()
-                        .type("주식 매수 후 정보")
+                        .type("자유")
                         .data(StockResponse.builder().player(chanegedPlayer).build())
                         .build())
                 .roomCode(roomCode)
@@ -65,19 +61,17 @@ public class StockController {
 
     @MessageMapping("/game-rooms/stock/sell/{roomCode}")
     public void sell(@DestinationVariable String roomCode, StockRequest stockRequest){
-
-        PlayerSeq playerSeq = stockRequest.getPlayerSeq();
-        StockInfo stockInfo = stockRequest.getStockInfo();
+        logger.info("CONTROLLER : sell()");
 
         // 입력받은 사람이 주식 매도
-        stockService.sell(roomCode, playerSeq, stockInfo);
+        stockService.sell(roomCode,stockRequest);
 
 
         GameInfo gameInfo = gameRoomService.getInfo(roomCode);
 
         Player chanegedPlayer = null;
         for(Player player : gameInfo.getPlayers()){
-            if(player.getNickname().equals(stockRequest.getPlayerSeq().getNickname())){
+            if(player.getNickname()!=null && player.getNickname().equals(gameInfo.getInfo().getCurrentPlayer())){
                 chanegedPlayer = player;
                 break;
             }
@@ -87,7 +81,7 @@ public class StockController {
 
         GameData gameData = GameData.builder()
                 .data(ResponseDto.builder()
-                        .type("주식 매도(팔기) 후 정보")
+                        .type("자유")
                         .data(StockResponse.builder().player(chanegedPlayer).build())
                         .build())
                 .roomCode(roomCode)

@@ -348,6 +348,10 @@ public class GameRoomService {
 			}
 		}
 
+		List<Integer> curPlayerLands = curPlayer.getLands();
+		curPlayerLands.add(curLand.getLandId());
+
+		curPlayer.setLands(curPlayerLands);
 		curPlayer.setMoney(curPlayer.getMoney() - totalPay);
 		curLand.setOwner(currentIdx);
 		curLand.setBuildings(purchasedBuildings);
@@ -398,6 +402,11 @@ public class GameRoomService {
 
 		saledLand.setOwner(-1);
 		saledLand.setBuildings(new boolean[] {false, false, false});
+
+		//Player 객체 안의 보유 땅 정보 업데이트
+		List<Integer> curPlayerLands = players[currentIdx].getLands();
+		curPlayerLands.remove(saledLand.getLandId());
+		players[currentIdx].setLands(curPlayerLands);
 
 		players[currentIdx].setMoney(players[currentIdx].getMoney() + (long)(currentLandPrice * 0.7));
 
@@ -455,7 +464,7 @@ public class GameRoomService {
 		players[owner].setMoney(players[owner].getMoney() + currentLandFee);
 		players[owner].setAsset(players[owner].getAsset() + currentLandFee);
 
-		// 바뀐 정보 gamInfo에 업데이트
+		// 바뀐 정보 gameInfo에 업데이트
 		gameInfo.setPlayers(players);
 
 		gameInfoRepository.createGameRoom(gameInfo);
@@ -506,6 +515,11 @@ public class GameRoomService {
 
 		// 인수 로직 처리 후 땅 주인 변경
 		currentLand.setOwner(currentIdx);
+
+		//Player 객체 안의 보유 땅 정보 업데이트
+		List<Integer> curPlayerLands = players[currentIdx].getLands();
+		curPlayerLands.remove(currentLand.getLandId());
+		players[currentIdx].setLands(curPlayerLands);
 
 		//gameInfo에 바뀐 정보 최신화
 		gameInfo.setPlayers(players);
@@ -902,7 +916,6 @@ public class GameRoomService {
 		for (int i = 1; i < playerStock.length; i++) {
 			// 주식의 현재 가격 저장
 			stockMoney += playerStock[i] * stocks.get(i - 1).getCurrentCost();
-
 		}
 		asset += stockMoney;
 		long landMoney = 0;
@@ -1498,6 +1511,8 @@ public class GameRoomService {
 				lands.set(land.getLandId(), land);
 			}
 		}
+
+		curPlayer.setLands(new ArrayList<>());
 
 		int aliveCnt = 0;
 		for (int i = 0; i < players.length; i++) {

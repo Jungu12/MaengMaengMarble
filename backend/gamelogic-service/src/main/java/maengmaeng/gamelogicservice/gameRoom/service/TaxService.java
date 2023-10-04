@@ -109,9 +109,12 @@ public class TaxService {
         for(int i = 0 ; i < players.length ; i++){
             if(players[i] !=null) {
                 players[i].setMoney((long) (players[i].getMoney() + realtax));
+                players[i].setAsset((long) (players[i].getAsset() + realtax));
             }
         }
 
+        player.setMoney((long) (player.getMoney() - taxTotal));
+        player.setAsset((long) (player.getAsset() - taxTotal));
 
         gameInfoRepository.createGameRoom(gameInfo);
     }

@@ -4,6 +4,6 @@ import lombok.Getter;
 
 @Getter
 public class StockRequest {
-    private PlayerSeq playerSeq;
-    private StockInfo stockInfo;
+    private String name;
+    private int cnt;
 }
