@@ -7,9 +7,9 @@ import java.io.Serializable;
 
 @Getter
 public class PlayerSeq {
-    String userId;
-    String nickname;
-    int characterId;
-    int playerCnt;
+    private String userId;
+    private String nickname;
+    private int characterId;
+    private int playerCnt;
 
 }
