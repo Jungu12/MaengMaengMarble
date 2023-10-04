@@ -9,7 +9,6 @@ import { addAmountUnit } from '@utils/game';
 import * as StompJs from '@stomp/stompjs';
 import { WSResponseType } from '@/types/common/common.type';
 import { SlotType } from '@/types/gameRoom/game.type';
-import { playersState } from '@atom/gameAtom';
 
 type Props = {
   client: StompJs.Client;
@@ -32,7 +31,6 @@ const SlotMachineModal = ({
   const [isClickBetting, setIsClickBetting] = useState(false);
   const { show } = useToastList();
   const setToastMessage = useSetRecoilState(ToastMessageState);
-  const setPlayerList = useSetRecoilState(playersState);
 
   const increaseMoney = useCallback(() => {
     if (bettingMoney === 30000000) {
@@ -109,7 +107,6 @@ const SlotMachineModal = ({
       if (response.type === '박진호 끝') {
         const parkResult = response as WSResponseType<SlotType>;
         console.log('[박진호데이터]', parkResult);
-        setPlayerList(parkResult.data.players);
         setSlotResult([
           parkResult.data.num[0],
           parkResult.data.num[1],
@@ -176,7 +173,6 @@ const SlotMachineModal = ({
     handleSlot,
     indexes,
     roll,
-    setPlayerList,
     setToastMessage,
     show,
     slotResult,

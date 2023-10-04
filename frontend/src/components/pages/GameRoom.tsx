@@ -16,6 +16,7 @@ import { ParticipantsType, WSResponseType } from '@/types/common/common.type';
 import {
   DiceResultType,
   FullGameDataType,
+  SlotType,
   TurnEndResponseType,
   TurnListType,
 } from '@/types/gameRoom/game.type';
@@ -134,13 +135,25 @@ const GameRoom = () => {
           setCurrentPlayer(temp.data.info.currentPlayer);
           updateInfo(temp.data);
         }
+        if (response.type === '박진호 끝') {
+          const parkResult = response as WSResponseType<SlotType>;
+          console.log('[박진호데이터]', parkResult);
+          setPlayerList(parkResult.data.players);
+        }
       });
     };
 
     return () => {
       subTemp.unsubscribe();
     };
-  }, [gameId, setCurrentPlayer, state.userList, updateInfo, user?.userId]);
+  }, [
+    gameId,
+    setCurrentPlayer,
+    setPlayerList,
+    state.userList,
+    updateInfo,
+    user?.userId,
+  ]);
 
   // 구독
   useEffect(() => {
