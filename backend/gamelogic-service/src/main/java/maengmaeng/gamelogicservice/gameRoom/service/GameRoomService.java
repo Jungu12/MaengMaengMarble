@@ -1320,7 +1320,7 @@ public class GameRoomService {
 					lands.set(entry.getKey(), curLand);
 				}
 
-				for (Map.Entry<Integer, Integer> entry : curEffectedCountries.entrySet()) {
+				for (Map.Entry<Integer, Integer> entry : curEffectedStocks.entrySet()) {
 					Stock curStocks = stocks.get(entry.getKey());
 					int curEffect = entry.getValue();
 
