@@ -3,6 +3,8 @@ package maengmaeng.gamelogicservice.gameRoom.controller;
 
 import lombok.AllArgsConstructor;
 import maengmaeng.gamelogicservice.gameRoom.domain.GameInfo;
+import maengmaeng.gamelogicservice.gameRoom.domain.Player;
+import maengmaeng.gamelogicservice.gameRoom.domain.dto.TaxResponse;
 import maengmaeng.gamelogicservice.gameRoom.service.GameRoomService;
 import maengmaeng.gamelogicservice.gameRoom.service.TaxService;
 import maengmaeng.gamelogicservice.global.dto.GameData;
@@ -14,6 +16,9 @@ import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.stereotype.Controller;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Controller
 @AllArgsConstructor
@@ -31,10 +36,21 @@ public class TaxController {
 
         GameInfo gameInfo = gameRoomService.getInfo(roomCode);
 
+        List<Player> players = new ArrayList<>();
+        for(Player player : gameInfo.getPlayers()){
+            if(player!=null){
+                players.add(player);
+            }else{
+                break;
+            }
+        }
+        TaxResponse response = TaxResponse.builder().players(players).build();
+
+
         GameData gameData = GameData.builder()
                 .data(ResponseDto.builder()
                         .type("세금 징수")
-                        .data(gameInfo)
+                        .data(ResponseDto.builder().type("세금 징수").data(response).build())
                         .build())
                 .roomCode(roomCode)
                 .type("GAME_ROOM")
