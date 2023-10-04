@@ -83,7 +83,6 @@ const GameRoom = () => {
     client.current?.publish({
       destination: `/pub/game-rooms/roll/${gameId}`,
     });
-    setIsDiceRollButtonClick(true);
   }, [gameId, isDiceRollButtonClick]);
 
   // 소켓 연결
@@ -123,24 +122,10 @@ const GameRoom = () => {
           }
           if (response.type === '주사위') {
             const diceResult = response as WSResponseType<DiceResultType>;
+            setIsDiceRollButtonClick(true);
             console.log('주사위 결과 나왔어요');
             setDice1(diceResult.data.dice1);
             setDice2(diceResult.data.dice2);
-            const diceRef = document.querySelectorAll('._space3d');
-            const clickEvent = new MouseEvent('click', {
-              bubbles: true, // 이벤트가 버블링되도록 설정합니다.
-              cancelable: true, // 이벤트가 취소 가능하도록 설정합니다.
-              view: window, // 이벤트의 관련 뷰를 설정합니다.
-            });
-
-            diceRef[0].dispatchEvent(clickEvent);
-            setTimeout(() => {
-              diceRef[1].dispatchEvent(clickEvent);
-            }, 50);
-
-            setTimeout(() => {
-              setIsDiceRoll(true);
-            }, 1000);
           }
           console.log(JSON.parse(res.body));
         }
@@ -148,6 +133,28 @@ const GameRoom = () => {
       console.log('[참가 인원]', currentParticipantsNum(state.userList));
     };
   }, [gameId, state.userList, user?.userId]);
+
+  useEffect(() => {
+    if (isDiceRollButtonClick) {
+      const diceRef = document.querySelectorAll('._space3d');
+      const clickEvent = new MouseEvent('click', {
+        bubbles: true, // 이벤트가 버블링되도록 설정합니다.
+        cancelable: true, // 이벤트가 취소 가능하도록 설정합니다.
+        view: window, // 이벤트의 관련 뷰를 설정합니다.
+      });
+
+      console.log(diceRef);
+
+      diceRef[0].dispatchEvent(clickEvent);
+      setTimeout(() => {
+        diceRef[1].dispatchEvent(clickEvent);
+      }, 50);
+
+      setTimeout(() => {
+        setIsDiceRoll(true);
+      }, 5000);
+    }
+  }, [isDiceRollButtonClick]);
 
   if (!gameId || !client.current) return;
 
@@ -173,7 +180,7 @@ const GameRoom = () => {
         {/* 주사위 버튼*/}
         {currentPlayer === user?.nickname && !isDiceRoll && (
           <div
-            className='absolute bottom-[50%] left-[50%] text-5xl text-white z-[10] text-[24px] font-bold'
+            className='absolute bottom-[25%] left-[50%] text-5xl text-white z-[10] text-[24px] font-bold'
             style={{
               transform: 'translate(-50%, -50%)',
             }}
