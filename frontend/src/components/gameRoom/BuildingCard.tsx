@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { images } from '@constants/images';
 import { BuildingType, addAmountUnit } from '@utils/game';
 import CCheckBox from '@components/common/CCheckBox';
+import { useEffect } from 'react';
 
 type Props = {
   type: BuildingType;
@@ -22,6 +23,11 @@ const BuildingCard = ({
   handleCheck,
   leftTurn,
 }: Props) => {
+  useEffect(() => {
+    console.log(type);
+    console.log(leftTurn);
+  }, [leftTurn, type]);
+
   return (
     <button
       onClick={

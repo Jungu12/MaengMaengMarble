@@ -299,6 +299,8 @@ const GameRoom = () => {
 
   // 건물 구매
   const handleConstruction = (purchase: boolean[]) => {
+    console.log(purchase);
+
     client.current?.publish({
       destination: `/pub/game-rooms/purchase/${gameId}`,
       body: JSON.stringify(purchase),
