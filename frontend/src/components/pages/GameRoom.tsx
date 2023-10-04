@@ -113,7 +113,7 @@ const GameRoom = () => {
   // 주사위 던지기
   const handleDiceRoll = useCallback(() => {
     client.current?.publish({
-      destination: `/pub/game-rooms/${gameId}`,
+      destination: `/pub/game-rooms/roll/${gameId}`,
     });
   }, [gameId]);
 
@@ -179,110 +179,58 @@ const GameRoom = () => {
   }
 
   return (
-    // <<<<<<< HEAD
-    //     <div
-    //       className='flex flex-col w-full h-full min-h-[700px] overflow-hidden relative'
-    //       style={{
-    //         backgroundImage: `url(${images.gameRoom.background})`,
-    //         backgroundSize: 'cover',
-    //       }}
-    //     >
-    //       {/* 주사위 버튼*/}
-    //       {currentPlayer === user?.nickname && (
-    //         <div
-    //           className='absolute bottom-[20%] left-[50%] text-5xl text-white z-[10] text-[24px] font-bold'
-    //           style={{
-    //             transform: 'translate(-50%, -50%)',
-    //           }}
-    //         >
-    //           <button
-    //             className='button-3d'
-    //             onClick={() => {
-    //               handleDiceRoll();
-    //             }}
-    //           >
-    //             주사위 굴리기
-    //           </button>
-    //         </div>
-    //       )}
-    //       {/* 유저 정보 */}
-    //       <div className='flex flex-col w-full h-full relative'>
-    //         <div className='flex justify-between'>
-    //           {playerList[0] && (
-    //             <div className='flex w-[360px] h-[160px] relative'>
-    //               <div className='w-[120px] flex items-center justify-center overflow-hidden relative'>
-    //                 <img
-    //                   className='object-cover mt-[80px] z-[1]'
-    //                   src={playerList[0].avatarImage}
-    //                   alt='player4'
-    //                 />
-    //                 <img
-    //                   className='w-full h-full absolute object-fill'
-    //                   src={images.gameRoom.profileBgRed}
-    //                   alt='배경이미지'
-    //                 />
-    //               </div>
-    //               <div className='flex flex-col w-[240px]'>
-    //                 <div
-    //                   className='text-white text-xl font-bold mt-[8px] pb-[8px] pl-[12px] relative'
-    //                   style={{
-    //                     /* 테두리 스타일 설정 */
-    //                     borderBottom: '3px solid transparent',
-    //                     borderImage:
-    //                       'linear-gradient(to right, #790317, transparent)',
-    //                     borderImageSlice: '1',
-    //                     borderImageWidth: '0 0 2px 0',
-    //                     borderImageOutset: '0',
-    //                     borderImageRepeat: 'stretch',
-    //                   }}
-    //                 >
-    //                   {playerList[0].nickname}
-    // =======
-    <>
-      <NewsCardModal isOpen={isOpenNews} handleNews={handleNews} />
-      <LandInfoModal
-        landId={landValue}
-        isOpen={isOpenLandInfo}
-        handleLandInfo={handleLandInfo}
-      />
-      <ConstructionModal
-        landId={landValue}
-        isOpen={isOpenConstruction}
-        handleConstruction={handleConstruction}
-      />
-      <LoansModal isOpen={isOpenLoans} handleLoans={handleLoans} />
-
-      <div
-        className='flex flex-col w-full h-full min-h-[700px] overflow-hidden relative'
-        style={{
-          backgroundImage: `url(${images.gameRoom.background})`,
-          backgroundSize: 'cover',
-        }}
-      >
-        {/* 주사위 버튼*/}
-        {currentPlayer === user?.nickname && (
-          <div
-            className='absolute bottom-[20%] left-[50%] text-5xl text-white z-[10] text-[24px] font-bold'
-            style={{
-              transform: 'translate(-50%, -50%)',
-            }}
-          >
-            <button
-              className='button-3d'
-              onClick={() => {
-                handleDiceRoll();
-              }}
-            >
-              주사위 굴리기
-            </button>
-          </div>
-        )}
-        {/* 유저 정보 */}
-        <div className='flex flex-col w-full h-full relative'>
-          <div className='flex justify-between'>
-            {playerList[0] && (
-              <div className='flex w-[360px] h-[160px] relative'>
-                <div className='w-[120px] flex items-center justify-center overflow-hidden relative'>
+    <div
+      className='flex flex-col w-full h-full min-h-[700px] overflow-hidden relative'
+      style={{
+        backgroundImage: `url(${images.gameRoom.background})`,
+        backgroundSize: 'cover',
+      }}
+    >
+      {/* 주사위 버튼*/}
+      {currentPlayer === user?.nickname && (
+        <div
+          className='absolute bottom-[20%] left-[50%] text-5xl text-white z-[10] text-[24px] font-bold'
+          style={{
+            transform: 'translate(-50%, -50%)',
+          }}
+        >
+          <button className='button-3d' onClick={handleDiceRoll}>
+            주사위 굴리기
+          </button>
+        </div>
+      )}
+      {/* 유저 정보 */}
+      <div className='flex flex-col w-full h-full relative'>
+        <div className='flex justify-between'>
+          {playerList[0] && (
+            <div className='flex w-[360px] h-[160px] relative'>
+              <div className='w-[120px] flex items-center justify-center overflow-hidden relative'>
+                <img
+                  className='object-cover mt-[80px] z-[1]'
+                  src={playerList[0].avatarImage}
+                  alt='player4'
+                />
+                <img
+                  className='w-full h-full absolute object-fill'
+                  src={images.gameRoom.profileBgRed}
+                  alt='배경이미지'
+                />
+              </div>
+              <div className='flex flex-col w-[240px]'>
+                <div
+                  className='text-white text-xl font-bold mt-[8px] pb-[8px] pl-[12px] relative'
+                  style={{
+                    /* 테두리 스타일 설정 */
+                    borderBottom: '3px solid transparent',
+                    borderImage:
+                      'linear-gradient(to right, #790317, transparent)',
+                    borderImageSlice: '1',
+                    borderImageWidth: '0 0 2px 0',
+                    borderImageOutset: '0',
+                    borderImageRepeat: 'stretch',
+                  }}
+                >
+                  {playerList[0].nickname}
                   <img
                     className='object-cover mt-[80px] z-[1]'
                     src={playerList[0].avatarImage}
