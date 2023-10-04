@@ -115,7 +115,8 @@ const SlotMachineModal = ({
         // slotResult[0] = parkResult.data.num[0];
         // slotResult[1] = parkResult.data.num[1];
         // slotResult[2] = parkResult.data.num[2];
-        console.log(slotResult);
+        console.log('[박진호 배열]', parkResult.data.num);
+        console.log('[slotResult 결과]', slotResult);
       }
     });
 
@@ -130,14 +131,14 @@ const SlotMachineModal = ({
       );
       console.log(indexes);
       if (
-        indexes[0] == indexes[1] &&
-        indexes[1] == indexes[2] &&
-        indexes[0] == 7
+        indexes[0] == indexes[1] ||
+        indexes[1] == indexes[2] ||
+        indexes[0] == indexes[2]
       ) {
         setToastMessage((prev) => {
           return {
             ...prev,
-            success: '777로 게임에서 승리하였습니다.',
+            success: '베팅금액의 2배 획득',
           };
         });
         show('success');
@@ -152,14 +153,14 @@ const SlotMachineModal = ({
         show('success');
       }
       if (
-        indexes[0] == indexes[1] ||
-        indexes[1] == indexes[2] ||
-        indexes[0] == indexes[2]
+        indexes[0] == indexes[1] &&
+        indexes[1] == indexes[2] &&
+        indexes[0] == 7
       ) {
         setToastMessage((prev) => {
           return {
             ...prev,
-            success: '베팅금액의 2배 획득',
+            success: '777로 게임에서 승리하였습니다.',
           };
         });
         show('success');
