@@ -5,9 +5,10 @@ import { motion } from 'framer-motion';
 
 type Props = {
   playerList: (PlayerType | null)[];
+  onClickLand: (landId: number) => void;
 };
 
-const GameMap = ({ playerList }: Props) => {
+const GameMap = ({ playerList, onClickLand }: Props) => {
   return (
     <div className='absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 mt-[40px] w-[640px] h-[640px] ]'>
       {/* 필드 타일 */}
@@ -26,6 +27,7 @@ const GameMap = ({ playerList }: Props) => {
           value={7}
           width={60}
           height={90}
+          onClickArea={onClickLand}
         />
         <MapArea
           src={images.map.egypt}
@@ -33,6 +35,7 @@ const GameMap = ({ playerList }: Props) => {
           value={6}
           width={60}
           height={90}
+          onClickArea={onClickLand}
         />
         <MapArea
           src={images.map.singapore}
@@ -40,6 +43,7 @@ const GameMap = ({ playerList }: Props) => {
           value={5}
           width={60}
           height={90}
+          onClickArea={onClickLand}
         />
         <MapArea
           src={images.map.goldKey1}
@@ -54,6 +58,7 @@ const GameMap = ({ playerList }: Props) => {
           value={3}
           width={60}
           height={90}
+          onClickArea={onClickLand}
         />
         <MapArea
           src={images.map.revenue}
@@ -68,6 +73,7 @@ const GameMap = ({ playerList }: Props) => {
           value={1}
           width={60}
           height={90}
+          onClickArea={onClickLand}
         />
         <MapArea
           src={images.map.start}
@@ -85,6 +91,7 @@ const GameMap = ({ playerList }: Props) => {
           value={15}
           width={90}
           height={60}
+          onClickArea={onClickLand}
         />
         <MapArea
           src={images.map.iran}
@@ -92,6 +99,7 @@ const GameMap = ({ playerList }: Props) => {
           value={14}
           width={90}
           height={60}
+          onClickArea={onClickLand}
         />
         <MapArea
           src={images.map.catarrh}
@@ -99,6 +107,7 @@ const GameMap = ({ playerList }: Props) => {
           value={13}
           width={90}
           height={60}
+          onClickArea={onClickLand}
         />
         <MapArea
           src={images.map.goldKey2}
@@ -113,6 +122,7 @@ const GameMap = ({ playerList }: Props) => {
           value={11}
           width={90}
           height={60}
+          onClickArea={onClickLand}
         />
         <MapArea
           src={images.map.macau}
@@ -120,6 +130,7 @@ const GameMap = ({ playerList }: Props) => {
           value={10}
           width={90}
           height={60}
+          onClickArea={onClickLand}
         />
         <MapArea
           src={images.map.argentina}
@@ -127,6 +138,7 @@ const GameMap = ({ playerList }: Props) => {
           value={9}
           width={90}
           height={60}
+          onClickArea={onClickLand}
         />
       </div>
       {/* 윗줄 */}
@@ -144,6 +156,7 @@ const GameMap = ({ playerList }: Props) => {
           value={17}
           width={60}
           height={90}
+          onClickArea={onClickLand}
         />
         <MapArea
           src={images.map.rushAndCash}
@@ -158,6 +171,7 @@ const GameMap = ({ playerList }: Props) => {
           value={19}
           width={60}
           height={90}
+          onClickArea={onClickLand}
         />
         <MapArea
           src={images.map.goldKey3}
@@ -172,6 +186,7 @@ const GameMap = ({ playerList }: Props) => {
           value={21}
           width={60}
           height={90}
+          onClickArea={onClickLand}
         />
         <MapArea
           src={images.map.germany}
@@ -179,6 +194,7 @@ const GameMap = ({ playerList }: Props) => {
           value={22}
           width={60}
           height={90}
+          onClickArea={onClickLand}
         />
         <MapArea
           src={images.map.uk}
@@ -186,6 +202,7 @@ const GameMap = ({ playerList }: Props) => {
           value={23}
           width={60}
           height={90}
+          onClickArea={onClickLand}
         />
         <MapArea
           src={images.map.anywhere}
@@ -203,6 +220,7 @@ const GameMap = ({ playerList }: Props) => {
           value={25}
           width={90}
           height={60}
+          onClickArea={onClickLand}
         />
         <MapArea
           src={images.map.canada}
@@ -210,6 +228,7 @@ const GameMap = ({ playerList }: Props) => {
           value={26}
           width={90}
           height={60}
+          onClickArea={onClickLand}
         />
         <MapArea
           src={images.map.India}
@@ -217,6 +236,7 @@ const GameMap = ({ playerList }: Props) => {
           value={27}
           width={90}
           height={60}
+          onClickArea={onClickLand}
         />
         <MapArea
           src={images.map.goldKey4}
@@ -231,6 +251,7 @@ const GameMap = ({ playerList }: Props) => {
           value={29}
           width={90}
           height={60}
+          onClickArea={onClickLand}
         />
         <MapArea
           src={images.map.japan}
@@ -238,6 +259,7 @@ const GameMap = ({ playerList }: Props) => {
           value={30}
           width={90}
           height={60}
+          onClickArea={onClickLand}
         />
         <MapArea
           src={images.map.korea}
@@ -245,6 +267,7 @@ const GameMap = ({ playerList }: Props) => {
           value={31}
           width={90}
           height={60}
+          onClickArea={onClickLand}
         />
       </div>
       {/* 캐릭터 */}
@@ -253,14 +276,17 @@ const GameMap = ({ playerList }: Props) => {
           // animate={controls}
           className={`absolute`}
           style={{
-            bottom: `30px`,
+            bottom: `20px`,
             right: `20px`,
           }}
         >
           <img
-            className='w-[56px] h-[56px]'
+            className='h-[64px]'
             src={playerList[0].avatarImage}
             alt='캐릭터'
+            style={{
+              filter: 'drop-shadow(1px 1px 1px #000)',
+            }}
           />
         </motion.div>
       )}
@@ -269,14 +295,17 @@ const GameMap = ({ playerList }: Props) => {
           // animate={controls}
           className={`absolute`}
           style={{
-            bottom: `30px`,
+            bottom: `20px`,
             right: `20px`,
           }}
         >
           <img
-            className='w-[56px] h-[56px]'
+            className='h-[64px]'
             src={playerList[1].avatarImage}
             alt='캐릭터'
+            style={{
+              filter: 'drop-shadow(1px 1px 1px #000)',
+            }}
           />
         </motion.div>
       )}
@@ -285,14 +314,17 @@ const GameMap = ({ playerList }: Props) => {
           // animate={controls}
           className={`absolute`}
           style={{
-            bottom: `30px`,
+            bottom: `20px`,
             right: `20px`,
           }}
         >
           <img
-            className='w-[56px] h-[56px]'
+            className='h-[64px]'
             src={playerList[2].avatarImage}
             alt='캐릭터'
+            style={{
+              filter: 'drop-shadow(1px 1px 1px #000)',
+            }}
           />
         </motion.div>
       )}
@@ -301,14 +333,17 @@ const GameMap = ({ playerList }: Props) => {
           // animate={controls}
           className={`absolute`}
           style={{
-            bottom: `30px`,
+            bottom: `20px`,
             right: `20px`,
           }}
         >
           <img
-            className='w-[56px] h-[56px]'
+            className='h-[64px]'
             src={playerList[3].avatarImage}
             alt='캐릭터'
+            style={{
+              filter: 'drop-shadow(1px 1px 1px #000)',
+            }}
           />
         </motion.div>
       )}

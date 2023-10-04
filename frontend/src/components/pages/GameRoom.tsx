@@ -1,7 +1,7 @@
 import { images } from '@constants/images';
 import { calcRank, effectNewsToString, formatAsset } from '@utils/game';
 import { motion } from 'framer-motion';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import * as StompJs from '@stomp/stompjs';
 import { activateClient, getClient } from '@utils/socket';
 import { useLocation, useParams } from 'react-router-dom';
@@ -30,7 +30,7 @@ const GameRoom = () => {
   const [playerList, setPlayerList] = useState<(PlayerType | null)[]>([]);
   const [news, setNews] = useState<NewsType[]>([]);
   const [currentPlayer, setCurrentPlayer] = useState('');
-  const [isDiceRoll, setIsDiceRoll] = useState(false);
+  // const [isDiceRoll, setIsDiceRoll] = useState(false);
   // const [position, setPosition] = useState(7);
   // const controls = useAnimation();
 
@@ -72,6 +72,13 @@ const GameRoom = () => {
   //   setPosition(7);
   // }, []);
 
+  // 주사위 던지기
+  const handleDiceRoll = useCallback(() => {
+    client.current?.publish({
+      destination: `/pub/game-rooms/roll/${gameId}`,
+    });
+  }, [gameId]);
+
   // 소켓 연결
   useEffect(() => {
     client.current = getClient();
@@ -107,6 +114,9 @@ const GameRoom = () => {
             setNews(temp.data.info.effectNews);
             setCurrentPlayer(temp.data.info.currentPlayer);
           }
+          if (response.type === '주사위') {
+            console.log('주사위 결과 나왔어요');
+          }
           console.log(JSON.parse(res.body));
         }
       );
@@ -131,422 +141,426 @@ const GameRoom = () => {
   }
 
   return (
-    <div
-      className='flex flex-col w-full h-full min-h-[700px] overflow-hidden relative'
-      style={{
-        backgroundImage: `url(${images.gameRoom.background})`,
-        backgroundSize: 'cover',
-      }}
-    >
-      {/* 주사위 버튼*/}
-      {currentPlayer === user?.nickname && (
-        <div
-          className='absolute bottom-[20%] left-[50%] text-5xl text-white z-[10] text-[24px] font-bold'
-          style={{
-            transform: 'translate(-50%, -50%)',
-          }}
-        >
-          <button
-            className='button-3d'
-            onClick={() => {
-              console.log('버튼 클릭');
-            }}
-          >
-            주사위 굴리기
-          </button>
-        </div>
-      )}
-      {/* 유저 정보 */}
-      <div className='flex flex-col w-full h-full relative'>
-        <div className='flex justify-between'>
-          {playerList[0] && (
-            <div className='flex w-[360px] h-[160px] relative'>
-              <div className='w-[120px] flex items-center justify-center overflow-hidden relative'>
-                <img
-                  className='object-cover mt-[80px] z-[1]'
-                  src={playerList[0].avatarImage}
-                  alt='player4'
-                />
-                <img
-                  className='w-full h-full absolute object-fill'
-                  src={images.gameRoom.profileBgRed}
-                  alt='배경이미지'
-                />
-              </div>
-              <div className='flex flex-col w-[240px]'>
-                <div
-                  className='text-white text-xl font-bold mt-[8px] pb-[8px] pl-[12px] relative'
-                  style={{
-                    /* 테두리 스타일 설정 */
-                    borderBottom: '3px solid transparent',
-                    borderImage:
-                      'linear-gradient(to right, #790317, transparent)',
-                    borderImageSlice: '1',
-                    borderImageWidth: '0 0 2px 0',
-                    borderImageOutset: '0',
-                    borderImageRepeat: 'stretch',
-                  }}
-                >
-                  {playerList[0].nickname}
-                  <img
-                    src={images.gameRoom.rankRed}
-                    alt='등수'
-                    className='absolute right-[16px] top-[4px] w-[56px] h-[56px]'
-                  />
-                  <p
-                    className='absolute right-[32px] top-[16px]'
-                    style={{
-                      textShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
-                    }}
-                  >
-                    {`${calcRank(playerList, 0)}등`}
-                  </p>
-                </div>
-                <div className='flex text-white mt-[24px] pl-[12px] overflow-hidden relative'>
-                  <span className='text-xl font-semibold'>총자산</span>
-                  <div className='flex-1 text-[#7492FF] text-[18px] font-medium ml-[12px] whitespace-nowrap'>
-                    <span>{`${formatAsset(playerList[0].asset)}`}</span>
-                  </div>
-                </div>
-                <div className='text-white pl-[12px] mt-[16px] overflow-hidden relative'>
-                  <span className='text-xl font-semibold'>보유현금</span>
-                  <span className='text-[#FFF59D] text-[18px] font-medium ml-[12px] whitespace-nowrap'>
-                    {`${formatAsset(playerList[0].money)}`}
-                  </span>
-                </div>
-              </div>
-              {/* 보유 카드 정보 */}
-              <div className='flex absolute bottom-[-36px] left-[26px]'>
-                {playerList[0].cards[0] && (
-                  <img
-                    className='w-[32px] h-[32px]'
-                    src={images.gameRoom.angel}
-                    alt='천사카드'
-                  />
-                )}
-                {playerList[0].cards[1] && (
-                  <img
-                    className='w-[32px] h-[32px]'
-                    src={images.gameRoom.mediaControl}
-                    alt='언론통제카드'
-                  />
-                )}
-              </div>
-            </div>
-          )}
+    <>
+      <div
+        className='flex flex-col w-full h-full min-h-[700px] overflow-hidden relative'
+        style={{
+          backgroundImage: `url(${images.gameRoom.background})`,
+          backgroundSize: 'cover',
+        }}
+      >
+        {/* 주사위 버튼*/}
+        {currentPlayer === user?.nickname && (
           <div
-            className='flex flex-1 text-white h-[48px] w-[500px] items-center mx-[80px] mt-[24px] overflow-hidden'
+            className='absolute bottom-[20%] left-[50%] text-5xl text-white z-[10] text-[24px] font-bold'
             style={{
-              background: 'rgba(255, 255, 255, 0.20)',
+              transform: 'translate(-50%, -50%)',
             }}
           >
-            <div
-              className='h-full flex items-center justify-center px-[8px] text-[18px] font-semibold text-primary-light100'
-              style={{
-                background: 'rgba(255, 255, 255, 0.30)',
+            <button
+              className='button-3d'
+              onClick={() => {
+                handleDiceRoll();
               }}
             >
-              NEWS
-            </div>
-            <div className='scroll-container overflow-hidden flex-1 font-medium text-[16px]'>
-              <motion.div
-                className='ml-[8px]'
-                initial={{ x: '100%' }} // 시작 위치 - 화면 오른쪽 밖
-                animate={{ x: '-100%' }} // 최종 위치 - 화면 왼쪽 밖
-                transition={{
-                  duration: 10, // 애니메이션 지속 시간 (조절 가능)
-                  repeat: Infinity, // 무한 반복
-                  repeatType: 'loop', // 반복 유형 설정
-                  ease: 'linear', // 선형 이동
+              주사위 굴리기
+            </button>
+          </div>
+        )}
+        {/* 유저 정보 */}
+        <div className='flex flex-col w-full h-full relative'>
+          <div className='flex justify-between'>
+            {playerList[0] && (
+              <div className='flex w-[360px] h-[160px] relative'>
+                <div className='w-[120px] flex items-center justify-center overflow-hidden relative'>
+                  <img
+                    className='object-cover mt-[80px] z-[1]'
+                    src={playerList[0].avatarImage}
+                    alt='player4'
+                  />
+                  <img
+                    className='w-full h-full absolute object-fill'
+                    src={images.gameRoom.profileBgRed}
+                    alt='배경이미지'
+                  />
+                </div>
+                <div className='flex flex-col w-[240px]'>
+                  <div
+                    className='text-white text-xl font-bold mt-[8px] pb-[8px] pl-[12px] relative'
+                    style={{
+                      /* 테두리 스타일 설정 */
+                      borderBottom: '3px solid transparent',
+                      borderImage:
+                        'linear-gradient(to right, #790317, transparent)',
+                      borderImageSlice: '1',
+                      borderImageWidth: '0 0 2px 0',
+                      borderImageOutset: '0',
+                      borderImageRepeat: 'stretch',
+                    }}
+                  >
+                    {playerList[0].nickname}
+                    <img
+                      src={images.gameRoom.rankRed}
+                      alt='등수'
+                      className='absolute right-[16px] top-[4px] w-[56px] h-[56px]'
+                    />
+                    <p
+                      className='absolute right-[32px] top-[16px]'
+                      style={{
+                        textShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
+                      }}
+                    >
+                      {`${calcRank(playerList, 0)}등`}
+                    </p>
+                  </div>
+                  <div className='flex text-white mt-[24px] pl-[12px] overflow-hidden relative'>
+                    <span className='text-xl font-semibold'>총자산</span>
+                    <div className='flex-1 text-[#7492FF] text-[18px] font-medium ml-[12px] whitespace-nowrap'>
+                      <span>{`${formatAsset(playerList[0].asset)}`}</span>
+                    </div>
+                  </div>
+                  <div className='text-white pl-[12px] mt-[16px] overflow-hidden relative'>
+                    <span className='text-xl font-semibold'>보유현금</span>
+                    <span className='text-[#FFF59D] text-[18px] font-medium ml-[12px] whitespace-nowrap'>
+                      {`${formatAsset(playerList[0].money)}`}
+                    </span>
+                  </div>
+                </div>
+                {/* 보유 카드 정보 */}
+                <div className='flex absolute bottom-[-36px] left-[26px]'>
+                  {playerList[0].cards[0] && (
+                    <img
+                      className='w-[32px] h-[32px]'
+                      src={images.gameRoom.angel}
+                      alt='천사카드'
+                    />
+                  )}
+                  {playerList[0].cards[1] && (
+                    <img
+                      className='w-[32px] h-[32px]'
+                      src={images.gameRoom.mediaControl}
+                      alt='언론통제카드'
+                    />
+                  )}
+                </div>
+              </div>
+            )}
+            <div
+              className='flex flex-1 text-white h-[48px] w-[500px] items-center mx-[80px] mt-[24px] overflow-hidden'
+              style={{
+                background: 'rgba(255, 255, 255, 0.20)',
+              }}
+            >
+              <div
+                className='h-full flex items-center justify-center px-[8px] text-[18px] font-semibold text-primary-light100'
+                style={{
+                  background: 'rgba(255, 255, 255, 0.30)',
                 }}
               >
-                {effectNewsToString(news) ?? '현재 적용중인 뉴스가 없습니다.'}
-              </motion.div>
-            </div>
-          </div>
-          {playerList[1] && (
-            <div className='flex w-[360px] h-[160px] relative'>
-              <div className='flex flex-col w-[240px]'>
-                <div
-                  className='text-white text-xl font-bold mt-[8px] pb-[8px] pr-[12px] text-right relative'
-                  style={{
-                    /* 테두리 스타일 설정 */
-                    borderBottom: '3px solid transparent',
-                    borderImage:
-                      'linear-gradient(to left, #055872, transparent)',
-                    borderImageSlice: '1',
-                    borderImageWidth: '0 0 2px 0',
-                    borderImageOutset: '0',
-                    borderImageRepeat: 'stretch',
+                NEWS
+              </div>
+              <div className='scroll-container overflow-hidden flex-1 font-medium text-[16px]'>
+                <motion.div
+                  className='ml-[8px]'
+                  initial={{ x: '100%' }} // 시작 위치 - 화면 오른쪽 밖
+                  animate={{ x: '-100%' }} // 최종 위치 - 화면 왼쪽 밖
+                  transition={{
+                    duration: 10, // 애니메이션 지속 시간 (조절 가능)
+                    repeat: Infinity, // 무한 반복
+                    repeatType: 'loop', // 반복 유형 설정
+                    ease: 'linear', // 선형 이동
                   }}
                 >
-                  {playerList[1].nickname}
-                  <img
-                    src={images.gameRoom.rankBlue}
-                    alt='등수'
-                    className='absolute left-[16px] top-[4px] w-[56px] h-[56px]'
-                  />
-                  <p
-                    className='absolute left-[30px] top-[16px]'
-                    style={{
-                      textShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
-                    }}
-                  >
-                    {`${calcRank(playerList, 1)}등`}
-                  </p>
-                </div>
-                <div className='flex text-white mt-[24px] pr-[12px] overflow-hidden relative'>
-                  <span className='text-xl font-semibold mr-[12px]'>
-                    총자산
-                  </span>
-                  <div className='flex-1 text-[#7492FF] text-[18px] font-medium whitespace-nowrap'>
-                    <span>{formatAsset(playerList[1].asset)}</span>
-                  </div>
-                </div>
-                <div className='flex text-white pr-[12px] mt-[16px] overflow-hidden relative'>
-                  <span className='text-xl font-semibold mr-[12px]'>
-                    보유현금
-                  </span>
-                  <span className='text-[#FFF59D] text-[18px] font-medium whitespace-nowrap text-right'>
-                    {formatAsset(playerList[1].money)}
-                  </span>
-                </div>
-              </div>
-              <div className='w-[120px] flex items-center justify-center overflow-hidden relative'>
-                <img
-                  className='object-cover mt-[80px] z-[1]'
-                  src={playerList[1].avatarImage}
-                  alt='player4'
-                />
-                <img
-                  className='w-full h-full absolute'
-                  src={images.gameRoom.profileBgBlue}
-                  alt='배경이미지'
-                />
-              </div>
-              {/* 보유 카드 정보 */}
-              <div className='flex absolute bottom-[-36px] right-[26px]'>
-                {playerList[1].cards[0] && (
-                  <img
-                    className='w-[32px] h-[32px]'
-                    src={images.gameRoom.angel}
-                    alt='천사카드'
-                  />
-                )}
-                {playerList[1].cards[1] && (
-                  <img
-                    className='w-[32px] h-[32px]'
-                    src={images.gameRoom.mediaControl}
-                    alt='언론통제카드'
-                  />
-                )}
+                  {news.length === 0
+                    ? '현재 적용중인 뉴스가 없습니다.'
+                    : effectNewsToString(news)}
+                </motion.div>
               </div>
             </div>
-          )}
-        </div>
-        <div className='flex flex-1 justify-between my-[40px] mx-[20px]'>
-          {/* 채팅창 */}
-          <div className='flex flex-col h-full w-[320px]'>
+            {playerList[1] && (
+              <div className='flex w-[360px] h-[160px] relative'>
+                <div className='flex flex-col w-[240px]'>
+                  <div
+                    className='text-white text-xl font-bold mt-[8px] pb-[8px] pr-[12px] text-right relative'
+                    style={{
+                      /* 테두리 스타일 설정 */
+                      borderBottom: '3px solid transparent',
+                      borderImage:
+                        'linear-gradient(to left, #055872, transparent)',
+                      borderImageSlice: '1',
+                      borderImageWidth: '0 0 2px 0',
+                      borderImageOutset: '0',
+                      borderImageRepeat: 'stretch',
+                    }}
+                  >
+                    {playerList[1].nickname}
+                    <img
+                      src={images.gameRoom.rankBlue}
+                      alt='등수'
+                      className='absolute left-[16px] top-[4px] w-[56px] h-[56px]'
+                    />
+                    <p
+                      className='absolute left-[30px] top-[16px]'
+                      style={{
+                        textShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
+                      }}
+                    >
+                      {`${calcRank(playerList, 1)}등`}
+                    </p>
+                  </div>
+                  <div className='flex text-white mt-[24px] pr-[12px] overflow-hidden relative'>
+                    <span className='text-xl font-semibold mr-[12px]'>
+                      총자산
+                    </span>
+                    <div className='flex-1 text-[#7492FF] text-[18px] font-medium whitespace-nowrap'>
+                      <span>{formatAsset(playerList[1].asset)}</span>
+                    </div>
+                  </div>
+                  <div className='flex text-white pr-[12px] mt-[16px] overflow-hidden relative'>
+                    <span className='text-xl font-semibold mr-[12px]'>
+                      보유현금
+                    </span>
+                    <span className='text-[#FFF59D] text-[18px] font-medium whitespace-nowrap text-right'>
+                      {formatAsset(playerList[1].money)}
+                    </span>
+                  </div>
+                </div>
+                <div className='w-[120px] flex items-center justify-center overflow-hidden relative'>
+                  <img
+                    className='object-cover mt-[80px] z-[1]'
+                    src={playerList[1].avatarImage}
+                    alt='player4'
+                  />
+                  <img
+                    className='w-full h-full absolute'
+                    src={images.gameRoom.profileBgBlue}
+                    alt='배경이미지'
+                  />
+                </div>
+                {/* 보유 카드 정보 */}
+                <div className='flex absolute bottom-[-36px] right-[26px]'>
+                  {playerList[1].cards[0] && (
+                    <img
+                      className='w-[32px] h-[32px]'
+                      src={images.gameRoom.angel}
+                      alt='천사카드'
+                    />
+                  )}
+                  {playerList[1].cards[1] && (
+                    <img
+                      className='w-[32px] h-[32px]'
+                      src={images.gameRoom.mediaControl}
+                      alt='언론통제카드'
+                    />
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+          <div className='flex flex-1 justify-between my-[40px] mx-[20px]'>
+            {/* 채팅창 */}
+            <div className='flex flex-col h-full w-[320px]'>
+              <div
+                className='flex-1 mb-[12px] text-white p-[12px]'
+                style={{
+                  borderRadius: '16px',
+                  border: '1px solid rgba(0, 0, 0, 0.30)',
+                  background: 'rgba(0, 0, 0, 0.25)',
+                }}
+              >
+                {/* 채팅 내용 */}
+              </div>
+              <input
+                className='h-[36px] px-[16px] text-white outline-none font-medium'
+                style={{
+                  borderRadius: '16px',
+                  border: '1px solid rgba(0, 0, 0, 0.30)',
+                  background: 'rgba(0, 0, 0, 0.25)',
+                }}
+              />
+            </div>
+
+            {/* 보유주식정보창 */}
             <div
-              className='flex-1 mb-[12px] text-white p-[12px]'
+              className='bg-red-100 h-full w-[320px] p-[12px]'
               style={{
                 borderRadius: '16px',
-                border: '1px solid rgba(0, 0, 0, 0.30)',
-                background: 'rgba(0, 0, 0, 0.25)',
+                border: '1px solid rgba(255, 255, 255, 0.30)',
+                background: 'rgba(255, 255, 255, 0.25)',
               }}
             >
-              {/* 채팅 내용 */}
-            </div>
-            <input
-              className='h-[36px] px-[16px] text-white outline-none font-medium'
-              style={{
-                borderRadius: '16px',
-                border: '1px solid rgba(0, 0, 0, 0.30)',
-                background: 'rgba(0, 0, 0, 0.25)',
-              }}
-            />
-          </div>
-
-          {/* 보유주식정보창 */}
-          <div
-            className='bg-red-100 h-full w-[320px] p-[12px]'
-            style={{
-              borderRadius: '16px',
-              border: '1px solid rgba(255, 255, 255, 0.30)',
-              background: 'rgba(255, 255, 255, 0.25)',
-            }}
-          >
-            <div className='w-full h-[56px] bg-white rounded-[8px] opacity-[0.9] flex items-center'>
-              <p className='text-[18px] font-semibold mx-[12px]'>LG 화학</p>
-              <p className='text-[16px] font-medium'>3억 12만원</p>
-              <div className='flex flex-col ml-auto justify-center text-[#2F50FF] text-[14px] font-medium mr-[12px]'>
-                <p className='ml-auto'>-1억 215만원</p>
-                <p className='ml-auto'>-45%</p>
+              <div className='w-full h-[56px] bg-white rounded-[8px] opacity-[0.9] flex items-center'>
+                <p className='text-[18px] font-semibold mx-[12px]'>LG 화학</p>
+                <p className='text-[16px] font-medium'>3억 12만원</p>
+                <div className='flex flex-col ml-auto justify-center text-[#2F50FF] text-[14px] font-medium mr-[12px]'>
+                  <p className='ml-auto'>-1억 215만원</p>
+                  <p className='ml-auto'>-45%</p>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-        <div className='flex justify-between mt-auto'>
-          {playerList[2] && (
-            <div className='flex w-[360px] h-[160px] relative'>
-              <div className='w-[120px] flex items-center justify-center overflow-hidden relative'>
-                <img
-                  className='object-cover mt-[80px] z-[1]'
-                  src={playerList[2].avatarImage}
-                  alt='player4'
-                />
-                <img
-                  className='w-full h-full absolute'
-                  src={images.gameRoom.profileBgGreen}
-                  alt='배경이미지'
-                />
-              </div>
-              <div className='flex flex-col w-[240px]'>
-                <div
-                  className='text-white text-xl font-bold mt-[8px] pb-[8px] pl-[12px] relative'
-                  style={{
-                    /* 테두리 스타일 설정 */
-                    borderBottom: '3px solid transparent',
-                    borderImage:
-                      'linear-gradient(to right, #7DAA98, transparent)',
-                    borderImageSlice: '1',
-                    borderImageWidth: '0 0 2px 0',
-                    borderImageOutset: '0',
-                    borderImageRepeat: 'stretch',
-                  }}
-                >
-                  {playerList[2].nickname}
+          <div className='flex justify-between mt-auto'>
+            {playerList[2] && (
+              <div className='flex w-[360px] h-[160px] relative'>
+                <div className='w-[120px] flex items-center justify-center overflow-hidden relative'>
                   <img
-                    src={images.gameRoom.rankGreen}
-                    alt='등수'
-                    className='absolute right-[16px] top-[4px] w-[56px] h-[56px]'
+                    className='object-cover mt-[80px] z-[1]'
+                    src={playerList[2].avatarImage}
+                    alt='player4'
                   />
-                  <p
-                    className='absolute right-[30px] top-[16px]'
+                  <img
+                    className='w-full h-full absolute'
+                    src={images.gameRoom.profileBgGreen}
+                    alt='배경이미지'
+                  />
+                </div>
+                <div className='flex flex-col w-[240px]'>
+                  <div
+                    className='text-white text-xl font-bold mt-[8px] pb-[8px] pl-[12px] relative'
                     style={{
-                      textShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
+                      /* 테두리 스타일 설정 */
+                      borderBottom: '3px solid transparent',
+                      borderImage:
+                        'linear-gradient(to right, #7DAA98, transparent)',
+                      borderImageSlice: '1',
+                      borderImageWidth: '0 0 2px 0',
+                      borderImageOutset: '0',
+                      borderImageRepeat: 'stretch',
                     }}
                   >
-                    {`${calcRank(playerList, 2)}등`}
-                  </p>
-                </div>
-                <div className='flex text-white mt-[24px] pl-[12px] overflow-hidden relative'>
-                  <span className='text-xl font-semibold'>총자산</span>
-                  <div className='flex-1 text-[#7492FF] text-[18px] font-medium ml-[12px] whitespace-nowrap'>
-                    <span>{formatAsset(playerList[2].asset)}</span>
+                    {playerList[2].nickname}
+                    <img
+                      src={images.gameRoom.rankGreen}
+                      alt='등수'
+                      className='absolute right-[16px] top-[4px] w-[56px] h-[56px]'
+                    />
+                    <p
+                      className='absolute right-[30px] top-[16px]'
+                      style={{
+                        textShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
+                      }}
+                    >
+                      {`${calcRank(playerList, 2)}등`}
+                    </p>
+                  </div>
+                  <div className='flex text-white mt-[24px] pl-[12px] overflow-hidden relative'>
+                    <span className='text-xl font-semibold'>총자산</span>
+                    <div className='flex-1 text-[#7492FF] text-[18px] font-medium ml-[12px] whitespace-nowrap'>
+                      <span>{formatAsset(playerList[2].asset)}</span>
+                    </div>
+                  </div>
+                  <div className='text-white pl-[12px] mt-[16px] overflow-hidden relative'>
+                    <span className='text-xl font-semibold'>보유현금</span>
+                    <span className='text-[#FFF59D] text-[18px] font-medium ml-[12px] whitespace-nowrap'>
+                      {formatAsset(playerList[2].money)}
+                    </span>
                   </div>
                 </div>
-                <div className='text-white pl-[12px] mt-[16px] overflow-hidden relative'>
-                  <span className='text-xl font-semibold'>보유현금</span>
-                  <span className='text-[#FFF59D] text-[18px] font-medium ml-[12px] whitespace-nowrap'>
-                    {formatAsset(playerList[2].money)}
-                  </span>
+                {/* 보유 카드 정보 */}
+                <div className='flex absolute top-[-32px] left-[26px] '>
+                  {playerList[2].cards[0] && (
+                    <img
+                      className='w-[32px] h-[32px]'
+                      src={images.gameRoom.angel}
+                      alt='천사카드'
+                    />
+                  )}
+                  {playerList[2].cards[1] && (
+                    <img
+                      className='w-[32px] h-[32px]'
+                      src={images.gameRoom.mediaControl}
+                      alt='언론통제카드'
+                    />
+                  )}
                 </div>
               </div>
-              {/* 보유 카드 정보 */}
-              <div className='flex absolute top-[-32px] left-[26px] '>
-                {playerList[2].cards[0] && (
-                  <img
-                    className='w-[32px] h-[32px]'
-                    src={images.gameRoom.angel}
-                    alt='천사카드'
-                  />
-                )}
-                {playerList[2].cards[1] && (
-                  <img
-                    className='w-[32px] h-[32px]'
-                    src={images.gameRoom.mediaControl}
-                    alt='언론통제카드'
-                  />
-                )}
-              </div>
-            </div>
-          )}
+            )}
 
-          {playerList[3] && (
-            <div className='flex w-[360px] h-[160px] relative'>
-              <div className='flex flex-col w-[240px]'>
-                <div
-                  className='text-white text-xl font-bold mt-[8px] pb-[8px] pr-[12px] text-right relative'
-                  style={{
-                    /* 테두리 스타일 설정 */
-                    borderBottom: '3px solid transparent',
-                    borderImage:
-                      'linear-gradient(to left, #C7B0E3, transparent)',
-                    borderImageSlice: '1',
-                    borderImageWidth: '0 0 2px 0',
-                    borderImageOutset: '0',
-                    borderImageRepeat: 'stretch',
-                  }}
-                >
-                  {playerList[3].nickname}
-                  <img
-                    src={images.gameRoom.rankPurple}
-                    alt='등수'
-                    className='absolute left-[16px] top-[4px] w-[56px] h-[56px]'
-                  />
-                  <p
-                    className='absolute left-[28px] top-[16px]'
+            {playerList[3] && (
+              <div className='flex w-[360px] h-[160px] relative'>
+                <div className='flex flex-col w-[240px]'>
+                  <div
+                    className='text-white text-xl font-bold mt-[8px] pb-[8px] pr-[12px] text-right relative'
                     style={{
-                      textShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
+                      /* 테두리 스타일 설정 */
+                      borderBottom: '3px solid transparent',
+                      borderImage:
+                        'linear-gradient(to left, #C7B0E3, transparent)',
+                      borderImageSlice: '1',
+                      borderImageWidth: '0 0 2px 0',
+                      borderImageOutset: '0',
+                      borderImageRepeat: 'stretch',
                     }}
                   >
-                    {`${calcRank(playerList, 3)}등`}
-                  </p>
-                </div>
-                <div className='flex text-white mt-[24px] pr-[12px] overflow-hidden relative'>
-                  <span className='text-xl font-semibold mr-[12px]'>
-                    총자산
-                  </span>
-                  <div className='flex-1 text-[#7492FF] text-[18px] font-medium whitespace-nowrap'>
-                    <span>{playerList[3].asset}</span>
+                    {playerList[3].nickname}
+                    <img
+                      src={images.gameRoom.rankPurple}
+                      alt='등수'
+                      className='absolute left-[16px] top-[4px] w-[56px] h-[56px]'
+                    />
+                    <p
+                      className='absolute left-[28px] top-[16px]'
+                      style={{
+                        textShadow: '0px 4px 4px rgba(0, 0, 0, 0.25)',
+                      }}
+                    >
+                      {`${calcRank(playerList, 3)}등`}
+                    </p>
+                  </div>
+                  <div className='flex text-white mt-[24px] pr-[12px] overflow-hidden relative'>
+                    <span className='text-xl font-semibold mr-[12px]'>
+                      총자산
+                    </span>
+                    <div className='flex-1 text-[#7492FF] text-[18px] font-medium whitespace-nowrap'>
+                      <span>{playerList[3].asset}</span>
+                    </div>
+                  </div>
+                  <div className='flex text-white pr-[12px] mt-[16px] overflow-hidden relative'>
+                    <span className='text-xl font-semibold mr-[12px]'>
+                      보유현금
+                    </span>
+                    <span className='text-[#FFF59D] text-[18px] font-medium whitespace-nowrap text-right'>
+                      {playerList[3].money}
+                    </span>
                   </div>
                 </div>
-                <div className='flex text-white pr-[12px] mt-[16px] overflow-hidden relative'>
-                  <span className='text-xl font-semibold mr-[12px]'>
-                    보유현금
-                  </span>
-                  <span className='text-[#FFF59D] text-[18px] font-medium whitespace-nowrap text-right'>
-                    {playerList[3].money}
-                  </span>
+                <div className='w-[120px] flex items-center justify-center overflow-hidden relative'>
+                  <img
+                    className='object-cover mt-[80px] z-[1]'
+                    src={playerList[3].avatarImage}
+                    alt='player4'
+                  />
+                  <img
+                    className='w-full h-full absolute'
+                    src={images.gameRoom.profileBgPurple}
+                    alt='배경이미지'
+                  />
+                </div>
+                {/* 보유 카드 정보 */}
+                <div className='flex absolute top-[-32px] right-[26px]'>
+                  {playerList[3].cards[0] && (
+                    <img
+                      className='w-[32px] h-[32px]'
+                      src={images.gameRoom.angel}
+                      alt='천사카드'
+                    />
+                  )}
+                  {playerList[3].cards[1] && (
+                    <img
+                      className='w-[32px] h-[32px]'
+                      src={images.gameRoom.mediaControl}
+                      alt='언론통제카드'
+                    />
+                  )}
                 </div>
               </div>
-              <div className='w-[120px] flex items-center justify-center overflow-hidden relative'>
-                <img
-                  className='object-cover mt-[80px] z-[1]'
-                  src={playerList[3].avatarImage}
-                  alt='player4'
-                />
-                <img
-                  className='w-full h-full absolute'
-                  src={images.gameRoom.profileBgPurple}
-                  alt='배경이미지'
-                />
-              </div>
-              {/* 보유 카드 정보 */}
-              <div className='flex absolute top-[-32px] right-[26px]'>
-                {playerList[3].cards[0] && (
-                  <img
-                    className='w-[32px] h-[32px]'
-                    src={images.gameRoom.angel}
-                    alt='천사카드'
-                  />
-                )}
-                {playerList[3].cards[1] && (
-                  <img
-                    className='w-[32px] h-[32px]'
-                    src={images.gameRoom.mediaControl}
-                    alt='언론통제카드'
-                  />
-                )}
-              </div>
-            </div>
-          )}
+            )}
+          </div>
         </div>
+        {/* 게임맵 */}
+        <GameMap playerList={playerList} onClickLand={() => console.log(1)} />
       </div>
-      {/* 게임맵 */}
-      <GameMap playerList={playerList} />
-    </div>
+    </>
   );
 };
 

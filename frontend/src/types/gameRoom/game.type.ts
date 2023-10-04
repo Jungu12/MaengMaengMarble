@@ -31,7 +31,7 @@ export type LandType = {
   currentLandPrice: number;
   currentBuildingPrices: [number, number, number];
   buildings: [boolean, boolean, boolean, boolean];
-  currentFees: [number, number, number];
+  currentFees: [number, number, number, number];
   owner: number;
 };
 
