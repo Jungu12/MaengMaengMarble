@@ -4,6 +4,5 @@ import lombok.Getter;
 
 @Getter
 public class PackJinHoRequest {
-    private String nickname;
     private int bettingMoney;
 }

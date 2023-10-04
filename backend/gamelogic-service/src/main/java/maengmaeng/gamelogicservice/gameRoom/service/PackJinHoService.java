@@ -56,7 +56,8 @@ public class PackJinHoService {
             players[currentIdx].setAsset(players[currentIdx].getAsset() + winnings);
         }
         else if (num1 == 7 && num2 == 7 && num3 == 7) {
-            return ResponseDto.builder().type("게임종료").data(gameInfo).build();
+            //
+            return ResponseDto.builder().type("게임종료").build();
         }
         else if (num1 == num2 || num2 == num3 || num3 == num1) {
             players[currentIdx].setMoney(players[currentIdx].getMoney() + bettingMoney);
