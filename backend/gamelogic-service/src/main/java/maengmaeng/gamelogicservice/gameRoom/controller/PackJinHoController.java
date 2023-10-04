@@ -36,6 +36,7 @@ public class PackJinHoController {
                 .roomCode(roomCode)
                 .data(responseDto)
                 .build();
+
         redisPublisher.publish(gameRoomTopic, gameData);
     }
 }
