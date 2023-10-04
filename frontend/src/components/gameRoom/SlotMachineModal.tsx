@@ -13,20 +13,13 @@ import { SlotType } from '@/types/gameRoom/game.type';
 type Props = {
   client: StompJs.Client;
   gameId: string;
-  // slotResult: [number, number, number];
   isOpen: boolean;
   handleSlot: () => void;
 };
 
-const SlotMachineModal = ({
-  client,
-  gameId,
-  // slotResult,
-  isOpen,
-  handleSlot,
-}: Props) => {
+const SlotMachineModal = ({ client, gameId, isOpen, handleSlot }: Props) => {
   const indexes = useMemo(() => [0, 0, 0], []);
-  const [slotResult, setSlotResult] = useState([0, 0, 0]);
+  // const [slotResult, setSlotResult] = useState([0, 0, 0]);
   const [bettingMoney, setBettingMoney] = useState(30000000);
   const [isClickBetting, setIsClickBetting] = useState(false);
   const { show } = useToastList();
@@ -62,7 +55,7 @@ const SlotMachineModal = ({
 
   const roll = useCallback(
     (slot: HTMLElement, offset: number = 0): Promise<number> => {
-      const delta: number = (offset + 2) * 10 + slotResult[offset];
+      const delta: number = (offset + 2) * 10 + offset;
 
       return new Promise<number>((resolve) => {
         const style = getComputedStyle(slot);
@@ -91,7 +84,7 @@ const SlotMachineModal = ({
         );
       });
     },
-    [slotResult]
+    []
   );
 
   const rollSlot = useCallback(async () => {
@@ -102,71 +95,73 @@ const SlotMachineModal = ({
       body: JSON.stringify({ bettingMoney: bettingMoney }),
     });
 
-    client?.subscribe(`/sub/game-rooms/${gameId}`, (res) => {
+    client?.subscribe(`/sub/game-rooms/${gameId}`, async (res) => {
       const response: WSResponseType<unknown> = JSON.parse(res.body);
       if (response.type === '박진호 끝') {
         const parkResult = response as WSResponseType<SlotType>;
         console.log('[박진호데이터]', parkResult);
-        setSlotResult([
-          parkResult.data.num[0],
-          parkResult.data.num[1],
-          parkResult.data.num[2],
-        ]);
+        // setSlotResult([
+        //   parkResult.data.num[0],
+        //   parkResult.data.num[1],
+        //   parkResult.data.num[2],
+        // ]);
         // slotResult[0] = parkResult.data.num[0];
         // slotResult[1] = parkResult.data.num[1];
         // slotResult[2] = parkResult.data.num[2];
         console.log('[박진호 배열]', parkResult.data.num);
-        console.log('[slotResult 결과]', slotResult);
-      }
-    });
+        // console.log('[slotResult 결과]', slotResult);
 
-    const slotList = document.querySelectorAll(
-      '.slot'
-    ) as NodeListOf<HTMLElement>;
-    await Promise.all<number>(
-      [...slotList].map((slot, i) => roll(slot, i))
-    ).then((deltas) => {
-      deltas.forEach(
-        (delta, i) => (indexes[i] = (indexes[i] + delta) % 10) // 배열의 첫 번째 값 사용
-      );
-      console.log(indexes);
-      if (
-        indexes[0] == indexes[1] ||
-        indexes[1] == indexes[2] ||
-        indexes[0] == indexes[2]
-      ) {
-        setToastMessage((prev) => {
-          return {
-            ...prev,
-            success: '베팅금액의 2배 획득',
-          };
+        // 슬롯 시작
+        const slotList = document.querySelectorAll(
+          '.slot'
+        ) as NodeListOf<HTMLElement>;
+        await Promise.all<number>(
+          [...slotList].map((slot, i) => roll(slot, parkResult.data.num[i]))
+        ).then((deltas) => {
+          deltas.forEach(
+            (delta, i) => (indexes[i] = (indexes[i] + delta) % 10) // 배열의 첫 번째 값 사용
+          );
+          console.log(indexes);
+          if (
+            indexes[0] == indexes[1] ||
+            indexes[1] == indexes[2] ||
+            indexes[0] == indexes[2]
+          ) {
+            setToastMessage((prev) => {
+              return {
+                ...prev,
+                success: '베팅금액의 2배 획득',
+              };
+            });
+            show('success');
+          }
+          if (indexes[0] == indexes[1] && indexes[1] == indexes[2]) {
+            setToastMessage((prev) => {
+              return {
+                ...prev,
+                success: '베팅금액의 50배 획득',
+              };
+            });
+            show('success');
+          }
+          if (
+            indexes[0] == indexes[1] &&
+            indexes[1] == indexes[2] &&
+            indexes[0] == 7
+          ) {
+            setToastMessage((prev) => {
+              return {
+                ...prev,
+                success: '777로 게임에서 승리하였습니다.',
+              };
+            });
+            show('success');
+          }
         });
-        show('success');
-      }
-      if (indexes[0] == indexes[1] && indexes[1] == indexes[2]) {
-        setToastMessage((prev) => {
-          return {
-            ...prev,
-            success: '베팅금액의 50배 획득',
-          };
-        });
-        show('success');
-      }
-      if (
-        indexes[0] == indexes[1] &&
-        indexes[1] == indexes[2] &&
-        indexes[0] == 7
-      ) {
-        setToastMessage((prev) => {
-          return {
-            ...prev,
-            success: '777로 게임에서 승리하였습니다.',
-          };
-        });
-        show('success');
+        handleSlot();
+        //
       }
     });
-    handleSlot();
   }, [
     bettingMoney,
     client,
@@ -176,7 +171,6 @@ const SlotMachineModal = ({
     roll,
     setToastMessage,
     show,
-    slotResult,
   ]);
 
   return (
