@@ -126,6 +126,21 @@ const GameRoom = () => {
             console.log('주사위 결과 나왔어요');
             setDice1(diceResult.data.dice1);
             setDice2(diceResult.data.dice2);
+            const diceRef = document.querySelectorAll('._space3d');
+            const clickEvent = new MouseEvent('click', {
+              bubbles: true, // 이벤트가 버블링되도록 설정합니다.
+              cancelable: true, // 이벤트가 취소 가능하도록 설정합니다.
+              view: window, // 이벤트의 관련 뷰를 설정합니다.
+            });
+
+            diceRef[0].dispatchEvent(clickEvent);
+            setTimeout(() => {
+              diceRef[1].dispatchEvent(clickEvent);
+            }, 50);
+
+            setTimeout(() => {
+              setIsDiceRoll(true);
+            }, 1000);
           }
           console.log(JSON.parse(res.body));
         }
@@ -133,24 +148,6 @@ const GameRoom = () => {
       console.log('[참가 인원]', currentParticipantsNum(state.userList));
     };
   }, [gameId, state.userList, user?.userId]);
-
-  useEffect(() => {
-    const diceRef = document.querySelectorAll('._space3d');
-    const clickEvent = new MouseEvent('click', {
-      bubbles: true, // 이벤트가 버블링되도록 설정합니다.
-      cancelable: true, // 이벤트가 취소 가능하도록 설정합니다.
-      view: window, // 이벤트의 관련 뷰를 설정합니다.
-    });
-
-    diceRef[0].dispatchEvent(clickEvent);
-    setTimeout(() => {
-      diceRef[1].dispatchEvent(clickEvent);
-    }, 50);
-
-    setTimeout(() => {
-      setIsDiceRoll(true);
-    }, 1000);
-  }, [dice1, dice2]);
 
   if (!gameId || !client.current) return;
 

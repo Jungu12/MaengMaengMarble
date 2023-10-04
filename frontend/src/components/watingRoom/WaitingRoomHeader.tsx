@@ -15,6 +15,8 @@ const WaitingRoomHeader = ({ title, code }: Props) => {
   const { show } = useToastList();
 
   const handleCopyClipBoard = async (text: string) => {
+    console.log(text);
+
     try {
       await navigator.clipboard.writeText(text);
       setToastMessage((prev) => {
