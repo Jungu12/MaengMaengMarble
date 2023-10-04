@@ -15,6 +15,7 @@ import { ParticipantsType, WSResponseType } from '@/types/common/common.type';
 import {
   DiceResultType,
   FullGameDataType,
+  TurnEndResponseType,
   TurnListType,
 } from '@/types/gameRoom/game.type';
 import { useRecoilState, useRecoilValue } from 'recoil';
@@ -110,7 +111,7 @@ const GameRoom = () => {
 
   // 데이터 최신화
   const updateInfo = useCallback(
-    (data: FullGameDataType) => {
+    (data: FullGameDataType | TurnEndResponseType) => {
       setPlayerList(data.players);
       setNews(data.info.effectNews);
       setLandList(data.lands);
@@ -122,6 +123,13 @@ const GameRoom = () => {
   useEffect(() => {
     console.log(reDice);
   }, [reDice]);
+
+  // 턴 종료
+  const handleTurnEnd = useCallback(() => {
+    client.current?.publish({
+      destination: `/pub/game-rooms/end-turn/${gameId}`,
+    });
+  }, [gameId]);
 
   // 소켓 연결
   useEffect(() => {
@@ -206,6 +214,16 @@ const GameRoom = () => {
             console.log('자유시간~~~');
           }
 
+          if (response.type === '턴종료끝') {
+            const temp = response as WSResponseType<TurnEndResponseType>;
+            updateInfo(temp.data);
+            setCurrentPlayer(temp.data.info.currentPlayer);
+            setIsDiceRoll(false);
+            setIsDiceRollButtonClick(false);
+            setDoubleCnt(0);
+            setReDice(false);
+          }
+
           console.log(JSON.parse(res.body));
         }
       );
@@ -220,6 +238,7 @@ const GameRoom = () => {
     gameId,
     playerList,
     seletedLandId,
+    setCurrentPlayer,
     updateInfo,
     user?.nickname,
   ]);
@@ -348,9 +367,7 @@ const GameRoom = () => {
             {currentPlayer === user?.nickname && (
               <button
                 className='button-3d'
-                onClick={() => {
-                  handleDiceRoll();
-                }}
+                onClick={handleDiceRoll}
                 disabled={isDiceRoll}
               >
                 주사위 굴리기
@@ -358,6 +375,14 @@ const GameRoom = () => {
             )}
           </div>
         )}
+        {/* 턴종료 버튼 */}
+        <div className='absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-5xl text-white z-[10] text-[24px] font-bold flex flex-col justify-center items-center'>
+          {user?.nickname === currentPlayer && !reDice && isDiceRoll && (
+            <button className='button-3d' onClick={handleTurnEnd}>
+              턴 종료
+            </button>
+          )}
+        </div>
         {/* 유저 정보 */}
         <div className='flex flex-col w-full h-full relative'>
           <div className='flex justify-between'>
