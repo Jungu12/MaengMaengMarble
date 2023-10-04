@@ -6,15 +6,17 @@ type Props = {
   src: string;
   alt: string;
   value: number;
+  onClickArea?: (landId: number) => void;
 };
 
-const MapArea = ({ height, width, src, alt, value }: Props) => {
-  const onClickArea = useCallback(() => {
+const MapArea = ({ height, width, src, alt, value, onClickArea }: Props) => {
+  const onClick = useCallback(() => {
+    onClickArea ? onClickArea(value) : {};
     console.log(value);
-  }, [value]);
+  }, [onClickArea, value]);
 
   return (
-    <button onClick={onClickArea}>
+    <button onClick={onClick}>
       <img
         src={src}
         alt={alt}

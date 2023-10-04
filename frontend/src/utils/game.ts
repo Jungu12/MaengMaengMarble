@@ -1,5 +1,7 @@
 import { NewsType, PlayerType } from '@/types/gameRoom/game.type';
 import { AnimationControls } from 'framer-motion';
+import { images } from '@constants/images';
+import { LandType } from '@/types/gameRoom/game.type';
 
 /**
  * 캐릭터를 이동시킨다.
@@ -74,6 +76,172 @@ export const moveCharacter = async (
   return cur;
 };
 
+export const BUILDING_TYPE = {
+  땅값: '땅값',
+  별장: '별장',
+  빌딩: '빌딩',
+  호텔: '호텔',
+} as const;
+
+export type BuildingType = keyof typeof BUILDING_TYPE;
+
+/**
+ * number타입에 현금단위를 더해 반환한다.
+ * @param money - 자산
+ * @returns 단위를 추가한 자산 string
+ */
+export const addAmountUnit = (money: number): string => {
+  let unit = '';
+  if (money >= 1000000000000) {
+    unit = `${Math.trunc(money / 1000000000000)}조`;
+    money = money % 1000000000000;
+  }
+  if (money >= 100000000) {
+    unit = `${unit} ${Math.trunc(money / 100000000)}억`;
+    money = money % 100000000;
+  }
+  if (money >= 10000) {
+    unit = `${unit} ${Math.trunc(money / 10000)}만`;
+    money = money % 10000;
+  }
+
+  return unit;
+};
+/**
+ * 해당 땅의 전체 통행료를 계산한다.
+ * @param landInfo - 해당 땅의 정보
+ * @returns 해당 땅의 통행료
+ */
+export const calCurrentFees = (landInfo: LandType): number => {
+  let fee = 0;
+
+  for (let i = 0; i < 4; i++) {
+    if (landInfo.buildings[i]) fee += landInfo.currentFees[i];
+  }
+
+  return fee;
+};
+/**
+ * 땅 색상을 반환한다.
+ * @param landId - 땅 id
+ * @returns 해당 땅의 색상
+ */
+export const landColor = (landId: number): string => {
+  if (landId <= 5) return '#82AC40';
+  else if (landId <= 7) return '#33A44A';
+  else if (landId <= 11) return '#31B2C7';
+  else if (landId <= 15) return '#2A81C4';
+  else if (landId <= 19) return '#E85984';
+  else if (landId <= 23) return '#7B61AA';
+  else if (landId <= 26) return '#F47A2D';
+  else return '#ED3B37';
+};
+/**
+ * 땅 국기 이미지를 반환한다.
+ * @param landId - 땅 id
+ * @returns 해당 땅의 국기 이미지
+ */
+export const landNationalFlag = (landId: number): string => {
+  switch (landId) {
+    case 1:
+      return images.flag.vietnam;
+    case 3:
+      return images.flag.thailand;
+    case 5:
+      return images.flag.singapore;
+    case 6:
+      return images.flag.egypt;
+    case 7:
+      return images.flag.southAfrica;
+    case 9:
+      return images.flag.argentina;
+    case 11:
+      return images.flag.brazil;
+    case 13:
+      return images.flag.catarrh;
+    case 14:
+      return images.flag.iran;
+    case 15:
+      return images.flag.saudiArabia;
+    case 17:
+      return images.flag.czech;
+    case 19:
+      return images.flag.russia;
+    case 21:
+      return images.flag.france;
+    case 22:
+      return images.flag.germany;
+    case 23:
+      return images.flag.uk;
+    case 25:
+      return images.flag.usa;
+    case 26:
+      return images.flag.canada;
+    case 27:
+      return images.flag.India;
+    case 29:
+      return images.flag.china;
+    case 30:
+      return images.flag.japan;
+    case 32:
+      return images.flag.korea;
+    default:
+      return images.flag.korea;
+  }
+};
+/**
+ * 땅 랜드마크 이미지 을 반환한다.
+ * @param landId - 땅 id
+ * @returns 해당 땅의 랜드마크 이미지
+ */
+export const landLandMarksImage = (landId: number): string => {
+  switch (landId) {
+    case 1:
+      return images.land.vietnam;
+    case 3:
+      return images.land.thailand;
+    case 5:
+      return images.land.singapore;
+    case 6:
+      return images.land.egypt;
+    case 7:
+      return images.land.southAfrica;
+    case 9:
+      return images.land.argentina;
+    case 11:
+      return images.land.brazil;
+    case 13:
+      return images.land.catarrh;
+    case 14:
+      return images.land.iran;
+    case 15:
+      return images.land.saudiArabia;
+    case 17:
+      return images.land.czech;
+    case 19:
+      return images.land.russia;
+    case 21:
+      return images.land.france;
+    case 22:
+      return images.land.germany;
+    case 23:
+      return images.land.uk;
+    case 25:
+      return images.land.usa;
+    case 26:
+      return images.land.canada;
+    case 27:
+      return images.land.India;
+    case 29:
+      return images.land.china;
+    case 30:
+      return images.land.japan;
+    case 32:
+      return images.land.korea;
+    default:
+      return images.land.korea;
+  }
+};
 /**
  * 플레이어의 총자산 순위를 계산한다.
  * @param players - 게임진행중인 플레이어들

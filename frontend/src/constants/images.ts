@@ -32,6 +32,12 @@ export const images = {
       'https://maeng.s3.ap-northeast-2.amazonaws.com/images/card-front.png',
     cardBack:
       'https://maeng.s3.ap-northeast-2.amazonaws.com/images/card-back.png',
+    flagbackground:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/bg-flag.png',
+    buildingbackground:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/bg-building.png',
+    rushandcash:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/rush-and-cash.png',
     rankRed:
       'https://maeng.s3.ap-northeast-2.amazonaws.com/images/gameRoom/ic-red-rank.png',
     rankBlue:
@@ -105,8 +111,13 @@ export const images = {
     registrationInactive:
       'https://maeng.s3.ap-northeast-2.amazonaws.com/images/ic-registration-inactive.png',
     back: 'https://maeng.s3.ap-northeast-2.amazonaws.com/images/icon-back.png',
+    dice: 'https://maeng.s3.ap-northeast-2.amazonaws.com/images/icon-dice.png',
+    up: 'https://maeng.s3.ap-northeast-2.amazonaws.com/images/icon-up.png',
+    down: 'https://maeng.s3.ap-northeast-2.amazonaws.com/images/icon-down.png',
   },
   button: {
+    gameclose:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/cancelbutton.png',
     close: 'https://maeng.s3.ap-northeast-2.amazonaws.com/images/btn-close.png',
     create:
       'https://maeng.s3.ap-northeast-2.amazonaws.com/images/btn-create.png',
@@ -223,5 +234,121 @@ export const images = {
       'https://maeng.s3.ap-northeast-2.amazonaws.com/images/ic-choice.png',
     buttonGreen:
       'https://maeng.s3.ap-northeast-2.amazonaws.com/images/button-green.png',
+  },
+  land: {
+    vietnam:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/landinfo/vietnam.png',
+    thailand:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/landinfo/thailand.png',
+    singapore:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/landinfo/singapore.png',
+    egypt:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/landinfo/egypt.png',
+    southAfrica:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/landinfo/southAfrica.png',
+    argentina:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/landinfo/argentina.png',
+    brazil:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/landinfo/brazil.png',
+    catarrh:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/landinfo/catarrh.png',
+    iran: 'https://maeng.s3.ap-northeast-2.amazonaws.com/images/landinfo/iran.png',
+    saudiArabia:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/landinfo/saudiArabia.png',
+    czech:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/landinfo/czech.png',
+    russia:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/landinfo/russia.png',
+    france:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/landinfo/france.png',
+    germany:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/landinfo/germany.png',
+    uk: 'https://maeng.s3.ap-northeast-2.amazonaws.com/images/landinfo/uk.png',
+    usa: 'https://maeng.s3.ap-northeast-2.amazonaws.com/images/landinfo/usa.png',
+    canada:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/landinfo/canada.png',
+    India:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/landinfo/india.png',
+    china:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/landinfo/china.png',
+    japan:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/landinfo/japan.png',
+    korea:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/landinfo/korea.png',
+  },
+  flag: {
+    vietnam:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/flag/vietnam.png',
+    thailand:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/flag/thailand.png',
+    singapore:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/flag/singapore.png',
+    egypt:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/flag/egypt.png',
+    southAfrica:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/flag/southAfrica.png',
+    argentina:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/flag/argentina.png',
+    brazil:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/flag/brazil.png',
+    catarrh:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/flag/catarrh.png',
+    iran: 'https://maeng.s3.ap-northeast-2.amazonaws.com/images/flag/iran.png',
+    saudiArabia:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/flag/saudiArabia.png',
+    czech:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/flag/czech.png',
+    russia:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/flag/russia.png',
+    france:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/flag/france.png',
+    germany:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/flag/germany.png',
+    uk: 'https://maeng.s3.ap-northeast-2.amazonaws.com/images/flag/uk.png',
+    usa: 'https://maeng.s3.ap-northeast-2.amazonaws.com/images/flag/usa.png',
+    canada:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/flag/canada.png',
+    India:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/flag/India.png',
+    china:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/flag/china.png',
+    japan:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/flag/japan.png',
+    korea:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/flag/korea.png',
+  },
+  building: {
+    purpleground:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/building/purple-ground.png',
+    purplehotel:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/building/purple-hotel.png',
+    purplebuilding:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/building/purple-building.png',
+    purplepension:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/building/purple-pension.png',
+    greenground:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/building/green-ground.png',
+    greenhotel:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/building/green-hotel.png',
+    greenbuilding:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/building/green-building.png',
+    greenpension:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/building/green-pension.png',
+    redground:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/building/red-ground.png',
+    redhotel:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/building/red-hotel.png',
+    redbuilding:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/building/red-building.png',
+    redpension:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/building/red-pension.png',
+    blueground:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/building/blue-ground.png',
+    bluehotel:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/building/blue-hotel.png',
+    bluebuilding:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/building/blue-building.png',
+    bluepension:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/building/blue-pension.png',
   },
 };
