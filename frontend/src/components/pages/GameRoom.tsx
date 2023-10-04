@@ -7,7 +7,7 @@ import {
   moveCharacter,
 } from '@utils/game';
 import { motion, useAnimation } from 'framer-motion';
-import { useEffect, useRef, useState, useCallback, useMemo } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import * as StompJs from '@stomp/stompjs';
 import { activateClient, getClient } from '@utils/socket';
 import { useLocation, useParams } from 'react-router-dom';
@@ -53,7 +53,6 @@ const GameRoom = () => {
   const controls4 = useAnimation();
   const [seletedLandId, setSeletedLandId] = useState(0);
   const [isOepnContrunction, setIsOepnContrunction] = useState(false);
-  const diceSum = useMemo(() => dice1 + dice2, [dice1, dice2]);
 
   // useEffect(() => {
   //   const cur = moveCharacter(1, 32, position, controls).then((res) => {
