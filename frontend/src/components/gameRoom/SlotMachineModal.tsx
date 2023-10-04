@@ -19,7 +19,7 @@ type Props = {
 
 const SlotMachineModal = ({ client, gameId, isOpen, handleSlot }: Props) => {
   const indexes = useMemo(() => [0, 0, 0], []);
-  // const [slotResult, setSlotResult] = useState([0, 0, 0]);
+  const [slotResult, setSlotResult] = useState([0, 0, 0]);
   const [bettingMoney, setBettingMoney] = useState(30000000);
   const [isClickBetting, setIsClickBetting] = useState(false);
   const { show } = useToastList();
@@ -55,7 +55,7 @@ const SlotMachineModal = ({ client, gameId, isOpen, handleSlot }: Props) => {
 
   const roll = useCallback(
     (slot: HTMLElement, offset: number = 0): Promise<number> => {
-      const delta: number = (offset + 2) * 10 + offset;
+      const delta: number = (offset + 2) * 10 + slotResult[offset];
 
       return new Promise<number>((resolve) => {
         const style = getComputedStyle(slot);
@@ -84,7 +84,7 @@ const SlotMachineModal = ({ client, gameId, isOpen, handleSlot }: Props) => {
         );
       });
     },
-    []
+    [slotResult]
   );
 
   const rollSlot = useCallback(async () => {
@@ -100,11 +100,11 @@ const SlotMachineModal = ({ client, gameId, isOpen, handleSlot }: Props) => {
       if (response.type === '박진호 끝') {
         const parkResult = response as WSResponseType<SlotType>;
         console.log('[박진호데이터]', parkResult);
-        // setSlotResult([
-        //   parkResult.data.num[0],
-        //   parkResult.data.num[1],
-        //   parkResult.data.num[2],
-        // ]);
+        setSlotResult([
+          parkResult.data.num[0],
+          parkResult.data.num[1],
+          parkResult.data.num[2],
+        ]);
         // slotResult[0] = parkResult.data.num[0];
         // slotResult[1] = parkResult.data.num[1];
         // slotResult[2] = parkResult.data.num[2];
@@ -116,7 +116,7 @@ const SlotMachineModal = ({ client, gameId, isOpen, handleSlot }: Props) => {
           '.slot'
         ) as NodeListOf<HTMLElement>;
         await Promise.all<number>(
-          [...slotList].map((slot, i) => roll(slot, parkResult.data.num[i]))
+          [...slotList].map((slot, i) => roll(slot, i))
         ).then((deltas) => {
           deltas.forEach(
             (delta, i) => (indexes[i] = (indexes[i] + delta) % 10) // 배열의 첫 번째 값 사용
@@ -177,7 +177,7 @@ const SlotMachineModal = ({ client, gameId, isOpen, handleSlot }: Props) => {
     <AnimatePresence>
       {isOpen && (
         <div
-          className='absolute flex w-full h-full bg-black bg-opacity-50 items-center justify-center'
+          className='absolute flex w-full h-full bg-black  items-center justify-center'
           style={{
             zIndex: 100,
           }}
