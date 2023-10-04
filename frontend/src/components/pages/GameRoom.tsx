@@ -96,6 +96,10 @@ const GameRoom = () => {
     });
   }, [gameId, isDiceRollButtonClick]);
 
+  useEffect(() => {
+    console.log(reDice);
+  }, [reDice]);
+
   // 소켓 연결
   useEffect(() => {
     client.current = getClient();

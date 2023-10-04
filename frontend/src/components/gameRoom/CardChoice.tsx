@@ -18,13 +18,14 @@ const CardChoice = ({ gameId, orderList, client }: Props) => {
 
   const flipCard = (index: number) => {
     const updatedOrderList = [...orderList];
+    if (!user) return;
     if (updatedOrderList[index].selected || cardChoice) return;
     client.publish({
       destination: `/pub/game-rooms/set-player/${gameId}`,
       body: JSON.stringify({
-        userId: user?.userId,
-        nickname: user?.nickname,
-        characterId: user?.avatarId,
+        userId: user.userId,
+        nickname: user.nickname,
+        characterId: user.avatarId,
         playerCnt: index,
       }),
     });
