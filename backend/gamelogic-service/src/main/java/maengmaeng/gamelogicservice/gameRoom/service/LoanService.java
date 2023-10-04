@@ -31,7 +31,7 @@ public class LoanService {
         // 2. 로그인된 사용자 찾기
         for (Player player : gameInfo.getPlayers()) {
             if(player==null || player.getNickname()==null)continue;
-            if (player.getNickname() != null && player.getNickname().equals(loanRequest.getNickname())) {
+            if (player.getNickname() != null && player.getNickname().equals(gameInfo.getInfo().getCurrentPlayer())) {
                 player.setLoan(player.getLoan() + loanRequest.getPrice());
                 player.setMoney(player.getMoney() + loanRequest.getPrice());
                 break;
@@ -48,7 +48,7 @@ public class LoanService {
         // 1. 로그인된 사용자 찾아서 돈 빼기
         // 소유하고 있는 돈에서 갚을 돈 빼기
         for (Player player : gameInfo.getPlayers()) {
-            if (player.getNickname().equals(loanRequest.getNickname())) {
+            if (player.getNickname().equals(gameInfo.getInfo().getCurrentPlayer())) {
                 // 사용자가 지금 현금으로 갚을 수 있는 상태인지 확인
                 if (player.getMoney() >= loanRequest.getPrice()) {
                     player.setLoan(player.getLoan() - loanRequest.getPrice());
