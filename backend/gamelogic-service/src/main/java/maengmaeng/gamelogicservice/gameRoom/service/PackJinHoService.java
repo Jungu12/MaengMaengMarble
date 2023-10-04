@@ -73,6 +73,6 @@ public class PackJinHoService {
 
         gameInfoRepository.createGameRoom(gameInfo);
 
-        return ResponseDto.builder().type("박진호").data(ParkJinHoResponse.builder().players(players).num(new int[] {num1, num2, num3}).build()).build();
+        return ResponseDto.builder().type("박진호 끝").data(ParkJinHoResponse.builder().players(players).num(new int[] {num1, num2, num3}).build()).build();
     }
 }
