@@ -50,7 +50,7 @@ public class TaxController {
         GameData gameData = GameData.builder()
                 .data(ResponseDto.builder()
                         .type("세금 징수")
-                        .data(ResponseDto.builder().type("세금 징수").data(response).build())
+                        .data(response)
                         .build())
                 .roomCode(roomCode)
                 .type("GAME_ROOM")
