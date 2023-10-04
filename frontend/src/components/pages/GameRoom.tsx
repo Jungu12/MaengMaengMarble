@@ -15,7 +15,6 @@ import { ParticipantsType, WSResponseType } from '@/types/common/common.type';
 import {
   DiceResultType,
   FullGameDataType,
-  NewsType,
   TurnListType,
 } from '@/types/gameRoom/game.type';
 import { useRecoilState, useRecoilValue } from 'recoil';
@@ -28,6 +27,7 @@ import ConstructionModal from '@components/gameRoom/ConstructionModal';
 import {
   currentPlayerState,
   landListState,
+  newsState,
   playersState,
 } from '@atom/gameAtom';
 
@@ -41,10 +41,9 @@ const GameRoom = () => {
   const [playerList, setPlayerList] = useRecoilState(playersState);
   const [currentPlayer, setCurrentPlayer] = useRecoilState(currentPlayerState);
   const [landList, setLandList] = useRecoilState(landListState);
+  const [news, setNews] = useRecoilState(newsState);
   const [isGameStart, setIsGameStart] = useState(false);
   const [orderList, setOrderList] = useState<TurnListType[]>([]);
-
-  const [news, setNews] = useState<NewsType[]>([]);
 
   const [dice1, setDice1] = useState<1 | 2 | 3 | 4 | 5 | 6>(1);
   const [dice2, setDice2] = useState<1 | 2 | 3 | 4 | 5 | 6>(1);
@@ -105,6 +104,17 @@ const GameRoom = () => {
     });
   }, [gameId, isDiceRollButtonClick]);
 
+  // 데이터 최신화
+  const updateInfo = useCallback(
+    (data: FullGameDataType) => {
+      setPlayerList(data.players);
+      setNews(data.info.effectNews);
+      setLandList(data.lands);
+      // TODO: 주식도 최신화 해야함
+    },
+    [setLandList, setNews, setPlayerList]
+  );
+
   useEffect(() => {
     console.log(reDice);
   }, [reDice]);
@@ -140,10 +150,8 @@ const GameRoom = () => {
           setIsGameStart(true);
           const temp = response as WSResponseType<FullGameDataType>;
           console.log('[게임시작데이터]', temp);
-          setPlayerList(temp.data.players);
-          setNews(temp.data.info.effectNews);
           setCurrentPlayer(temp.data.info.currentPlayer);
-          setLandList(temp.data.lands);
+          updateInfo(temp.data);
         }
       });
     };
@@ -151,14 +159,7 @@ const GameRoom = () => {
     return () => {
       subTemp.unsubscribe();
     };
-  }, [
-    gameId,
-    setCurrentPlayer,
-    setLandList,
-    setPlayerList,
-    state.userList,
-    user?.userId,
-  ]);
+  }, [gameId, setCurrentPlayer, state.userList, updateInfo, user?.userId]);
 
   // 구독
   useEffect(() => {
@@ -200,6 +201,13 @@ const GameRoom = () => {
               setIsOepnContrunction(true);
             }
           }
+
+          if (response.type === '자유') {
+            const temp = response as WSResponseType<FullGameDataType>;
+            updateInfo(temp.data);
+            console.log('자유시간~~~');
+          }
+
           console.log(JSON.parse(res.body));
         }
       );
