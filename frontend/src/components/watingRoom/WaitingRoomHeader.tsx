@@ -24,8 +24,8 @@ const WaitingRoomHeader = ({ title, code }: Props) => {
         };
       });
       show('success');
-      // alert('클립보드에 링크가 복사되었습니다.');
     } catch (e) {
+      console.log(e);
       setToastMessage((prev) => {
         return {
           ...prev,

@@ -7,6 +7,7 @@ import { activateClient, getClient } from '@utils/socket';
 import { useLocation, useParams } from 'react-router-dom';
 import { ParticipantsType, WSResponseType } from '@/types/common/common.type';
 import {
+  DiceResultType,
   FullGameDataType,
   NewsType,
   PlayerType,
@@ -17,6 +18,7 @@ import { userState } from '@atom/userAtom';
 import { currentParticipantsNum } from '@utils/lobby';
 import CardChoice from '@components/gameRoom/CardChoice';
 import GameMap from '@components/gameRoom/GameMap';
+import Dice from 'react-dice-roll';
 
 const GameRoom = () => {
   const location = useLocation();
@@ -30,7 +32,10 @@ const GameRoom = () => {
   const [playerList, setPlayerList] = useState<(PlayerType | null)[]>([]);
   const [news, setNews] = useState<NewsType[]>([]);
   const [currentPlayer, setCurrentPlayer] = useState('');
-  // const [isDiceRoll, setIsDiceRoll] = useState(false);
+  const [dice1, setDice1] = useState<1 | 2 | 3 | 4 | 5 | 6>(1);
+  const [dice2, setDice2] = useState<1 | 2 | 3 | 4 | 5 | 6>(1);
+  const [isDiceRollButtonClick, setIsDiceRollButtonClick] = useState(false);
+  const [isDiceRoll, setIsDiceRoll] = useState(false);
   // const [position, setPosition] = useState(7);
   // const controls = useAnimation();
 
@@ -74,10 +79,12 @@ const GameRoom = () => {
 
   // 주사위 던지기
   const handleDiceRoll = useCallback(() => {
+    if (isDiceRollButtonClick) return;
     client.current?.publish({
       destination: `/pub/game-rooms/roll/${gameId}`,
     });
-  }, [gameId]);
+    setIsDiceRollButtonClick(true);
+  }, [gameId, isDiceRollButtonClick]);
 
   // 소켓 연결
   useEffect(() => {
@@ -115,7 +122,10 @@ const GameRoom = () => {
             setCurrentPlayer(temp.data.info.currentPlayer);
           }
           if (response.type === '주사위') {
+            const diceResult = response as WSResponseType<DiceResultType>;
             console.log('주사위 결과 나왔어요');
+            setDice1(diceResult.data.dice1);
+            setDice2(diceResult.data.dice2);
           }
           console.log(JSON.parse(res.body));
         }
@@ -125,8 +135,22 @@ const GameRoom = () => {
   }, [gameId, state.userList, user?.userId]);
 
   useEffect(() => {
-    console.log('[카드리스트 변경]', orderList);
-  }, [orderList]);
+    const diceRef = document.querySelectorAll('._space3d');
+    const clickEvent = new MouseEvent('click', {
+      bubbles: true, // 이벤트가 버블링되도록 설정합니다.
+      cancelable: true, // 이벤트가 취소 가능하도록 설정합니다.
+      view: window, // 이벤트의 관련 뷰를 설정합니다.
+    });
+
+    diceRef[0].dispatchEvent(clickEvent);
+    setTimeout(() => {
+      diceRef[1].dispatchEvent(clickEvent);
+    }, 50);
+
+    setTimeout(() => {
+      setIsDiceRoll(true);
+    }, 1000);
+  }, [dice1, dice2]);
 
   if (!gameId || !client.current) return;
 
@@ -150,18 +174,36 @@ const GameRoom = () => {
         }}
       >
         {/* 주사위 버튼*/}
-        {currentPlayer === user?.nickname && (
+        {currentPlayer === user?.nickname && !isDiceRoll && (
           <div
-            className='absolute bottom-[20%] left-[50%] text-5xl text-white z-[10] text-[24px] font-bold'
+            className='absolute bottom-[50%] left-[50%] text-5xl text-white z-[10] text-[24px] font-bold'
             style={{
               transform: 'translate(-50%, -50%)',
             }}
           >
+            <div
+              className='flex gap-[24px] mb-[80px]'
+              style={{ pointerEvents: 'none' }}
+            >
+              <Dice
+                cheatValue={dice1}
+                size={100}
+                faceBg='none'
+                onRoll={(value) => console.log(value)}
+              />
+              <Dice
+                cheatValue={dice2}
+                size={100}
+                faceBg='none'
+                onRoll={(value) => console.log(value)}
+              />
+            </div>
             <button
               className='button-3d'
               onClick={() => {
                 handleDiceRoll();
               }}
+              disabled={isDiceRoll}
             >
               주사위 굴리기
             </button>
