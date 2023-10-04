@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.redis.listener.ChannelTopic;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
+import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.stereotype.Controller;
 
 @RequiredArgsConstructor
@@ -24,6 +25,8 @@ public class PackJinHoController {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final ChannelTopic gameRoomTopic;
 
+
+    @MessageMapping("/game-rooms/parkjinho/{roomCode}")
     public void betting(@DestinationVariable String roomCode, PackJinHoRequest packJinHoRequest) {
         logger.info("betting() 함수 시작");
         ResponseDto responseDto = packJinHoService.betting(roomCode, packJinHoRequest);

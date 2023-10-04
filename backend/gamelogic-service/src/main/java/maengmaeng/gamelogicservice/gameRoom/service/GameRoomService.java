@@ -203,8 +203,6 @@ public class GameRoomService {
 
         if(checkTrade){
             curPlayer.setCurrentLocation(stopTrade);
-            // TODO: 거래정지
-
             players[currentIdx] = curPlayer;
             gameInfo.setPlayers(players);
             gameInfoRepository.createGameRoom(gameInfo);
@@ -1180,8 +1178,7 @@ public class GameRoomService {
 
 
 		if(isLastPlayer){
-            //TODO: 턴이 바뀔 때 수행되어야하는 로직
-            //TODO: effectNews, waitingNews, doorCheck
+            //턴이 바뀔 때 수행되어야하는 로직
 			int turnCount = info.getTurnCount() + 1 ;
 			// 종료 조건 체크
 			if(turnCount ==31){
