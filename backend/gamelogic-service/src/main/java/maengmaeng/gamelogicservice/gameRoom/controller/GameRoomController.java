@@ -1,6 +1,7 @@
 package maengmaeng.gamelogicservice.gameRoom.controller;
 
 import maengmaeng.gamelogicservice.gameRoom.domain.GameInfo;
+import maengmaeng.gamelogicservice.gameRoom.domain.News;
 import maengmaeng.gamelogicservice.gameRoom.domain.Player;
 import maengmaeng.gamelogicservice.gameRoom.domain.StartCard;
 import maengmaeng.gamelogicservice.gameRoom.domain.dto.Dice;
@@ -240,6 +241,14 @@ public class GameRoomController {
 			.build();
 
 		redisPublisher.publish(gameRoomTopic, gameData);
+	}
+
+	/**
+	 * 뉴스 세개 중 하나 골라서 적용 시키기
+	 */
+	@MessageMapping("/game-rooms/news/{roomCode}")
+	public void applyNews(@DestinationVariable String roomCode, News news) {
+		gameRoomService.applyNews(news);
 	}
 
 	/**
