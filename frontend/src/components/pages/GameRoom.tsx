@@ -1,9 +1,7 @@
-import NewsCardModal from '@components/gameRoom/NewsCardModal';
 import { images } from '@constants/images';
-// import { moveCharacter } from '@utils/game';
+import { calcRank, effectNewsToString, formatAsset } from '@utils/game';
 import { motion } from 'framer-motion';
 import { useEffect, useRef, useState, useCallback } from 'react';
-import { calcRank, effectNewsToString, formatAsset } from '@utils/game';
 import * as StompJs from '@stomp/stompjs';
 import { activateClient, getClient } from '@utils/socket';
 import { useLocation, useParams } from 'react-router-dom';
@@ -17,9 +15,6 @@ import {
 import { useRecoilValue } from 'recoil';
 import { userState } from '@atom/userAtom';
 import { currentParticipantsNum } from '@utils/lobby';
-import LandInfoModal from '@components/gameRoom/LandInfoModal';
-import ConstructionModal from '@components/gameRoom/ConstructionModal';
-import LoansModal from '@components/gameRoom/LoansModal';
 import CardChoice from '@components/gameRoom/CardChoice';
 import GameMap from '@components/gameRoom/GameMap';
 
@@ -32,39 +27,6 @@ const GameRoom = () => {
   const { gameId } = useParams();
   const [isGameStart, setIsGameStart] = useState(false);
   const [orderList, setOrderList] = useState<TurnListType[]>([]);
-  // const [x, setX] = useState(0);
-  // const [y, setY] = useState(0);
-  // const [position, setPosition] = useState(7);
-  // const controls = useAnimation();
-  const [isOpenNews, setIsOpenNews] = useState(false);
-  const [isOpenLandInfo, setIsOpenLandInfo] = useState(false);
-  const [isOpenConstruction, setIsOpenConstruction] = useState(false);
-  const [isOpenLoans, setIsOpenLoans] = useState(false);
-  const [landValue, setLandValue] = useState(25);
-
-  const handleNews = useCallback(() => {
-    setIsOpenNews((prev) => !prev);
-  }, []);
-
-  const handleLandInfo = useCallback(() => {
-    setIsOpenLandInfo((prev) => !prev);
-  }, []);
-
-  const handleConstruction = useCallback(() => {
-    setIsOpenConstruction((prev) => !prev);
-  }, []);
-
-  const handleLoans = useCallback(() => {
-    setIsOpenLoans((prev) => !prev);
-  }, []);
-
-  const onClickLand = useCallback(
-    (value: number) => {
-      handleLandInfo();
-      setLandValue(value);
-    },
-    [handleLandInfo]
-  );
   const [playerList, setPlayerList] = useState<(PlayerType | null)[]>([]);
   const [news, setNews] = useState<NewsType[]>([]);
   const [currentPlayer, setCurrentPlayer] = useState('');
@@ -113,7 +75,7 @@ const GameRoom = () => {
   // 주사위 던지기
   const handleDiceRoll = useCallback(() => {
     client.current?.publish({
-      destination: `/pub/game-rooms/roll/${gameId}`,
+      destination: `/pub/game-rooms/${gameId}`,
     });
   }, [gameId]);
 
@@ -162,9 +124,9 @@ const GameRoom = () => {
     };
   }, [gameId, state.userList, user?.userId]);
 
-  // useEffect(() => {
-  //   console.log('[카드리스트 변경]', orderList);
-  // }, [orderList]);
+  useEffect(() => {
+    console.log('[카드리스트 변경]', orderList);
+  }, [orderList]);
 
   if (!gameId || !client.current) return;
 
@@ -179,58 +141,38 @@ const GameRoom = () => {
   }
 
   return (
-    <div
-      className='flex flex-col w-full h-full min-h-[700px] overflow-hidden relative'
-      style={{
-        backgroundImage: `url(${images.gameRoom.background})`,
-        backgroundSize: 'cover',
-      }}
-    >
-      {/* 주사위 버튼*/}
-      {currentPlayer === user?.nickname && (
-        <div
-          className='absolute bottom-[20%] left-[50%] text-5xl text-white z-[10] text-[24px] font-bold'
-          style={{
-            transform: 'translate(-50%, -50%)',
-          }}
-        >
-          <button className='button-3d' onClick={handleDiceRoll}>
-            주사위 굴리기
-          </button>
-        </div>
-      )}
-      {/* 유저 정보 */}
-      <div className='flex flex-col w-full h-full relative'>
-        <div className='flex justify-between'>
-          {playerList[0] && (
-            <div className='flex w-[360px] h-[160px] relative'>
-              <div className='w-[120px] flex items-center justify-center overflow-hidden relative'>
-                <img
-                  className='object-cover mt-[80px] z-[1]'
-                  src={playerList[0].avatarImage}
-                  alt='player4'
-                />
-                <img
-                  className='w-full h-full absolute object-fill'
-                  src={images.gameRoom.profileBgRed}
-                  alt='배경이미지'
-                />
-              </div>
-              <div className='flex flex-col w-[240px]'>
-                <div
-                  className='text-white text-xl font-bold mt-[8px] pb-[8px] pl-[12px] relative'
-                  style={{
-                    /* 테두리 스타일 설정 */
-                    borderBottom: '3px solid transparent',
-                    borderImage:
-                      'linear-gradient(to right, #790317, transparent)',
-                    borderImageSlice: '1',
-                    borderImageWidth: '0 0 2px 0',
-                    borderImageOutset: '0',
-                    borderImageRepeat: 'stretch',
-                  }}
-                >
-                  {playerList[0].nickname}
+    <>
+      <div
+        className='flex flex-col w-full h-full min-h-[700px] overflow-hidden relative'
+        style={{
+          backgroundImage: `url(${images.gameRoom.background})`,
+          backgroundSize: 'cover',
+        }}
+      >
+        {/* 주사위 버튼*/}
+        {currentPlayer === user?.nickname && (
+          <div
+            className='absolute bottom-[20%] left-[50%] text-5xl text-white z-[10] text-[24px] font-bold'
+            style={{
+              transform: 'translate(-50%, -50%)',
+            }}
+          >
+            <button
+              className='button-3d'
+              onClick={() => {
+                handleDiceRoll();
+              }}
+            >
+              주사위 굴리기
+            </button>
+          </div>
+        )}
+        {/* 유저 정보 */}
+        <div className='flex flex-col w-full h-full relative'>
+          <div className='flex justify-between'>
+            {playerList[0] && (
+              <div className='flex w-[360px] h-[160px] relative'>
+                <div className='w-[120px] flex items-center justify-center overflow-hidden relative'>
                   <img
                     className='object-cover mt-[80px] z-[1]'
                     src={playerList[0].avatarImage}
@@ -616,7 +558,7 @@ const GameRoom = () => {
           </div>
         </div>
         {/* 게임맵 */}
-        <GameMap playerList={playerList} onClickLand={onClickLand} />
+        <GameMap playerList={playerList} onClickLand={() => console.log(1)} />
       </div>
     </>
   );
