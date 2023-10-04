@@ -116,7 +116,7 @@ public class GameRoomService {
 			players[seq - 1] = player;
 			startCards[playerSeq.getPlayerCnt()].setSelected(true);
 
-			if (playerSeq.getPlayerCnt() == 1) {
+			if (seq == 1) {
 				Info info = Info.builder()
 					.currentPlayer(players[0].getNickname())
 					.playerCnt(playerNum)
@@ -180,6 +180,7 @@ public class GameRoomService {
 		}
 		if (currentIdx != -1) {
 			// 예외 처리
+
 		}
 		// 주사위 굴리기
 		Dice dice = getDice();
