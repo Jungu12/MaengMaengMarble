@@ -1133,6 +1133,8 @@ public class GameRoomService {
 	public ResponseDto endTurn(String roomCode) {
 		GameInfo gameInfo = gameInfoRepository.getGameInfo(roomCode);
 		Player[] players = gameInfo.getPlayers();
+		List<Land> lands = gameInfo.getLands();
+		List<Stock> stocks = gameInfo.getStocks();
 		int playerIdx = getPlayerIdx(players, gameInfo.getInfo().getCurrentPlayer());
 		Player currentPlayer = players[playerIdx];
 		// 현재 플레이어의 turnCount++
@@ -1178,10 +1180,97 @@ public class GameRoomService {
 						//TODO: 적용중인 뉴스 효과 제거도 해야함
 						// TODO: 뉴스효과 뺄 때 뉴스 효과 빼고 나서 asset
 						News news = effectNews.poll();
-						news.getCountryEffects();
-						news.getCountryEffects();
+
 					}
 					effectNews.offer(waitingNews.poll().getNews());
+
+					Map<Integer, Integer> effectedCountries = new HashMap<>();
+					Map<Integer, Integer> effectedStocks = new HashMap<>();
+					for (News curNews : effectNews) {
+						effectedCountries.putAll(curNews.getCountryEffects());
+						effectedStocks.putAll(curNews.getStockEffects());
+					}
+
+					//뉴스에 의해 변동 된 땅 값 초기화
+					for (Map.Entry<Integer, Integer> entry : effectedCountries.entrySet()) {
+						Land curLand = lands.get(entry.getKey());
+						curLand.setCurrentBuildingPrices(curLand.getBuildingPrices());
+						curLand.setCurrentLandPrice(curLand.getLandPrice());
+						curLand.setCurrentFees(curLand.getFees());
+					}
+
+					//뉴스에 의해 변동 된 주식 가격 초기화
+					for (Map.Entry<Integer, Integer> entry : effectedStocks.entrySet()) {
+						Stock curStock = stocks.get(entry.getKey());
+						curStock.setCurrentCost(curStock.getCost());
+					}
+
+					//현재 적용중인 뉴스 List를 돌면서 해당 뉴스가 끼치는 영향을 적용
+					for (News curNews : effectNews) {
+						Map<Integer, Integer> curEffectedCountries = curNews.getCountryEffects();
+						Map<Integer, Integer> curEffectedStocks = curNews.getStockEffects();
+
+						for (Map.Entry<Integer, Integer> entry : curEffectedCountries.entrySet()) {
+							Land curLand = lands.get(entry.getKey());
+							int curEffect = entry.getValue();
+
+							int currentLandPrice = 0;
+							int[] currentBuildingPrices = new int[3];
+							int[] currentFees = new int[4];
+
+							//좋은 효과
+							if (curEffect >= 0) {
+								currentLandPrice =
+										curLand.getCurrentLandPrice() * (100 + curEffect) / 100;
+								for (int i = 0; i < currentBuildingPrices.length; i++) {
+									currentBuildingPrices[i] =
+											curLand.getCurrentBuildingPrices()[i] * (100 + curEffect) / 100;
+								}
+								for (int i = 0; i < currentFees.length; i++) {
+									currentBuildingPrices[i] =
+											curLand.getCurrentFees()[i] * (100 + curEffect) / 100;
+								}
+							}
+							//나쁜 효과
+							else {
+								currentLandPrice =
+										curLand.getCurrentLandPrice() * (100 - curEffect) / 100;
+								for (int i = 0; i < currentBuildingPrices.length; i++) {
+									currentBuildingPrices[i] =
+											curLand.getCurrentBuildingPrices()[i] * (100 - curEffect) / 100;
+								}
+								for (int i = 0; i < currentFees.length; i++) {
+									currentBuildingPrices[i] =
+											curLand.getCurrentFees()[i] * (100 - curEffect) / 100;
+								}
+							}
+							//바뀐 정보 해당 땅에 업데이트
+							curLand.setCurrentLandPrice(currentLandPrice);
+							curLand.setCurrentBuildingPrices(currentBuildingPrices);
+							curLand.setCurrentFees(currentFees);
+							lands.set(entry.getKey(), curLand);
+						}
+
+						for (Map.Entry<Integer, Integer> entry : curEffectedStocks.entrySet()) {
+							Stock curStocks = stocks.get(entry.getKey());
+							int curEffect = entry.getValue();
+
+							int currentCost = 0;
+
+							//좋은 효과
+							if (curEffect >= 0) {
+								currentCost = curStocks.getCurrentCost() * (100 + curEffect) / 100;
+							}
+							//나쁜 효과
+							else {
+								currentCost = curStocks.getCurrentCost() * (100 - curEffect) / 100;
+							}
+							//바뀐 정보 해당 땅에 업데이트
+							curStocks.setCurrentCost(currentCost);
+							stocks.set(entry.getKey(), curStocks);
+						}
+					}
+
 				} else {
 					// 적용 시킬 뉴스 없으면
 					break;
@@ -1251,7 +1340,7 @@ public class GameRoomService {
 				effectNews.poll();
 			}
 			effectNews.add(news);
-			// TODO : 땅 값 바뀌면 주식과 플레이어 총 자산이 변경 된다. 구현해라 ~
+			//땅 값 바뀌면 주식과 플레이어 총 자산이 변경
 
 			Map<Integer, Integer> effectedCountries = new HashMap<>();
 			Map<Integer, Integer> effectedStocks = new HashMap<>();
