@@ -2,7 +2,9 @@ package maengmaeng.gamelogicservice.gameRoom.controller;
 
 import lombok.AllArgsConstructor;
 import maengmaeng.gamelogicservice.gameRoom.domain.GameInfo;
+import maengmaeng.gamelogicservice.gameRoom.domain.Player;
 import maengmaeng.gamelogicservice.gameRoom.domain.dto.LoanRequest;
+import maengmaeng.gamelogicservice.gameRoom.domain.dto.LoanResponse;
 import maengmaeng.gamelogicservice.gameRoom.service.GameRoomService;
 import maengmaeng.gamelogicservice.gameRoom.service.LoanService;
 import maengmaeng.gamelogicservice.global.dto.GameData;
@@ -26,14 +28,25 @@ public class LoanController {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     @MessageMapping("/game-rooms/loan/borrow/{roomCode}")
     public void borrow(@DestinationVariable String roomCode, LoanRequest loanRequest){
-        logger.info("borrow()함수 시작");
         loanService.borrow(roomCode, loanRequest);
 
         GameInfo gameInfo  = gameRoomService.getInfo(roomCode);
+
+        Player changedPlayer = null;
+
+        for(Player player : gameInfo.getPlayers()){
+            if(player.getNickname().equals(gameInfo.getInfo().getCurrentPlayer())){
+                changedPlayer = player;
+                break;
+            }
+        }
+
+
+
         GameData gameData = GameData.builder()
                 .type("GAME_ROOM")
                 .roomCode(roomCode)
-                .data(ResponseDto.builder().type("대출 완료").data(gameInfo).build())
+                .data(ResponseDto.builder().type("대출 완료").data(LoanResponse.builder().player(changedPlayer).build()).build())
                 .build();
         redisPublisher.publish(gameRoomTopic,gameData);
     }
@@ -44,10 +57,21 @@ public class LoanController {
 
 
         GameInfo gameInfo  = gameRoomService.getInfo(roomCode);
+
+        Player changedPlayer = null;
+
+        for(Player player : gameInfo.getPlayers()){
+            if(player.getNickname().equals(gameInfo.getInfo().getCurrentPlayer())){
+                changedPlayer = player;
+                break;
+            }
+        }
+
+
         GameData gameData = GameData.builder()
                 .type("GAME_ROOM")
                 .roomCode(roomCode)
-                .data(ResponseDto.builder().type("대출 갚기 완료").data(gameInfo).build())
+                .data(ResponseDto.builder().type("대출 갚기 완료").data(LoanResponse.builder().player(changedPlayer).build()).build())
                 .build();
         redisPublisher.publish(gameRoomTopic,gameData);
     }
