@@ -42,6 +42,8 @@ const GameRoom = () => {
   const [dice2, setDice2] = useState<1 | 2 | 3 | 4 | 5 | 6>(1);
   const [isDiceRollButtonClick, setIsDiceRollButtonClick] = useState(false);
   const [isDiceRoll, setIsDiceRoll] = useState(false);
+  const [doubleCnt, setDoubleCnt] = useState(0); // 현재 더블이 몇번 나왔는지 확인용도
+  const [reDice, setReDice] = useState(false); // 주사위를 더 던질 수 있는지 확인
   // const [position, setPosition] = useState(7);
   const controls1 = useAnimation();
   const controls2 = useAnimation();
@@ -129,19 +131,27 @@ const GameRoom = () => {
             setNews(temp.data.info.effectNews);
             setCurrentPlayer(temp.data.info.currentPlayer);
           }
-          if (response.type === '주사위') {
+          if (
+            response.type === '주사위' ||
+            response.type === '거래정지칸도착'
+          ) {
             const diceResult = response as WSResponseType<DiceResultType>;
             setIsDiceRollButtonClick(true);
             console.log('주사위 결과 나왔어요');
             setDice1(diceResult.data.dice1);
             setDice2(diceResult.data.dice2);
+            // 더블이 나오는 경우 주사위 다시 던지기
+            if (doubleCnt < diceResult.data.doubleCount) {
+              setReDice(true);
+              setDoubleCnt(diceResult.data.doubleCount);
+            }
           }
           console.log(JSON.parse(res.body));
         }
       );
       console.log('[참가 인원]', currentParticipantsNum(state.userList));
     };
-  }, [gameId, state.userList, user?.userId]);
+  }, [doubleCnt, gameId, state.userList, user?.userId]);
 
   useEffect(() => {
     if (isDiceRollButtonClick && !isDiceRoll) {
@@ -161,9 +171,9 @@ const GameRoom = () => {
 
       setTimeout(() => {
         setIsDiceRoll(true);
+        const idx = getPlayerIndex(playerList, currentPlayer);
         // 캐릭터 이동 시작
         if (user) {
-          const idx = getPlayerIndex(playerList, user?.nickname);
           let tempControls = controls1;
           if (idx === 1) {
             tempControls = controls2;
@@ -179,6 +189,13 @@ const GameRoom = () => {
               dice1 + dice2,
               playerList[idx]!.currentLocation,
               tempControls
+            ).then(
+              // 도착 위치 호출
+              () => {
+                client.current?.publish({
+                  destination: `/pub/game-rooms/after-move/${gameId}`,
+                });
+              }
             );
           }
         }
@@ -189,8 +206,10 @@ const GameRoom = () => {
     controls2,
     controls3,
     controls4,
+    currentPlayer,
     dice1,
     dice2,
+    gameId,
     isDiceRoll,
     isDiceRollButtonClick,
     playerList,
