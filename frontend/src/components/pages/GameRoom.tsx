@@ -166,7 +166,6 @@ const GameRoom = () => {
             console.log('주사위 결과 나왔어요');
             setDice1(diceResult.data.dice1);
             setDice2(diceResult.data.dice2);
-            setPlayerList(diceResult.data.players);
             const idx = getPlayerIndex(playerList, currentPlayer);
             console.log('[현재 플레이어 최신]', diceResult.data.players);
             console.log('[현재 플레이어 인덱스]', idx);
@@ -175,7 +174,7 @@ const GameRoom = () => {
               diceResult.data.players[idx]!.currentLocation
             );
 
-            setSeletedLandId(playerList[idx]!.currentLocation);
+            setSeletedLandId(diceResult.data.players[idx]!.currentLocation);
             // 더블이 나오는 경우 주사위 다시 던지기
             if (doubleCnt < diceResult.data.doubleCount) {
               setReDice(true);
@@ -184,7 +183,6 @@ const GameRoom = () => {
           }
 
           if (response.type === '땅구매') {
-            console.log('맹맹맴맹맹');
             console.log('[플레이어 정보]', playerList);
 
             // 현재 플레이어만 보이게
@@ -218,8 +216,6 @@ const GameRoom = () => {
         cancelable: true, // 이벤트가 취소 가능하도록 설정합니다.
         view: window, // 이벤트의 관련 뷰를 설정합니다.
       });
-
-      console.log(diceRef);
 
       diceRef[0].dispatchEvent(clickEvent);
       setTimeout(() => {
