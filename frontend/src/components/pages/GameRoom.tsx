@@ -1,6 +1,12 @@
 import { images } from '@constants/images';
-import { calcRank, effectNewsToString, formatAsset } from '@utils/game';
-import { motion } from 'framer-motion';
+import {
+  calcRank,
+  effectNewsToString,
+  formatAsset,
+  getPlayerIndex,
+  moveCharacter,
+} from '@utils/game';
+import { motion, useAnimation } from 'framer-motion';
 import { useEffect, useRef, useState, useCallback } from 'react';
 import * as StompJs from '@stomp/stompjs';
 import { activateClient, getClient } from '@utils/socket';
@@ -37,7 +43,10 @@ const GameRoom = () => {
   const [isDiceRollButtonClick, setIsDiceRollButtonClick] = useState(false);
   const [isDiceRoll, setIsDiceRoll] = useState(false);
   // const [position, setPosition] = useState(7);
-  // const controls = useAnimation();
+  const controls1 = useAnimation();
+  const controls2 = useAnimation();
+  const controls3 = useAnimation();
+  const controls4 = useAnimation();
 
   // useEffect(() => {
   //   const cur = moveCharacter(1, 32, position, controls).then((res) => {
@@ -135,7 +144,7 @@ const GameRoom = () => {
   }, [gameId, state.userList, user?.userId]);
 
   useEffect(() => {
-    if (isDiceRollButtonClick) {
+    if (isDiceRollButtonClick && isDiceRoll) {
       const diceRef = document.querySelectorAll('._space3d');
       const clickEvent = new MouseEvent('click', {
         bubbles: true, // 이벤트가 버블링되도록 설정합니다.
@@ -152,9 +161,41 @@ const GameRoom = () => {
 
       setTimeout(() => {
         setIsDiceRoll(true);
+        // 캐릭터 이동 시작
+        if (user) {
+          const idx = getPlayerIndex(playerList, user?.nickname);
+          let tempControls = controls1;
+          if (idx === 1) {
+            tempControls = controls2;
+          }
+          if (idx === 2) {
+            tempControls = controls3;
+          }
+          if (idx === 3) {
+            tempControls = controls4;
+          }
+          if (playerList[idx] !== null) {
+            moveCharacter(
+              dice1 + dice2,
+              playerList[idx]!.currentLocation,
+              tempControls
+            );
+          }
+        }
       }, 3000);
     }
-  }, [isDiceRollButtonClick]);
+  }, [
+    controls1,
+    controls2,
+    controls3,
+    controls4,
+    dice1,
+    dice2,
+    isDiceRoll,
+    isDiceRollButtonClick,
+    playerList,
+    user,
+  ]);
 
   if (!gameId || !client.current) return;
 
@@ -555,7 +596,7 @@ const GameRoom = () => {
                       총자산
                     </span>
                     <div className='flex-1 text-[#7492FF] text-[18px] font-medium whitespace-nowrap'>
-                      <span>{playerList[3].asset}</span>
+                      <span>{formatAsset(playerList[3].asset)}</span>
                     </div>
                   </div>
                   <div className='flex text-white pr-[12px] mt-[16px] overflow-hidden relative'>
@@ -563,7 +604,7 @@ const GameRoom = () => {
                       보유현금
                     </span>
                     <span className='text-[#FFF59D] text-[18px] font-medium whitespace-nowrap text-right'>
-                      {playerList[3].money}
+                      {formatAsset(playerList[3].money)}
                     </span>
                   </div>
                 </div>
@@ -601,7 +642,14 @@ const GameRoom = () => {
           </div>
         </div>
         {/* 게임맵 */}
-        <GameMap playerList={playerList} onClickLand={() => console.log(1)} />
+        <GameMap
+          playerList={playerList}
+          onClickLand={() => console.log(1)}
+          controls1={controls1}
+          controls2={controls2}
+          controls3={controls3}
+          controls4={controls4}
+        />
       </div>
     </>
   );
