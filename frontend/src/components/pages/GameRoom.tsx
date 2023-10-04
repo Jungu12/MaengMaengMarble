@@ -118,7 +118,12 @@ const GameRoom = () => {
           }),
         });
       }
+    };
+  }, [gameId, state.userList, user?.userId]);
 
+  // 구독
+  useEffect(() => {
+    if (client.current?.connected) {
       gameSub.current = client.current?.subscribe(
         `/sub/game-rooms/${gameId}`,
         (res) => {
@@ -165,16 +170,12 @@ const GameRoom = () => {
           console.log(JSON.parse(res.body));
         }
       );
-      console.log('[참가 인원]', currentParticipantsNum(state.userList));
+    }
+
+    return () => {
+      gameSub.current?.unsubscribe();
     };
-  }, [
-    currentPlayer,
-    doubleCnt,
-    gameId,
-    playerList,
-    state.userList,
-    user?.userId,
-  ]);
+  }, [currentPlayer, doubleCnt, gameId, playerList]);
 
   useEffect(() => {
     if (isDiceRollButtonClick && !isDiceRoll) {
