@@ -222,7 +222,7 @@ public class GameRoomService {
 			// 거래 정지 칸으로 이동
 			// 클라이언트에서 서버로 턴종료  호출
 
-			responseDto = ResponseDto.builder().type("거래정지칸도착").data(dice).build();
+			responseDto = ResponseDto.builder().type("턴종료").data(dice).build();
 
 		} else {
 			//
@@ -284,7 +284,7 @@ public class GameRoomService {
 			dice.setPlayers(players);
 			gameInfo.setPlayers(players);
 			gameInfoRepository.createGameRoom(gameInfo);
-			return ResponseDto.builder().type("거래정지탈출실패").data(dice).build();
+			return ResponseDto.builder().type("턴종료").data(dice).build();
 		} else {
 			// 더블이면 이동
 			int curLocation = curPlayer.getCurrentLocation();
@@ -463,7 +463,7 @@ public class GameRoomService {
 		return ResponseDto.builder().type("인수").data(players).build();
 	}
 
-	/**
+	/**료
 	 * 인수
 	 * @param roomCode
 	 */
@@ -980,7 +980,7 @@ public class GameRoomService {
 				break;
 			case 8:
 				// 거래정지
-				responseDto = ResponseDto.builder().type("거래정지").build();
+				responseDto = ResponseDto.builder().type("턴종료").build();
 				break;
 			case 10:
 				// 박진호
