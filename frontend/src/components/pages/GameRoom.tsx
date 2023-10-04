@@ -178,7 +178,7 @@ const GameRoom = () => {
         }}
       >
         {/* 주사위 버튼*/}
-        {currentPlayer === user?.nickname && !isDiceRoll && (
+        {!isDiceRoll && (
           <div className='absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-5xl text-white z-[10] text-[24px] font-bold flex flex-col justify-center items-center'>
             <div
               className='flex gap-[24px] mb-[80px]'
@@ -197,15 +197,17 @@ const GameRoom = () => {
                 onRoll={(value) => console.log(value)}
               />
             </div>
-            <button
-              className='button-3d'
-              onClick={() => {
-                handleDiceRoll();
-              }}
-              disabled={isDiceRoll}
-            >
-              주사위 굴리기
-            </button>
+            {currentPlayer === user?.nickname && (
+              <button
+                className='button-3d'
+                onClick={() => {
+                  handleDiceRoll();
+                }}
+                disabled={isDiceRoll}
+              >
+                주사위 굴리기
+              </button>
+            )}
           </div>
         )}
         {/* 유저 정보 */}
