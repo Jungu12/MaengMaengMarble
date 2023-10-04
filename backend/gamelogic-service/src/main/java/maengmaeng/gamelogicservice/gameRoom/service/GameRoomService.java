@@ -242,7 +242,7 @@ public class GameRoomService {
 			dice.setDoubleCount(curPlayer.getDoubleCount());
 			dice.setPlayers(players);
 
-			responseDto = ResponseDto.builder().type("주사위").data(dice).build();
+			responseDto = ResponseDto.builder().type("이동후로직").data(dice).build();
 
 		}
 
@@ -304,7 +304,7 @@ public class GameRoomService {
 			dice.setDoubleCount(0);
 			dice.setPlayers(players);
 
-			return ResponseDto.builder().type("거래정지탈출성공").data(dice).build();
+			return ResponseDto.builder().type("이동후로직").data(dice).build();
 
 		}
 
@@ -815,11 +815,11 @@ public class GameRoomService {
 			player.setMoney(playerMoney + maengMaeng);
 			//TODO: asset 값 올리기
 			long playerAsset = player.getAsset();
-			player.setAsset(playerAsset + playerAsset);
+			player.setAsset(playerAsset + maengMaeng);
 			players[playerIdx] = player;
 			gameInfo.setPlayers(players);
 			gameInfoRepository.createGameRoom(gameInfo);
-			return ResponseDto.builder().type("맹맹지급").data(player).build();
+			return ResponseDto.builder().type("이동후로직").data(player).build();
 		} else {
 			// 맹맹이 음수일 때
 			// 맹맹이 보유자산 보다 많을 때?
@@ -832,9 +832,9 @@ public class GameRoomService {
 					players[playerIdx] = player;
 					gameInfo.setPlayers(players);
 					gameInfoRepository.createGameRoom(gameInfo);
-					return ResponseDto.builder().type("맹맹지급").data(player).build();
+					return ResponseDto.builder().type("이동후로직").data(player).build();
 				} else {
-					return ResponseDto.builder().type("매각시작").build();
+					return ResponseDto.builder().type("매각").build();
 				}
 			}
 
