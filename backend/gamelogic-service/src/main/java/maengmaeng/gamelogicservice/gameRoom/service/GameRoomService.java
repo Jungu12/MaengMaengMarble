@@ -446,7 +446,7 @@ public class GameRoomService {
 			}
 		}
 
-		// 통행료 만큼 현재 플레이어의 보유 자산 및 보유 현금 차감
+		// 만큼 현재 플레이어의 보유 자산 및 보유 현금 차감
 		players[currentIdx].setMoney(players[currentIdx].getMoney() - currentLandFee);
 		players[currentIdx].setAsset(players[currentIdx].getAsset() - currentLandFee);
 
@@ -829,6 +829,7 @@ public class GameRoomService {
 				if (player.getMoney() - maengMaeng >= 0) {
 					// 보유 현금 -
 					player.setMoney(player.getMoney() - maengMaeng);
+					player.setAsset(player.getAsset() - maengMaeng);
 					players[playerIdx] = player;
 					gameInfo.setPlayers(players);
 					gameInfoRepository.createGameRoom(gameInfo);
