@@ -208,7 +208,7 @@ public class GameRoomController {
 	/** 거래 정지에서 주사위 굴리기
 	 *
 	 * */
-	@MessageMapping("/game-rooms/stopTrade/{roomCode}")
+	@MessageMapping("/game-rooms/stop-trade/{roomCode}")
 	public void stopTrade(@DestinationVariable String roomCode) {
 
 		ResponseDto responseDto = gameRoomService.stopTrade(roomCode);
@@ -233,7 +233,7 @@ public class GameRoomController {
 	/**
 	 * 이동후 로직
 	 * */
-	@MessageMapping("/game-rooms/afterMove/{roomCode}")
+	@MessageMapping("/game-rooms/after-move/{roomCode}")
 	public void afterMove(@DestinationVariable String roomCode){
 		// 도착한 땅의 위치에 따라 행동 변환
 
@@ -302,6 +302,23 @@ public class GameRoomController {
 		redisPublisher.publish(gameRoomTopic,gameData);
 
 
+	}
+
+
+	/**
+	 * 게임 종료
+	 * */
+	@MessageMapping("/game-rooms/end-game/{roomCode}")
+	public void endGame(@DestinationVariable String roomCode){
+		ResponseDto responseDto = gameRoomService.endGame(roomCode);
+
+		GameData gameData = GameData.builder()
+				.type("GAME_ROOM")
+				.roomCode(roomCode)
+				.data(responseDto)
+				.build();
+
+		redisPublisher.publish(gameRoomTopic,gameData);
 	}
 
 }

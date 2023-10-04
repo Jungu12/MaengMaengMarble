@@ -16,7 +16,10 @@ public enum ExceptionCode {
 
     /* Stock */
     MONEY_NOT_SUFFICIENT(HttpStatus.INTERNAL_SERVER_ERROR, "보유 현금이 부족합니다."),
-    STOCK_NOT_SUFFICIENT(HttpStatus.INTERNAL_SERVER_ERROR, "보유 주식이 부족합니다.");
+    STOCK_NOT_SUFFICIENT(HttpStatus.INTERNAL_SERVER_ERROR, "보유 주식이 부족합니다."),
+
+    /* PackJinHo */
+    PACKJINHO_MONEY_OVER(HttpStatus.INTERNAL_SERVER_ERROR, "보유 현금보다 많은 금액입니다.");
 
     private final HttpStatus status;
     private final String message;
