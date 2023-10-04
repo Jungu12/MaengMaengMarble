@@ -35,80 +35,96 @@ const GameMap = ({
     if (playerList[0]) {
       const position = playerList[0].currentLocation;
       if (position >= 0 && position < 8) {
-        setPlayer1X(position * -33);
+        setPlayer1X(position * -67);
         setPlayer1Y(0);
       }
       if (position >= 8 && position < 16) {
-        setPlayer1X(-33 * 8);
-        setPlayer1Y((position - 8) * 3);
+        setPlayer1X(-67 * 8);
+        setPlayer1Y((position - 8) * 67);
       }
       if (position >= 16 && position < 24) {
-        setPlayer1X((24 - position) * -33);
-        setPlayer1Y(33 * 8);
+        setPlayer1X((24 - position) * -67);
+        setPlayer1Y(67 * 8);
       }
       if (position >= 24 && position < 32) {
         setPlayer1X(0);
-        setPlayer1Y((32 - position) * 33);
+        setPlayer1Y((32 - position) * 67);
       }
+      controls1.set({
+        x: 0,
+        y: 0,
+      });
     }
     if (playerList[1]) {
       const position = playerList[1].currentLocation;
       if (position >= 0 && position < 8) {
-        setPlayer2X(position * -33);
+        setPlayer2X(position * -67);
         setPlayer2Y(0);
       }
       if (position >= 8 && position < 16) {
-        setPlayer2X(-33 * 8);
-        setPlayer2Y((position - 8) * 33);
+        setPlayer2X(-67 * 8);
+        setPlayer2Y((position - 8) * 67);
       }
       if (position >= 16 && position < 24) {
-        setPlayer2X((24 - position) * -33);
-        setPlayer2Y(33 * 8);
+        setPlayer2X((24 - position) * -67);
+        setPlayer2Y(67 * 8);
       }
       if (position >= 24 && position < 32) {
         setPlayer2X(0);
-        setPlayer2Y((32 - position) * 33);
+        setPlayer2Y((32 - position) * 67);
       }
+      controls2.set({
+        x: 0,
+        y: 0,
+      });
     }
     if (playerList[2]) {
       const position = playerList[2].currentLocation;
       if (position >= 0 && position < 8) {
-        setPlayer3X(position * -33);
+        setPlayer3X(position * -67);
         setPlayer3Y(0);
       }
       if (position >= 8 && position < 16) {
-        setPlayer3X(-33 * 8);
-        setPlayer3Y((position - 8) * 33);
+        setPlayer3X(-67 * 8);
+        setPlayer3Y((position - 8) * 67);
       }
       if (position >= 16 && position < 24) {
-        setPlayer3X((24 - position) * -33);
-        setPlayer3Y(33 * 8);
+        setPlayer3X((24 - position) * -67);
+        setPlayer3Y(67 * 8);
       }
       if (position >= 24 && position < 32) {
         setPlayer3X(0);
-        setPlayer3Y((32 - position) * 33);
+        setPlayer3Y((32 - position) * 67);
       }
+      controls3.set({
+        x: 0,
+        y: 0,
+      });
     }
     if (playerList[3]) {
       const position = playerList[3].currentLocation;
       if (position >= 0 && position < 8) {
-        setPlayer4X(position * -33);
+        setPlayer4X(position * -67);
         setPlayer4Y(0);
       }
       if (position >= 8 && position < 16) {
-        setPlayer4X(-33 * 8);
-        setPlayer4Y((position - 8) * 33);
+        setPlayer4X(-67 * 8);
+        setPlayer4Y((position - 8) * 67);
       }
       if (position >= 16 && position < 24) {
-        setPlayer4X((24 - position) * -33);
-        setPlayer4Y(33 * 8);
+        setPlayer4X((24 - position) * -67);
+        setPlayer4Y(67 * 8);
       }
       if (position >= 24 && position < 32) {
         setPlayer4X(0);
-        setPlayer4Y((32 - position) * 33);
+        setPlayer4Y((32 - position) * 67);
       }
+      controls4.set({
+        x: 0,
+        y: 0,
+      });
     }
-  }, [playerList]);
+  }, [controls1, controls2, controls3, controls4, playerList]);
 
   return (
     <div className='absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 mt-[40px] w-[640px] h-[640px] ]'>
