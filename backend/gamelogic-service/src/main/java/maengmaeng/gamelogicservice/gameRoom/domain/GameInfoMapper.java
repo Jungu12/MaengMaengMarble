@@ -94,22 +94,18 @@ public class GameInfoMapper {
 	public News toRedisNews(DbNews dbNews) {
 
 		List<DbNewsCountry> dbNewsCountryList = dbNews.getDbNewsCountryList();
-		List<Map<String, Integer>> countryEffects = new ArrayList<>();
+		Map<Integer, Integer> countryEffects = new HashMap<>();
 
 		List<DbNewsStock> dbNewsStockList = dbNews.getDbNewsStockList();
-		List<Map<String, Integer>> stockEffects = new ArrayList<>();
+		Map<Integer, Integer> stockEffects = new HashMap<>();
 
 		for (DbNewsCountry dbNewsCountry : dbNewsCountryList) {
-			Map<String, Integer> countryEffect = new HashMap<>();
-			countryEffect.put(dbNewsCountry.getDbCountry().getCountryName(), dbNewsCountry.getEffect());
-			countryEffects.add(countryEffect);
+			countryEffects.put(dbNewsCountry.getDbCountry().getCountryId(), dbNewsCountry.getEffect());
 		}
 		for (DbNewsStock dbNewsStock : dbNewsStockList) {
-			Map<String, Integer> stockEffect = new HashMap<>();
-			stockEffect.put(dbNewsStock.getDbStock().getStockName(), dbNewsStock.getEffect());
-			stockEffects.add(stockEffect);
-
+			stockEffects.put(dbNewsStock.getDbStock().getStockId(), dbNewsStock.getEffect());
 		}
+
 		return News.builder()
 			.newsId(dbNews.getNewsId())
 			.imageUrl(dbNews.getNewsImage())

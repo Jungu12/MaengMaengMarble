@@ -1,6 +1,7 @@
 package maengmaeng.gamelogicservice.gameRoom.controller;
 
 import maengmaeng.gamelogicservice.gameRoom.domain.GameInfo;
+import maengmaeng.gamelogicservice.gameRoom.domain.News;
 import maengmaeng.gamelogicservice.gameRoom.domain.Player;
 import maengmaeng.gamelogicservice.gameRoom.domain.StartCard;
 import maengmaeng.gamelogicservice.gameRoom.domain.dto.*;
@@ -20,6 +21,8 @@ import maengmaeng.gamelogicservice.util.RedisPublisher;
 
 import org.springframework.transaction.annotation.Transactional;
 
+import com.google.common.collect.ForwardingMapEntry;
+
 @RequiredArgsConstructor
 @Controller
 public class GameRoomController {
@@ -35,10 +38,8 @@ public class GameRoomController {
 	@Transactional
 	@MessageMapping("/game-rooms/start/{roomCode}")
 	public void setPlayer(@DestinationVariable String roomCode, PlayerCount playerCount) {
-		System.out.println(roomCode);
-
+		logger.info("setPlayer(), roomCode = {}, PlayerCnt, = {}", roomCode,playerCount.getCnt() );
 		GameStart cards = gameRoomService.setStart(roomCode, playerCount.getCnt());
-
 		GameData gameData = GameData.builder()
 			.type("GAME_ROOM")
 			.data(ResponseDto.builder().type("플레이순서").data(cards).build())
@@ -54,7 +55,7 @@ public class GameRoomController {
 	 * */
 	@MessageMapping("/game-rooms/set-player/{roomCode}")
 	public void setPlayer(@DestinationVariable String roomCode, PlayerSeq playerSeq) {
-		System.out.println("setPlayer");
+		logger.info("setPlayer(), roomCode = {}, userId = {}, nickname = {}, characterId ={}, playerCnt = {}",roomCode,playerSeq.getUserId(), playerSeq.getNickname(), playerSeq.getCharacterId(), playerSeq.getPlayerCnt());
 
 		StartCard[] startCards = gameRoomService.setPlayer(roomCode, playerSeq);
 		GameInfo gameInfo = gameRoomService.getInfo(roomCode);
@@ -68,8 +69,8 @@ public class GameRoomController {
 		boolean check = true;
 
 		// 모든 플레이어가 순서를 정했으면 게임정보 전송
-		for(StartCard startCard : startCards){
-			if(!startCard.isSelected()){
+		for (StartCard startCard : startCards) {
+			if (!startCard.isSelected()) {
 				check = false;
 			}
 		}
@@ -227,25 +228,50 @@ public class GameRoomController {
 	 */
 	@MessageMapping("/game-rooms/golden-keys/{roomCode}")
 	public void chooseGoldenKeys(@DestinationVariable String roomCode) {
-		gameRoomService.chooseGoldenKeys(roomCode);
+
+		ResponseDto responseDto = gameRoomService.chooseGoldenKeys(roomCode);
+
+		GameData gameData = GameData.builder()
+			.type("GAME_ROOM")
+			.roomCode(roomCode)
+			.data(responseDto)
+			.build();
+
+		redisPublisher.publish(gameRoomTopic, gameData);
+	}
+
+	/**
+	 * 뉴스 세개 중 하나 골라서 적용 시키기
+	 */
+	@MessageMapping("/game-rooms/news/{roomCode}")
+	public void applyNews(@DestinationVariable String roomCode, News news, String type) {
+		ResponseDto responseDto = gameRoomService.applyNews(roomCode, news, type);
+
+		GameData gameData = GameData.builder()
+			.type("GAME_ROOM")
+			.roomCode(roomCode)
+			.data(responseDto)
+			.build();
+
+		redisPublisher.publish(gameRoomTopic, gameData);
 	}
 
 	/**
 	 * 이동후 로직
 	 * */
 	@MessageMapping("/game-rooms/after-move/{roomCode}")
-	public void afterMove(@DestinationVariable String roomCode){
+	public void afterMove(@DestinationVariable String roomCode) {
 		// 도착한 땅의 위치에 따라 행동 변환
 
 		ResponseDto responseDto = gameRoomService.afterMove(roomCode);
 		GameData gameData = GameData.builder()
-				.type("GAME_ROOM")
-				.roomCode(roomCode)
-				.data(responseDto)
+			.type("GAME_ROOM")
+			.roomCode(roomCode)
+			.data(responseDto)
 
-				.build();
+			.build();
 
-		redisPublisher.publish(gameRoomTopic,gameData);
+		redisPublisher.publish(gameRoomTopic, gameData);
 
 	}
 
@@ -254,16 +280,16 @@ public class GameRoomController {
 	 * */
 
 	@MessageMapping("/game-rooms/door/{roomCode}")
-	public void door(@DestinationVariable String roomCode, Door door){
+	public void door(@DestinationVariable String roomCode, Door door) {
 		ResponseDto responseDto = gameRoomService.door(roomCode, door);
 
 		GameData gameData = GameData.builder()
-				.type("GAME_ROOM")
-				.roomCode(roomCode)
-				.data(responseDto)
-				.build();
+			.type("GAME_ROOM")
+			.roomCode(roomCode)
+			.data(responseDto)
+			.build();
 
-		redisPublisher.publish(gameRoomTopic,gameData);
+		redisPublisher.publish(gameRoomTopic, gameData);
 
 	}
 
@@ -272,16 +298,16 @@ public class GameRoomController {
 	 * */
 
 	@MessageMapping("/game-rooms/jungu-door/{roomCode}")
-	public void junguDoor(@DestinationVariable String roomCode){
+	public void junguDoor(@DestinationVariable String roomCode) {
 		ResponseDto responseDto = gameRoomService.junguDoor(roomCode);
 
 		GameData gameData = GameData.builder()
-				.type("GAME_ROOM")
-				.roomCode(roomCode)
-				.data(responseDto)
-				.build();
+			.type("GAME_ROOM")
+			.roomCode(roomCode)
+			.data(responseDto)
+			.build();
 
-		redisPublisher.publish(gameRoomTopic,gameData);
+		redisPublisher.publish(gameRoomTopic, gameData);
 
 	}
 
@@ -294,31 +320,29 @@ public class GameRoomController {
 		ResponseDto responseDto = gameRoomService.endTurn(roomCode);
 
 		GameData gameData = GameData.builder()
-				.type("GAME_ROOM")
-				.roomCode(roomCode)
-				.data(responseDto)
-				.build();
+			.type("GAME_ROOM")
+			.roomCode(roomCode)
+			.data(responseDto)
+			.build();
 
-		redisPublisher.publish(gameRoomTopic,gameData);
-
+		redisPublisher.publish(gameRoomTopic, gameData);
 
 	}
-
 
 	/**
 	 * 게임 종료
 	 * */
 	@MessageMapping("/game-rooms/end-game/{roomCode}")
-	public void endGame(@DestinationVariable String roomCode){
+	public void endGame(@DestinationVariable String roomCode) {
 		ResponseDto responseDto = gameRoomService.endGame(roomCode);
 
 		GameData gameData = GameData.builder()
-				.type("GAME_ROOM")
-				.roomCode(roomCode)
-				.data(responseDto)
-				.build();
+			.type("GAME_ROOM")
+			.roomCode(roomCode)
+			.data(responseDto)
+			.build();
 
-		redisPublisher.publish(gameRoomTopic,gameData);
+		redisPublisher.publish(gameRoomTopic, gameData);
 	}
 
 }
