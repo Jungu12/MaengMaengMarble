@@ -366,7 +366,7 @@ public class GameRoomService {
 
 		return ResponseDto.builder()
 			.type("자유")
-			.data(AfterMoveResponse.builder().players(players).lands(gameInfo.getLands()).build())
+			.data(gameInfo)
 			.build();
 	}
 
@@ -419,7 +419,7 @@ public class GameRoomService {
 
 		return ResponseDto.builder()
 			.type("자유")
-			.data(AfterMoveResponse.builder().lands(gameInfo.getLands()).players(gameInfo.getPlayers()).build())
+			.data(gameInfo)
 			.build();
 	}
 
@@ -531,7 +531,7 @@ public class GameRoomService {
 		// 바뀐 정보 return
 		return ResponseDto.builder()
 			.type("자유")
-			.data(AfterMoveResponse.builder().lands(gameInfo.getLands()).players(gameInfo.getPlayers()).build())
+			.data(gameInfo)
 			.build();
 	}
 
@@ -1010,7 +1010,7 @@ public class GameRoomService {
 				break;
 			case 24:
 				// 어디로든 문
-				responseDto = ResponseDto.builder().type("자유").build();
+				responseDto = ResponseDto.builder().type("자유").data(gameInfo).build();
 
 				break;
 			default:
@@ -1474,7 +1474,7 @@ public class GameRoomService {
 
 		return ResponseDto.builder()
 			.type("자유")
-			.data(NewsApplyResponse.builder().lands(lands).stocks(stocks).info(info).build())
+			.data(gameInfo)
 			.build();
 	}
 
