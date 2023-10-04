@@ -440,7 +440,7 @@ public class GameRoomService {
 		Land currentLand = gameInfo.getLands().get(landId);
 		int currentLandFee = currentLand.getCurrentFees()[0];
 
-		for (int i = 0; i < currentLand.getCurrentFees().length; i++) {
+		for (int i = 0; i < currentLand.getBuildings().length; i++) {
 			if (currentLand.getBuildings()[i]) {
 				currentLandFee += currentLand.getCurrentFees()[i + 1];
 			}
@@ -489,7 +489,7 @@ public class GameRoomService {
 		Land currentLand = gameInfo.getLands().get(landId);
 		int currentLandFee = currentLand.getCurrentFees()[0];
 
-		for (int i = 0; i < currentLand.getCurrentFees().length; i++) {
+		for (int i = 0; i < currentLand.getBuildings().length; i++) {
 			if (currentLand.getBuildings()[i]) {
 				currentLandFee += currentLand.getCurrentFees()[i + 1];
 			}
