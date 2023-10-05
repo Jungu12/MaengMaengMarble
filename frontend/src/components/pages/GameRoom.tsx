@@ -325,7 +325,7 @@ const GameRoom = () => {
             }
             if (myTurn) {
               client.current?.publish({
-                destination: `/pub/game-rooms/maengmaneg/${gameId}`,
+                destination: `/pub/game-rooms/maengmaeng/${gameId}`,
               });
             }
           }
@@ -507,6 +507,7 @@ const GameRoom = () => {
 
         if (response.type === '허리케인' || response.type === '지진') {
           const 결과 = response as WSResponseType<GoldenKeyLandsResponseType>;
+          locationUpdate();
           set황금열쇠이미지(결과.data.imgUrl);
           setLandList(결과.data.lands);
           if (reDice) {
