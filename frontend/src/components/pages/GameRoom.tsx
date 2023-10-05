@@ -461,9 +461,11 @@ const GameRoom = () => {
     }
 
     return () => {
-      subTemp.unsubscribe();
+      if (client.current?.connected) {
+        subTemp.unsubscribe();
+      }
     };
-  });
+  }, [gameId]);
 
   useEffect(() => {
     if (이동중) return;
