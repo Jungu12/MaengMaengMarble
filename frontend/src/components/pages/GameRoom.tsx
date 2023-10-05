@@ -231,6 +231,8 @@ const GameRoom = () => {
             if (doubleCnt < diceResult.data.doubleCount) {
               setReDice(true);
               setDoubleCnt(diceResult.data.doubleCount);
+            } else {
+              setReDice(false);
             }
           }
 
@@ -245,6 +247,7 @@ const GameRoom = () => {
             const diceResult = response as WSResponseType<DiceResultType>;
             setDice1(diceResult.data.dice1);
             setDice2(diceResult.data.dice2);
+            setPlayerList(diceResult.data.players);
             const idx = getPlayerIndex(playerList, currentPlayer);
             setSeletedLandId(diceResult.data.players[idx]!.currentLocation);
             if (myTurn) {
@@ -253,6 +256,8 @@ const GameRoom = () => {
           }
 
           if (response.type === '거래정지턴종료') {
+            const diceResult = response as WSResponseType<DiceResultType>;
+            setPlayerList(diceResult.data.players);
             if (myTurn) {
               handleTurnEnd();
             }
@@ -277,7 +282,9 @@ const GameRoom = () => {
           }
 
           if (response.type === '박진호') {
+            const parkResponse = response as WSResponseType<SlotType>;
             console.log('박진호가 왔어요~~');
+            setPlayerList(parkResponse.data.players);
 
             // 현재 플레이어만 보이게
             if (currentPlayer === user?.nickname) {
