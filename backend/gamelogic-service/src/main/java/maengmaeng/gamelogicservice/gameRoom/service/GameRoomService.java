@@ -156,13 +156,14 @@ public class GameRoomService {
 	public Dice getDice() {
 		Random random = new Random();
 
-		 // 주사위 1 던지기 (1부터 6까지)
-		 int dice1 = random.nextInt(6) + 1;
-//
-		 // 주사위 2 던지기 (1부터 6까지)
-		 int dice2 = random.nextInt(6) + 1;
-//		 int dice1 = 6;
-//		 int dice2 = 2;
+		 // // 주사위 1 던지기 (1부터 6까지)
+		 // int dice1 = random.nextInt(6) + 1;
+		 //
+		 // // 주사위 2 던지기 (1부터 6까지)
+		 // int dice2 = random.nextInt(6) + 1;
+
+		 int dice1 = 2;
+		 int dice2 = 2;
 
 
 		return Dice.builder().dice1(dice1).dice2(dice2).build();
@@ -581,11 +582,13 @@ public class GameRoomService {
 
 			List<News> bronzes = gameInfo.getNewsInfo().getBronze();
 			//반환할 뉴스 3개
-			List<News> choosed = bronzes.subList(0, 2);
+			List<News> choosed = new ArrayList<>(bronzes.subList(0, 3));
 
 			//선택 된 뉴스 삭제
-			for (int i = 0; i < 3; i++) {
-				bronzes.remove(0);
+			Iterator<News> iterator = bronzes.iterator();
+			for (int i = 0; i < 3 && iterator.hasNext(); i++) {
+				iterator.next();
+				iterator.remove();
 			}
 
 			//gameInfo에 바뀐 뉴스 정보 업데이트
@@ -602,11 +605,14 @@ public class GameRoomService {
 
 			List<News> platinums = gameInfo.getNewsInfo().getPlatinum();
 			//반환할 뉴스 3개
-			List<News> choosed = platinums.subList(0, 2);
+			List<News> choosed = new ArrayList<>(platinums.subList(0, 3));
+
 
 			//선택 된 뉴스 삭제
-			for (int i = 0; i < 3; i++) {
-				platinums.remove(0);
+			Iterator<News> iterator = platinums.iterator();
+			for (int i = 0; i < 3 && iterator.hasNext(); i++) {
+				iterator.next();
+				iterator.remove();
 			}
 
 			//gameInfo에 바뀐 뉴스 정보 업데이트
@@ -623,11 +629,14 @@ public class GameRoomService {
 
 			List<News> diamonds = gameInfo.getNewsInfo().getDiamond();
 			//반환할 뉴스 3개
-			List<News> choosed = diamonds.subList(0, 2);
+			List<News> choosed = new ArrayList<>(diamonds.subList(0, 3));
+
 
 			//선택 된 뉴스 삭제
-			for (int i = 0; i < 3; i++) {
-				diamonds.remove(0);
+			Iterator<News> iterator = diamonds.iterator();
+			for (int i = 0; i < 3 && iterator.hasNext(); i++) {
+				iterator.next();
+				iterator.remove();
 			}
 
 			//gameInfo에 바뀐 뉴스 정보 업데이트
@@ -844,7 +853,7 @@ public class GameRoomService {
 			players[playerIdx] = player;
 			gameInfo.setPlayers(players);
 			gameInfoRepository.createGameRoom(gameInfo);
-			return ResponseDto.builder().type("맹맹지급이동후로직").data(player).build();
+			return ResponseDto.builder().type("맹맹지급이동후로직").data(players).build();
 		} else {
 			// 맹맹이 음수일 때
 			// 맹맹이 보유자산 보다 많을 때?
@@ -858,9 +867,9 @@ public class GameRoomService {
 					players[playerIdx] = player;
 					gameInfo.setPlayers(players);
 					gameInfoRepository.createGameRoom(gameInfo);
-					return ResponseDto.builder().type("맹맹지급이동후로직").data(player).build();
+					return ResponseDto.builder().type("맹맹지급이동후로직").data(players).build();
 				} else {
-					return ResponseDto.builder().type("매각").build();
+					return ResponseDto.builder().type("매각").data(NeedSaleMoney.builder().needMoney(maengMaeng).build()).build();
 				}
 			}
 
@@ -1051,7 +1060,7 @@ public class GameRoomService {
 						// 현금으로 통행료 지급이 불가능 할 때
 						if (asset >= fees) {
 							// 매각할 수 있으면
-							responseDto = ResponseDto.builder().type("매각").build();
+							responseDto = ResponseDto.builder().type("매각").data(NeedSaleMoney.builder().needMoney(fees).build()).build();
 						} else {
 							// 파산각이면
 							responseDto = ResponseDto.builder().type("파산").build();
