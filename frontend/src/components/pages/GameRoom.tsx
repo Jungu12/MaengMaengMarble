@@ -82,6 +82,8 @@ const GameRoom = () => {
 
   // 주사위 던지기
   const handleDiceRoll = useCallback(() => {
+    console.log(isDiceRollButtonClick, '주사위 굴려잇~');
+
     if (isDiceRollButtonClick) return;
     client.current?.publish({
       destination: `/pub/game-rooms/roll/${gameId}`,
@@ -90,6 +92,7 @@ const GameRoom = () => {
 
   // 거래정지칸 주사위 던지기
   const handleStopTradeDiceRoll = useCallback(() => {
+    console.log(isDiceRollButtonClick, '거래 정지 주사위 굴려잇~');
     if (isDiceRollButtonClick) return;
     client.current?.publish({
       destination: `/pub/game-rooms/stop-trade/${gameId}`,
