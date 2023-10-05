@@ -1062,7 +1062,7 @@ const GameRoom = () => {
                   value={16}
                   width={90}
                   height={90}
-                  onClickArea={() => 어디로든이동(10)}
+                  onClickArea={() => 어디로든이동(16)}
                 />
                 <MapArea
                   src={images.map.czech}
