@@ -1,6 +1,6 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { useState, useCallback } from 'react';
-import { addAmountUnit, landColor, landNationalFlag } from '@utils/game';
+import { landColor, landNationalFlag } from '@utils/game';
 import { images } from '@constants/images';
 import BuildingCard from './BuildingCard';
 import CButton from '@components/common/CButton';
@@ -34,9 +34,9 @@ const ConstructionModal = ({
   const [isCheckedPension, setIsCheckedPension] = useState(land.buildings[0]);
   const [isCheckedBuilding, setIsCheckedBuilding] = useState(land.buildings[1]);
   const [isCheckedHotel, setIsCheckedHotel] = useState(land.buildings[2]);
-  const [totalPurchasePrice, setTotalPurchasePrice] = useState(
-    land.owner != -1 ? 0 : land.currentLandPrice
-  );
+  // const [totalPurchasePrice, setTotalPurchasePrice] = useState(
+  //   land.owner != -1 ? 0 : land.currentLandPrice
+  // );
   // const totalPurchasePrice = useMemo(
   //   () =>
   //     land.owner != -1
@@ -69,33 +69,54 @@ const ConstructionModal = ({
   // );
 
   const handleCheckPension = useCallback(() => {
-    if (isCheckedPension) {
-      setTotalPurchasePrice((prev) => prev - land.currentBuildingPrices[0]);
-    } else {
-      setTotalPurchasePrice((prev) => prev + land.currentBuildingPrices[0]);
-    }
+    // if (isCheckedPension) {
+    //   setTotalPurchasePrice((prev) => prev - land.currentBuildingPrices[0]);
+    // } else {
+    //   setTotalPurchasePrice((prev) => prev + land.currentBuildingPrices[0]);
+    // }
     setIsCheckedPension((prev) => !prev);
-  }, [isCheckedPension, land.currentBuildingPrices]);
+  }, []);
 
   const handleCheckBuilding = useCallback(() => {
-    if (isCheckedBuilding) {
-      setTotalPurchasePrice((prev) => prev - land.currentBuildingPrices[1]);
-    } else {
-      setTotalPurchasePrice((prev) => prev + land.currentBuildingPrices[1]);
-    }
+    // if (isCheckedBuilding) {
+    //   setTotalPurchasePrice((prev) => prev - land.currentBuildingPrices[1]);
+    // } else {
+    //   setTotalPurchasePrice((prev) => prev + land.currentBuildingPrices[1]);
+    // }
     setIsCheckedBuilding((prev) => !prev);
-  }, [isCheckedBuilding, land.currentBuildingPrices]);
+  }, []);
 
   const handleCheckHotel = useCallback(() => {
-    if (isCheckedHotel) {
-      setTotalPurchasePrice((prev) => prev - land.currentBuildingPrices[2]);
-    } else {
-      setTotalPurchasePrice((prev) => prev + land.currentBuildingPrices[2]);
-    }
+    // if (isCheckedHotel) {
+    //   setTotalPurchasePrice((prev) => prev - land.currentBuildingPrices[2]);
+    // } else {
+    //   setTotalPurchasePrice((prev) => prev + land.currentBuildingPrices[2]);
+    // }
     setIsCheckedHotel((prev) => !prev);
-  }, [isCheckedHotel, land.currentBuildingPrices]);
+  }, []);
 
   const onClickPurchase = useCallback(() => {
+    const totalPurchasePrice =
+      land.owner != -1
+        ? 0
+        : land.currentLandPrice +
+          (land.buildings[0]
+            ? 0
+            : isCheckedPension
+            ? land.currentBuildingPrices[0]
+            : 0) +
+          (land.buildings[1]
+            ? 0
+            : isCheckedBuilding
+            ? land.currentBuildingPrices[1]
+            : 0) +
+          (land.buildings[2]
+            ? 0
+            : isCheckedHotel
+            ? land.currentBuildingPrices[2]
+            : 0);
+    console.log('[구매 가격]', totalPurchasePrice);
+
     if (totalPurchasePrice == 0) {
       setToastMessage((prev) => {
         return {
@@ -129,10 +150,12 @@ const ConstructionModal = ({
     isCheckedHotel,
     isCheckedPension,
     land.buildings,
+    land.currentBuildingPrices,
+    land.currentLandPrice,
+    land.owner,
     player,
     setToastMessage,
     show,
-    totalPurchasePrice,
   ]);
 
   return (
@@ -243,7 +266,7 @@ const ConstructionModal = ({
                 </div>
               </div>
             )}
-            {!noMore && (
+            {/* {!noMore && (
               <div className='flex flex-col w-full h-fit px-[30px]  relative'>
                 <div className='flex flex-row justify-center bg-primary-200 w-full h-full py-[15px] items-center my-[20px] rounded-[20px]'>
                   <p className='text-text-100 font-bold text-[22px]'>
@@ -259,7 +282,7 @@ const ConstructionModal = ({
                   </p>
                 </div>
               </div>
-            )}
+            )} */}
 
             {!noMore && (
               <motion.div
