@@ -5,6 +5,9 @@ import { images } from '@constants/images';
 import BuildingCard from './BuildingCard';
 import CButton from '@components/common/CButton';
 import { LandType, PlayerType } from '@/types/gameRoom/game.type';
+import useToastList from '@hooks/useToastList';
+import { useSetRecoilState } from 'recoil';
+import { ToastMessageState } from '@atom/toastAtom';
 
 type Props = {
   player: PlayerType | null;
@@ -21,6 +24,8 @@ const ConstructionModal = ({
   handleConstruction,
   handleClose,
 }: Props) => {
+  const { show } = useToastList();
+  const setToastMessage = useSetRecoilState(ToastMessageState);
   const [isCheckedPension, setIsCheckedPension] = useState(land.buildings[0]);
   const [isCheckedBuilding, setIsCheckedBuilding] = useState(land.buildings[1]);
   const [isCheckedHotel, setIsCheckedHotel] = useState(land.buildings[2]);
@@ -68,21 +73,34 @@ const ConstructionModal = ({
   }, []);
 
   const onClickPurchase = useCallback(() => {
-    handleConstruction([
-      land.buildings[0] ? false : isCheckedPension,
-      land.buildings[1] ? false : isCheckedBuilding,
-      land.buildings[2] ? false : isCheckedHotel,
-    ]);
-    setIsCheckedPension(false);
-    setIsCheckedBuilding(false);
-    setIsCheckedHotel(false);
-    console.log(totalPurchasePrice);
+    if (player && player.money >= totalPurchasePrice) {
+      handleConstruction([
+        land.buildings[0] ? false : isCheckedPension,
+        land.buildings[1] ? false : isCheckedBuilding,
+        land.buildings[2] ? false : isCheckedHotel,
+      ]);
+      setIsCheckedPension(false);
+      setIsCheckedBuilding(false);
+      setIsCheckedHotel(false);
+      console.log(totalPurchasePrice);
+    } else {
+      setToastMessage((prev) => {
+        return {
+          ...prev,
+          error: '보유 현금이 부족합니다.',
+        };
+      });
+      show('error');
+    }
   }, [
     handleConstruction,
     isCheckedBuilding,
     isCheckedHotel,
     isCheckedPension,
     land.buildings,
+    player,
+    setToastMessage,
+    show,
     totalPurchasePrice,
   ]);
 
