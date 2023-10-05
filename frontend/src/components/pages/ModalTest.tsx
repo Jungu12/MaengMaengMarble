@@ -1,20 +1,28 @@
-// import InvestmentMachineModal from '@components/gameRoom/InvestmentMachineModal';
-// import { useCallback, useState } from 'react';
+// import SellStockMachineModal from '@components/gameRoom/SellStockMachineModal';
+import { useCallback, useState } from 'react';
 import { images } from '@constants/images';
-// import InvestmentModal from '@components/gameRoom/InvestmentModal';
+import SellStockModal from '@components/gameRoom/SellStockModal';
 
 const ModalTest = () => {
-  // const [isOpenInvestment, setIsOpenInvestment] = useState(true);
-  // const handleInvestment = useCallback(() => {
-  //   setIsOpenInvestment((prev) => !prev);
-  // }, []);
+  const [isOpenSellStock, setIsOpenSellStock] = useState(true);
+  const handleSellStock = useCallback(() => {
+    setIsOpenSellStock((prev) => !prev);
+  }, []);
 
   return (
     <>
-      {/* <InvestmentModal
-        isOpen={isOpenInvestment}
-        handleInvestment={handleInvestment}
-      /> */}
+      <SellStockModal
+        stockCnt={10}
+        stock={{
+          id: 1,
+          name: 'LG 화학',
+          cost: 580000,
+          currentCost: 980000,
+          dividends: 5,
+        }}
+        isOpen={isOpenSellStock}
+        handleSellStock={handleSellStock}
+      />
       <div
         className='flex flex-col w-full h-full relative p-[45px] overflow-auto'
         style={{
