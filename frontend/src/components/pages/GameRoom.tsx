@@ -455,6 +455,7 @@ const GameRoom = () => {
           if (response.type === '황금열쇠') {
             // 황금열쇠 뽑기
             console.log('[황금열쇠를 뽑았다] 지금이 내 차례니?', myTurn);
+            console.log('누구 차례야?', currentPlayer);
 
             if (myTurn) {
               client.current?.publish({
