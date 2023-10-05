@@ -179,8 +179,13 @@ public class WaitingRoomService {
     }
 
 
-
-
+    public boolean existRoom(String roomCode) {
+        WaitingRoom waitingRoom = waitingRoomRepository.getWaitingRoomNow(roomCode);
+        if(waitingRoom==null)
+            return false;
+        else
+            return true;
+    }
 }
 
 

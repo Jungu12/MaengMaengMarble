@@ -17,12 +17,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.data.redis.listener.ChannelTopic;
+import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
+import javax.xml.transform.Result;
 import java.util.List;
 import java.util.Map;
 
@@ -40,6 +44,16 @@ public class WaitingRoomController {
     private final static String WAITINGROOM = "WAITING_ROOM";
 
     private final static String LOBBY = "LOBBY";
+
+    @GetMapping("/api/maeng/waiting-rooms/{roomCode}")
+    public ResponseEntity<?> existRoom(@PathVariable String roomCode){
+        boolean exist = waitingRoomService.existRoom(roomCode);
+        if(exist){
+            return ResponseEntity.ok().build();
+        }else{
+         return ResponseEntity.notFound().build();
+        }
+    }
 
     @MessageMapping("/waiting-rooms/{roomCode}")
     public void enter(@DestinationVariable String roomCode, UserInfo user) {
