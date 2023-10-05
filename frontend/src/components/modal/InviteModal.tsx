@@ -7,7 +7,7 @@ import useToastList from '@hooks/useToastList';
 import { useSetRecoilState } from 'recoil';
 import { ToastMessageState } from '@atom/toastAtom';
 import { useNavigate } from 'react-router-dom';
-import { authHttp } from '@utils/http';
+import { validateInviteCode } from '@apis/lobbyApi';
 
 type InviteModalProps = {
   isOpenInviteModal: boolean;
@@ -19,7 +19,6 @@ const InviteModal = ({
   handleInviteModalClose,
 }: InviteModalProps) => {
   const navigation = useNavigate();
-  const inviteCodeConfirm = false;
   const [inviteCode, setInviteCode] = useState('');
   const { show } = useToastList();
   const setToastMessage = useSetRecoilState(ToastMessageState);
@@ -34,15 +33,12 @@ const InviteModal = ({
     setInviteCode('');
   }, [handleInviteModalClose]);
 
-  const onClickEnterRoom = useCallback(() => {
-    authHttp.get(`maeng/waiting-rooms/${inviteCode}`).then((res) => {
-      console.log('[초대 버튼 클릭]', res);
-    });
-    console.log(inviteCode);
-    handleClose();
-    navigation(`/waiting-room/${inviteCode}`);
+  const onClickEnterRoom = useCallback(async () => {
+    const inviteCodeConfirm = await validateInviteCode(inviteCode);
+    console.log(inviteCodeConfirm);
+
     if (inviteCodeConfirm) {
-      show('success');
+      navigation(`/waiting-room/${inviteCode}`);
     } else {
       setToastMessage((prev) => {
         return {
@@ -52,14 +48,7 @@ const InviteModal = ({
       });
       show('error');
     }
-  }, [
-    inviteCode,
-    handleClose,
-    navigation,
-    inviteCodeConfirm,
-    show,
-    setToastMessage,
-  ]);
+  }, [inviteCode, navigation, show, setToastMessage]);
 
   return (
     <CModal isOpen={isOpenInviteModal} handleClose={handleClose}>

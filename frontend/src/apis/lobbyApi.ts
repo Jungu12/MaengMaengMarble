@@ -1,6 +1,6 @@
 import { UserType } from '@/types/common/common.type';
 import { RoomType } from '@/types/lobby/lobby.type';
-import { gameHttp } from '@utils/http';
+import { authHttp, gameHttp } from '@utils/http';
 
 // 추후 gameHttp -> http로 변경해야함.
 export async function createRoom(
@@ -19,6 +19,6 @@ export async function getRooms(): Promise<{ waitingRooms: RoomType[] }> {
   return gameHttp.get(`maeng/lobby`);
 }
 
-// export async function validateInviteCode(roomCode: string): Promise<> {
-//   return authHttp.get(`maeng/waiting-rooms/${roomCode}`);
-// }
+export async function validateInviteCode(roomCode: string): Promise<boolean> {
+  return authHttp.get(`maeng/lobby/validation/${roomCode}`);
+}
