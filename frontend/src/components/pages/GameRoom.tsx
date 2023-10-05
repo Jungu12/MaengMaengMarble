@@ -48,6 +48,7 @@ import SlotMachineModal from '@components/gameRoom/SlotMachineModal';
 import NewsCardModal from '@components/gameRoom/NewsCardModal';
 import GoldenKeyModal from '@components/gameRoom/GoldenKeyModal';
 import TakeOverModal from '@components/gameRoom/TakeOverModal';
+import MapArea from '@components/gameRoom/MapArea';
 
 const GameRoom = () => {
   const location = useLocation();
@@ -71,6 +72,7 @@ const GameRoom = () => {
   const [이동가능, set이동가능] = useState(false);
   const [소켓연결, set소켓연결] = useState(false);
   const [인수중, set인수중] = useState(false);
+  const [어디로든문_이용중, set어디로든문_이용중] = useState(false);
 
   const [dice1, setDice1] = useState<1 | 2 | 3 | 4 | 5 | 6>(1);
   const [dice2, setDice2] = useState<1 | 2 | 3 | 4 | 5 | 6>(1);
@@ -177,10 +179,24 @@ const GameRoom = () => {
   }, [myTurn, reDice]);
 
   const 인수하기 = useCallback(() => {
+    set인수중(false);
     client.current?.publish({
       destination: `/pub/game-rooms/take-over/${gameId}`,
     });
   }, [gameId]);
+
+  const 어디로든이동 = useCallback(
+    (value: number) => {
+      set어디로든문_이용중(false);
+      client.current?.publish({
+        destination: `/pub/game-rooms/door/${gameId}`,
+        body: JSON.stringify({
+          landId: value,
+        }),
+      });
+    },
+    [gameId]
+  );
 
   useEffect(() => {
     client.current = getClient();
@@ -255,6 +271,8 @@ const GameRoom = () => {
             console.log('주사위 결과 나왔어요');
             setDice1(diceResult.data.dice1);
             setDice2(diceResult.data.dice2);
+            locationUpdate();
+            // setPlayerList(diceResult.data.players);
             const idx = getPlayerIndex(playerList, currentPlayer);
             setSeletedLandId(diceResult.data.players[idx]!.currentLocation);
             // 더블이 나오는 경우 주사위 다시 던지기
@@ -366,8 +384,16 @@ const GameRoom = () => {
             console.log('[플레이어 정보]', playerList);
 
             // 현재 플레이어만 보이게
-            if (currentPlayer === user?.nickname) {
+            if (myTurn) {
               console.log(seletedLandId);
+              setIsOepnContrunction(true);
+            }
+          }
+
+          if (response.type === '구매') {
+            const result = response as WSResponseType<FullGameDataType>;
+            updateInfo(result.data);
+            if (myTurn) {
               setIsOepnContrunction(true);
             }
           }
@@ -474,6 +500,29 @@ const GameRoom = () => {
             }
           }
 
+          if (response.type === '어디로든문맹맹지급') {
+            const result = response as WSResponseType<(PlayerType | null)[]>;
+            locationUpdate();
+            setPlayerList(result.data);
+            if (myTurn) {
+              client.current?.publish({
+                destination: `/pub/game-rooms/maengmaeng/${gameId}`,
+              });
+              setIsTurnEnd(true);
+            }
+          }
+
+          if (response.type === '어디로든문이동후로직') {
+            const result = response as WSResponseType<(PlayerType | null)[]>;
+            locationUpdate();
+            setPlayerList(result.data);
+            if (myTurn) {
+              client.current?.publish({
+                destination: `/pub/game-rooms/after-move/${gameId}`,
+              });
+            }
+          }
+
           if (response.type === '턴종료끝') {
             const temp = response as WSResponseType<TurnEndResponseType>;
             const players = temp.data.players;
@@ -492,11 +541,21 @@ const GameRoom = () => {
             // 1. 문단속 효과 발동중인 경우에 어디로든 문인 경우
             if (nextPlayerLocation === 24 && temp.data.info.doorCheck > 0) {
               console.log('문단속 중인 어디로든 문');
+              setIsDiceRoll(true);
+              setIsDiceRollButtonClick(false);
+              client.current?.publish({
+                destination: `/pub/game-rooms/jungu-door/${gameId}`,
+              });
               // 서버에 랜덤 이동 위치 요청하기
             }
             // 2.어디로든 문인 경우
             else if (nextPlayerLocation === 24) {
               console.log('어디로든 문');
+              setIsDiceRoll(true);
+              setIsDiceRollButtonClick(false);
+              if (temp.data.info.currentPlayer === user?.nickname) {
+                set어디로든문_이용중(true);
+              }
               // 이동 위치 선택 화면 보여주기
             }
             // 3. 거래정지칸인 경우
@@ -538,6 +597,7 @@ const GameRoom = () => {
     doubleCnt,
     gameId,
     handleTurnEnd,
+    landList,
     locationUpdate,
     myTurn,
     playerList,
@@ -785,12 +845,7 @@ const GameRoom = () => {
         isOpen={인수중}
         handleClose={handleTakeOverClose}
         handleTakeOver={인수하기}
-        land={
-          landList[
-            playerList[getPlayerIndex(playerList, currentPlayer)]!
-              .currentLocation
-          ]
-        }
+        land={landList[seletedLandId]}
       />
       <ConstructionModal
         isOpen={isOepnContrunction}
@@ -843,6 +898,273 @@ const GameRoom = () => {
           backgroundSize: 'cover',
         }}
       >
+        {/* 어디로든문 선택 */}
+        {어디로든문_이용중 && (
+          <div className='absolute w-full h-full z-[10] bg-black opacity-80'>
+            <div className='top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 mt-[40px] w-[640px] h-[640px] z-[20]'>
+              <div className='absolute bottom-0 flex justify-between gap-[6px]'>
+                <MapArea
+                  src={images.map.transactionSuspended}
+                  alt='거래정지'
+                  value={8}
+                  width={90}
+                  height={90}
+                  onClickArea={() => 어디로든이동(8)}
+                />
+                <MapArea
+                  src={images.map.southAfrica}
+                  alt='남아공'
+                  value={7}
+                  width={60}
+                  height={90}
+                  onClickArea={() => 어디로든이동(7)}
+                />
+                <MapArea
+                  src={images.map.egypt}
+                  alt='이집트'
+                  value={6}
+                  width={60}
+                  height={90}
+                  onClickArea={() => 어디로든이동(6)}
+                />
+                <MapArea
+                  src={images.map.singapore}
+                  alt='싱가포르'
+                  value={5}
+                  width={60}
+                  height={90}
+                  onClickArea={() => 어디로든이동(5)}
+                />
+                <MapArea
+                  src={images.map.goldKey1}
+                  alt='황금열쇠'
+                  value={4}
+                  width={60}
+                  height={90}
+                  onClickArea={() => 어디로든이동(4)}
+                />
+                <MapArea
+                  src={images.map.thailand}
+                  alt='태국'
+                  value={3}
+                  width={60}
+                  height={90}
+                  onClickArea={() => 어디로든이동(3)}
+                />
+                <MapArea
+                  src={images.map.revenue}
+                  alt='국세청'
+                  value={2}
+                  width={60}
+                  height={90}
+                  onClickArea={() => 어디로든이동(2)}
+                />
+                <MapArea
+                  src={images.map.vietnam}
+                  alt='베트남'
+                  value={1}
+                  width={60}
+                  height={90}
+                  onClickArea={() => 어디로든이동(1)}
+                />
+                <MapArea
+                  src={images.map.start}
+                  alt='시작점'
+                  value={0}
+                  width={90}
+                  // height={90}
+                  onClickArea={() => 어디로든이동(0)}
+                />
+              </div>
+              {/* 왼쪽줄 */}
+              <div className='absolute left-0 bottom-[96px] flex flex-col justify-between gap-[5px]'>
+                <MapArea
+                  src={images.map.saudiArabia}
+                  alt='사우디아라비아'
+                  value={15}
+                  width={90}
+                  height={60}
+                  onClickArea={() => 어디로든이동(15)}
+                />
+                <MapArea
+                  src={images.map.iran}
+                  alt='이란'
+                  value={14}
+                  width={90}
+                  height={60}
+                  onClickArea={() => 어디로든이동(15)}
+                />
+                <MapArea
+                  src={images.map.catarrh}
+                  alt='카타르'
+                  value={13}
+                  width={90}
+                  height={60}
+                  onClickArea={() => 어디로든이동(13)}
+                />
+                <MapArea
+                  src={images.map.goldKey2}
+                  alt='황금열쇠'
+                  value={12}
+                  width={90}
+                  height={60}
+                  onClickArea={() => 어디로든이동(12)}
+                />
+                <MapArea
+                  src={images.map.brazil}
+                  alt='브라질'
+                  value={11}
+                  width={90}
+                  height={60}
+                  onClickArea={() => 어디로든이동(11)}
+                />
+                <MapArea
+                  src={images.map.macau}
+                  alt='마카오'
+                  value={10}
+                  width={90}
+                  height={60}
+                  onClickArea={() => 어디로든이동(10)}
+                />
+                <MapArea
+                  src={images.map.argentina}
+                  alt='아르헨티나'
+                  value={9}
+                  width={90}
+                  height={60}
+                  onClickArea={() => 어디로든이동(9)}
+                />
+              </div>
+              {/* 윗줄 */}
+              <div className='absolute top-0 flex justify-between gap-[6px]'>
+                <MapArea
+                  src={images.map.stockMarket}
+                  alt='주식장'
+                  value={16}
+                  width={90}
+                  height={90}
+                  onClickArea={() => 어디로든이동(10)}
+                />
+                <MapArea
+                  src={images.map.czech}
+                  alt='체코'
+                  value={17}
+                  width={60}
+                  height={90}
+                  onClickArea={() => 어디로든이동(17)}
+                />
+                <MapArea
+                  src={images.map.rushAndCash}
+                  alt='대출'
+                  value={18}
+                  width={60}
+                  height={90}
+                  onClickArea={() => 어디로든이동(18)}
+                />
+                <MapArea
+                  src={images.map.russia}
+                  alt='러시아'
+                  value={19}
+                  width={60}
+                  height={90}
+                  onClickArea={() => 어디로든이동(19)}
+                />
+                <MapArea
+                  src={images.map.goldKey3}
+                  alt='황금열쇠3'
+                  value={20}
+                  width={60}
+                  height={90}
+                  onClickArea={() => 어디로든이동(20)}
+                />
+                <MapArea
+                  src={images.map.france}
+                  alt='프랑스'
+                  value={21}
+                  width={60}
+                  height={90}
+                  onClickArea={() => 어디로든이동(21)}
+                />
+                <MapArea
+                  src={images.map.germany}
+                  alt='독일'
+                  value={22}
+                  width={60}
+                  height={90}
+                  onClickArea={() => 어디로든이동(22)}
+                />
+                <MapArea
+                  src={images.map.uk}
+                  alt='영국'
+                  value={23}
+                  width={60}
+                  height={90}
+                  onClickArea={() => 어디로든이동(23)}
+                />
+                <div className='h-[90px] w-[90px] opacity-0'></div>
+              </div>
+              {/* 오른쪽줄 */}
+              <div className='absolute right-0 top-[96px] bottom-[96px] flex flex-col justify-between gap-[5px]'>
+                <MapArea
+                  src={images.map.usa}
+                  alt='미국'
+                  value={25}
+                  width={90}
+                  height={60}
+                  onClickArea={() => 어디로든이동(25)}
+                />
+                <MapArea
+                  src={images.map.canada}
+                  alt='캐나다'
+                  value={26}
+                  width={90}
+                  height={60}
+                  onClickArea={() => 어디로든이동(26)}
+                />
+                <MapArea
+                  src={images.map.India}
+                  alt='인도'
+                  value={27}
+                  width={90}
+                  height={60}
+                  onClickArea={() => 어디로든이동(27)}
+                />
+                <MapArea
+                  src={images.map.goldKey4}
+                  alt='황금열쇠'
+                  value={28}
+                  width={90}
+                  height={60}
+                  onClickArea={() => 어디로든이동(28)}
+                />
+                <MapArea
+                  src={images.map.china}
+                  alt='중국'
+                  value={29}
+                  width={90}
+                  height={60}
+                  onClickArea={() => 어디로든이동(29)}
+                />
+                <MapArea
+                  src={images.map.japan}
+                  alt='일본'
+                  value={30}
+                  width={90}
+                  height={60}
+                  onClickArea={() => 어디로든이동(30)}
+                />
+                <MapArea
+                  src={images.map.korea}
+                  alt='한국'
+                  value={31}
+                  width={90}
+                  height={60}
+                  onClickArea={() => 어디로든이동(31)}
+                />
+              </div>
+            </div>
+          </div>
+        )}
         {/* 주사위 버튼*/}
         {!isDiceRoll && (
           <div className='absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-5xl text-white z-[10] text-[24px] font-bold flex flex-col justify-center items-center'>
