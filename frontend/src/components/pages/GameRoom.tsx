@@ -177,6 +177,7 @@ const GameRoom = () => {
   }, [myTurn, reDice]);
 
   const 인수하기 = useCallback(() => {
+    set인수중(false);
     client.current?.publish({
       destination: `/pub/game-rooms/take-over/${gameId}`,
     });
@@ -256,7 +257,7 @@ const GameRoom = () => {
             setDice1(diceResult.data.dice1);
             setDice2(diceResult.data.dice2);
             locationUpdate();
-            setPlayerList(diceResult.data.players);
+            // setPlayerList(diceResult.data.players);
             const idx = getPlayerIndex(playerList, currentPlayer);
             setSeletedLandId(diceResult.data.players[idx]!.currentLocation);
             // 더블이 나오는 경우 주사위 다시 던지기
