@@ -5,6 +5,9 @@ import { images } from '@constants/images';
 import BuildingCard from './BuildingCard';
 import CButton from '@components/common/CButton';
 import { LandType, PlayerType } from '@/types/gameRoom/game.type';
+import useToastList from '@hooks/useToastList';
+import { useSetRecoilState } from 'recoil';
+import { ToastMessageState } from '@atom/toastAtom';
 
 type Props = {
   player: PlayerType | null;
@@ -21,6 +24,13 @@ const ConstructionModal = ({
   handleConstruction,
   handleClose,
 }: Props) => {
+  const noMore =
+    land.owner != -1 &&
+    land.buildings[0] &&
+    (land.buildings[1] || (player ? 1 - player.currentLap > 0 : true)) &&
+    (land.buildings[2] || (player ? 2 - player.currentLap > 0 : true));
+  const { show } = useToastList();
+  const setToastMessage = useSetRecoilState(ToastMessageState);
   const [isCheckedPension, setIsCheckedPension] = useState(land.buildings[0]);
   const [isCheckedBuilding, setIsCheckedBuilding] = useState(land.buildings[1]);
   const [isCheckedHotel, setIsCheckedHotel] = useState(land.buildings[2]);
@@ -68,21 +78,42 @@ const ConstructionModal = ({
   }, []);
 
   const onClickPurchase = useCallback(() => {
-    handleConstruction([
-      land.buildings[0] ? false : isCheckedPension,
-      land.buildings[1] ? false : isCheckedBuilding,
-      land.buildings[2] ? false : isCheckedHotel,
-    ]);
-    setIsCheckedPension(false);
-    setIsCheckedBuilding(false);
-    setIsCheckedHotel(false);
-    console.log(totalPurchasePrice);
+    if (totalPurchasePrice == 0) {
+      setToastMessage((prev) => {
+        return {
+          ...prev,
+          error: '구매할 건물을 선택하세요.',
+        };
+      });
+      show('error');
+    } else if (player && player.money >= totalPurchasePrice) {
+      handleConstruction([
+        land.buildings[0] ? false : isCheckedPension,
+        land.buildings[1] ? false : isCheckedBuilding,
+        land.buildings[2] ? false : isCheckedHotel,
+      ]);
+      setIsCheckedPension(false);
+      setIsCheckedBuilding(false);
+      setIsCheckedHotel(false);
+      console.log(totalPurchasePrice);
+    } else {
+      setToastMessage((prev) => {
+        return {
+          ...prev,
+          error: '보유 현금이 부족합니다.',
+        };
+      });
+      show('error');
+    }
   }, [
     handleConstruction,
     isCheckedBuilding,
     isCheckedHotel,
     isCheckedPension,
     land.buildings,
+    player,
+    setToastMessage,
+    show,
     totalPurchasePrice,
   ]);
 
@@ -185,7 +216,7 @@ const ConstructionModal = ({
               />
             </div>
 
-            {totalPurchasePrice == 0 && (
+            {noMore && (
               <div className='flex flex-col w-full h-fit px-[30px]  relative'>
                 <div className='flex flex-row justify-center bg-primary-200 w-full h-full py-[15px] items-center my-[20px] rounded-[20px]'>
                   <p className='text-text-100 font-bold text-[22px] mx-[20px]'>
@@ -194,7 +225,7 @@ const ConstructionModal = ({
                 </div>
               </div>
             )}
-            {totalPurchasePrice > 0 && (
+            {!noMore && (
               <div className='flex flex-col w-full h-fit px-[30px]  relative'>
                 <div className='flex flex-row justify-center bg-primary-200 w-full h-full py-[15px] items-center my-[20px] rounded-[20px]'>
                   <p className='text-text-100 font-bold text-[22px]'>
@@ -210,7 +241,7 @@ const ConstructionModal = ({
               </div>
             )}
 
-            {totalPurchasePrice != 0 && (
+            {!noMore && (
               <motion.div
                 className='w-full flex flex-row justify-center items-center mb-[40px]'
                 whileHover={{ scale: 1.1 }}
