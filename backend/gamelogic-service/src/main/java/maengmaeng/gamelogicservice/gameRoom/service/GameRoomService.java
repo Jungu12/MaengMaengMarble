@@ -844,7 +844,7 @@ public class GameRoomService {
 			players[playerIdx] = player;
 			gameInfo.setPlayers(players);
 			gameInfoRepository.createGameRoom(gameInfo);
-			return ResponseDto.builder().type("맹맹지급이동후로직").data(player).build();
+			return ResponseDto.builder().type("맹맹지급이동후로직").data(players).build();
 		} else {
 			// 맹맹이 음수일 때
 			// 맹맹이 보유자산 보다 많을 때?
@@ -858,9 +858,9 @@ public class GameRoomService {
 					players[playerIdx] = player;
 					gameInfo.setPlayers(players);
 					gameInfoRepository.createGameRoom(gameInfo);
-					return ResponseDto.builder().type("맹맹지급이동후로직").data(player).build();
+					return ResponseDto.builder().type("맹맹지급이동후로직").data(players).build();
 				} else {
-					return ResponseDto.builder().type("매각").build();
+					return ResponseDto.builder().type("매각").data(NeedSaleMoney.builder().needMoney(maengMaeng).build()).build();
 				}
 			}
 
@@ -1051,7 +1051,7 @@ public class GameRoomService {
 						// 현금으로 통행료 지급이 불가능 할 때
 						if (asset >= fees) {
 							// 매각할 수 있으면
-							responseDto = ResponseDto.builder().type("매각").build();
+							responseDto = ResponseDto.builder().type("매각").data(NeedSaleMoney.builder().needMoney(fees).build()).build();
 						} else {
 							// 파산각이면
 							responseDto = ResponseDto.builder().type("파산").build();
