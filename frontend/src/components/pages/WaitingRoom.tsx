@@ -144,12 +144,26 @@ const WaitingRoom = () => {
         waitSub.current = client.current.subscribe(
           `/sub/waiting-rooms/${roomId}`,
           (res) => {
-            const response: WSResponseType<RoomType> = JSON.parse(res.body);
+            const response: WSResponseType<unknown> = JSON.parse(res.body);
             if (response.type === 'waitingRoom') {
-              const { title, code, currentParticipants } = response.data;
+              const result = response as WSResponseType<RoomType>;
+              const { title, code, currentParticipants } = result.data;
               setRoomTitle(title);
               setInviteCode(code);
               setUserList(currentParticipants);
+            }
+
+            if (response.type === '강퇴') {
+              const result = response as WSResponseType<{
+                currentParticipants: ParticipantsType[];
+                outUser: string;
+              }>;
+              setUserList(result.data.currentParticipants);
+              // 강퇴 당한 경우 내보내기
+              if (user?.nickname === result.data.outUser) {
+                waitSub.current?.unsubscribe();
+                navigation(`/lobby`);
+              }
             }
 
             if (response.type === '방 폭파') {
