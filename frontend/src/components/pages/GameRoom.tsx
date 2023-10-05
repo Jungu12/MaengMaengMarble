@@ -215,7 +215,9 @@ const GameRoom = () => {
           }
 
           if (response.type === '거래정지턴종료') {
-            handleTurnEnd();
+            if (myTurn) {
+              handleTurnEnd();
+            }
           }
 
           // 더블이 3번 나온 경우
