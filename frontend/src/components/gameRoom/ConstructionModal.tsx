@@ -241,7 +241,7 @@ const ConstructionModal = ({
               </div>
             )}
 
-            {noMore && (
+            {!noMore && (
               <motion.div
                 className='w-full flex flex-row justify-center items-center mb-[40px]'
                 whileHover={{ scale: 1.1 }}
