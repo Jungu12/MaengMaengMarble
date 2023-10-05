@@ -112,6 +112,25 @@ const GameRoom = () => {
     });
   }, [gameId, isDiceRollButtonClick]);
 
+  const locationUpdate = useCallback(() => {
+    controls1.set({
+      x: 0,
+      y: 0,
+    });
+    controls2.set({
+      x: 0,
+      y: 0,
+    });
+    controls3.set({
+      x: 0,
+      y: 0,
+    });
+    controls4.set({
+      x: 0,
+      y: 0,
+    });
+  }, [controls1, controls2, controls3, controls4]);
+
   // 데이터 최신화
   const updateInfo = useCallback(
     (data: FullGameDataType | TurnEndResponseType) => {
@@ -119,32 +138,9 @@ const GameRoom = () => {
       setNews(data.info.effectNews);
       setLandList(data.lands);
       // TODO: 주식도 최신화 해야함
-      controls1.set({
-        x: 0,
-        y: 0,
-      });
-      controls2.set({
-        x: 0,
-        y: 0,
-      });
-      controls3.set({
-        x: 0,
-        y: 0,
-      });
-      controls4.set({
-        x: 0,
-        y: 0,
-      });
+      locationUpdate();
     },
-    [
-      controls1,
-      controls2,
-      controls3,
-      controls4,
-      setLandList,
-      setNews,
-      setPlayerList,
-    ]
+    [locationUpdate, setLandList, setNews, setPlayerList]
   );
 
   useEffect(() => {
@@ -493,6 +489,7 @@ const GameRoom = () => {
           const 결과 = response as WSResponseType<GoldenKeyPlayerResponseType>;
           set황금열쇠이미지(결과.data.imgUrl);
           setPlayerList(결과.data.players);
+          locationUpdate();
           if (myTurn) {
             setIsOpenGoldenKey(true);
           }
@@ -505,7 +502,7 @@ const GameRoom = () => {
         subTemp.unsubscribe();
       }
     };
-  }, [gameId, myTurn, setLandList, setPlayerList, 소켓연결]);
+  }, [gameId, locationUpdate, myTurn, setLandList, setPlayerList, 소켓연결]);
 
   useEffect(() => {
     if (이동중) return;
