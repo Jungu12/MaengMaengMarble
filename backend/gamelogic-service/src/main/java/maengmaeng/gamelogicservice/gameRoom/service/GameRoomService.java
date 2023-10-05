@@ -745,13 +745,15 @@ public class GameRoomService {
 			cardType = "강준구의 문단속";
 			goldenKeys.setKangJunGu(goldenKeys.getKangJunGu() - 1);
 
+			gameInfo.getInfo().setDoorCheck(20);
+
 			//gameInfo에 바뀐 정보 업데이트
 			players[currentIdx] = curPlayer;
 			gameInfo.setPlayers(players);
 
 			responseDto = ResponseDto.builder()
 				.type(cardType)
-				.data(GoldenKeysPlayersResponse.builder().players(players).goldenKeys(goldenKeys).imgUrl(goldenKeys.getKangJunGuImgUrl()).build())
+				.data(GoldenKeysInfoResponse.builder().info(gameInfo.getInfo()).goldenKeys(goldenKeys).imgUrl(goldenKeys.getKangJunGuImgUrl()).build())
 				.build();
 		} else if (randomValue
 			< goldenKeys.getBronze() + goldenKeys.getPlatinum() + goldenKeys.getDiamond() + goldenKeys.getNewsBan()
