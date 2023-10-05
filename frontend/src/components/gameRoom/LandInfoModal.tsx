@@ -59,7 +59,7 @@ const LandInfoModal = ({ landId, isOpen, handleLandInfo }: Props) => {
         <div
           className='absolute flex w-full h-full bg-black bg-opacity-50 items-center justify-center'
           style={{
-            zIndex: 100,
+            zIndex: 1000,
           }}
           ref={modalRef}
           onClick={(e) => modalOutSideClick(e)}
