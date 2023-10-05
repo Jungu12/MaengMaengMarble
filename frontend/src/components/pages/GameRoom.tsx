@@ -282,6 +282,13 @@ const GameRoom = () => {
 
           // 더블이 3번 나온 경우
           if (response.type === '주사위턴종료') {
+            const diceResult = response as WSResponseType<DiceResultType>;
+            setIsDiceRollButtonClick(true);
+            console.log('더블이 3번~');
+            setDice1(diceResult.data.dice1);
+            setDice2(diceResult.data.dice2);
+            const idx = getPlayerIndex(playerList, currentPlayer);
+            setSeletedLandId(diceResult.data.players[idx]!.currentLocation);
             if (myTurn) {
               console.log('거래정지요~');
               handleTurnEnd();
@@ -814,7 +821,7 @@ const GameRoom = () => {
               </div>
               <div className='scroll-container overflow-hidden flex-1 font-medium text-[16px]'>
                 <motion.div
-                  className='ml-[8px]'
+                  className='ml-[8px] whitespace-nowrap'
                   initial={{ x: '100%' }} // 시작 위치 - 화면 오른쪽 밖
                   animate={{ x: '-100%' }} // 최종 위치 - 화면 왼쪽 밖
                   transition={{
