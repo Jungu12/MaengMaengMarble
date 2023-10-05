@@ -263,6 +263,12 @@ const GameRoom = () => {
           }
 
           if (response.type === '거래정지턴종료') {
+            // 주사위 굴린 후 턴 종료시키기
+            const diceResult = response as WSResponseType<DiceResultType>;
+            setDice1(diceResult.data.dice1);
+            setDice2(diceResult.data.dice2);
+            const idx = getPlayerIndex(playerList, currentPlayer);
+            setSeletedLandId(diceResult.data.players[idx]!.currentLocation);
             if (myTurn) {
               handleTurnEnd();
             }
@@ -418,6 +424,7 @@ const GameRoom = () => {
     doubleCnt,
     gameId,
     handleTurnEnd,
+    locationUpdate,
     myTurn,
     playerList,
     reDice,
