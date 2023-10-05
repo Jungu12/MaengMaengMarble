@@ -296,11 +296,11 @@ const GameRoom = () => {
             const temp = response as WSResponseType<FullGameDataType>;
             updateInfo(temp.data);
             // 주사위에서 더블이 나온 경우
-            if (myTurn) {
-              if (reDice) {
-                setIsDiceRoll(false);
-                setIsDiceRollButtonClick(false);
-              } else {
+            if (reDice) {
+              setIsDiceRoll(false);
+              setIsDiceRollButtonClick(false);
+            } else {
+              if (myTurn) {
                 setIsTurnEnd(true);
               }
             }
