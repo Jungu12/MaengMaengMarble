@@ -210,24 +210,26 @@ const ConstructionModal = ({
               </div>
             )}
 
-            <motion.div
-              className='w-full flex flex-row justify-center items-center mb-[40px]'
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-              transition={{ type: 'spring', stiffness: 400, damping: 17 }}
-            >
-              <CButton
-                type='green'
-                onClick={onClickPurchase}
-                width={150}
-                height={50}
-                rounded={20}
+            {totalPurchasePrice == 0 && (
+              <motion.div
+                className='w-full flex flex-row justify-center items-center mb-[40px]'
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                transition={{ type: 'spring', stiffness: 400, damping: 17 }}
               >
-                <p className='text-[22px] font-black text-primary-100'>
-                  구매하기
-                </p>
-              </CButton>
-            </motion.div>
+                <CButton
+                  type='green'
+                  onClick={onClickPurchase}
+                  width={150}
+                  height={50}
+                  rounded={20}
+                >
+                  <p className='text-[22px] font-black text-primary-100'>
+                    구매하기
+                  </p>
+                </CButton>
+              </motion.div>
+            )}
           </motion.div>
         </div>
       )}
