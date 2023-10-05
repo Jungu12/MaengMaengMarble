@@ -64,6 +64,7 @@ const GameRoom = () => {
   const [isTurnEnd, setIsTurnEnd] = useState(false);
   const [isStopTrade, setIsStopTrade] = useState(false); // 거래 정지 칸에 위치하는지
   const [이동중, set이동중] = useState(false);
+  const [이동가능, set이동가능] = useState(false);
   const [소켓연결, set소켓연결] = useState(false);
 
   const [dice1, setDice1] = useState<1 | 2 | 3 | 4 | 5 | 6>(1);
@@ -233,6 +234,7 @@ const GameRoom = () => {
           const response: WSResponseType<unknown> = JSON.parse(res.body);
 
           if (response.type === '주사위이동후로직') {
+            set이동가능(true);
             const diceResult = response as WSResponseType<DiceResultType>;
             setIsDiceRollButtonClick(true);
             console.log('주사위 결과 나왔어요');
@@ -255,6 +257,7 @@ const GameRoom = () => {
           }
 
           if (response.type === '거래정지이동후로직') {
+            set이동가능(true);
             const diceResult = response as WSResponseType<DiceResultType>;
             setIsDiceRollButtonClick(true);
             setDice1(diceResult.data.dice1);
@@ -270,6 +273,7 @@ const GameRoom = () => {
 
           if (response.type === '거래정지턴종료') {
             // 주사위 굴린 후 턴 종료시키기
+            set이동가능(true);
             const diceResult = response as WSResponseType<DiceResultType>;
             setDice1(diceResult.data.dice1);
             setDice2(diceResult.data.dice2);
@@ -285,6 +289,8 @@ const GameRoom = () => {
             const diceResult = response as WSResponseType<DiceResultType>;
             setIsDiceRollButtonClick(true);
             console.log('더블이 3번~');
+            setReDice(false);
+            set이동가능(false);
             setDice1(diceResult.data.dice1);
             setDice2(diceResult.data.dice2);
             const idx = getPlayerIndex(playerList, currentPlayer);
@@ -545,6 +551,7 @@ const GameRoom = () => {
   ]);
 
   useEffect(() => {
+    if (!이동가능) return;
     if (이동중) return;
     if (isDiceRollButtonClick && !isDiceRoll) {
       const diceRef = document.querySelectorAll('._space3d');
@@ -582,6 +589,7 @@ const GameRoom = () => {
               tempControls
             ).then(() => {
               set이동중(false);
+              set이동가능(false);
               console.log('이동 완료!!!');
 
               if (myTurn) {
@@ -608,6 +616,7 @@ const GameRoom = () => {
     myTurn,
     playerList,
     user,
+    이동가능,
     이동중,
   ]);
 

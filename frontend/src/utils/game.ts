@@ -70,6 +70,12 @@ export const moveCharacter = async (
       );
     }
   }
+
+  controls.start({
+    x: 0,
+    y: 0,
+  });
+
   return cur;
 };
 
