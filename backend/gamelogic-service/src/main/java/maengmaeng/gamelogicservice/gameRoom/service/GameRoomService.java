@@ -41,7 +41,7 @@ public class GameRoomService {
 	/**
 	 * 처음 시작 카드 선택
 	 * */
-	public GameStart setStart(String roomCode, int playerCnt) {
+	public synchronized GameStart setStart(String roomCode, int playerCnt) {
 
 		StartCard[] cards = new StartCard[playerCnt];
 		for (int i = 0; i < playerCnt; i++) {
