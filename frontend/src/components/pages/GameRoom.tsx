@@ -376,9 +376,11 @@ const GameRoom = () => {
           }
 
           if (response.type === '세금 징수') {
-            const result = response as WSResponseType<(PlayerType | null)[]>;
+            const result = response as WSResponseType<{
+              players: (PlayerType | null)[];
+            }>;
             locationUpdate();
-            setPlayerList(result.data);
+            setPlayerList(result.data.players);
             if (myTurn) {
               setIsTurnEnd(true);
             }
