@@ -665,7 +665,8 @@ public class GameRoomService {
 
 			responseDto = ResponseDto.builder()
 				.type(cardType)
-				.data(GoldenKeysPlayersResponse.builder().players(players).goldenKeys(goldenKeys).build())
+				.data(GoldenKeysPlayersResponse.builder().players(players).goldenKeys(goldenKeys).imgUrl(
+					goldenKeys.getNewsBanImgUrl()).build())
 				.build();
 
 		} else if (randomValue
@@ -703,7 +704,8 @@ public class GameRoomService {
 
 			responseDto = ResponseDto.builder()
 				.type(cardType)
-				.data(GoldenKeysLandsResponse.builder().Lands(lands).goldenKeys(goldenKeys).build())
+				.data(GoldenKeysLandsResponse.builder().Lands(lands).goldenKeys(goldenKeys).imgUrl(
+					goldenKeys.getHurricaneImgUrl()).build())
 				.build();
 
 		} else if (randomValue
@@ -725,7 +727,8 @@ public class GameRoomService {
 
 			responseDto = ResponseDto.builder()
 				.type(cardType)
-				.data(GoldenKeysPlayersResponse.builder().players(players).goldenKeys(goldenKeys).build())
+				.data(GoldenKeysPlayersResponse.builder().players(players).goldenKeys(goldenKeys).imgUrl(
+					goldenKeys.getAngelImgUrl()).build())
 				.build();
 
 		} else if (randomValue
@@ -759,7 +762,8 @@ public class GameRoomService {
 
 			responseDto = ResponseDto.builder()
 				.type(cardType)
-				.data(GoldenKeysPlayersResponse.builder().players(players).goldenKeys(goldenKeys).build())
+				.data(GoldenKeysPlayersResponse.builder().players(players).goldenKeys(goldenKeys).imgUrl(
+					goldenKeys.getKangJunGuImgUrl()).build())
 				.build();
 		} else if (randomValue
 			< goldenKeys.getBronze() + goldenKeys.getPlatinum() + goldenKeys.getDiamond() + goldenKeys.getNewsBan()
@@ -812,7 +816,8 @@ public class GameRoomService {
 
 			responseDto = ResponseDto.builder()
 				.type(cardType)
-				.data(GoldenKeysLandsResponse.builder().Lands(lands).goldenKeys(goldenKeys).build())
+				.data(GoldenKeysLandsResponse.builder().Lands(lands).goldenKeys(goldenKeys).imgUrl(
+					goldenKeys.getEarthquakeImgUrl()).build())
 				.build();
 		}
 

@@ -11,4 +11,5 @@ import maengmaeng.gamelogicservice.gameRoom.domain.Player;
 public class GoldenKeysPlayersResponse {
 	private Player[] players;
 	private GoldenKeys goldenKeys;
+	private String imgUrl;
 }

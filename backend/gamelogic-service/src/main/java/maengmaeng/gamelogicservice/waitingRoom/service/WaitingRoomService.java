@@ -181,7 +181,7 @@ public class WaitingRoomService {
         WaitingRoom waitingRoom = waitingRoomRepository.getWaitingRoomNow(roomCode);
 
         // n번째 사용자 closed true로 변경하기
-        waitingRoom.getCurrentParticipants().get(num).setClosed(!waitingRoom.getCurrentParticipants().get(num-1).isClosed());
+        waitingRoom.getCurrentParticipants().get(num).setClosed(!waitingRoom.getCurrentParticipants().get(num).isClosed());
 
         waitingRoomRepository.saveWaitingRoom(waitingRoom);
     }
