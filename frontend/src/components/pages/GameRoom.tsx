@@ -51,6 +51,8 @@ const GameRoom = () => {
   const [news, setNews] = useRecoilState(newsState);
   const [isGameStart, setIsGameStart] = useState(false);
   const [orderList, setOrderList] = useState<TurnListType[]>([]);
+  const [isTurnEnd, setIsTurnEnd] = useState(false);
+  const [isStopTrade, setIsStopTrade] = useState(false); // 거래 정지 칸에 위치하는지
 
   const [dice1, setDice1] = useState<1 | 2 | 3 | 4 | 5 | 6>(1);
   const [dice2, setDice2] = useState<1 | 2 | 3 | 4 | 5 | 6>(1);
@@ -70,6 +72,12 @@ const GameRoom = () => {
     () => getPlayerIndex(playerList, currentPlayer),
     [currentPlayer, playerList]
   );
+  const myTurn = useMemo(() => {
+    if (currentPlayer === user?.nickname) {
+      return true;
+    }
+    return false;
+  }, [currentPlayer, user?.nickname]);
 
   // 주사위 던지기
   const handleDiceRoll = useCallback(() => {
@@ -78,6 +86,9 @@ const GameRoom = () => {
       destination: `/pub/game-rooms/roll/${gameId}`,
     });
   }, [gameId, isDiceRollButtonClick]);
+
+  // 거래정지칸 주사위 던지기
+  const handleStopTradeDiceRoll = useCallback(() => {}, []);
 
   // 데이터 최신화
   const updateInfo = useCallback(
@@ -164,19 +175,41 @@ const GameRoom = () => {
         (res) => {
           const response: WSResponseType<unknown> = JSON.parse(res.body);
 
-          if (response.type === '이동후로직') {
+          if (response.type === '주사위이동후로직') {
             const diceResult = response as WSResponseType<DiceResultType>;
             setIsDiceRollButtonClick(true);
             console.log('주사위 결과 나왔어요');
             setDice1(diceResult.data.dice1);
             setDice2(diceResult.data.dice2);
             const idx = getPlayerIndex(playerList, currentPlayer);
-
             setSeletedLandId(diceResult.data.players[idx]!.currentLocation);
             // 더블이 나오는 경우 주사위 다시 던지기
             if (doubleCnt < diceResult.data.doubleCount) {
               setReDice(true);
               setDoubleCnt(diceResult.data.doubleCount);
+            }
+          }
+
+          if (response.type === '거래정지이동후로직') {
+            const diceResult = response as WSResponseType<DiceResultType>;
+            setDice1(diceResult.data.dice1);
+            setDice2(diceResult.data.dice2);
+            const idx = getPlayerIndex(playerList, currentPlayer);
+            setSeletedLandId(diceResult.data.players[idx]!.currentLocation);
+            if (myTurn) {
+              setIsStopTrade(false);
+            }
+          }
+
+          if (response.type === '거래정지턴종료') {
+            handleTurnEnd();
+          }
+
+          // 더블이 3번 나온 경우
+          if (response.type === '주사위턴종료') {
+            if (myTurn) {
+              console.log('거래정지요~');
+              handleTurnEnd();
             }
           }
 
@@ -202,17 +235,63 @@ const GameRoom = () => {
           if (response.type === '자유') {
             const temp = response as WSResponseType<FullGameDataType>;
             updateInfo(temp.data);
+            // 주사위에서 더블이 나온 경우
+            if (reDice) {
+              setIsDiceRoll(true);
+              setIsDiceRollButtonClick(true);
+            } else {
+              setIsTurnEnd(true);
+            }
             console.log('자유시간~~~');
           }
 
           if (response.type === '턴종료끝') {
             const temp = response as WSResponseType<TurnEndResponseType>;
+            const players = temp.data.players;
+            const nextPlayerIndex = getPlayerIndex(
+              players,
+              temp.data.info.currentPlayer
+            );
+            const nextPlayerLocation =
+              players[nextPlayerIndex]!.currentLocation;
             updateInfo(temp.data);
             setCurrentPlayer(temp.data.info.currentPlayer);
-            setIsDiceRoll(false);
-            setIsDiceRollButtonClick(false);
-            setDoubleCnt(0);
-            setReDice(false);
+            // 다음 플레이의 땅 위치에 따라 다른 로직 수행
+            // 1. 문단속 효과 발동중인 경우에 어디로든 문인 경우
+            if (nextPlayerLocation === 24 && temp.data.info.doorCheck > 0) {
+              console.log('문단속 중인 어디로든 문');
+              // 서버에 랜덤 이동 위치 요청하기
+            }
+            // 2.어디로든 문인 경우
+            else if (nextPlayerLocation === 24) {
+              console.log('어디로든 문');
+              // 이동 위치 선택 화면 보여주기
+            }
+            // 3. 거래정지칸인 경우
+            else if (nextPlayerLocation === 8) {
+              if (
+                temp.data.info.currentPlayer === user?.nickname &&
+                players[nextPlayerIndex]!.stopTradeCount > 3
+              ) {
+                setIsStopTrade(false);
+              } else if (temp.data.info.currentPlayer === user?.nickname) {
+                setIsStopTrade(true);
+              }
+              console.log('거래정지');
+              setIsDiceRoll(false);
+              setIsDiceRollButtonClick(false);
+              setDoubleCnt(0);
+              setReDice(false);
+              // 거래정지칸 특별 주사위 던지기 요청
+            }
+            // 4. 나머지 경우 주사위 던지기
+            else {
+              console.log('나머지');
+              setIsDiceRoll(false);
+              setIsDiceRollButtonClick(false);
+              setDoubleCnt(0);
+              setReDice(false);
+            }
           }
 
           console.log(JSON.parse(res.body));
@@ -227,7 +306,10 @@ const GameRoom = () => {
     currentPlayer,
     doubleCnt,
     gameId,
+    handleTurnEnd,
+    myTurn,
     playerList,
+    reDice,
     seletedLandId,
     setCurrentPlayer,
     updateInfo,
@@ -363,10 +445,10 @@ const GameRoom = () => {
                 onRoll={(value) => console.log(value)}
               />
             </div>
-            {currentPlayer === user?.nickname && (
+            {myTurn && (
               <button
                 className='button-3d'
-                onClick={handleDiceRoll}
+                onClick={isStopTrade ? handleStopTradeDiceRoll : handleDiceRoll}
                 disabled={isDiceRoll}
               >
                 주사위 굴리기
@@ -376,7 +458,7 @@ const GameRoom = () => {
         )}
         {/* 턴종료 버튼 */}
         <div className='absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-5xl text-white z-[10] text-[24px] font-bold flex flex-col justify-center items-center'>
-          {user?.nickname === currentPlayer && !reDice && isDiceRoll && (
+          {myTurn && isTurnEnd && (
             <button className='button-3d' onClick={handleTurnEnd}>
               턴 종료
             </button>
