@@ -227,7 +227,6 @@ const GameRoom = () => {
           const response: WSResponseType<unknown> = JSON.parse(res.body);
 
           if (response.type === '주사위이동후로직') {
-            locationUpdate();
             set이동가능(true);
             const diceResult = response as WSResponseType<DiceResultType>;
             setIsDiceRollButtonClick(true);
