@@ -237,10 +237,14 @@ const GameRoom = () => {
             updateInfo(temp.data);
             // 주사위에서 더블이 나온 경우
             if (reDice) {
-              setIsDiceRoll(true);
-              setIsDiceRollButtonClick(true);
+              if (myTurn) {
+                setIsDiceRoll(true);
+                setIsDiceRollButtonClick(true);
+              }
             } else {
-              setIsTurnEnd(true);
+              if (myTurn) {
+                setIsTurnEnd(true);
+              }
             }
             console.log('자유시간~~~');
           }
