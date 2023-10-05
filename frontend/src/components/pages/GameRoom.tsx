@@ -273,7 +273,7 @@ const GameRoom = () => {
 
           if (response.type === '거래정지턴종료') {
             // 주사위 굴린 후 턴 종료시키기
-            set이동가능(true);
+            set이동가능(false);
             const diceResult = response as WSResponseType<DiceResultType>;
             setDice1(diceResult.data.dice1);
             setDice2(diceResult.data.dice2);
@@ -295,6 +295,8 @@ const GameRoom = () => {
             setDice2(diceResult.data.dice2);
             const idx = getPlayerIndex(playerList, currentPlayer);
             setSeletedLandId(diceResult.data.players[idx]!.currentLocation);
+            console.log('[지금이 내 차례니?]', myTurn);
+
             if (myTurn) {
               console.log('거래정지요~');
               handleTurnEnd();
@@ -462,6 +464,8 @@ const GameRoom = () => {
       subTemp = client.current.subscribe(`/sub/game-rooms/${gameId}`, (res) => {
         const response: WSResponseType<unknown> = JSON.parse(res.body);
 
+        console.log('[열쇠로직 response]', response);
+
         if (response.type === '황금열쇠') {
           // 황금열쇠 뽑기
           if (myTurn) {
@@ -566,6 +570,7 @@ const GameRoom = () => {
     info,
     locationUpdate,
     myTurn,
+    reDice,
     setInfo,
     setLandList,
     setPlayerList,
