@@ -106,32 +106,24 @@ const GameRoom = () => {
       setNews(data.info.effectNews);
       setLandList(data.lands);
       // TODO: 주식도 최신화 해야함
-      controls1.set({
-        x: 0,
-        y: 0,
-      });
-      controls2.set({
-        x: 0,
-        y: 0,
-      });
-      controls3.set({
-        x: 0,
-        y: 0,
-      });
-      controls4.set({
-        x: 0,
-        y: 0,
-      });
+      // controls1.set({
+      //   x: 0,
+      //   y: 0,
+      // });
+      // controls2.set({
+      //   x: 0,
+      //   y: 0,
+      // });
+      // controls3.set({
+      //   x: 0,
+      //   y: 0,
+      // });
+      // controls4.set({
+      //   x: 0,
+      //   y: 0,
+      // });
     },
-    [
-      controls1,
-      controls2,
-      controls3,
-      controls4,
-      setLandList,
-      setNews,
-      setPlayerList,
-    ]
+    [setLandList, setNews, setPlayerList]
   );
 
   useEffect(() => {
