@@ -124,11 +124,13 @@ export type GoldenKeyNewsResponseType = {
 };
 
 export type GoldenKeyPlayerResponseType = {
+  imgUrl: string;
   players: PlayerType[];
   goldenKeys: GoldKeyType;
 };
 
 export type GoldenKeyLandsResponseType = {
+  imgUrl: string;
   lands: LandType[];
   goldenKeys: GoldKeyType;
 };

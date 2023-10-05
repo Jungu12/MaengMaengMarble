@@ -16,7 +16,9 @@ import { ParticipantsType, WSResponseType } from '@/types/common/common.type';
 import {
   DiceResultType,
   FullGameDataType,
+  GoldenKeyLandsResponseType,
   GoldenKeyNewsResponseType,
+  GoldenKeyPlayerResponseType,
   NewsType,
   PlayerType,
   SlotType,
@@ -41,6 +43,7 @@ import {
 } from '@atom/gameAtom';
 import SlotMachineModal from '@components/gameRoom/SlotMachineModal';
 import NewsCardModal from '@components/gameRoom/NewsCardModal';
+import GoldenKeyModal from '@components/gameRoom/GoldenKeyModal';
 
 const GameRoom = () => {
   const location = useLocation();
@@ -76,6 +79,8 @@ const GameRoom = () => {
   const [isOpenNews, setIsOpenNews] = useState(false);
   const [뉴스카드목록, set뉴스카드목록] = useState<NewsType[]>([]);
   const [뉴스타입, set뉴스타입] = useState('');
+  const [isOpenGoldenKey, setIsOpenGoldenKey] = useState(false);
+  const [황금열쇠이미지, set황금열쇠이미지] = useState('');
   // const slotResult = useMemo(() => [0, 0, 0], []);
   const nowPalyerIdx = useMemo(
     () => getPlayerIndex(playerList, currentPlayer),
@@ -468,33 +473,30 @@ const GameRoom = () => {
           setIsOpenNews(true);
         }
 
-        // if (response.type === '언론통제') {
+        if (response.type === '허리케인' || response.type === '지진') {
+          const 결과 = response as WSResponseType<GoldenKeyLandsResponseType>;
+          set황금열쇠이미지(결과.data.imgUrl);
+          setLandList(결과.data.lands);
+          if (myTurn) {
+            setIsOpenGoldenKey(true);
+          }
+        }
 
-        // }
-
-        // if (response.type === '허리케인') {
-
-        // }
-
-        // if (response.type === '천사') {
-
-        // }
-
-        // if (response.type === '강준구의 문단속') {
-
-        // }
-
-        // if (response.type === '복권 당첨') {
-
-        // }
-
-        // if (response.type === '어디로든 문 초대권') {
-
-        // }
-
-        // if (response.type === '지진') {
-
-        // }
+        if (
+          response.type === '천사' ||
+          response.type === '언론통제' ||
+          response.type === '강준구의 문단속' ||
+          response.type === '복권 당첨' ||
+          response.type === '어디로든 문 초대권' ||
+          response.type === '언론통제'
+        ) {
+          const 결과 = response as WSResponseType<GoldenKeyPlayerResponseType>;
+          set황금열쇠이미지(결과.data.imgUrl);
+          setPlayerList(결과.data.players);
+          if (myTurn) {
+            setIsOpenGoldenKey(true);
+          }
+        }
       });
     }
 
@@ -623,6 +625,13 @@ const GameRoom = () => {
         isOpen={isOpenNews}
         handleNews={() => {
           setIsOpenNews(false);
+        }}
+      />
+      <GoldenKeyModal
+        cardImg={황금열쇠이미지}
+        isOpen={isOpenGoldenKey}
+        handleGoldenKey={() => {
+          setIsOpenGoldenKey(false);
         }}
       />
       <div
