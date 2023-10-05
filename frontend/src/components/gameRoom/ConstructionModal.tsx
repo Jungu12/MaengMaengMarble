@@ -1,5 +1,5 @@
 import { AnimatePresence, motion } from 'framer-motion';
-import { useMemo, useState, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { addAmountUnit, landColor, landNationalFlag } from '@utils/game';
 import { images } from '@constants/images';
 import BuildingCard from './BuildingCard';
@@ -34,48 +34,66 @@ const ConstructionModal = ({
   const [isCheckedPension, setIsCheckedPension] = useState(land.buildings[0]);
   const [isCheckedBuilding, setIsCheckedBuilding] = useState(land.buildings[1]);
   const [isCheckedHotel, setIsCheckedHotel] = useState(land.buildings[2]);
-  const totalPurchasePrice = useMemo(
-    () =>
-      land.owner != -1
-        ? 0
-        : land.currentLandPrice +
-          (land.buildings[0]
-            ? 0
-            : isCheckedPension
-            ? land.currentBuildingPrices[0]
-            : 0) +
-          (land.buildings[1]
-            ? 0
-            : isCheckedBuilding
-            ? land.currentBuildingPrices[1]
-            : 0) +
-          (land.buildings[2]
-            ? 0
-            : isCheckedHotel
-            ? land.currentBuildingPrices[2]
-            : 0),
-    [
-      isCheckedBuilding,
-      isCheckedHotel,
-      isCheckedPension,
-      land.buildings,
-      land.currentBuildingPrices,
-      land.currentLandPrice,
-      land.owner,
-    ]
+  const [totalPurchasePrice, setTotalPurchasePrice] = useState(
+    land.owner != -1 ? 0 : land.currentLandPrice
   );
+  // const totalPurchasePrice = useMemo(
+  //   () =>
+  //     land.owner != -1
+  //       ? 0
+  //       : land.currentLandPrice +
+  //         (land.buildings[0]
+  //           ? 0
+  //           : isCheckedPension
+  //           ? land.currentBuildingPrices[0]
+  //           : 0) +
+  //         (land.buildings[1]
+  //           ? 0
+  //           : isCheckedBuilding
+  //           ? land.currentBuildingPrices[1]
+  //           : 0) +
+  //         (land.buildings[2]
+  //           ? 0
+  //           : isCheckedHotel
+  //           ? land.currentBuildingPrices[2]
+  //           : 0),
+  //   [
+  //     isCheckedBuilding,
+  //     isCheckedHotel,
+  //     isCheckedPension,
+  //     land.buildings,
+  //     land.currentBuildingPrices,
+  //     land.currentLandPrice,
+  //     land.owner,
+  //   ]
+  // );
 
   const handleCheckPension = useCallback(() => {
+    if (isCheckedPension) {
+      setTotalPurchasePrice((prev) => prev - land.currentBuildingPrices[0]);
+    } else {
+      setTotalPurchasePrice((prev) => prev + land.currentBuildingPrices[0]);
+    }
     setIsCheckedPension((prev) => !prev);
-  }, []);
+  }, [isCheckedPension, land.currentBuildingPrices]);
 
   const handleCheckBuilding = useCallback(() => {
+    if (isCheckedBuilding) {
+      setTotalPurchasePrice((prev) => prev - land.currentBuildingPrices[1]);
+    } else {
+      setTotalPurchasePrice((prev) => prev + land.currentBuildingPrices[1]);
+    }
     setIsCheckedBuilding((prev) => !prev);
-  }, []);
+  }, [isCheckedBuilding, land.currentBuildingPrices]);
 
   const handleCheckHotel = useCallback(() => {
+    if (isCheckedHotel) {
+      setTotalPurchasePrice((prev) => prev - land.currentBuildingPrices[2]);
+    } else {
+      setTotalPurchasePrice((prev) => prev + land.currentBuildingPrices[2]);
+    }
     setIsCheckedHotel((prev) => !prev);
-  }, []);
+  }, [isCheckedHotel, land.currentBuildingPrices]);
 
   const onClickPurchase = useCallback(() => {
     if (totalPurchasePrice == 0) {
@@ -235,7 +253,9 @@ const ConstructionModal = ({
                     →
                   </p>
                   <p className='text-text-100 font-bold text-[22px]'>
-                    {addAmountUnit(totalPurchasePrice)}
+                    {totalPurchasePrice == 0
+                      ? '0원'
+                      : addAmountUnit(totalPurchasePrice)}
                   </p>
                 </div>
               </div>
