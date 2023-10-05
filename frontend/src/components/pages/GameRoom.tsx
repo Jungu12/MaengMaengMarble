@@ -550,7 +550,7 @@ const GameRoom = () => {
             // 2.어디로든 문인 경우
             else if (nextPlayerLocation === 24) {
               console.log('어디로든 문');
-              if (myTurn) {
+              if (temp.data.info.currentPlayer === user?.nickname) {
                 set어디로든문_이용중(true);
               }
               // 이동 위치 선택 화면 보여주기
