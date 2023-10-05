@@ -3,6 +3,7 @@ import {
   LandType,
   NewsType,
   PlayerType,
+  StockType,
 } from '@/types/gameRoom/game.type';
 import { atom } from 'recoil';
 
@@ -29,4 +30,9 @@ export const newsState = atom<NewsType[]>({
 export const infoState = atom<InfoType | null>({
   key: 'info',
   default: null,
+});
+
+export const stockListState = atom<StockType[] | null>({
+  key: 'stock',
+  default: [],
 });
