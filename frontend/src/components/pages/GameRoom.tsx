@@ -381,8 +381,13 @@ const GameRoom = () => {
             }>;
             locationUpdate();
             setPlayerList(result.data.players);
-            if (myTurn) {
-              setIsTurnEnd(true);
+            if (reDice) {
+              setIsDiceRoll(false);
+              setIsDiceRollButtonClick(false);
+            } else {
+              if (myTurn) {
+                setIsTurnEnd(true);
+              }
             }
           }
 
@@ -412,6 +417,8 @@ const GameRoom = () => {
             updateInfo(temp.data);
             setCurrentPlayer(temp.data.info.currentPlayer);
             setIsTurnEnd(false);
+            console.log('다음 차례는 누구야?', temp.data.info.currentPlayer);
+
             // 다음 플레이의 땅 위치에 따라 다른 로직 수행
             // 1. 문단속 효과 발동중인 경우에 어디로든 문인 경우
             if (nextPlayerLocation === 24 && temp.data.info.doorCheck > 0) {
@@ -710,6 +717,9 @@ const GameRoom = () => {
         handleConstruction={handleConstruction}
         handleClose={() => {
           setIsOepnContrunction(false);
+          if (myTurn) {
+            setIsTurnEnd(true);
+          }
         }}
         land={landList[seletedLandId]}
         player={playerList[nowPalyerIdx]}
@@ -1180,7 +1190,6 @@ const GameRoom = () => {
         {/* 게임맵 */}
         <GameMap
           playerList={playerList}
-          onClickLand={() => console.log(1)}
           controls1={controls1}
           controls2={controls2}
           controls3={controls3}
