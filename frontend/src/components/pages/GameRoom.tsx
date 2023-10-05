@@ -152,9 +152,21 @@ const GameRoom = () => {
     client.current.onConnect = () => {
       if (client.current) {
         if (!client.current) return;
-        subTemp = client.current.subscribe(`/sub/game-rooms/${gameId}`, () => {
-          // 방장인 경우 게임 시작 알리기
-        });
+        subTemp = client.current.subscribe(
+          `/sub/game-rooms/${gameId}`,
+          (res) => {
+            const response: WSResponseType<unknown> = JSON.parse(res.body);
+
+            if (response.type === '플레이순서') {
+              const newOrderList = response as WSResponseType<{
+                cards: TurnListType[];
+              }>;
+              console.log('[테스트]', newOrderList);
+              setOrderList(newOrderList.data.cards);
+            }
+          }
+        );
+        // 방장인 경우 게임 시작 알리기
         if (user?.userId === state.userList[0].userId) {
           client.current.publish({
             destination: `/pub/game-rooms/start/${gameId}`,
@@ -178,13 +190,7 @@ const GameRoom = () => {
     if (client.current?.connected) {
       subTemp = client.current.subscribe(`/sub/game-rooms/${gameId}`, (res) => {
         const response: WSResponseType<unknown> = JSON.parse(res.body);
-        if (response.type === '플레이순서') {
-          const newOrderList = response as WSResponseType<{
-            cards: TurnListType[];
-          }>;
-          console.log('[테스트]', newOrderList);
-          setOrderList(newOrderList.data.cards);
-        }
+
         if (response.type === '초기게임정보') {
           // 유저 배치 등 초기 세팅하기
           setIsGameStart(true);
