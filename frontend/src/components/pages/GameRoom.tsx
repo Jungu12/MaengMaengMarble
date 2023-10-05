@@ -190,6 +190,13 @@ const GameRoom = () => {
             }
           }
 
+          // 거래 정지칸에 도착한 경우
+          if (response.type === '이동후턴종료') {
+            if (myTurn) {
+              handleTurnEnd();
+            }
+          }
+
           if (response.type === '거래정지이동후로직') {
             const diceResult = response as WSResponseType<DiceResultType>;
             setDice1(diceResult.data.dice1);
