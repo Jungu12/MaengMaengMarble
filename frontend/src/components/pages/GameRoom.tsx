@@ -243,16 +243,15 @@ const GameRoom = () => {
             const temp = response as WSResponseType<FullGameDataType>;
             updateInfo(temp.data);
             // 주사위에서 더블이 나온 경우
-            if (reDice) {
-              if (myTurn) {
-                setIsDiceRoll(true);
-                setIsDiceRollButtonClick(true);
-              }
-            } else {
-              if (myTurn) {
+            if (myTurn) {
+              if (reDice) {
+                setIsDiceRoll(false);
+                setIsDiceRollButtonClick(false);
+              } else {
                 setIsTurnEnd(true);
               }
             }
+
             console.log('자유시간~~~');
           }
 
@@ -267,6 +266,7 @@ const GameRoom = () => {
               players[nextPlayerIndex]!.currentLocation;
             updateInfo(temp.data);
             setCurrentPlayer(temp.data.info.currentPlayer);
+            setIsTurnEnd(false);
             // 다음 플레이의 땅 위치에 따라 다른 로직 수행
             // 1. 문단속 효과 발동중인 경우에 어디로든 문인 경우
             if (nextPlayerLocation === 24 && temp.data.info.doorCheck > 0) {
