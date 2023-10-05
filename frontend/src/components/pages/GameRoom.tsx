@@ -364,6 +364,7 @@ const GameRoom = () => {
             const nextPlayerLocation =
               players[nextPlayerIndex]!.currentLocation;
             updateInfo(temp.data);
+            locationUpdate();
             setCurrentPlayer(temp.data.info.currentPlayer);
             setIsTurnEnd(false);
             // 다음 플레이의 땅 위치에 따라 다른 로직 수행
