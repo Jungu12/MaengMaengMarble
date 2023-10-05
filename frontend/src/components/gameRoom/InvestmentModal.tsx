@@ -139,7 +139,7 @@ const InvestmentModal = ({ isOpen, handleInvestment }: Props) => {
                 duration: 0.15,
               },
             }}
-            className='flex flex-col items-center sapce-y-[30px] w-fit h-[650px] p-[20px] bg-white bg-opacity-90 rounded-[15px] relative overflow-auto'
+            className='flex flex-col items-center w-fit h-[650px] p-[20px] bg-white bg-opacity-90 rounded-[15px] relative overflow-auto'
           >
             <button
               className='w-[40px] h-[40px] ml-auto'
@@ -147,7 +147,9 @@ const InvestmentModal = ({ isOpen, handleInvestment }: Props) => {
             >
               <img src={images.icon.close} alt='닫기 버튼' />
             </button>
-            <p className='text-[36px] text-black font-black'>투자장</p>
+            <p className='text-[36px] text-black font-black mb-[30px]'>
+              투자장
+            </p>
             <div className='flex-1 flex flex-col pr-[20px] pl-[10px] space-y-[15px] overflow-auto scrollbar-invest'>
               {stockList.map((stock) => (
                 <InvestmentStockCard
