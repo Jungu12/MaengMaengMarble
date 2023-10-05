@@ -118,6 +118,10 @@ export const images = {
     dice: 'https://maeng.s3.ap-northeast-2.amazonaws.com/images/icon-dice.png',
     up: 'https://maeng.s3.ap-northeast-2.amazonaws.com/images/icon-up.png',
     down: 'https://maeng.s3.ap-northeast-2.amazonaws.com/images/icon-down.png',
+    blackup:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/icon-up-black.png',
+    blackdown:
+      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/icon-down-black.png',
   },
   button: {
     gameclose:
