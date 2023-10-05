@@ -463,7 +463,7 @@ const GameRoom = () => {
     }
 
     return () => {
-      if (client.current?.connected) {
+      if (client.current?.connected && 소켓연결) {
         subTemp.unsubscribe();
       }
     };
