@@ -18,7 +18,7 @@ const RootRouter = () => {
       <AnimatePresence>
         <Routes>
           <Route path='/' element={<HomePage />}></Route>
-          <Route path='/test' element={<ModalTest />}></Route>
+          <Route path='/test2' element={<ModalTest />}></Route>
           <Route path='/login' element={<LoginPage />}></Route>
           <Route path='/test' element={<Test />} />
           <Route element={<PrivateRoutes />}>

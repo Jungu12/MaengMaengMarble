@@ -343,3 +343,15 @@ export const sortStyle = (value: number): number => {
   }
   return 0;
 };
+
+/**
+ * 주식 인상률을 계산해서 반환
+ * @param after 최근 주식 가격
+ * @param before 기존 주식 가격
+ * @returns 적용해야할 스타일 타입 반환
+ */
+export const calStockPercentage = (after: number, before: number): string => {
+  let result = 0;
+  result = Math.round(((after - before) / before) * 100); // 백분율로 변환
+  return result > 0 ? `+${result}%` : `${result}%`;
+};
