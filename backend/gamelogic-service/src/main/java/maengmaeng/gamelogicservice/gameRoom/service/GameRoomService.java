@@ -744,8 +744,7 @@ public class GameRoomService {
 			+ goldenKeys.getHurricane() + goldenKeys.getAngel() + goldenKeys.getKangJunGu()) {
 			cardType = "강준구의 문단속";
 			goldenKeys.setKangJunGu(goldenKeys.getKangJunGu() - 1);
-
-			gameInfo.getInfo().setDoorCheck(20);
+			gameInfo.getInfo().setDoorCheck(5);
 
 			//gameInfo에 바뀐 정보 업데이트
 			players[currentIdx] = curPlayer;
@@ -1372,7 +1371,7 @@ public class GameRoomService {
 			info.setEffectNews(effectNews);
 			info.setWaitingNews(waitingNews);
 
-			logger.info("다음턴={}, 문단속 적용={}",doorCheck,turnCount);
+			logger.info("다음턴={}, 문단속 적용={}",turnCount,doorCheck);
 
 		}
 
