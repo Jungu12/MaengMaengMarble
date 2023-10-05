@@ -16,7 +16,6 @@ import { ParticipantsType, WSResponseType } from '@/types/common/common.type';
 import {
   DiceResultType,
   FullGameDataType,
-  SlotType,
   TurnEndResponseType,
   TurnListType,
 } from '@/types/gameRoom/game.type';
@@ -193,33 +192,33 @@ const GameRoom = () => {
   }, [gameId, setCurrentPlayer, state.userList, updateInfo, user?.userId]);
 
   // 소켓 연결
-  useEffect(() => {
-    let subTemp: StompJs.StompSubscription;
+  // useEffect(() => {
+  //   let subTemp: StompJs.StompSubscription;
 
-    if (client.current?.connected) {
-      subTemp = client.current.subscribe(`/sub/game-rooms/${gameId}`, (res) => {
-        const response: WSResponseType<unknown> = JSON.parse(res.body);
+  //   if (client.current?.connected) {
+  //     subTemp = client.current.subscribe(`/sub/game-rooms/${gameId}`, (res) => {
+  //       const response: WSResponseType<unknown> = JSON.parse(res.body);
 
-        if (response.type === '박진호 끝') {
-          const parkResult = response as WSResponseType<SlotType>;
-          console.log('[박진호데이터]', parkResult);
-          setPlayerList(parkResult.data.players);
-          if (myTurn) {
-            if (reDice) {
-              setIsDiceRoll(false);
-              setIsDiceRollButtonClick(false);
-            } else {
-              setIsTurnEnd(true);
-            }
-          }
-        }
-      });
-    }
+  //       if (response.type === '박진호 끝') {
+  //         const parkResult = response as WSResponseType<SlotType>;
+  //         console.log('[박진호데이터]', parkResult);
+  //         setPlayerList(parkResult.data.players);
+  //         if (myTurn) {
+  //           if (reDice) {
+  //             setIsDiceRoll(false);
+  //             setIsDiceRollButtonClick(false);
+  //           } else {
+  //             setIsTurnEnd(true);
+  //           }
+  //         }
+  //       }
+  //     });
+  //   }
 
-    return () => {
-      subTemp.unsubscribe();
-    };
-  }, [gameId, myTurn, reDice, setPlayerList]);
+  //   return () => {
+  //     subTemp.unsubscribe();
+  //   };
+  // }, [gameId, myTurn, reDice, setPlayerList]);
 
   // 구독
   useEffect(() => {
