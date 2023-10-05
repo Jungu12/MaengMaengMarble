@@ -688,8 +688,13 @@ const GameRoom = () => {
         isOpen={isOpenGoldenKey}
         handleGoldenKey={() => {
           // 주사위에서 더블이 나온 경우
-          if (myTurn) {
-            setIsTurnEnd(true);
+          if (reDice) {
+            setIsDiceRoll(false);
+            setIsDiceRollButtonClick(false);
+          } else {
+            if (myTurn) {
+              setIsTurnEnd(true);
+            }
           }
 
           console.log('황금열쇠 끝~~~');
