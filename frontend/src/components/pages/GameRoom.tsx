@@ -234,6 +234,7 @@ const GameRoom = () => {
           const response: WSResponseType<unknown> = JSON.parse(res.body);
 
           if (response.type === '주사위이동후로직') {
+            locationUpdate();
             set이동가능(true);
             const diceResult = response as WSResponseType<DiceResultType>;
             setIsDiceRollButtonClick(true);
@@ -257,6 +258,7 @@ const GameRoom = () => {
           }
 
           if (response.type === '거래정지이동후로직') {
+            locationUpdate();
             set이동가능(true);
             const diceResult = response as WSResponseType<DiceResultType>;
             setIsDiceRollButtonClick(true);
@@ -273,6 +275,7 @@ const GameRoom = () => {
 
           if (response.type === '거래정지턴종료') {
             // 주사위 굴린 후 턴 종료시키기
+            locationUpdate();
             set이동가능(false);
             const diceResult = response as WSResponseType<DiceResultType>;
             setDice1(diceResult.data.dice1);
@@ -290,6 +293,7 @@ const GameRoom = () => {
             setIsDiceRollButtonClick(true);
             console.log('더블이 3번~');
             setReDice(false);
+            locationUpdate();
             set이동가능(false);
             setDice1(diceResult.data.dice1);
             setDice2(diceResult.data.dice2);
@@ -305,6 +309,8 @@ const GameRoom = () => {
 
           // 한 바퀴 돈 경우 서버에 알려주기
           if (response.type === '주사위맹맹지급') {
+            locationUpdate();
+            set이동가능(true);
             const diceResult = response as WSResponseType<DiceResultType>;
             setIsDiceRollButtonClick(true);
             console.log('주사위 결과 나왔어요');
