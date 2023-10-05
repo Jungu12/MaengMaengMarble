@@ -454,6 +454,8 @@ const GameRoom = () => {
 
           if (response.type === '황금열쇠') {
             // 황금열쇠 뽑기
+            console.log('[황금열쇠를 뽑았다] 지금이 내 차례니?', myTurn);
+
             if (myTurn) {
               client.current?.publish({
                 destination: `/pub/game-rooms/golden-keys/${gameId}`,
