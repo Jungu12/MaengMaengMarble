@@ -117,3 +117,18 @@ export type SlotType = {
   players: (PlayerType | null)[];
   num: number[];
 };
+
+export type GoldenKeyNewsResponseType = {
+  choosed: NewsType[];
+  goldenKeys: GoldKeyType;
+};
+
+export type GoldenKeyPlayerResponseType = {
+  players: PlayerType[];
+  goldenKeys: GoldKeyType;
+};
+
+export type GoldenKeyLandsResponseType = {
+  lands: LandType[];
+  goldenKeys: GoldKeyType;
+};

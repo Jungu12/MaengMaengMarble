@@ -1,33 +1,14 @@
+import { NewsType } from '@/types/gameRoom/game.type';
 import CMovingCard from '@components/common/CMovingCard';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const newscardData = [
-  {
-    cardImg:
-      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/newscard/dia/DIA-1.png',
-    cardId: 1,
-    event: 'COVID-19 대유행',
-  },
-  {
-    cardImg:
-      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/newscard/dia/DIA-2.png',
-    cardId: 2,
-    event: '미 연준 금리인상',
-  },
-  {
-    cardImg:
-      'https://maeng.s3.ap-northeast-2.amazonaws.com/images/newscard/dia/DIA-3.png',
-    cardId: 3,
-    event: '우크라이나 전쟁',
-  },
-];
-
 type Props = {
+  newsList: NewsType[];
   isOpen: boolean;
   handleNews: () => void;
 };
 
-const NewsCardModal = ({ isOpen, handleNews }: Props) => {
+const NewsCardModal = ({ newsList, isOpen, handleNews }: Props) => {
   return (
     <AnimatePresence>
       {isOpen && (
@@ -48,18 +29,18 @@ const NewsCardModal = ({ isOpen, handleNews }: Props) => {
             }}
             className='flex flex-row w-full h-full space-x-20 items-center justify-center'
           >
-            {newscardData.map((news) => (
-              <CMovingCard key={news.cardId}>
+            {newsList.map((news) => (
+              <CMovingCard key={news.newsId}>
                 <button
                   onClick={() => {
-                    console.log(news.event);
+                    console.log(news.content);
                     handleNews();
                   }}
-                  key={news.cardId}
+                  key={news.newsId}
                 >
                   <img
                     className='w-[410px] h-[570px]'
-                    src={news.cardImg}
+                    src={news.imageUrl}
                     alt='뉴스카드'
                   />
                 </button>

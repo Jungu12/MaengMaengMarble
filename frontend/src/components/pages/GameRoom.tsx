@@ -16,6 +16,8 @@ import { ParticipantsType, WSResponseType } from '@/types/common/common.type';
 import {
   DiceResultType,
   FullGameDataType,
+  GoldenKeyNewsResponseType,
+  NewsType,
   SlotType,
   TurnEndResponseType,
   TurnListType,
@@ -37,6 +39,7 @@ import {
   playersState,
 } from '@atom/gameAtom';
 import SlotMachineModal from '@components/gameRoom/SlotMachineModal';
+import NewsCardModal from '@components/gameRoom/NewsCardModal';
 
 const GameRoom = () => {
   const location = useLocation();
@@ -68,6 +71,8 @@ const GameRoom = () => {
   const [seletedLandId, setSeletedLandId] = useState(0);
   const [isOepnContrunction, setIsOepnContrunction] = useState(false);
   const [isOpenSlot, setIsOpenSlot] = useState(false);
+  const [isOpenNews, setIsOpenNews] = useState(false);
+  const [뉴스카드목록, set뉴스카드목록] = useState<NewsType[]>([]);
   // const slotResult = useMemo(() => [0, 0, 0], []);
   const nowPalyerIdx = useMemo(
     () => getPlayerIndex(playerList, currentPlayer),
@@ -231,8 +236,6 @@ const GameRoom = () => {
             if (doubleCnt < diceResult.data.doubleCount) {
               setReDice(true);
               setDoubleCnt(diceResult.data.doubleCount);
-            } else {
-              setReDice(false);
             }
           }
 
@@ -247,7 +250,6 @@ const GameRoom = () => {
             const diceResult = response as WSResponseType<DiceResultType>;
             setDice1(diceResult.data.dice1);
             setDice2(diceResult.data.dice2);
-            setPlayerList(diceResult.data.players);
             const idx = getPlayerIndex(playerList, currentPlayer);
             setSeletedLandId(diceResult.data.players[idx]!.currentLocation);
             if (myTurn) {
@@ -256,8 +258,6 @@ const GameRoom = () => {
           }
 
           if (response.type === '거래정지턴종료') {
-            const diceResult = response as WSResponseType<DiceResultType>;
-            setPlayerList(diceResult.data.players);
             if (myTurn) {
               handleTurnEnd();
             }
@@ -282,9 +282,7 @@ const GameRoom = () => {
           }
 
           if (response.type === '박진호') {
-            const parkResponse = response as WSResponseType<SlotType>;
             console.log('박진호가 왔어요~~');
-            setPlayerList(parkResponse.data.players);
 
             // 현재 플레이어만 보이게
             if (currentPlayer === user?.nickname) {
@@ -296,11 +294,11 @@ const GameRoom = () => {
             const temp = response as WSResponseType<FullGameDataType>;
             updateInfo(temp.data);
             // 주사위에서 더블이 나온 경우
-            if (reDice) {
-              setIsDiceRoll(false);
-              setIsDiceRollButtonClick(false);
-            } else {
-              if (myTurn) {
+            if (myTurn) {
+              if (reDice) {
+                setIsDiceRoll(false);
+                setIsDiceRollButtonClick(false);
+              } else {
                 setIsTurnEnd(true);
               }
             }
@@ -394,6 +392,78 @@ const GameRoom = () => {
     updateInfo,
     user?.nickname,
   ]);
+
+  // 황금 열쇠 구독
+  useEffect(() => {
+    let subTemp: StompJs.StompSubscription;
+
+    if (!client.current) return;
+    if (client.current.connected) {
+      subTemp = client.current.subscribe(`/sub/game-rooms/${gameId}`, (res) => {
+        const response: WSResponseType<unknown> = JSON.parse(res.body);
+
+        if (response.type === '황금열쇠') {
+          // 황금열쇠 뽑기
+          client.current?.publish({
+            destination: `/pub/game-rooms/golden-keys/${gameId}`,
+          });
+        }
+
+        if (response.type === '브론즈') {
+          const 브론즈결과 =
+            response as WSResponseType<GoldenKeyNewsResponseType>;
+          set뉴스카드목록(브론즈결과.data.choosed);
+          setIsOpenNews(true);
+        }
+
+        if (response.type === '플레티넘') {
+          const 플레티넘결과 =
+            response as WSResponseType<GoldenKeyNewsResponseType>;
+          set뉴스카드목록(플레티넘결과.data.choosed);
+          setIsOpenNews(true);
+        }
+
+        if (response.type === '다이아몬드') {
+          const 다이아몬드결과 =
+            response as WSResponseType<GoldenKeyNewsResponseType>;
+          set뉴스카드목록(다이아몬드결과.data.choosed);
+          setIsOpenNews(true);
+        }
+
+        // if (response.type === '언론통제') {
+
+        // }
+
+        // if (response.type === '허리케인') {
+
+        // }
+
+        // if (response.type === '천사') {
+
+        // }
+
+        // if (response.type === '강준구의 문단속') {
+
+        // }
+
+        // if (response.type === '복권 당첨') {
+
+        // }
+
+        // if (response.type === '어디로든 문 초대권') {
+
+        // }
+
+        // if (response.type === '지진') {
+
+        // }
+      });
+    }
+
+    return () => {
+      subTemp.unsubscribe();
+    };
+  });
 
   useEffect(() => {
     if (이동중) return;
@@ -502,6 +572,13 @@ const GameRoom = () => {
         isOpen={isOpenSlot}
         handleSlot={() => {
           setIsOpenSlot(false);
+        }}
+      />
+      <NewsCardModal
+        newsList={뉴스카드목록}
+        isOpen={isOpenNews}
+        handleNews={() => {
+          setIsOpenNews(false);
         }}
       />
       <div
