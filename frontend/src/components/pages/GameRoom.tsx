@@ -138,11 +138,11 @@ const GameRoom = () => {
   // 데이터 최신화
   const updateInfo = useCallback(
     (data: FullGameDataType | TurnEndResponseType) => {
+      locationUpdate();
       setPlayerList(data.players);
       setNews(data.info.effectNews);
       setLandList(data.lands);
       // TODO: 주식도 최신화 해야함
-      locationUpdate();
     },
     [locationUpdate, setLandList, setNews, setPlayerList]
   );
@@ -389,7 +389,6 @@ const GameRoom = () => {
             const nextPlayerLocation =
               players[nextPlayerIndex]!.currentLocation;
             updateInfo(temp.data);
-            locationUpdate();
             setCurrentPlayer(temp.data.info.currentPlayer);
             setIsTurnEnd(false);
             // 다음 플레이의 땅 위치에 따라 다른 로직 수행
@@ -514,8 +513,8 @@ const GameRoom = () => {
         ) {
           const 결과 = response as WSResponseType<GoldenKeyPlayerResponseType>;
           set황금열쇠이미지(결과.data.imgUrl);
-          setPlayerList(결과.data.players);
           locationUpdate();
+          setPlayerList(결과.data.players);
           if (myTurn) {
             setIsOpenGoldenKey(true);
           }
