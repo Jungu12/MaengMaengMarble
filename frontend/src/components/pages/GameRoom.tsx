@@ -797,8 +797,13 @@ const GameRoom = () => {
         handleConstruction={handleConstruction}
         handleClose={() => {
           setIsOepnContrunction(false);
-          if (myTurn) {
-            setIsTurnEnd(true);
+          if (reDice) {
+            setIsDiceRoll(false);
+            setIsDiceRollButtonClick(false);
+          } else {
+            if (myTurn) {
+              setIsTurnEnd(true);
+            }
           }
         }}
         land={landList[seletedLandId]}

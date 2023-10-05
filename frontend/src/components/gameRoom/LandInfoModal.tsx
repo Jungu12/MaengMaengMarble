@@ -109,8 +109,7 @@ const LandInfoModal = ({ landInfo, isOpen, handleLandInfo }: Props) => {
                   alt='국기 사진'
                 />
                 <p className='text-primary-light100 font-bold text-[30px] '>
-                  {/* {landInfo.name} */}
-                  베트남
+                  {landInfo.name}
                 </p>
                 <button onClick={handleLandInfo}>
                   <img
@@ -135,7 +134,7 @@ const LandInfoModal = ({ landInfo, isOpen, handleLandInfo }: Props) => {
                     alt='주사위 아이콘'
                   />
                   <p className='text-primary-light100 font-bold text-[22px] py-[10px]'>
-                    여기까지 4칸
+                    여기까지 맹맹
                   </p>
                 </div>
               </div>

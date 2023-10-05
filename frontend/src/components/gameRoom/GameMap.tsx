@@ -35,6 +35,7 @@ const GameMap = ({
   const [선택한땅, set선택한땅] = useState(0);
 
   const onClickLand = useCallback((landId: number) => {
+    setIsOepnLandInfo(true);
     set선택한땅(landId);
   }, []);
 
@@ -247,7 +248,6 @@ const GameMap = ({
             value={10}
             width={90}
             height={60}
-            onClickArea={onClickLand}
           />
           <MapArea
             src={images.map.argentina}
