@@ -8,12 +8,14 @@ def calculate_rank_percentage(rating, min_rating, max_rating):
         percentage = ((rating - max_rating) / (min_rating - max_rating)) * 100
         return percentage
     else:
-        return None
+        return 0
 
 # 백분율 계산 함수
 def calculate_percentage(value, min_value, max_value):
-    if min_value <= value <= max_value:
-        percentage = (value - min_value) / (max_value - min_value) * 100
+    value = str(value)
+    cleaned_string = value.replace(',', '')
+    if int(min_value) <= float(cleaned_string) <= int(max_value):
+        percentage = (float(cleaned_string) - int(min_value)) / (int(max_value) - int(min_value)) * 100
         return percentage
     else:
         return 0  # 범위 밖의 값에 대해서는 None을 반환하거나 처리 방식을 변경할 수 있습니다.
@@ -21,8 +23,8 @@ def calculate_percentage(value, min_value, max_value):
 def playstyle(rating_average, asset_average, land_count, stock_average, loan_count, door_count, key_count, angel_count, turn_count):
     max_asset = GameResult.objects.aggregate(max_asset=Max('asset'))['max_asset']
     max_land = GameResult.objects.aggregate(max_land=Max('land_amount'))['max_land']
-    max_loan = GameResult.objects.aggregate(max_loan=Max('loan_amount'))['max_loan']
-    max_door = GameResult.objects.aggregate(max_door=Max('door_amount'))['max_door']
+    max_loan = GameResult.objects.aggregate(max_loan=Max('loan_num'))['max_loan']
+    max_door = GameResult.objects.aggregate(max_door=Max('door_used_num'))['max_door']
     
     # 평균 등수에 대한 백분율
     per_rating = calculate_rank_percentage(rating_average, 1.5, 1)
@@ -90,6 +92,9 @@ def my_analysis_view(request, user_id):
     rating_average = GameResult.objects.filter(user_id=user_id).aggregate(avg_rating=Avg('rating'))['avg_rating']
     # 총 자산
     asset_average = '{:,.2f}'.format(GameResult.objects.filter(user_id=user_id).aggregate(avg_asset=Avg('asset'))['avg_asset'])
+    asset_average = str(asset_average)
+    asset_average = asset_average.replace(',', '')
+    asset_average = float(asset_average)
     # 각 순위별 횟수
     rating = [list(GameResult.objects.filter(user_id=user_id).values_list('rating', flat=True)).count(i) for i in range(1, 5)]
     # 땅 개수
@@ -98,6 +103,9 @@ def my_analysis_view(request, user_id):
     stock_count = GameResult.objects.filter(user_id=user_id).aggregate(avg_stock_amount=Avg('stock_amount'))['avg_stock_amount']
     # 주식 자산
     stock_average = '{:,.2f}'.format(GameResult.objects.filter(user_id=user_id).aggregate(avg_stock_asset=Avg('stock_asset'))['avg_stock_asset'])
+    stock_average = str(stock_average)
+    stock_average = stock_average.replace(',', '')
+    stock_average = float(stock_average)
     # 대출 횟수
     loan_count = GameResult.objects.filter(user_id=user_id).aggregate(avg_loan_num=Avg('loan_num'))['avg_loan_num']
     # 어디로든 문 이용 횟수
@@ -123,7 +131,6 @@ def my_analysis_view(request, user_id):
         'land_count': land_count,
         'stock_count': stock_count,
         'stock_average': stock_average,
-        'rating': rating,
         '1st' : rating[0],
         '2nd' : rating[1],
         '3th' : rating[2],
