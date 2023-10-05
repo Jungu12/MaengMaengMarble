@@ -353,11 +353,11 @@ const GameRoom = () => {
             updateInfo(temp.data);
             setIsOpenNews(false);
             // 주사위에서 더블이 나온 경우
-            if (myTurn) {
-              if (reDice) {
-                setIsDiceRoll(false);
-                setIsDiceRollButtonClick(false);
-              } else {
+            if (reDice) {
+              setIsDiceRoll(false);
+              setIsDiceRollButtonClick(false);
+            } else {
+              if (myTurn) {
                 setIsTurnEnd(true);
               }
             }
