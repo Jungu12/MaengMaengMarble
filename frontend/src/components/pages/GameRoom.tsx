@@ -53,6 +53,7 @@ const GameRoom = () => {
   const [orderList, setOrderList] = useState<TurnListType[]>([]);
   const [isTurnEnd, setIsTurnEnd] = useState(false);
   const [isStopTrade, setIsStopTrade] = useState(false); // 거래 정지 칸에 위치하는지
+  const [이동중, set이동중] = useState(false);
 
   const [dice1, setDice1] = useState<1 | 2 | 3 | 4 | 5 | 6>(1);
   const [dice2, setDice2] = useState<1 | 2 | 3 | 4 | 5 | 6>(1);
@@ -328,6 +329,7 @@ const GameRoom = () => {
   ]);
 
   useEffect(() => {
+    if (이동중) return;
     if (isDiceRollButtonClick && !isDiceRoll) {
       const diceRef = document.querySelectorAll('._space3d');
       const clickEvent = new MouseEvent('click', {
@@ -335,6 +337,7 @@ const GameRoom = () => {
         cancelable: true, // 이벤트가 취소 가능하도록 설정합니다.
         view: window, // 이벤트의 관련 뷰를 설정합니다.
       });
+      set이동중(true);
 
       diceRef[0].dispatchEvent(clickEvent);
       setTimeout(() => {
@@ -364,6 +367,7 @@ const GameRoom = () => {
             ).then(
               // 도착 위치 호출
               () => {
+                set이동중(false);
                 client.current?.publish({
                   destination: `/pub/game-rooms/after-move/${gameId}`,
                 });
