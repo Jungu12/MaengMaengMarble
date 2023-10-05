@@ -506,10 +506,12 @@ public class GameRoomService {
 
 		Land currentLand = gameInfo.getLands().get(landId);
 		int currentLandFee = currentLand.getCurrentFees()[0];
+		int currentPriceSum = currentLand.getCurrentLandPrice();
 
 		for (int i = 0; i < currentLand.getBuildings().length; i++) {
 			if (currentLand.getBuildings()[i]) {
 				currentLandFee += currentLand.getCurrentFees()[i + 1];
+				currentPriceSum += currentLand.getCurrentBuildingPrices()[i];
 			}
 		}
 
@@ -520,7 +522,7 @@ public class GameRoomService {
 		// 통행료 만큼 땅 주인의 보유 자산 및 보유 현금 증감
 		int owner = currentLand.getOwner();
 		players[owner].setMoney(players[owner].getMoney() + currentLandFee);
-		players[owner].setAsset(players[owner].getAsset() + currentLandFee);
+		players[owner].setAsset(players[owner].getAsset() - currentPriceSum + currentLandFee);
 
 		// 인수 로직 처리 후 땅 주인 변경
 		currentLand.setOwner(currentIdx);
