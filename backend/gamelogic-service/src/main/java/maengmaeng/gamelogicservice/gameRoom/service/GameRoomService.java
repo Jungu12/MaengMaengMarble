@@ -163,7 +163,7 @@ public class GameRoomService {
 		 // int dice2 = random.nextInt(6) + 1;
 
 		int dice1 = 1;
-		int dice2 = 2;
+		int dice2 = 1;
 
 		return Dice.builder().dice1(dice1).dice2(dice2).build();
 	}
