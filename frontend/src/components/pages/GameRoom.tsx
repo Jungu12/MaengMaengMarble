@@ -18,6 +18,7 @@ import {
   FullGameDataType,
   GoldenKeyNewsResponseType,
   NewsType,
+  PlayerType,
   SlotType,
   TurnEndResponseType,
   TurnListType,
@@ -271,6 +272,34 @@ const GameRoom = () => {
               console.log('거래정지요~');
               handleTurnEnd();
             }
+          }
+
+          // 한 바퀴 돈 경우 서버에 알려주기
+          if (response.type === '주사위맹맹지급') {
+            const diceResult = response as WSResponseType<DiceResultType>;
+            setIsDiceRollButtonClick(true);
+            console.log('주사위 결과 나왔어요');
+            setDice1(diceResult.data.dice1);
+            setDice2(diceResult.data.dice2);
+            const idx = getPlayerIndex(playerList, currentPlayer);
+            setSeletedLandId(diceResult.data.players[idx]!.currentLocation);
+            // 더블이 나오는 경우 주사위 다시 던지기
+            if (doubleCnt < diceResult.data.doubleCount) {
+              setReDice(true);
+              setDoubleCnt(diceResult.data.doubleCount);
+            }
+            if (myTurn) {
+              client.current?.publish({
+                destination: `/pub/game-rooms/maengmaneg/${gameId}`,
+              });
+            }
+          }
+
+          if (response.type === '맹맹지급이동후로직') {
+            const result = response as WSResponseType<{
+              players: (PlayerType | null)[];
+            }>;
+            setPlayerList(result.data.players);
           }
 
           if (response.type === '땅구매') {
