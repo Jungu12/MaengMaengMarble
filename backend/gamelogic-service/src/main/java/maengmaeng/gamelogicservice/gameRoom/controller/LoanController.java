@@ -73,6 +73,7 @@ public class LoanController {
                 .roomCode(roomCode)
                 .data(ResponseDto.builder().type("대출 갚기 완료").data(LoanResponse.builder().player(changedPlayer).build()).build())
                 .build();
+
         redisPublisher.publish(gameRoomTopic,gameData);
     }
 }
