@@ -89,7 +89,12 @@ const GameRoom = () => {
   }, [gameId, isDiceRollButtonClick]);
 
   // 거래정지칸 주사위 던지기
-  const handleStopTradeDiceRoll = useCallback(() => {}, []);
+  const handleStopTradeDiceRoll = useCallback(() => {
+    if (isDiceRollButtonClick) return;
+    client.current?.publish({
+      destination: `/pub/game-rooms/stop-trade/${gameId}`,
+    });
+  }, [gameId, isDiceRollButtonClick]);
 
   // 데이터 최신화
   const updateInfo = useCallback(
@@ -368,9 +373,11 @@ const GameRoom = () => {
               // 도착 위치 호출
               () => {
                 set이동중(false);
-                client.current?.publish({
-                  destination: `/pub/game-rooms/after-move/${gameId}`,
-                });
+                if (myTurn) {
+                  client.current?.publish({
+                    destination: `/pub/game-rooms/after-move/${gameId}`,
+                  });
+                }
               }
             );
           }
@@ -388,6 +395,7 @@ const GameRoom = () => {
     gameId,
     isDiceRoll,
     isDiceRollButtonClick,
+    myTurn,
     playerList,
     user,
     이동중,
