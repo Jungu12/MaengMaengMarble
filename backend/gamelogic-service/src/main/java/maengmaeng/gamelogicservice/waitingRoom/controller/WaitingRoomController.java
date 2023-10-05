@@ -46,15 +46,6 @@ public class WaitingRoomController {
 
     private final static String LOBBY = "LOBBY";
 
-    @GetMapping("/api/maeng/waiting-rooms/{roomCode}")
-    public ResponseEntity<?> existRoom(@PathVariable String roomCode){
-        boolean exist = waitingRoomService.existRoom(roomCode);
-        if(exist){
-            return ResponseEntity.ok().build();
-        }else{
-         return ResponseEntity.notFound().build();
-        }
-    }
 
     @MessageMapping("/waiting-rooms/{roomCode}")
     public void enter(@DestinationVariable String roomCode, UserInfo user) {
