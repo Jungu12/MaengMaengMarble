@@ -834,7 +834,7 @@ public class GameRoomService {
 		//Redis에 바뀐 정보 업데이트
 		gameInfo.setGoldenKeys(goldenKeys);
 		gameInfoRepository.createGameRoom(gameInfo);
-
+		logger.info("type={}", cardType);
 		return responseDto;
 	}
 
