@@ -1137,9 +1137,7 @@ public class GameRoomService {
 			gameInfoRepository.createGameRoom(gameInfo);
 			return ResponseDto.builder()
 				.type("어디로든문맹맹지급")
-				.data(DoorResponse.builder().lapCheck(true)
-					.players(players)
-					.build())
+				.data(players)
 				.build();
 
 		} else {
@@ -1149,9 +1147,7 @@ public class GameRoomService {
 			gameInfoRepository.createGameRoom(gameInfo);
 			return ResponseDto.builder()
 				.type("어디로든문이동후로직")
-				.data(DoorResponse.builder().lapCheck(false)
-					.players(players)
-					.build())
+				.data(players)
 				.build();
 
 		}
@@ -1190,9 +1186,7 @@ public class GameRoomService {
 			gameInfoRepository.createGameRoom(gameInfo);
 			return ResponseDto.builder()
 				.type("어디로든문맹맹지급")
-				.data(DoorResponse.builder().lapCheck(true)
-					.players(players)
-					.build())
+				.data(players)
 				.build();
 
 		} else {
@@ -1202,9 +1196,7 @@ public class GameRoomService {
 			gameInfoRepository.createGameRoom(gameInfo);
 			return ResponseDto.builder()
 				.type("어디로든문이동후로직")
-				.data(DoorResponse.builder().lapCheck(false)
-					.players(players)
-					.build())
+				.data(players)
 				.build();
 
 		}
