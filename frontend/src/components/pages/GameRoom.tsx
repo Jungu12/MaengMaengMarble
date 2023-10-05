@@ -113,19 +113,19 @@ const GameRoom = () => {
   }, [gameId, isDiceRollButtonClick]);
 
   const locationUpdate = useCallback(() => {
-    controls1.set({
+    controls1.start({
       x: 0,
       y: 0,
     });
-    controls2.set({
+    controls2.start({
       x: 0,
       y: 0,
     });
-    controls3.set({
+    controls3.start({
       x: 0,
       y: 0,
     });
-    controls4.set({
+    controls4.start({
       x: 0,
       y: 0,
     });
@@ -253,10 +253,13 @@ const GameRoom = () => {
 
           if (response.type === '거래정지이동후로직') {
             const diceResult = response as WSResponseType<DiceResultType>;
+            setIsDiceRollButtonClick(true);
             setDice1(diceResult.data.dice1);
             setDice2(diceResult.data.dice2);
             const idx = getPlayerIndex(playerList, currentPlayer);
             setSeletedLandId(diceResult.data.players[idx]!.currentLocation);
+
+            // 거래정지칸 탈출
             if (myTurn) {
               setIsStopTrade(false);
             }
@@ -548,17 +551,16 @@ const GameRoom = () => {
               dice1 + dice2,
               playerList[idx]!.currentLocation,
               tempControls
-            ).then(
-              // 도착 위치 호출
-              () => {
-                set이동중(false);
-                if (myTurn) {
-                  client.current?.publish({
-                    destination: `/pub/game-rooms/after-move/${gameId}`,
-                  });
-                }
+            ).then(() => {
+              set이동중(false);
+              console.log('이동 완료!!!');
+
+              if (myTurn) {
+                client.current?.publish({
+                  destination: `/pub/game-rooms/after-move/${gameId}`,
+                });
               }
-            );
+            });
           }
         }
       }, 3000);
