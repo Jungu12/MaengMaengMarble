@@ -35,6 +35,7 @@ const GameMap = ({
   const [선택한땅, set선택한땅] = useState(0);
 
   const onClickLand = useCallback((landId: number) => {
+    setIsOepnLandInfo(true);
     set선택한땅(landId);
   }, []);
 
