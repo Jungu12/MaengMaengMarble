@@ -114,7 +114,6 @@ public class GameRoomService {
 		int seq = startCards[playerSeq.getPlayerCnt()].getSeq();
 		if (players[seq - 1] == null && !startCards[playerSeq.getPlayerCnt()].isSelected()) {
 			players[seq - 1] = player;
-			System.out.println("순서 세팅" + players[seq-1].getNickname());
 			startCards[playerSeq.getPlayerCnt()].setSelected(true);
 
 			if (seq == 1) {
@@ -125,7 +124,6 @@ public class GameRoomService {
 					.effectNews(new LinkedList<>())
 					.waitingNews(new PriorityQueue<WaitingNews>(/*(o1, o2) -> o1.getTurn() - o2.getTurn()*/))
 					.build();
-				System.out.println("info 저장 :"+info.getCurrentPlayer());
 				gameInfo.setInfo(info);
 			}
 			gameInfo.setSeqCards(startCards);
@@ -133,7 +131,6 @@ public class GameRoomService {
 
 		gameInfoRepository.createGameRoom(gameInfo);
 
-		System.out.println("currentPlayer 저장 " +gameInfo.getInfo().getCurrentPlayer());
 
 
 		return gameInfo.getSeqCards();
@@ -159,14 +156,12 @@ public class GameRoomService {
 	public Dice getDice() {
 		Random random = new Random();
 
-		// // 주사위 1 던지기 (1부터 6까지)
-		// int dice1 = random.nextInt(6) + 1;
-		//
-		// // 주사위 2 던지기 (1부터 6까지)
-		// int dice2 = random.nextInt(6) + 1;
+		 // 주사위 1 던지기 (1부터 6까지)
+		 int dice1 = random.nextInt(6) + 1;
 
-		int dice1 = 5;
-		int dice2 = 5;
+		 // 주사위 2 던지기 (1부터 6까지)
+		 int dice2 = random.nextInt(6) + 1;
+		 
 
 		return Dice.builder().dice1(dice1).dice2(dice2).build();
 	}
