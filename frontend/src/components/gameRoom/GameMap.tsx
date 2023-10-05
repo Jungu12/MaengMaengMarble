@@ -50,10 +50,6 @@ const GameMap = ({
         setPlayer1X(0);
         setPlayer1Y((32 - position) * 67);
       }
-      controls1.set({
-        x: 0,
-        y: 0,
-      });
     }
     if (playerList[1]) {
       const position = playerList[1].currentLocation;
@@ -73,10 +69,6 @@ const GameMap = ({
         setPlayer2X(0);
         setPlayer2Y((32 - position) * 67);
       }
-      controls2.set({
-        x: 0,
-        y: 0,
-      });
     }
     if (playerList[2]) {
       const position = playerList[2].currentLocation;
@@ -96,10 +88,6 @@ const GameMap = ({
         setPlayer3X(0);
         setPlayer3Y((32 - position) * 67);
       }
-      controls3.set({
-        x: 0,
-        y: 0,
-      });
     }
     if (playerList[3]) {
       const position = playerList[3].currentLocation;
@@ -119,12 +107,8 @@ const GameMap = ({
         setPlayer4X(0);
         setPlayer4Y((32 - position) * 67);
       }
-      controls4.set({
-        x: 0,
-        y: 0,
-      });
     }
-  }, [controls1, controls2, controls3, controls4, playerList]);
+  }, [playerList]);
 
   return (
     <div className='absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 mt-[40px] w-[640px] h-[640px] ]'>
