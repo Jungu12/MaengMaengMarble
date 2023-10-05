@@ -1278,7 +1278,7 @@ public class GameRoomService {
 											curLand.getCurrentBuildingPrices()[i] * (100 + curEffect) / 100;
 								}
 								for (int i = 0; i < currentFees.length; i++) {
-									currentBuildingPrices[i] =
+									currentFees[i] =
 											curLand.getCurrentFees()[i] * (100 + curEffect) / 100;
 								}
 							}
@@ -1291,7 +1291,7 @@ public class GameRoomService {
 											curLand.getCurrentBuildingPrices()[i] * (100 - curEffect) / 100;
 								}
 								for (int i = 0; i < currentFees.length; i++) {
-									currentBuildingPrices[i] =
+									currentFees[i] =
 											curLand.getCurrentFees()[i] * (100 - curEffect) / 100;
 								}
 							}
@@ -1440,7 +1440,7 @@ public class GameRoomService {
 								curLand.getCurrentBuildingPrices()[i] * (100 + curEffect) / 100;
 						}
 						for (int i = 0; i < currentFees.length; i++) {
-							currentBuildingPrices[i] =
+							currentFees[i] =
 								curLand.getCurrentFees()[i] * (100 + curEffect) / 100;
 						}
 					}
@@ -1453,7 +1453,7 @@ public class GameRoomService {
 								curLand.getCurrentBuildingPrices()[i] * (100 - curEffect) / 100;
 						}
 						for (int i = 0; i < currentFees.length; i++) {
-							currentBuildingPrices[i] =
+							currentFees[i] =
 								curLand.getCurrentFees()[i] * (100 - curEffect) / 100;
 						}
 					}
