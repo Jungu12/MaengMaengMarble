@@ -247,9 +247,9 @@ public class GameRoomController {
      * 뉴스 세개 중 하나 골라서 적용 시키기
      */
     @MessageMapping("/game-rooms/news/{roomCode}")
-    public void applyNews(@DestinationVariable String roomCode, News news, String type) {
-        logger.info("applyNews(), roomCode = {}, News ={}, type = {}",roomCode,news.toString(),type);
-        ResponseDto responseDto = gameRoomService.applyNews(roomCode, news, type);
+    public void applyNews(@DestinationVariable String roomCode, ApplyNewsRequest applyNewsRequest) {
+        logger.info("applyNews(), roomCode = {}, News ={}, type = {}",roomCode,applyNewsRequest.getNews().toString(), applyNewsRequest.getType());
+        ResponseDto responseDto = gameRoomService.applyNews(roomCode, applyNewsRequest.getNews(), applyNewsRequest.getType());
 
         GameData gameData = GameData.builder()
                 .type("GAME_ROOM")
