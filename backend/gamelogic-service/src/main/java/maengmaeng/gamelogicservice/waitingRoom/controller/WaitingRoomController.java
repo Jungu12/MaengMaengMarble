@@ -11,6 +11,7 @@ import maengmaeng.gamelogicservice.global.dto.GameData;
 
 import maengmaeng.gamelogicservice.waitingRoom.domain.dto.ChangeStateRequest;
 import maengmaeng.gamelogicservice.waitingRoom.domain.dto.OutUser;
+import maengmaeng.gamelogicservice.waitingRoom.domain.dto.OutUserResponse;
 import maengmaeng.gamelogicservice.waitingRoom.domain.dto.UserInfo;
 import maengmaeng.gamelogicservice.waitingRoom.service.WaitingRoomService;
 import org.slf4j.Logger;
@@ -169,7 +170,7 @@ public class WaitingRoomController {
         WaitingRoom waitingRoom = waitingRoomService.getWaitingRoomNow(roomCode);
 
         GameData gameData = GameData.builder()
-                .data(ResponseDto.builder().type(outUser.getOutUser() + " 강퇴 waitingRoom").data(waitingRoom).build())
+                .data(ResponseDto.builder().type("강퇴").data(OutUserResponse.builder().outUser(outUser.getOutUser()).currentParticipants(waitingRoom.getCurrentParticipants()).build()).build())
                 .roomCode(roomCode)
                 .type(WAITINGROOM)
                 .build();
