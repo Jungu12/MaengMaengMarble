@@ -203,6 +203,9 @@ const GameRoom = () => {
         }
       }
     };
+    return () => {
+      initSub.current?.unsubscribe();
+    };
   }, [
     gameId,
     setCurrentPlayer,
@@ -431,6 +434,9 @@ const GameRoom = () => {
         }
       );
     }
+    return () => {
+      gameSub.current?.unsubscribe();
+    };
   }, [
     currentPlayer,
     doubleCnt,
@@ -557,7 +563,11 @@ const GameRoom = () => {
         }
       );
     }
+    return () => {
+      keySub.current?.unsubscribe();
+    };
   }, [
+    currentPlayer,
     gameId,
     info,
     locationUpdate,
