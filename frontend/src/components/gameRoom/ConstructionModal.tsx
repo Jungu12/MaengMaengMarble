@@ -72,6 +72,9 @@ const ConstructionModal = ({
       land.buildings[2] ? false : isCheckedBuilding,
       land.buildings[3] ? false : isCheckedHotel,
     ]);
+    setIsCheckedPension(false);
+    setIsCheckedBuilding(false);
+    setIsCheckedHotel(false);
     console.log(totalPurchasePrice);
   }, [
     handleConstruction,
