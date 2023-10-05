@@ -171,7 +171,7 @@ public class WaitingRoomController {
 
 
     @MessageMapping("/waiting-rooms/kick/{roomCode}")
-    public void kick(@DestinationVariable String roomCode, @Payload OutUser outUser){
+    public void kick(@DestinationVariable String roomCode, OutUser outUser){
         // 유저가 kick 눌러서 내보내기
         waitingRoomService.kick(roomCode,outUser.getOutUser());
 
