@@ -550,19 +550,32 @@ const GameRoom = () => {
   ]);
 
   useEffect(() => {
-    const diceRef = document.querySelectorAll('._space3d');
-    const clickEvent = new MouseEvent('click', {
-      bubbles: true, // 이벤트가 버블링되도록 설정합니다.
-      cancelable: true, // 이벤트가 취소 가능하도록 설정합니다.
-      view: window, // 이벤트의 관련 뷰를 설정합니다.
-    });
-    diceRef[0].dispatchEvent(clickEvent);
-    setTimeout(() => {
-      diceRef[1].dispatchEvent(clickEvent);
-    }, 50);
-    if (!이동가능) return;
+    if (!이동가능) {
+      const diceRef = document.querySelectorAll('._space3d');
+      const clickEvent = new MouseEvent('click', {
+        bubbles: true, // 이벤트가 버블링되도록 설정합니다.
+        cancelable: true, // 이벤트가 취소 가능하도록 설정합니다.
+        view: window, // 이벤트의 관련 뷰를 설정합니다.
+      });
+      diceRef[0].dispatchEvent(clickEvent);
+      setTimeout(() => {
+        diceRef[1].dispatchEvent(clickEvent);
+      }, 50);
+
+      return;
+    }
     if (이동중) return;
     if (isDiceRollButtonClick && !isDiceRoll) {
+      const diceRef = document.querySelectorAll('._space3d');
+      const clickEvent = new MouseEvent('click', {
+        bubbles: true, // 이벤트가 버블링되도록 설정합니다.
+        cancelable: true, // 이벤트가 취소 가능하도록 설정합니다.
+        view: window, // 이벤트의 관련 뷰를 설정합니다.
+      });
+      diceRef[0].dispatchEvent(clickEvent);
+      setTimeout(() => {
+        diceRef[1].dispatchEvent(clickEvent);
+      }, 50);
       set이동중(true);
       setTimeout(() => {
         setIsDiceRoll(true);
