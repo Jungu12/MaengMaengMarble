@@ -84,4 +84,10 @@ public class LobbyRestController {
 
 		return ResponseEntity.ok().build();
 	}
+
+	@GetMapping("/validation/{roomCode}")
+	public ResponseEntity<Boolean> existRoom(@PathVariable String roomCode){
+		boolean exist = lobbyService.existRoom(roomCode);
+		return ResponseEntity.ok().body(exist);
+	}
 }

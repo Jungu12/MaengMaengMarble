@@ -84,4 +84,13 @@ public class LobbyService {
     public void removeWaitingRoom(String roomCode) {
         waitingRoomService.removeWaitingRoom(roomCode);
     }
+
+
+    public boolean existRoom(String roomCode) {
+        WaitingRoom waitingRoom = waitingRoomService.getWaitingRoomNow(roomCode);
+        if(waitingRoom==null)
+            return false;
+        else
+            return true;
+    }
 }
