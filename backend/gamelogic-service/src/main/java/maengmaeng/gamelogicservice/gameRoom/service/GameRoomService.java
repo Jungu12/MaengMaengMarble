@@ -1455,7 +1455,7 @@ public class GameRoomService {
 						}
 						for (int i = 0; i < currentFees.length; i++) {
 							currentFees[i] =
-								curLand.getCurrentFees()[i] * ((100 - curEffect) / 100);
+								curLand.getCurrentFees()[i] * ((100 + curEffect) / 100);
 						}
 					}
 					//바뀐 정보 해당 땅에 업데이트
