@@ -216,6 +216,8 @@ const GameRoom = () => {
       gameSub.current = client.current.subscribe(
         `/sub/game-rooms/${gameId}`,
         (res) => {
+          console.log('[새로운 메시지]', res);
+
           const response: WSResponseType<unknown> = JSON.parse(res.body);
 
           if (response.type === '주사위이동후로직') {
