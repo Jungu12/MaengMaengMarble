@@ -1,5 +1,6 @@
 package maengmaeng.gamelogicservice.gameRoom.controller;
 
+import lombok.Synchronized;
 import maengmaeng.gamelogicservice.gameRoom.domain.GameInfo;
 import maengmaeng.gamelogicservice.gameRoom.domain.News;
 import maengmaeng.gamelogicservice.gameRoom.domain.Player;
@@ -38,7 +39,7 @@ public class GameRoomController {
      */
     @Transactional
     @MessageMapping("/game-rooms/start/{roomCode}")
-    public void start(@DestinationVariable String roomCode, PlayerCount playerCount) {
+    public synchronized void start(@DestinationVariable String roomCode, PlayerCount playerCount) {
         logger.info("start(), roomCode = {}, PlayerCnt, = {}", roomCode, playerCount.getCnt());
         GameStart cards = gameRoomService.setStart(roomCode, playerCount.getCnt());
         GameData gameData = GameData.builder()

@@ -743,7 +743,7 @@ public class GameRoomService {
 
 			responseDto = ResponseDto.builder()
 				.type(cardType)
-				.data(GoldenKeysPlayersResponse.builder().players(players).goldenKeys(goldenKeys).build())
+				.data(GoldenKeysPlayersResponse.builder().players(players).goldenKeys(goldenKeys).imgUrl(goldenKeys.getKangJunGuImgUrl()).build())
 				.build();
 		} else if (randomValue
 			< goldenKeys.getBronze() + goldenKeys.getPlatinum() + goldenKeys.getDiamond() + goldenKeys.getNewsBan()
@@ -763,7 +763,7 @@ public class GameRoomService {
 			responseDto = ResponseDto.builder()
 				.type(cardType)
 				.data(GoldenKeysPlayersResponse.builder().players(players).goldenKeys(goldenKeys).imgUrl(
-					goldenKeys.getKangJunGuImgUrl()).build())
+					goldenKeys.getLottoImgUrl()).build())
 				.build();
 		} else if (randomValue
 			< goldenKeys.getBronze() + goldenKeys.getPlatinum() + goldenKeys.getDiamond() + goldenKeys.getNewsBan()
@@ -781,7 +781,7 @@ public class GameRoomService {
 
 			responseDto = ResponseDto.builder()
 				.type(cardType)
-				.data(GoldenKeysPlayersResponse.builder().players(players).goldenKeys(goldenKeys).build())
+				.data(GoldenKeysPlayersResponse.builder().players(players).goldenKeys(goldenKeys).imgUrl(goldenKeys.getDoorImgUrl()).build())
 				.build();
 		} else {
 			cardType = "지진";
