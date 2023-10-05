@@ -210,7 +210,7 @@ const ConstructionModal = ({
               </div>
             )}
 
-            {totalPurchasePrice == 0 && (
+            {totalPurchasePrice != 0 && (
               <motion.div
                 className='w-full flex flex-row justify-center items-center mb-[40px]'
                 whileHover={{ scale: 1.1 }}
