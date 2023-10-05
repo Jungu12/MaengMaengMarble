@@ -1,8 +1,9 @@
 import { images } from '@constants/images';
 // import { moveCharacter } from '@utils/game';
 import {
+  calCurrentFees,
   calcRank,
-  effectNewsToString,
+  // effectNewsToString,
   formatAsset,
   getPlayerIndex,
   moveCharacter,
@@ -46,6 +47,7 @@ import {
 import SlotMachineModal from '@components/gameRoom/SlotMachineModal';
 import NewsCardModal from '@components/gameRoom/NewsCardModal';
 import GoldenKeyModal from '@components/gameRoom/GoldenKeyModal';
+import TakeOverModal from '@components/gameRoom/TakeOverModal';
 
 const GameRoom = () => {
   const location = useLocation();
@@ -68,6 +70,7 @@ const GameRoom = () => {
   const [이동중, set이동중] = useState(false);
   const [이동가능, set이동가능] = useState(false);
   const [소켓연결, set소켓연결] = useState(false);
+  const [인수중, set인수중] = useState(false);
 
   const [dice1, setDice1] = useState<1 | 2 | 3 | 4 | 5 | 6>(1);
   const [dice2, setDice2] = useState<1 | 2 | 3 | 4 | 5 | 6>(1);
@@ -157,6 +160,25 @@ const GameRoom = () => {
   const handleTurnEnd = useCallback(() => {
     client.current?.publish({
       destination: `/pub/game-rooms/end-turn/${gameId}`,
+    });
+  }, [gameId]);
+
+  // 인수 종료
+  const handleTakeOverClose = useCallback(() => {
+    set인수중(false);
+    if (reDice) {
+      setIsDiceRoll(false);
+      setIsDiceRollButtonClick(false);
+    } else {
+      if (myTurn) {
+        setIsTurnEnd(true);
+      }
+    }
+  }, [myTurn, reDice]);
+
+  const 인수하기 = useCallback(() => {
+    client.current?.publish({
+      destination: `/pub/game-rooms/take-over/${gameId}`,
     });
   }, [gameId]);
 
@@ -394,6 +416,46 @@ const GameRoom = () => {
             } else {
               if (myTurn) {
                 setIsTurnEnd(true);
+              }
+            }
+          }
+
+          if (response.type === '통행료지급') {
+            if (myTurn) {
+              client.current?.publish({
+                destination: `/pub/game-rooms/fee/${gameId}`,
+              });
+            }
+          }
+
+          if (response.type === '인수') {
+            const result = response as WSResponseType<(PlayerType | null)[]>;
+            console.log('[인수]', result);
+            if (myTurn) {
+              // 인수할 돈이 있는지 확인
+              if (
+                playerList[getPlayerIndex(playerList, currentPlayer)]!.money <
+                calCurrentFees(
+                  landList[
+                    playerList[getPlayerIndex(playerList, currentPlayer)]!
+                      .currentLocation
+                  ]
+                )
+              ) {
+                locationUpdate();
+                setPlayerList(result.data);
+                if (reDice) {
+                  setIsDiceRoll(false);
+                  setIsDiceRollButtonClick(false);
+                } else {
+                  if (myTurn) {
+                    setIsTurnEnd(true);
+                  }
+                }
+              }
+              // 인수 할지 안할지 정하기
+              else {
+                set인수중(true);
               }
             }
           }
@@ -719,6 +781,17 @@ const GameRoom = () => {
   };
   return (
     <>
+      <TakeOverModal
+        isOpen={인수중}
+        handleClose={handleTakeOverClose}
+        handleTakeOver={인수하기}
+        land={
+          landList[
+            playerList[getPlayerIndex(playerList, currentPlayer)]!
+              .currentLocation
+          ]
+        }
+      />
       <ConstructionModal
         isOpen={isOepnContrunction}
         handleConstruction={handleConstruction}
@@ -898,7 +971,7 @@ const GameRoom = () => {
               </div>
               <div className='scroll-container overflow-hidden flex-1 font-medium text-[16px]'>
                 <motion.div
-                  className='ml-[8px] whitespace-nowrap'
+                  className='ml-[8px] whitespace-nowrap flex gap-12px'
                   initial={{ x: '100%' }} // 시작 위치 - 화면 오른쪽 밖
                   animate={{ x: '-100%' }} // 최종 위치 - 화면 왼쪽 밖
                   transition={{
@@ -908,9 +981,14 @@ const GameRoom = () => {
                     ease: 'linear', // 선형 이동
                   }}
                 >
-                  {news.length === 0
-                    ? '현재 적용중인 뉴스가 없습니다.'
-                    : effectNewsToString(news)}
+                  {
+                    news.length === 0
+                      ? '현재 적용중인 뉴스가 없습니다.'
+                      : news.map((item) => (
+                          <div key={item.newsId}>{item.content}</div>
+                        ))
+                    // effectNewsToString(news)
+                  }
                 </motion.div>
               </div>
             </div>
