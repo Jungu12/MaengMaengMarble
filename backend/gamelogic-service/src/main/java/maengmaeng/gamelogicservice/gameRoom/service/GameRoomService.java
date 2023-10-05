@@ -1273,27 +1273,27 @@ public class GameRoomService {
 							//좋은 효과
 							if (curEffect >= 0) {
 								currentLandPrice =
-										curLand.getCurrentLandPrice() * (100 + curEffect) / 100;
+										curLand.getCurrentLandPrice() * ((100 + curEffect) / 100);
 								for (int i = 0; i < currentBuildingPrices.length; i++) {
 									currentBuildingPrices[i] =
-											curLand.getCurrentBuildingPrices()[i] * (100 + curEffect) / 100;
+											curLand.getCurrentBuildingPrices()[i] * ((100 + curEffect) / 100);
 								}
 								for (int i = 0; i < currentFees.length; i++) {
 									currentFees[i] =
-											curLand.getCurrentFees()[i] * (100 + curEffect) / 100;
+											curLand.getCurrentFees()[i] * ((100 + curEffect) / 100);
 								}
 							}
 							//나쁜 효과
 							else {
 								currentLandPrice =
-										curLand.getCurrentLandPrice() * (100 - curEffect) / 100;
+										curLand.getCurrentLandPrice() * ((100 + curEffect) / 100);
 								for (int i = 0; i < currentBuildingPrices.length; i++) {
 									currentBuildingPrices[i] =
-											curLand.getCurrentBuildingPrices()[i] * (100 - curEffect) / 100;
+											curLand.getCurrentBuildingPrices()[i] * ((100 + curEffect) / 100);
 								}
 								for (int i = 0; i < currentFees.length; i++) {
 									currentFees[i] =
-											curLand.getCurrentFees()[i] * (100 - curEffect) / 100;
+											curLand.getCurrentFees()[i] * ((100 + curEffect) / 100);
 								}
 							}
 							//바뀐 정보 해당 땅에 업데이트
@@ -1311,11 +1311,11 @@ public class GameRoomService {
 
 							//좋은 효과
 							if (curEffect >= 0) {
-								currentCost = curStocks.getCurrentCost() * (100 + curEffect) / 100;
+								currentCost = curStocks.getCurrentCost() * ((100 + curEffect) / 100);
 							}
 							//나쁜 효과
 							else {
-								currentCost = curStocks.getCurrentCost() * (100 - curEffect) / 100;
+								currentCost = curStocks.getCurrentCost() * ((100 + curEffect) / 100);
 							}
 							//바뀐 정보 해당 땅에 업데이트
 							curStocks.setCurrentCost(currentCost);
@@ -1435,27 +1435,27 @@ public class GameRoomService {
 					//좋은 효과
 					if (curEffect >= 0) {
 						currentLandPrice =
-							curLand.getCurrentLandPrice() * (100 + curEffect) / 100;
+							curLand.getCurrentLandPrice() * ((100 + curEffect) / 100);
 						for (int i = 0; i < currentBuildingPrices.length; i++) {
 							currentBuildingPrices[i] =
-								curLand.getCurrentBuildingPrices()[i] * (100 + curEffect) / 100;
+								curLand.getCurrentBuildingPrices()[i] * ((100 + curEffect) / 100);
 						}
 						for (int i = 0; i < currentFees.length; i++) {
 							currentFees[i] =
-								curLand.getCurrentFees()[i] * (100 + curEffect) / 100;
+								curLand.getCurrentFees()[i] * ((100 + curEffect) / 100);
 						}
 					}
 					//나쁜 효과
 					else {
 						currentLandPrice =
-							curLand.getCurrentLandPrice() * (100 - curEffect) / 100;
+							curLand.getCurrentLandPrice() * ((100 + curEffect) / 100);
 						for (int i = 0; i < currentBuildingPrices.length; i++) {
 							currentBuildingPrices[i] =
-								curLand.getCurrentBuildingPrices()[i] * (100 - curEffect) / 100;
+								curLand.getCurrentBuildingPrices()[i] * ((100 + curEffect) / 100);
 						}
 						for (int i = 0; i < currentFees.length; i++) {
 							currentFees[i] =
-								curLand.getCurrentFees()[i] * (100 - curEffect) / 100;
+								curLand.getCurrentFees()[i] * ((100 - curEffect) / 100);
 						}
 					}
 					//바뀐 정보 해당 땅에 업데이트
@@ -1473,11 +1473,11 @@ public class GameRoomService {
 
 					//좋은 효과
 					if (curEffect >= 0) {
-						currentCost = curStocks.getCurrentCost() * (100 + curEffect) / 100;
+						currentCost = curStocks.getCurrentCost() * ((100 + curEffect) / 100);
 					}
 					//나쁜 효과
 					else {
-						currentCost = curStocks.getCurrentCost() * (100 - curEffect) / 100;
+						currentCost = curStocks.getCurrentCost() * ((100 + curEffect) / 100);
 					}
 					//바뀐 정보 해당 땅에 업데이트
 					curStocks.setCurrentCost(currentCost);
