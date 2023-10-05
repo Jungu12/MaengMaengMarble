@@ -21,10 +21,10 @@ const TakeOverModal = ({
   return (
     <CModal isOpen={isOpen} handleClose={handleClose}>
       <div className='flex flex-col p-[16px] justify-center items-center w-[420px] h-[360px]'>
-        <div className='text-5xl text-text-100 mb-[32px]'>
+        <div className='text-4xl text-text-100 mb-[32px] font-bold'>
           인수하시겠습니까?
         </div>
-        <div className='text-2xp text-text-50 mb-[24px]'>{`${calCurrentFees(
+        <div className='text-2xl text-text-50 mb-[40px] font-semibold'>{`${calCurrentFees(
           land
         )}원`}</div>
         <div className='flex mt-auto w-full h-[32px] gap-[12px] justify-center items-center'>
@@ -32,19 +32,19 @@ const TakeOverModal = ({
             type={'green'}
             onClick={handleTakeOver}
             rounded={16}
-            height={32}
-            width={60}
+            height={60}
+            width={80}
           >
-            <div className='text-[20px] text-white'>예</div>
+            <div className='text-[20px] text-white font-semibold'>예</div>
           </CButton>
           <CButton
             type={'red'}
             onClick={handleClose}
             rounded={16}
-            height={32}
-            width={60}
+            height={60}
+            width={80}
           >
-            <div className='text-[20px] text-white'>아니오</div>
+            <div className='text-[20px] text-white font-semibold'>아니오</div>
           </CButton>
         </div>
       </div>

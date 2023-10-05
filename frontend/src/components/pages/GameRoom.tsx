@@ -255,6 +255,8 @@ const GameRoom = () => {
             console.log('주사위 결과 나왔어요');
             setDice1(diceResult.data.dice1);
             setDice2(diceResult.data.dice2);
+            locationUpdate();
+            setPlayerList(diceResult.data.players);
             const idx = getPlayerIndex(playerList, currentPlayer);
             setSeletedLandId(diceResult.data.players[idx]!.currentLocation);
             // 더블이 나오는 경우 주사위 다시 던지기
@@ -538,6 +540,7 @@ const GameRoom = () => {
     doubleCnt,
     gameId,
     handleTurnEnd,
+    landList,
     locationUpdate,
     myTurn,
     playerList,
@@ -785,12 +788,7 @@ const GameRoom = () => {
         isOpen={인수중}
         handleClose={handleTakeOverClose}
         handleTakeOver={인수하기}
-        land={
-          landList[
-            playerList[getPlayerIndex(playerList, currentPlayer)]!
-              .currentLocation
-          ]
-        }
+        land={landList[seletedLandId]}
       />
       <ConstructionModal
         isOpen={isOepnContrunction}
