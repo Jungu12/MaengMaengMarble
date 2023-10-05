@@ -35,24 +35,7 @@ const ConstructionModal = ({
   const [isCheckedBuilding, setIsCheckedBuilding] = useState(land.buildings[1]);
   const [isCheckedHotel, setIsCheckedHotel] = useState(land.buildings[2]);
   const [totalPurchasePrice, setTotalPurchasePrice] = useState(
-    land.owner != -1
-      ? 0
-      : land.currentLandPrice +
-          (land.buildings[0]
-            ? 0
-            : isCheckedPension
-            ? land.currentBuildingPrices[0]
-            : 0) +
-          (land.buildings[1]
-            ? 0
-            : isCheckedBuilding
-            ? land.currentBuildingPrices[1]
-            : 0) +
-          (land.buildings[2]
-            ? 0
-            : isCheckedHotel
-            ? land.currentBuildingPrices[2]
-            : 0)
+    land.owner != -1 ? 0 : land.currentLandPrice
   );
   // const totalPurchasePrice = useMemo(
   //   () =>
@@ -86,16 +69,31 @@ const ConstructionModal = ({
   // );
 
   const handleCheckPension = useCallback(() => {
+    if (isCheckedPension) {
+      setTotalPurchasePrice((prev) => prev - land.currentBuildingPrices[0]);
+    } else {
+      setTotalPurchasePrice((prev) => prev + land.currentBuildingPrices[0]);
+    }
     setIsCheckedPension((prev) => !prev);
-  }, []);
+  }, [isCheckedPension, land.currentBuildingPrices]);
 
   const handleCheckBuilding = useCallback(() => {
+    if (isCheckedBuilding) {
+      setTotalPurchasePrice((prev) => prev - land.currentBuildingPrices[1]);
+    } else {
+      setTotalPurchasePrice((prev) => prev + land.currentBuildingPrices[1]);
+    }
     setIsCheckedBuilding((prev) => !prev);
-  }, []);
+  }, [isCheckedBuilding, land.currentBuildingPrices]);
 
   const handleCheckHotel = useCallback(() => {
+    if (isCheckedHotel) {
+      setTotalPurchasePrice((prev) => prev - land.currentBuildingPrices[2]);
+    } else {
+      setTotalPurchasePrice((prev) => prev + land.currentBuildingPrices[2]);
+    }
     setIsCheckedHotel((prev) => !prev);
-  }, []);
+  }, [isCheckedHotel, land.currentBuildingPrices]);
 
   const onClickPurchase = useCallback(() => {
     if (totalPurchasePrice == 0) {
@@ -116,26 +114,6 @@ const ConstructionModal = ({
       setIsCheckedBuilding(false);
       setIsCheckedHotel(false);
       console.log(totalPurchasePrice);
-      setTotalPurchasePrice(
-        land.owner != -1
-          ? 0
-          : land.currentLandPrice +
-              (land.buildings[0]
-                ? 0
-                : isCheckedPension
-                ? land.currentBuildingPrices[0]
-                : 0) +
-              (land.buildings[1]
-                ? 0
-                : isCheckedBuilding
-                ? land.currentBuildingPrices[1]
-                : 0) +
-              (land.buildings[2]
-                ? 0
-                : isCheckedHotel
-                ? land.currentBuildingPrices[2]
-                : 0)
-      );
     } else {
       setToastMessage((prev) => {
         return {
