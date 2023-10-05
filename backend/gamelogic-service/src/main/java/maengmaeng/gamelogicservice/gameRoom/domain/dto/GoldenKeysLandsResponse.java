@@ -12,4 +12,5 @@ import maengmaeng.gamelogicservice.gameRoom.domain.Land;
 public class GoldenKeysLandsResponse {
 	private List<Land> Lands;
 	private GoldenKeys goldenKeys;
+	private String imgUrl;
 }

@@ -32,4 +32,32 @@ public class GoldenKeys implements Serializable {
 	private int door;
 	// 남은 지진
 	private int earthquake;
+
+	public String getNewsBanImgUrl() {
+		return "https://maeng.s3.ap-northeast-2.amazonaws.com/images/golden-key/goldenKey-ban.png";
+	}
+
+	public String getHurricaneImgUrl() {
+		return "https://maeng.s3.ap-northeast-2.amazonaws.com/images/golden-key/goldenKey-hurricane.png";
+	}
+
+	public String getAngelImgUrl() {
+		return "https://maeng.s3.ap-northeast-2.amazonaws.com/images/golden-key/goldenKey-angel.png";
+	}
+
+	public String getKangJunGuImgUrl() {
+		return "https://maeng.s3.ap-northeast-2.amazonaws.com/images/golden-key/goldenKey-door.png";
+	}
+
+	public String getLottoImgUrl() {
+		return "https://maeng.s3.ap-northeast-2.amazonaws.com/images/golden-key/goldenKey-lotto.png";
+	}
+
+	public String getDoorImgUrl() {
+		return "https://maeng.s3.ap-northeast-2.amazonaws.com/images/golden-key/goldenKey-invite-anywhere.png";
+	}
+
+	public String getEarthquakeImgUrl() {
+		return "https://maeng.s3.ap-northeast-2.amazonaws.com/images/golden-key/goldenKey-earthquake.png";
+	}
 }
