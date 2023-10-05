@@ -172,17 +172,6 @@ const GameRoom = () => {
     let subTemp: StompJs.StompSubscription;
 
     if (client.current?.connected) {
-      // 방장인 경우 게임 시작 알리기
-      if (!client.current) return;
-      if (user?.userId === state.userList[0].userId) {
-        client.current.publish({
-          destination: `/pub/game-rooms/start/${gameId}`,
-          body: JSON.stringify({
-            cnt: currentParticipantsNum(state.userList).toString(),
-          }),
-        });
-      }
-
       subTemp = client.current.subscribe(`/sub/game-rooms/${gameId}`, (res) => {
         const response: WSResponseType<unknown> = JSON.parse(res.body);
         if (response.type === '플레이순서') {
