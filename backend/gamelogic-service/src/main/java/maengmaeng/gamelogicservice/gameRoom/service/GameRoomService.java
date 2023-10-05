@@ -7,6 +7,8 @@ import maengmaeng.gamelogicservice.gameRoom.domain.dto.*;
 import maengmaeng.gamelogicservice.gameRoom.repository.*;
 import maengmaeng.gamelogicservice.global.dto.ResponseDto;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,6 +29,8 @@ public class GameRoomService {
 	private final GameInfoMapper gameInfoMapper;
 	private final AvatarRepository avatarRepository;
 	private static final int stopTrade = 8;
+	private final Logger logger = LoggerFactory.getLogger(getClass());
+
 
 	/**
 	 * 게임 정보  가져오기
@@ -176,8 +180,6 @@ public class GameRoomService {
 		// 게임 정보 가져오기
 		GameInfo gameInfo = gameInfoRepository.getGameInfo(roomCode);
 		Player[] players = gameInfo.getPlayers();
-		System.out.println(gameInfo.getInfo().getCurrentPlayer());
-
 		String currentPlayer = gameInfo.getInfo().getCurrentPlayer();
 
 		int currentIdx = -1;
@@ -188,8 +190,8 @@ public class GameRoomService {
 				break;
 			}
 		}
-		System.out.println(currentPlayer);
-		System.out.println(currentIdx);
+		logger.info("rollDice(), roomCode ={},currentPlayer = {} ", roomCode, players[currentIdx].getNickname());
+
 		if (currentIdx != -1) {
 			// 예외 처리
 
@@ -214,6 +216,7 @@ public class GameRoomService {
 		int curLocation = curPlayer.getCurrentLocation();
 
 		if (checkTrade) {
+			logger.info("doubleCount = {}",curPlayer.getDoubleCount());
 			curPlayer.setCurrentLocation(stopTrade);
 			players[currentIdx] = curPlayer;
 			gameInfo.setPlayers(players);
@@ -222,7 +225,7 @@ public class GameRoomService {
 			dice.setPlayers(players);
 			// 거래 정지 칸으로 이동
 			// 클라이언트에서 서버로 턴종료  호출
-
+			logger.info("주사위턴종료호출");
 			responseDto = ResponseDto.builder().type("주사위턴종료").data(dice).build();
 
 		} else {
@@ -241,6 +244,7 @@ public class GameRoomService {
 				gameInfoRepository.createGameRoom(gameInfo);
 				dice.setDoubleCount(curPlayer.getDoubleCount());
 				dice.setPlayers(players);
+				logger.info("주사위 맹맹지급");
 				responseDto = ResponseDto.builder().type("주사위맹맹지급").data(dice).build();
 
 			} else{
@@ -250,6 +254,7 @@ public class GameRoomService {
 				gameInfoRepository.createGameRoom(gameInfo);
 				dice.setDoubleCount(curPlayer.getDoubleCount());
 				dice.setPlayers(players);
+				logger.info("주사위이동후로직");
 				responseDto = ResponseDto.builder().type("주사위이동후로직").data(dice).build();
 
 			}
@@ -270,6 +275,7 @@ public class GameRoomService {
 		Player[] players = gameInfo.getPlayers();
 
 		String currentPlayer = gameInfo.getInfo().getCurrentPlayer();
+
 		int currentIdx = -1;
 		// 현재 플레이어 인덱스 찾기
 		for (int i = 0; i < players.length; i++) {
@@ -278,6 +284,7 @@ public class GameRoomService {
 			}
 		}
 		Player curPlayer = players[currentIdx];
+		logger.info("stopTrade(),roomCode = {}, currentPlayer = {} ",roomCode,players[currentIdx].getNickname());
 		// 현재 위치가 stopTrade 위치가 아니면
 		if (curPlayer.getCurrentLocation() != stopTrade) {
 			// 예외 처리
@@ -296,6 +303,7 @@ public class GameRoomService {
 			dice.setPlayers(players);
 			gameInfo.setPlayers(players);
 			gameInfoRepository.createGameRoom(gameInfo);
+			logger.info("탈출 실패");
 			return ResponseDto.builder().type("거래정지턴종료").data(dice).build();
 		} else {
 			// 더블이면 이동
@@ -315,7 +323,7 @@ public class GameRoomService {
 			// 거래정지탈출 이후엔 더블이어도 한 번더 던질 수 없음
 			dice.setDoubleCount(0);
 			dice.setPlayers(players);
-
+			logger.info("더블나와서 탈출");
 			return ResponseDto.builder().type("거래정지이동후로직").data(dice).build();
 
 		}
@@ -835,6 +843,7 @@ public class GameRoomService {
 		// 맹맹: 보유 현금 * 0.15 + 배당금 - 대출 원금 * 0.24)
 		Player[] players = gameInfo.getPlayers();
 		int playerIdx = getPlayerIdx(players, gameInfo.getInfo().getCurrentPlayer());
+		logger.info("maengMaeng(), currentPlayer ={}",players[playerIdx].getNickname());
 		Player player = players[playerIdx];
 		List<Land> lands = gameInfo.getLands();
 		List<Stock> stocks = gameInfo.getStocks();
@@ -858,11 +867,13 @@ public class GameRoomService {
 			players[playerIdx] = player;
 			gameInfo.setPlayers(players);
 			gameInfoRepository.createGameRoom(gameInfo);
+			logger.info("type= 맹맹지급이동후로직");
 			return ResponseDto.builder().type("맹맹지급이동후로직").data(players).build();
 		} else {
 			// 맹맹이 음수일 때
 			// 맹맹이 보유자산 보다 많을 때?
 			if (maengMaeng > calculateMoney(player, stocks, lands)) {
+				logger.info("type=파산");
 				return ResponseDto.builder().type("파산").build();
 			} else {
 				if (player.getMoney() - maengMaeng >= 0) {
@@ -872,8 +883,12 @@ public class GameRoomService {
 					players[playerIdx] = player;
 					gameInfo.setPlayers(players);
 					gameInfoRepository.createGameRoom(gameInfo);
+					logger.info("type=맹맹지급이동후로직");
+
 					return ResponseDto.builder().type("맹맹지급이동후로직").data(players).build();
 				} else {
+					logger.info("type=매각");
+
 					return ResponseDto.builder().type("매각").data(NeedSaleMoney.builder().needMoney(maengMaeng).build()).build();
 				}
 			}
@@ -995,6 +1010,7 @@ public class GameRoomService {
 		int playerIdx = getPlayerIdx(players, gameInfo.getInfo().getCurrentPlayer());
 		// 현재 플레이어
 		Player curPlayer = players[playerIdx];
+		logger.info("afterMove(), currentPlayer={}, currentLocation = {}",curPlayer.getNickname(),curPlayer.getCurrentLocation());
 		int currentLocation = curPlayer.getCurrentLocation();
 		/* 이동 후에 위치에 따라서 로직...*/
 		/**/
@@ -1003,10 +1019,13 @@ public class GameRoomService {
 		switch (currentLocation) {
 			case 0:
 				// 시작지점
+				logger.info("type=자유");
 				responseDto = ResponseDto.builder().type("자유").data(gameInfo).build();
 				break;
 			case 2:
 				// 세금 징수
+				logger.info("type=세금징수");
+
 				responseDto = ResponseDto.builder().type("세금징수").build();
 
 				break;
@@ -1015,26 +1034,34 @@ public class GameRoomService {
 			case 20:
 			case 28:
 				// 황금 열쇠
+				logger.info("type=황금열쇠");
+
 				responseDto = ResponseDto.builder().type("황금열쇠").build();
 				break;
 			case 8:
 				// 거래정지
+				logger.info("type=이동후턴종료");
 				responseDto = ResponseDto.builder().type("이동후턴종료").build();
 				break;
 			case 10:
 				// 박진호
+				logger.info("type=박진호");
 				responseDto = ResponseDto.builder().type("박진호").build();
 				break;
 			case 16:
 				// 투자장
+				logger.info("type=거래장");
+
 				responseDto = ResponseDto.builder().type("거래장").build();
 				break;
 			case 18:
 				// Rush & Cash
+				logger.info("type=대출");
 				responseDto = ResponseDto.builder().type("대출").build();
 				break;
 			case 24:
 				// 어디로든 문
+				logger.info("type=자유");
 				responseDto = ResponseDto.builder().type("자유").data(gameInfo).build();
 
 				break;
@@ -1044,9 +1071,13 @@ public class GameRoomService {
 				List<Land> lands = gameInfo.getLands();
 				if (lands.get(currentLocation).getOwner() == -1) {
 					// 중립 땅일 때
+					logger.info("type=땅구매");
+
 					responseDto = ResponseDto.builder().type("땅구매").build();
 				} else if (lands.get(currentLocation).getOwner() == playerIdx) {
 					// 내땅 일 때
+					logger.info("type=건물구매");
+
 					responseDto = ResponseDto.builder().type("건물구매").build();
 				} else {
 					// 다른 플레이어의 소유 일 때
@@ -1060,14 +1091,20 @@ public class GameRoomService {
 					long asset = calculateAsset(players[playerIdx], gameInfo.getStocks(), lands);
 					if (fees <= players[playerIdx].getMoney()) {
 						// 현금으로 통행료 지급이 가능할 때
+						logger.info("type=통행료지급");
+
 						responseDto = ResponseDto.builder().type("통행료지급").build();
 					} else {
 						// 현금으로 통행료 지급이 불가능 할 때
 						if (asset >= fees) {
 							// 매각할 수 있으면
+							logger.info("type=매각");
+
 							responseDto = ResponseDto.builder().type("매각").data(NeedSaleMoney.builder().needMoney(fees).build()).build();
 						} else {
 							// 파산각이면
+							logger.info("type=파산");
+
 							responseDto = ResponseDto.builder().type("파산").build();
 						}
 					}
@@ -1188,6 +1225,7 @@ public class GameRoomService {
 		List<Stock> stocks = gameInfo.getStocks();
 		int playerIdx = getPlayerIdx(players, gameInfo.getInfo().getCurrentPlayer());
 		Player currentPlayer = players[playerIdx];
+		logger.info("endTurn(), currentPlayer= {}, currentTurn = {}",currentPlayer.getNickname(),currentPlayer.getCurrentTurn());
 		// 현재 플레이어의 turnCount++
 		int currentTurn = currentPlayer.getCurrentTurn() + 1;
 		currentPlayer.setCurrentTurn(currentTurn);
@@ -1332,6 +1370,8 @@ public class GameRoomService {
 			info.setEffectNews(effectNews);
 			info.setWaitingNews(waitingNews);
 
+			logger.info("다음턴={}, 문단속 적용={}",doorCheck,turnCount);
+
 		}
 
 		// 다음 플레이어
@@ -1355,7 +1395,8 @@ public class GameRoomService {
 		gameInfo.setInfo(info);
 		gameInfoRepository.createGameRoom(gameInfo);
 
-
+		logger.info("다음플레이어={}",players[nextPlayerIdx].getNickname());
+		logger.info("type=턴종료끝");
 
 		return ResponseDto.builder().type("턴종료끝")
 			.data(EndTurnResponse.builder()
