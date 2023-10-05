@@ -28,33 +28,33 @@ const MapArea = ({ height, width, src, alt, value, onClickArea }: Props) => {
   const ground = useMemo(() => {
     const landOwner = landList[value].owner;
     if (landOwner === -1) return '';
-    if (landOwner === 1) return images.building.redground;
-    if (landOwner === 2) return images.building.blueground;
-    if (landOwner === 3) return images.building.greenground;
+    if (landOwner === 0) return images.building.redground;
+    if (landOwner === 1) return images.building.blueground;
+    if (landOwner === 2) return images.building.greenground;
     return images.building.purpleground;
   }, [landList, value]);
   const pension = useMemo(() => {
     const landOwner = landList[value].owner;
     if (landOwner === -1) return '';
-    if (landOwner === 1) return images.building.redpension;
-    if (landOwner === 2) return images.building.bluepension;
-    if (landOwner === 3) return images.building.greenpension;
+    if (landOwner === 0) return images.building.redpension;
+    if (landOwner === 1) return images.building.bluepension;
+    if (landOwner === 2) return images.building.greenpension;
     return images.building.purplepension;
   }, [landList, value]);
   const building = useMemo(() => {
     const landOwner = landList[value].owner;
     if (landOwner === -1) return '';
-    if (landOwner === 1) return images.building.redbuilding;
-    if (landOwner === 2) return images.building.bluebuilding;
-    if (landOwner === 3) return images.building.greenbuilding;
+    if (landOwner === 0) return images.building.redbuilding;
+    if (landOwner === 1) return images.building.bluebuilding;
+    if (landOwner === 2) return images.building.greenbuilding;
     return images.building.purplebuilding;
   }, [landList, value]);
   const hotel = useMemo(() => {
     const landOwner = landList[value].owner;
     if (landOwner === -1) return '';
-    if (landOwner === 1) return images.building.redhotel;
-    if (landOwner === 2) return images.building.bluehotel;
-    if (landOwner === 3) return images.building.greenhotel;
+    if (landOwner === 0) return images.building.redhotel;
+    if (landOwner === 1) return images.building.bluehotel;
+    if (landOwner === 2) return images.building.greenhotel;
     return images.building.purplehotel;
   }, [landList, value]);
   const onlyGround = useMemo(() => {

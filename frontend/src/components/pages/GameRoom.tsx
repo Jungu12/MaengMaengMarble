@@ -239,6 +239,8 @@ const GameRoom = () => {
             if (doubleCnt < diceResult.data.doubleCount) {
               setReDice(true);
               setDoubleCnt(diceResult.data.doubleCount);
+            } else {
+              setReDice(false);
             }
           }
 
@@ -313,6 +315,8 @@ const GameRoom = () => {
             if (doubleCnt < diceResult.data.doubleCount) {
               setReDice(true);
               setDoubleCnt(diceResult.data.doubleCount);
+            } else {
+              setReDice(false);
             }
             if (myTurn) {
               client.current?.publish({
@@ -578,7 +582,6 @@ const GameRoom = () => {
   ]);
 
   useEffect(() => {
-    setReDice(false);
     if (!이동가능) {
       if (isDiceRollButtonClick && !isDiceRoll) {
         const diceRef = document.querySelectorAll('._space3d');
