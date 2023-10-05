@@ -417,6 +417,13 @@ const GameRoom = () => {
             const temp = response as WSResponseType<FullGameDataType>;
             updateInfo(temp.data);
             setIsOpenNews(false);
+            // 현재 위치가 어디로든 문이면 더블이어도 안굴리기
+            if (
+              temp.data.players[getPlayerIndex(playerList, currentPlayer)]
+                ?.currentLocation === 24
+            ) {
+              setReDice(false);
+            }
             // 주사위에서 더블이 나온 경우
             if (reDice) {
               setIsDiceRoll(false);
