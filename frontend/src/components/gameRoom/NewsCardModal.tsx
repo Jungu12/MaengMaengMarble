@@ -1,15 +1,27 @@
 import { NewsType } from '@/types/gameRoom/game.type';
 import CMovingCard from '@components/common/CMovingCard';
 import { motion, AnimatePresence } from 'framer-motion';
+import * as StompJs from '@stomp/stompjs';
+import { type } from 'os';
 
 type Props = {
+  type: string;
+  client: StompJs.Client;
+  gameId: string;
   isMyTurn: boolean;
   newsList: NewsType[];
   isOpen: boolean;
   handleNews: () => void;
 };
 
-const NewsCardModal = ({ isMyTurn, newsList, isOpen, handleNews }: Props) => {
+const NewsCardModal = ({
+  client,
+  gameId,
+  isMyTurn,
+  newsList,
+  isOpen,
+  handleNews,
+}: Props) => {
   return (
     <AnimatePresence>
       {isOpen && (
@@ -34,6 +46,10 @@ const NewsCardModal = ({ isMyTurn, newsList, isOpen, handleNews }: Props) => {
               <CMovingCard key={news.newsId}>
                 <button
                   onClick={() => {
+                    client?.publish({
+                      destination: `/pub/game-rooms/news/${gameId}`,
+                      body: JSON.stringify({ news: news, type: type }),
+                    });
                     console.log(news.content);
                     handleNews();
                   }}

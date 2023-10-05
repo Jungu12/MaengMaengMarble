@@ -75,6 +75,7 @@ const GameRoom = () => {
   const [isOpenSlot, setIsOpenSlot] = useState(false);
   const [isOpenNews, setIsOpenNews] = useState(false);
   const [뉴스카드목록, set뉴스카드목록] = useState<NewsType[]>([]);
+  const [뉴스타입, set뉴스타입] = useState('');
   // const slotResult = useMemo(() => [0, 0, 0], []);
   const nowPalyerIdx = useMemo(
     () => getPlayerIndex(playerList, currentPlayer),
@@ -324,6 +325,7 @@ const GameRoom = () => {
           if (response.type === '자유') {
             const temp = response as WSResponseType<FullGameDataType>;
             updateInfo(temp.data);
+            setIsOpenNews(false);
             // 주사위에서 더블이 나온 경우
             if (myTurn) {
               if (reDice) {
@@ -446,6 +448,7 @@ const GameRoom = () => {
           const 브론즈결과 =
             response as WSResponseType<GoldenKeyNewsResponseType>;
           set뉴스카드목록(브론즈결과.data.choosed);
+          set뉴스타입('브론즈');
           setIsOpenNews(true);
         }
 
@@ -453,6 +456,7 @@ const GameRoom = () => {
           const 플레티넘결과 =
             response as WSResponseType<GoldenKeyNewsResponseType>;
           set뉴스카드목록(플레티넘결과.data.choosed);
+          set뉴스타입('플레티넘');
           setIsOpenNews(true);
         }
 
@@ -460,6 +464,7 @@ const GameRoom = () => {
           const 다이아몬드결과 =
             response as WSResponseType<GoldenKeyNewsResponseType>;
           set뉴스카드목록(다이아몬드결과.data.choosed);
+          set뉴스타입('다이아몬드');
           setIsOpenNews(true);
         }
 
@@ -610,6 +615,9 @@ const GameRoom = () => {
         }}
       />
       <NewsCardModal
+        type={뉴스타입}
+        client={client.current}
+        gameId={gameId}
         isMyTurn={myTurn}
         newsList={뉴스카드목록}
         isOpen={isOpenNews}
