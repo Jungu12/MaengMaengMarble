@@ -582,7 +582,7 @@ public class GameRoomService {
 
 			List<News> bronzes = gameInfo.getNewsInfo().getBronze();
 			//반환할 뉴스 3개
-			List<News> choosed = bronzes.subList(0, 2);
+			List<News> choosed = new ArrayList<>(bronzes.subList(0, 2));
 
 			//선택 된 뉴스 삭제
 			Iterator<News> iterator = bronzes.iterator();
@@ -605,7 +605,8 @@ public class GameRoomService {
 
 			List<News> platinums = gameInfo.getNewsInfo().getPlatinum();
 			//반환할 뉴스 3개
-			List<News> choosed = platinums.subList(0, 2);
+			List<News> choosed = new ArrayList<>(platinums.subList(0, 2));
+
 
 			//선택 된 뉴스 삭제
 			Iterator<News> iterator = platinums.iterator();
@@ -628,7 +629,8 @@ public class GameRoomService {
 
 			List<News> diamonds = gameInfo.getNewsInfo().getDiamond();
 			//반환할 뉴스 3개
-			List<News> choosed = diamonds.subList(0, 2);
+			List<News> choosed = new ArrayList<>(diamonds.subList(0, 2));
+
 
 			//선택 된 뉴스 삭제
 			Iterator<News> iterator = diamonds.iterator();
