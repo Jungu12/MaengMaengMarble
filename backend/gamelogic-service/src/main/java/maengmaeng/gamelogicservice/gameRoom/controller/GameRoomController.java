@@ -324,7 +324,7 @@ public class GameRoomController {
      */
 
     @MessageMapping("/game-rooms/end-turn/{roomCode}")
-    public void endTurn(@DestinationVariable String roomCode) {
+    public void endTurn(@DestinationVariable String roomCode) throws InterruptedException {
         logger.info("endTurn() roomCode = {}", roomCode);
         ResponseDto responseDto = gameRoomService.endTurn(roomCode);
 
@@ -333,6 +333,8 @@ public class GameRoomController {
                 .roomCode(roomCode)
                 .data(responseDto)
                 .build();
+
+        Thread.sleep(500);
 
         redisPublisher.publish(gameRoomTopic, gameData);
     }
