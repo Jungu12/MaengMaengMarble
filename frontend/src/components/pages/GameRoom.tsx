@@ -164,6 +164,15 @@ const GameRoom = () => {
               console.log('[테스트]', newOrderList);
               setOrderList(newOrderList.data.cards);
             }
+
+            if (response.type === '초기게임정보') {
+              // 유저 배치 등 초기 세팅하기
+              setIsGameStart(true);
+              const temp = response as WSResponseType<FullGameDataType>;
+              console.log('[게임시작데이터]', temp);
+              setCurrentPlayer(temp.data.info.currentPlayer);
+              updateInfo(temp.data);
+            }
           }
         );
         // 방장인 경우 게임 시작 알리기
@@ -181,7 +190,7 @@ const GameRoom = () => {
     return () => {
       subTemp.unsubscribe();
     };
-  }, [gameId, state.userList, user?.userId]);
+  }, [gameId, setCurrentPlayer, state.userList, updateInfo, user?.userId]);
 
   // 소켓 연결
   useEffect(() => {
@@ -191,14 +200,6 @@ const GameRoom = () => {
       subTemp = client.current.subscribe(`/sub/game-rooms/${gameId}`, (res) => {
         const response: WSResponseType<unknown> = JSON.parse(res.body);
 
-        if (response.type === '초기게임정보') {
-          // 유저 배치 등 초기 세팅하기
-          setIsGameStart(true);
-          const temp = response as WSResponseType<FullGameDataType>;
-          console.log('[게임시작데이터]', temp);
-          setCurrentPlayer(temp.data.info.currentPlayer);
-          updateInfo(temp.data);
-        }
         if (response.type === '박진호 끝') {
           const parkResult = response as WSResponseType<SlotType>;
           console.log('[박진호데이터]', parkResult);
@@ -218,16 +219,7 @@ const GameRoom = () => {
     return () => {
       subTemp.unsubscribe();
     };
-  }, [
-    gameId,
-    myTurn,
-    reDice,
-    setCurrentPlayer,
-    setPlayerList,
-    state.userList,
-    updateInfo,
-    user?.userId,
-  ]);
+  }, [gameId, myTurn, reDice, setPlayerList]);
 
   // 구독
   useEffect(() => {
