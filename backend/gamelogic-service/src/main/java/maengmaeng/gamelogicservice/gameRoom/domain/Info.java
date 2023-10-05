@@ -12,7 +12,6 @@ import lombok.*;
 @Builder
 @Getter
 @Setter
-
 public class Info implements Serializable {
 	@Builder.Default
 	private static final long serialVersionUID = 207207207207L;

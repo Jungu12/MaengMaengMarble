@@ -177,7 +177,7 @@ public class WaitingRoomController {
         WaitingRoom waitingRoom = waitingRoomService.getWaitingRoomNow(roomCode);
 
         GameData gameData = GameData.builder()
-                .data(ResponseDto.builder().type("waitingRoom").data(waitingRoom).build())
+                .data(ResponseDto.builder().type(outUser.getOutUser() + " 강퇴 waitingRoom").data(waitingRoom).build())
                 .roomCode(roomCode)
                 .type(WAITINGROOM)
                 .build();
