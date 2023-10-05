@@ -499,6 +499,14 @@ const GameRoom = () => {
           const 결과 = response as WSResponseType<GoldenKeyLandsResponseType>;
           set황금열쇠이미지(결과.data.imgUrl);
           setLandList(결과.data.lands);
+          if (reDice) {
+            setIsDiceRoll(false);
+            setIsDiceRollButtonClick(false);
+          } else {
+            if (myTurn) {
+              setIsTurnEnd(true);
+            }
+          }
           if (myTurn) {
             setIsOpenGoldenKey(true);
           }
@@ -515,6 +523,14 @@ const GameRoom = () => {
           set황금열쇠이미지(결과.data.imgUrl);
           locationUpdate();
           setPlayerList(결과.data.players);
+          if (reDice) {
+            setIsDiceRoll(false);
+            setIsDiceRollButtonClick(false);
+          } else {
+            if (myTurn) {
+              setIsTurnEnd(true);
+            }
+          }
           if (myTurn) {
             setIsOpenGoldenKey(true);
           }
@@ -525,7 +541,14 @@ const GameRoom = () => {
           set황금열쇠이미지(결과.data.imgUrl);
           setInfo(결과.data.info);
           console.log(info);
-
+          if (reDice) {
+            setIsDiceRoll(false);
+            setIsDiceRollButtonClick(false);
+          } else {
+            if (myTurn) {
+              setIsTurnEnd(true);
+            }
+          }
           if (myTurn) {
             setIsOpenGoldenKey(true);
           }
@@ -687,16 +710,6 @@ const GameRoom = () => {
         cardImg={황금열쇠이미지}
         isOpen={isOpenGoldenKey}
         handleGoldenKey={() => {
-          // 주사위에서 더블이 나온 경우
-          if (reDice) {
-            setIsDiceRoll(false);
-            setIsDiceRollButtonClick(false);
-          } else {
-            if (myTurn) {
-              setIsTurnEnd(true);
-            }
-          }
-
           console.log('황금열쇠 끝~~~');
           setIsOpenGoldenKey(false);
         }}
