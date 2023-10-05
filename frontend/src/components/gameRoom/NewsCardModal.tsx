@@ -2,7 +2,6 @@ import { NewsType } from '@/types/gameRoom/game.type';
 import CMovingCard from '@components/common/CMovingCard';
 import { motion, AnimatePresence } from 'framer-motion';
 import * as StompJs from '@stomp/stompjs';
-import { type } from 'os';
 
 type Props = {
   type: string;
@@ -15,6 +14,7 @@ type Props = {
 };
 
 const NewsCardModal = ({
+  type,
   client,
   gameId,
   isMyTurn,
