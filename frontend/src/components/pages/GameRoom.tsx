@@ -327,10 +327,17 @@ const GameRoom = () => {
           }
 
           if (response.type === '맹맹지급이동후로직') {
-            const result = response as WSResponseType<(PlayerType | null)[]>;
+            const result = response as WSResponseType<FullGameDataType>;
             console.log('[맹맹지급이동후로직] 반환값', result);
-
-            setPlayerList(result.data);
+            updateInfo(result.data);
+            if (reDice) {
+              setIsDiceRoll(false);
+              setIsDiceRollButtonClick(false);
+            } else {
+              if (myTurn) {
+                setIsTurnEnd(true);
+              }
+            }
           }
 
           if (response.type === '땅구매') {

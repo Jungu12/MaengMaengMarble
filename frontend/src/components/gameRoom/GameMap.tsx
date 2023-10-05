@@ -4,6 +4,8 @@ import { images } from '@constants/images';
 import { AnimationControls, motion } from 'framer-motion';
 import { useState, useEffect, useCallback } from 'react';
 import LandInfoModal from './LandInfoModal';
+import { useRecoilValue } from 'recoil';
+import { landListState } from '@atom/gameAtom';
 
 type Props = {
   playerList: (PlayerType | null)[];
@@ -29,6 +31,7 @@ const GameMap = ({
   const [player4X, setPlayer4X] = useState(0);
   const [player4Y, setPlayer4Y] = useState(0);
   const [isOepnLandInfo, setIsOepnLandInfo] = useState(false);
+  const landList = useRecoilValue(landListState);
   const [선택한땅, set선택한땅] = useState(0);
 
   const onClickLand = useCallback((landId: number) => {
@@ -122,7 +125,7 @@ const GameMap = ({
         handleLandInfo={() => {
           setIsOepnLandInfo(false);
         }}
-        landId={선택한땅}
+        landInfo={landList[선택한땅]}
       />
       <div className='absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 mt-[40px] w-[640px] h-[640px] ]'>
         {/* 필드 타일 */}

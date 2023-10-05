@@ -1,24 +1,24 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { images } from '@constants/images';
-import { useRef, useCallback, useEffect } from 'react';
-// import { lands } from '@components/gameRoom/LandDummy';
+import { useRef, useCallback, useEffect, useMemo } from 'react';
 import {
   addAmountUnit,
-  // calCurrentFees,
+  calCurrentFees,
   landColor,
   landLandMarksImage,
   landNationalFlag,
 } from '@utils/game';
+import { LandType } from '@/types/gameRoom/game.type';
 
 type Props = {
-  landId: number;
+  landInfo: LandType;
   isOpen: boolean;
   handleLandInfo: () => void;
 };
 
-const LandInfoModal = ({ landId, isOpen, handleLandInfo }: Props) => {
+const LandInfoModal = ({ landInfo, isOpen, handleLandInfo }: Props) => {
   // const landInfo = useMemo(() => lands[landId], [landId]);
-  // const fee = useMemo(() => calCurrentFees(landInfo), [landInfo]);
+  const fee = useMemo(() => calCurrentFees(landInfo), [landInfo]);
 
   const modalRef = useRef<HTMLDivElement>(null);
 
@@ -92,8 +92,7 @@ const LandInfoModal = ({ landId, isOpen, handleLandInfo }: Props) => {
               <div
                 className='w-full h-[70px] rounded-tr-[15px] rounded-br-[15px] absolute left-0 z-0'
                 style={{
-                  // backgroundColor: `${landColor(landInfo.landId)}`,
-                  backgroundColor: `${landColor(landId)}`,
+                  backgroundColor: `${landColor(landInfo.landId)}`,
                   boxShadow:
                     '0px -1.39534px 2.79068px 0px #68634F inset, 0px -1.39534px 2.79068px 0px #68634F inset, 1.39534px -1.39534px 6.97669px 0px #68634F inset',
                 }}
@@ -106,8 +105,7 @@ const LandInfoModal = ({ landId, isOpen, handleLandInfo }: Props) => {
               <div className='flex flex-row w-full absolute items-center justify-between left-[15px] pr-[15px] z-10'>
                 <img
                   className='w-[90px] h-[90px]'
-                  // src={landNationalFlag(landInfo.landId)}
-                  src={landNationalFlag(1)}
+                  src={landNationalFlag(landInfo.landId)}
                   alt='국기 사진'
                 />
                 <p className='text-primary-light100 font-bold text-[30px] '>
@@ -127,8 +125,7 @@ const LandInfoModal = ({ landId, isOpen, handleLandInfo }: Props) => {
               <div className='w-[281px] h-[413px] relative mr-[20px]'>
                 <img
                   className='w-full h-full'
-                  // src={landLandMarksImage(landInfo.landId)}
-                  src={landLandMarksImage(1)}
+                  src={landLandMarksImage(landInfo.landId)}
                   alt='랜드마크 이미지'
                 />
                 <div className='flex flex-row items-center absolute w-11/12 h-fit rounded-tr-[15px] rounded-br-[15px] bg-black bg-opacity-20 left-0 z-20 top-[10px]'>
@@ -152,29 +149,25 @@ const LandInfoModal = ({ landId, isOpen, handleLandInfo }: Props) => {
                     <tr className='border-b-[1px] border-text-hint'>
                       <td className='text-center p-[10px]'>땅</td>
                       <td className='text-right p-[10px]'>
-                        {/* {addAmountUnit(landInfo.currentLandPrice)} */}
-                        {addAmountUnit(10000000)}
+                        {addAmountUnit(landInfo.currentLandPrice)}
                       </td>
                     </tr>
                     <tr className='border-b-[1px] border-text-hint'>
                       <td className='text-center p-[10px]'>별장</td>
                       <td className='text-right p-[10px]'>
-                        {/* {addAmountUnit(landInfo.currentBuildingPrices[0])} */}
-                        {addAmountUnit(106465312)}
+                        {addAmountUnit(landInfo.currentBuildingPrices[0])}
                       </td>
                     </tr>
                     <tr className='border-b-[1px] border-text-hint'>
                       <td className='text-center p-[10px]'>빌딩</td>
                       <td className='text-right p-[10px]'>
-                        {addAmountUnit(2123120)}
-                        {/* {addAmountUnit(landInfo.currentBuildingPrices[1])} */}
+                        {addAmountUnit(landInfo.currentBuildingPrices[1])}
                       </td>
                     </tr>
                     <tr className='border-b-[1px] border-text-hint'>
                       <td className='text-center p-[10px]'>호텔</td>
                       <td className='text-right p-[10px]'>
-                        {/* {addAmountUnit(landInfo.currentBuildingPrices[2])} */}
-                        {addAmountUnit(314654515)}
+                        {addAmountUnit(landInfo.currentBuildingPrices[2])}
                       </td>
                     </tr>
                   </tbody>
@@ -184,8 +177,7 @@ const LandInfoModal = ({ landId, isOpen, handleLandInfo }: Props) => {
                     <tr className='border-y-[1px] border-text-hint bg-primary-100'>
                       <td className='text-center p-[10px]'>통행료</td>
                       <td className='text-right p-[10px]'>
-                        {/* {fee === 0 ? '없음' : addAmountUnit(fee)} */}
-                        {addAmountUnit(545451515)}
+                        {fee === 0 ? '없음' : addAmountUnit(fee)}
                       </td>
                     </tr>
                   </tbody>
@@ -195,8 +187,7 @@ const LandInfoModal = ({ landId, isOpen, handleLandInfo }: Props) => {
                     <tr className='border-y-[1px] border-text-hint bg-primary-100'>
                       <td className='text-center p-[10px]'>인수비용</td>
                       <td className='text-right p-[10px]'>
-                        {/* {fee === 0 ? '없음' : addAmountUnit(fee * 2)} */}
-                        {addAmountUnit(458645151)}
+                        {fee === 0 ? '없음' : addAmountUnit(fee * 2)}
                       </td>
                     </tr>
                   </tbody>
