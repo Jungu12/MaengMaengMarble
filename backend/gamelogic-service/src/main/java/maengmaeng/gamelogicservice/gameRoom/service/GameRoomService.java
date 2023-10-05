@@ -547,7 +547,7 @@ public class GameRoomService {
 
 		// 바뀐 정보 return
 		return ResponseDto.builder()
-			.type("자유")
+			.type("구매")
 			.data(gameInfo)
 			.build();
 	}
