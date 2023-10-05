@@ -188,6 +188,7 @@ const GameRoom = () => {
   const 어디로든이동 = useCallback(
     (value: number) => {
       set어디로든문_이용중(false);
+      setSeletedLandId(value);
       client.current?.publish({
         destination: `/pub/game-rooms/door/${gameId}`,
         body: JSON.stringify({
@@ -370,6 +371,11 @@ const GameRoom = () => {
             const result = response as WSResponseType<FullGameDataType>;
             console.log('[맹맹지급이동후로직] 반환값', result);
             updateInfo(result.data);
+            if (myTurn) {
+              client.current?.publish({
+                destination: `/pub/game-rooms/after-move/${gameId}`,
+              });
+            }
             if (reDice) {
               setIsDiceRoll(false);
               setIsDiceRollButtonClick(false);
@@ -901,7 +907,7 @@ const GameRoom = () => {
         {/* 어디로든문 선택 */}
         {어디로든문_이용중 && (
           <div className='absolute w-full h-full z-[10] bg-black opacity-80'>
-            <div className='top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 mt-[40px] w-[640px] h-[640px] z-[20]'>
+            <div className='absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 mt-[40px] w-[640px] h-[640px] z-[20]'>
               <div className='absolute bottom-0 flex justify-between gap-[6px]'>
                 <MapArea
                   src={images.map.transactionSuspended}
