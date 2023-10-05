@@ -390,6 +390,7 @@ const GameRoom = () => {
     isDiceRollButtonClick,
     playerList,
     user,
+    이동중,
   ]);
 
   if (!gameId || !client.current) return;
