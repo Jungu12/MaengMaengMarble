@@ -585,8 +585,10 @@ public class GameRoomService {
 			List<News> choosed = bronzes.subList(0, 2);
 
 			//선택 된 뉴스 삭제
-			for (int i = 0; i < 3; i++) {
-				bronzes.remove(0);
+			Iterator<News> iterator = bronzes.iterator();
+			for (int i = 0; i < 3 && iterator.hasNext(); i++) {
+				iterator.next();
+				iterator.remove();
 			}
 
 			//gameInfo에 바뀐 뉴스 정보 업데이트
@@ -606,8 +608,10 @@ public class GameRoomService {
 			List<News> choosed = platinums.subList(0, 2);
 
 			//선택 된 뉴스 삭제
-			for (int i = 0; i < 3; i++) {
-				platinums.remove(0);
+			Iterator<News> iterator = platinums.iterator();
+			for (int i = 0; i < 3 && iterator.hasNext(); i++) {
+				iterator.next();
+				iterator.remove();
 			}
 
 			//gameInfo에 바뀐 뉴스 정보 업데이트
@@ -627,8 +631,10 @@ public class GameRoomService {
 			List<News> choosed = diamonds.subList(0, 2);
 
 			//선택 된 뉴스 삭제
-			for (int i = 0; i < 3; i++) {
-				diamonds.remove(0);
+			Iterator<News> iterator = diamonds.iterator();
+			for (int i = 0; i < 3 && iterator.hasNext(); i++) {
+				iterator.next();
+				iterator.remove();
 			}
 
 			//gameInfo에 바뀐 뉴스 정보 업데이트
