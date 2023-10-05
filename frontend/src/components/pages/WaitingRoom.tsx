@@ -116,6 +116,20 @@ const WaitingRoom = () => {
     });
   }, [roomId]);
 
+  const handleEmptyPlace = useCallback(
+    (index: number) => {
+      // 방장이 아니면 아무 효과 없음
+      if (userList[0].nickname !== user?.nickname) return;
+      client.current?.publish({
+        destination: `/pub/waiting-rooms/state/${roomId}`,
+        body: JSON.stringify({
+          num: index,
+        }),
+      });
+    },
+    [roomId, user?.nickname, userList]
+  );
+
   // 캐릭터 리스트 불러오기
   useEffect(() => {
     getCharacterList().then((res) => setCharacterList(res.data));
@@ -130,12 +144,26 @@ const WaitingRoom = () => {
         waitSub.current = client.current.subscribe(
           `/sub/waiting-rooms/${roomId}`,
           (res) => {
-            const response: WSResponseType<RoomType> = JSON.parse(res.body);
+            const response: WSResponseType<unknown> = JSON.parse(res.body);
             if (response.type === 'waitingRoom') {
-              const { title, code, currentParticipants } = response.data;
+              const result = response as WSResponseType<RoomType>;
+              const { title, code, currentParticipants } = result.data;
               setRoomTitle(title);
               setInviteCode(code);
               setUserList(currentParticipants);
+            }
+
+            if (response.type === '강퇴') {
+              const result = response as WSResponseType<{
+                currentParticipants: ParticipantsType[];
+                outUser: string;
+              }>;
+              setUserList(result.data.currentParticipants);
+              // 강퇴 당한 경우 내보내기
+              if (user?.nickname === result.data.outUser) {
+                waitSub.current?.unsubscribe();
+                navigation(`/lobby`);
+              }
             }
 
             if (response.type === '방 폭파') {
@@ -251,6 +279,8 @@ const WaitingRoom = () => {
               isClose={user.closed}
               animation={InnerAnimation}
               handleKick={handleKick}
+              index={index}
+              handleEmptyPlace={handleEmptyPlace}
             />
           ))}
       </motion.div>

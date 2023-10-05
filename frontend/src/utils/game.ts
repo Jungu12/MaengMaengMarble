@@ -131,8 +131,10 @@ export const addAmountUnit = (money: number): string => {
 export const calCurrentFees = (landInfo: LandType): number => {
   let fee = 0;
 
-  for (let i = 0; i < 4; i++) {
-    if (landInfo.buildings[i]) fee += landInfo.currentFees[i];
+  for (let i = 0; i < 3; i++) {
+    if (landInfo.owner === -1) return 0;
+    if (landInfo.buildings[i]) fee += landInfo.currentFees[i + 1];
+    fee += landInfo.currentFees[0];
   }
 
   return fee;
@@ -315,7 +317,7 @@ export const formatAsset = (asset: number): string => {
 export const effectNewsToString = (curNews: NewsType[]): string => {
   let result = '';
   curNews.forEach((news) => {
-    result += news.content + ' ';
+    result += `${news.content}         `;
   });
 
   return result;

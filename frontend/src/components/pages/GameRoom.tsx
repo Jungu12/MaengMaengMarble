@@ -1,8 +1,9 @@
 import { images } from '@constants/images';
 // import { moveCharacter } from '@utils/game';
 import {
+  calCurrentFees,
   calcRank,
-  effectNewsToString,
+  // effectNewsToString,
   formatAsset,
   getPlayerIndex,
   moveCharacter,
@@ -16,7 +17,10 @@ import { ParticipantsType, WSResponseType } from '@/types/common/common.type';
 import {
   DiceResultType,
   FullGameDataType,
+  GoldenKeyKangsResponseType,
+  GoldenKeyLandsResponseType,
   GoldenKeyNewsResponseType,
+  GoldenKeyPlayerResponseType,
   NewsType,
   PlayerType,
   SlotType,
@@ -35,12 +39,15 @@ import Dice from 'react-dice-roll';
 import ConstructionModal from '@components/gameRoom/ConstructionModal';
 import {
   currentPlayerState,
+  infoState,
   landListState,
   newsState,
   playersState,
 } from '@atom/gameAtom';
 import SlotMachineModal from '@components/gameRoom/SlotMachineModal';
 import NewsCardModal from '@components/gameRoom/NewsCardModal';
+import GoldenKeyModal from '@components/gameRoom/GoldenKeyModal';
+import TakeOverModal from '@components/gameRoom/TakeOverModal';
 
 const GameRoom = () => {
   const location = useLocation();
@@ -48,17 +55,22 @@ const GameRoom = () => {
   const user = useRecoilValue(userState);
   const client = useRef<StompJs.Client>();
   const gameSub = useRef<StompJs.StompSubscription>();
+  const keySub = useRef<StompJs.StompSubscription>();
+  const initSub = useRef<StompJs.StompSubscription>();
   const { gameId } = useParams();
   const [playerList, setPlayerList] = useRecoilState(playersState);
   const [currentPlayer, setCurrentPlayer] = useRecoilState(currentPlayerState);
   const [landList, setLandList] = useRecoilState(landListState);
   const [news, setNews] = useRecoilState(newsState);
+  const [info, setInfo] = useRecoilState(infoState);
   const [isGameStart, setIsGameStart] = useState(false);
   const [orderList, setOrderList] = useState<TurnListType[]>([]);
   const [isTurnEnd, setIsTurnEnd] = useState(false);
   const [isStopTrade, setIsStopTrade] = useState(false); // 거래 정지 칸에 위치하는지
   const [이동중, set이동중] = useState(false);
+  const [이동가능, set이동가능] = useState(false);
   const [소켓연결, set소켓연결] = useState(false);
+  const [인수중, set인수중] = useState(false);
 
   const [dice1, setDice1] = useState<1 | 2 | 3 | 4 | 5 | 6>(1);
   const [dice2, setDice2] = useState<1 | 2 | 3 | 4 | 5 | 6>(1);
@@ -76,6 +88,8 @@ const GameRoom = () => {
   const [isOpenNews, setIsOpenNews] = useState(false);
   const [뉴스카드목록, set뉴스카드목록] = useState<NewsType[]>([]);
   const [뉴스타입, set뉴스타입] = useState('');
+  const [isOpenGoldenKey, setIsOpenGoldenKey] = useState(false);
+  const [황금열쇠이미지, set황금열쇠이미지] = useState('');
   // const slotResult = useMemo(() => [0, 0, 0], []);
   const nowPalyerIdx = useMemo(
     () => getPlayerIndex(playerList, currentPlayer),
@@ -107,39 +121,35 @@ const GameRoom = () => {
     });
   }, [gameId, isDiceRollButtonClick]);
 
+  const locationUpdate = useCallback(() => {
+    controls1.start({
+      x: 0,
+      y: 0,
+    });
+    controls2.start({
+      x: 0,
+      y: 0,
+    });
+    controls3.start({
+      x: 0,
+      y: 0,
+    });
+    controls4.start({
+      x: 0,
+      y: 0,
+    });
+  }, [controls1, controls2, controls3, controls4]);
+
   // 데이터 최신화
   const updateInfo = useCallback(
     (data: FullGameDataType | TurnEndResponseType) => {
+      locationUpdate();
       setPlayerList(data.players);
       setNews(data.info.effectNews);
       setLandList(data.lands);
       // TODO: 주식도 최신화 해야함
-      controls1.set({
-        x: 0,
-        y: 0,
-      });
-      controls2.set({
-        x: 0,
-        y: 0,
-      });
-      controls3.set({
-        x: 0,
-        y: 0,
-      });
-      controls4.set({
-        x: 0,
-        y: 0,
-      });
     },
-    [
-      controls1,
-      controls2,
-      controls3,
-      controls4,
-      setLandList,
-      setNews,
-      setPlayerList,
-    ]
+    [locationUpdate, setLandList, setNews, setPlayerList]
   );
 
   useEffect(() => {
@@ -153,15 +163,33 @@ const GameRoom = () => {
     });
   }, [gameId]);
 
+  // 인수 종료
+  const handleTakeOverClose = useCallback(() => {
+    set인수중(false);
+    if (reDice) {
+      setIsDiceRoll(false);
+      setIsDiceRollButtonClick(false);
+    } else {
+      if (myTurn) {
+        setIsTurnEnd(true);
+      }
+    }
+  }, [myTurn, reDice]);
+
+  const 인수하기 = useCallback(() => {
+    client.current?.publish({
+      destination: `/pub/game-rooms/take-over/${gameId}`,
+    });
+  }, [gameId]);
+
   useEffect(() => {
-    let subTemp: StompJs.StompSubscription;
     client.current = getClient();
     activateClient(client.current);
     client.current.onConnect = () => {
       set소켓연결(true);
       if (client.current) {
         if (!client.current) return;
-        subTemp = client.current.subscribe(
+        initSub.current = client.current.subscribe(
           `/sub/game-rooms/${gameId}`,
           (res) => {
             const response: WSResponseType<unknown> = JSON.parse(res.body);
@@ -179,7 +207,9 @@ const GameRoom = () => {
               setIsGameStart(true);
               const temp = response as WSResponseType<FullGameDataType>;
               console.log('[게임시작데이터]', temp);
+              console.log('[현재 플레이어]', temp.data.info.currentPlayer);
               setCurrentPlayer(temp.data.info.currentPlayer);
+              setInfo(temp.data.info);
               updateInfo(temp.data);
             }
           }
@@ -195,27 +225,17 @@ const GameRoom = () => {
         }
       }
     };
-
     return () => {
-      subTemp.unsubscribe();
+      initSub.current?.unsubscribe();
     };
-  }, [gameId, setCurrentPlayer, state.userList, updateInfo, user?.userId]);
-
-  // 소켓 연결
-  // useEffect(() => {
-  //   let subTemp: StompJs.StompSubscription;
-
-  //   if (client.current?.connected) {
-  //     subTemp = client.current.subscribe(`/sub/game-rooms/${gameId}`, (res) => {
-  //       const response: WSResponseType<unknown> = JSON.parse(res.body);
-
-  //     });
-  //   }
-
-  //   return () => {
-  //     subTemp.unsubscribe();
-  //   };
-  // }, [gameId, myTurn, reDice, setPlayerList]);
+  }, [
+    gameId,
+    setCurrentPlayer,
+    setInfo,
+    state.userList,
+    updateInfo,
+    user?.userId,
+  ]);
 
   // 구독
   useEffect(() => {
@@ -229,6 +249,7 @@ const GameRoom = () => {
           const response: WSResponseType<unknown> = JSON.parse(res.body);
 
           if (response.type === '주사위이동후로직') {
+            set이동가능(true);
             const diceResult = response as WSResponseType<DiceResultType>;
             setIsDiceRollButtonClick(true);
             console.log('주사위 결과 나왔어요');
@@ -240,6 +261,8 @@ const GameRoom = () => {
             if (doubleCnt < diceResult.data.doubleCount) {
               setReDice(true);
               setDoubleCnt(diceResult.data.doubleCount);
+            } else {
+              setReDice(false);
             }
           }
 
@@ -251,17 +274,31 @@ const GameRoom = () => {
           }
 
           if (response.type === '거래정지이동후로직') {
+            locationUpdate();
+            set이동가능(true);
             const diceResult = response as WSResponseType<DiceResultType>;
+            setIsDiceRollButtonClick(true);
             setDice1(diceResult.data.dice1);
             setDice2(diceResult.data.dice2);
             const idx = getPlayerIndex(playerList, currentPlayer);
             setSeletedLandId(diceResult.data.players[idx]!.currentLocation);
+
+            // 거래정지칸 탈출
             if (myTurn) {
               setIsStopTrade(false);
             }
           }
 
           if (response.type === '거래정지턴종료') {
+            // 주사위 굴린 후 턴 종료시키기
+            locationUpdate();
+            set이동가능(false);
+            const diceResult = response as WSResponseType<DiceResultType>;
+            setIsDiceRollButtonClick(true);
+            setDice1(diceResult.data.dice1);
+            setDice2(diceResult.data.dice2);
+            const idx = getPlayerIndex(playerList, currentPlayer);
+            setSeletedLandId(diceResult.data.players[idx]!.currentLocation);
             if (myTurn) {
               handleTurnEnd();
             }
@@ -269,6 +306,18 @@ const GameRoom = () => {
 
           // 더블이 3번 나온 경우
           if (response.type === '주사위턴종료') {
+            const diceResult = response as WSResponseType<DiceResultType>;
+            setIsDiceRollButtonClick(true);
+            console.log('더블이 3번~');
+            setReDice(false);
+            locationUpdate();
+            set이동가능(false);
+            setDice1(diceResult.data.dice1);
+            setDice2(diceResult.data.dice2);
+            const idx = getPlayerIndex(playerList, currentPlayer);
+            setSeletedLandId(diceResult.data.players[idx]!.currentLocation);
+            console.log('[지금이 내 차례니?]', myTurn);
+
             if (myTurn) {
               console.log('거래정지요~');
               handleTurnEnd();
@@ -277,6 +326,7 @@ const GameRoom = () => {
 
           // 한 바퀴 돈 경우 서버에 알려주기
           if (response.type === '주사위맹맹지급') {
+            set이동가능(true);
             const diceResult = response as WSResponseType<DiceResultType>;
             setIsDiceRollButtonClick(true);
             console.log('주사위 결과 나왔어요');
@@ -288,19 +338,28 @@ const GameRoom = () => {
             if (doubleCnt < diceResult.data.doubleCount) {
               setReDice(true);
               setDoubleCnt(diceResult.data.doubleCount);
+            } else {
+              setReDice(false);
             }
             if (myTurn) {
               client.current?.publish({
-                destination: `/pub/game-rooms/maengmaneg/${gameId}`,
+                destination: `/pub/game-rooms/maengmaeng/${gameId}`,
               });
             }
           }
 
           if (response.type === '맹맹지급이동후로직') {
-            const result = response as WSResponseType<{
-              players: (PlayerType | null)[];
-            }>;
-            setPlayerList(result.data.players);
+            const result = response as WSResponseType<FullGameDataType>;
+            console.log('[맹맹지급이동후로직] 반환값', result);
+            updateInfo(result.data);
+            if (reDice) {
+              setIsDiceRoll(false);
+              setIsDiceRollButtonClick(false);
+            } else {
+              if (myTurn) {
+                setIsTurnEnd(true);
+              }
+            }
           }
 
           if (response.type === '땅구매') {
@@ -327,16 +386,78 @@ const GameRoom = () => {
             updateInfo(temp.data);
             setIsOpenNews(false);
             // 주사위에서 더블이 나온 경우
-            if (myTurn) {
-              if (reDice) {
-                setIsDiceRoll(false);
-                setIsDiceRollButtonClick(false);
-              } else {
+            if (reDice) {
+              setIsDiceRoll(false);
+              setIsDiceRollButtonClick(false);
+            } else {
+              if (myTurn) {
                 setIsTurnEnd(true);
               }
             }
 
             console.log('자유시간~~~');
+          }
+
+          if (response.type === '세금징수') {
+            client.current?.publish({
+              destination: `/pub/game-rooms/tax/${gameId}`,
+            });
+          }
+
+          if (response.type === '세금 징수') {
+            const result = response as WSResponseType<{
+              players: (PlayerType | null)[];
+            }>;
+            locationUpdate();
+            setPlayerList(result.data.players);
+            if (reDice) {
+              setIsDiceRoll(false);
+              setIsDiceRollButtonClick(false);
+            } else {
+              if (myTurn) {
+                setIsTurnEnd(true);
+              }
+            }
+          }
+
+          if (response.type === '통행료지급') {
+            if (myTurn) {
+              client.current?.publish({
+                destination: `/pub/game-rooms/fee/${gameId}`,
+              });
+            }
+          }
+
+          if (response.type === '인수') {
+            const result = response as WSResponseType<(PlayerType | null)[]>;
+            console.log('[인수]', result);
+            if (myTurn) {
+              // 인수할 돈이 있는지 확인
+              if (
+                playerList[getPlayerIndex(playerList, currentPlayer)]!.money <
+                calCurrentFees(
+                  landList[
+                    playerList[getPlayerIndex(playerList, currentPlayer)]!
+                      .currentLocation
+                  ]
+                )
+              ) {
+                locationUpdate();
+                setPlayerList(result.data);
+                if (reDice) {
+                  setIsDiceRoll(false);
+                  setIsDiceRollButtonClick(false);
+                } else {
+                  if (myTurn) {
+                    setIsTurnEnd(true);
+                  }
+                }
+              }
+              // 인수 할지 안할지 정하기
+              else {
+                set인수중(true);
+              }
+            }
           }
 
           if (response.type === '박진호 끝') {
@@ -365,6 +486,8 @@ const GameRoom = () => {
             updateInfo(temp.data);
             setCurrentPlayer(temp.data.info.currentPlayer);
             setIsTurnEnd(false);
+            console.log('다음 차례는 누구야?', temp.data.info.currentPlayer);
+
             // 다음 플레이의 땅 위치에 따라 다른 로직 수행
             // 1. 문단속 효과 발동중인 경우에 어디로든 문인 경우
             if (nextPlayerLocation === 24 && temp.data.info.doorCheck > 0) {
@@ -407,7 +530,6 @@ const GameRoom = () => {
         }
       );
     }
-
     return () => {
       gameSub.current?.unsubscribe();
     };
@@ -416,6 +538,7 @@ const GameRoom = () => {
     doubleCnt,
     gameId,
     handleTurnEnd,
+    locationUpdate,
     myTurn,
     playerList,
     reDice,
@@ -428,84 +551,146 @@ const GameRoom = () => {
 
   // 황금 열쇠 구독
   useEffect(() => {
-    let subTemp: StompJs.StompSubscription;
-
     if (!client.current) return;
     if (client.current.connected && 소켓연결) {
-      subTemp = client.current.subscribe(`/sub/game-rooms/${gameId}`, (res) => {
-        const response: WSResponseType<unknown> = JSON.parse(res.body);
+      keySub.current = client.current.subscribe(
+        `/sub/game-rooms/${gameId}`,
+        (res) => {
+          const response: WSResponseType<unknown> = JSON.parse(res.body);
 
-        if (response.type === '황금열쇠') {
-          // 황금열쇠 뽑기
-          if (myTurn) {
-            client.current?.publish({
-              destination: `/pub/game-rooms/golden-keys/${gameId}`,
-            });
+          console.log('[열쇠로직 response]', response);
+
+          if (response.type === '황금열쇠') {
+            // 황금열쇠 뽑기
+            console.log('[황금열쇠를 뽑았다] 지금이 내 차례니?', myTurn);
+            console.log('누구 차례야?', currentPlayer);
+
+            if (myTurn) {
+              client.current?.publish({
+                destination: `/pub/game-rooms/golden-keys/${gameId}`,
+              });
+            }
+          }
+
+          if (response.type === '브론즈') {
+            const 브론즈결과 =
+              response as WSResponseType<GoldenKeyNewsResponseType>;
+            set뉴스카드목록(브론즈결과.data.choosed);
+            set뉴스타입('브론즈');
+            setIsOpenNews(true);
+          }
+
+          if (response.type === '플레티넘') {
+            const 플레티넘결과 =
+              response as WSResponseType<GoldenKeyNewsResponseType>;
+            set뉴스카드목록(플레티넘결과.data.choosed);
+            set뉴스타입('플레티넘');
+            setIsOpenNews(true);
+          }
+
+          if (response.type === '다이아몬드') {
+            const 다이아몬드결과 =
+              response as WSResponseType<GoldenKeyNewsResponseType>;
+            set뉴스카드목록(다이아몬드결과.data.choosed);
+            set뉴스타입('다이아몬드');
+            setIsOpenNews(true);
+          }
+
+          if (response.type === '허리케인' || response.type === '지진') {
+            const 결과 = response as WSResponseType<GoldenKeyLandsResponseType>;
+            locationUpdate();
+            set황금열쇠이미지(결과.data.imgUrl);
+            setLandList(결과.data.lands);
+            if (reDice) {
+              setIsDiceRoll(false);
+              setIsDiceRollButtonClick(false);
+            } else {
+              if (myTurn) {
+                setIsTurnEnd(true);
+              }
+            }
+            if (myTurn) {
+              setIsOpenGoldenKey(true);
+            }
+          }
+
+          if (
+            response.type === '천사' ||
+            response.type === '언론통제' ||
+            response.type === '복권 당첨' ||
+            response.type === '어디로든 문 초대권' ||
+            response.type === '언론통제'
+          ) {
+            const 결과 =
+              response as WSResponseType<GoldenKeyPlayerResponseType>;
+            set황금열쇠이미지(결과.data.imgUrl);
+            locationUpdate();
+            setPlayerList(결과.data.players);
+            if (reDice) {
+              setIsDiceRoll(false);
+              setIsDiceRollButtonClick(false);
+            } else {
+              if (myTurn) {
+                setIsTurnEnd(true);
+              }
+            }
+            if (myTurn) {
+              setIsOpenGoldenKey(true);
+            }
+          }
+
+          if (response.type === '강준구의 문단속') {
+            const 결과 = response as WSResponseType<GoldenKeyKangsResponseType>;
+            set황금열쇠이미지(결과.data.imgUrl);
+            setInfo(결과.data.info);
+            console.log(info);
+            if (reDice) {
+              setIsDiceRoll(false);
+              setIsDiceRollButtonClick(false);
+            } else {
+              if (myTurn) {
+                setIsTurnEnd(true);
+              }
+            }
+            if (myTurn) {
+              setIsOpenGoldenKey(true);
+            }
           }
         }
-
-        if (response.type === '브론즈') {
-          const 브론즈결과 =
-            response as WSResponseType<GoldenKeyNewsResponseType>;
-          set뉴스카드목록(브론즈결과.data.choosed);
-          set뉴스타입('브론즈');
-          setIsOpenNews(true);
-        }
-
-        if (response.type === '플레티넘') {
-          const 플레티넘결과 =
-            response as WSResponseType<GoldenKeyNewsResponseType>;
-          set뉴스카드목록(플레티넘결과.data.choosed);
-          set뉴스타입('플레티넘');
-          setIsOpenNews(true);
-        }
-
-        if (response.type === '다이아몬드') {
-          const 다이아몬드결과 =
-            response as WSResponseType<GoldenKeyNewsResponseType>;
-          set뉴스카드목록(다이아몬드결과.data.choosed);
-          set뉴스타입('다이아몬드');
-          setIsOpenNews(true);
-        }
-
-        // if (response.type === '언론통제') {
-
-        // }
-
-        // if (response.type === '허리케인') {
-
-        // }
-
-        // if (response.type === '천사') {
-
-        // }
-
-        // if (response.type === '강준구의 문단속') {
-
-        // }
-
-        // if (response.type === '복권 당첨') {
-
-        // }
-
-        // if (response.type === '어디로든 문 초대권') {
-
-        // }
-
-        // if (response.type === '지진') {
-
-        // }
-      });
+      );
     }
-
     return () => {
-      if (client.current?.connected && 소켓연결) {
-        subTemp.unsubscribe();
-      }
+      keySub.current?.unsubscribe();
     };
-  }, [gameId, myTurn, 소켓연결]);
+  }, [
+    currentPlayer,
+    gameId,
+    info,
+    locationUpdate,
+    myTurn,
+    reDice,
+    setInfo,
+    setLandList,
+    setPlayerList,
+    소켓연결,
+  ]);
 
   useEffect(() => {
+    if (!이동가능) {
+      if (isDiceRollButtonClick && !isDiceRoll) {
+        const diceRef = document.querySelectorAll('._space3d');
+        const clickEvent = new MouseEvent('click', {
+          bubbles: true, // 이벤트가 버블링되도록 설정합니다.
+          cancelable: true, // 이벤트가 취소 가능하도록 설정합니다.
+          view: window, // 이벤트의 관련 뷰를 설정합니다.
+        });
+        diceRef[0].dispatchEvent(clickEvent);
+        setTimeout(() => {
+          diceRef[1].dispatchEvent(clickEvent);
+        }, 50);
+      }
+      return;
+    }
     if (이동중) return;
     if (isDiceRollButtonClick && !isDiceRoll) {
       const diceRef = document.querySelectorAll('._space3d');
@@ -514,13 +699,11 @@ const GameRoom = () => {
         cancelable: true, // 이벤트가 취소 가능하도록 설정합니다.
         view: window, // 이벤트의 관련 뷰를 설정합니다.
       });
-      set이동중(true);
-
       diceRef[0].dispatchEvent(clickEvent);
       setTimeout(() => {
         diceRef[1].dispatchEvent(clickEvent);
       }, 50);
-
+      set이동중(true);
       setTimeout(() => {
         setIsDiceRoll(true);
         const idx = getPlayerIndex(playerList, currentPlayer);
@@ -541,17 +724,17 @@ const GameRoom = () => {
               dice1 + dice2,
               playerList[idx]!.currentLocation,
               tempControls
-            ).then(
-              // 도착 위치 호출
-              () => {
-                set이동중(false);
-                if (myTurn) {
-                  client.current?.publish({
-                    destination: `/pub/game-rooms/after-move/${gameId}`,
-                  });
-                }
+            ).then(() => {
+              set이동중(false);
+              set이동가능(false);
+              console.log('이동 완료!!!');
+
+              if (myTurn) {
+                client.current?.publish({
+                  destination: `/pub/game-rooms/after-move/${gameId}`,
+                });
               }
-            );
+            });
           }
         }
       }, 3000);
@@ -570,6 +753,7 @@ const GameRoom = () => {
     myTurn,
     playerList,
     user,
+    이동가능,
     이동중,
   ]);
 
@@ -597,11 +781,30 @@ const GameRoom = () => {
   };
   return (
     <>
+      <TakeOverModal
+        isOpen={인수중}
+        handleClose={handleTakeOverClose}
+        handleTakeOver={인수하기}
+        land={
+          landList[
+            playerList[getPlayerIndex(playerList, currentPlayer)]!
+              .currentLocation
+          ]
+        }
+      />
       <ConstructionModal
         isOpen={isOepnContrunction}
         handleConstruction={handleConstruction}
         handleClose={() => {
           setIsOepnContrunction(false);
+          if (reDice) {
+            setIsDiceRoll(false);
+            setIsDiceRollButtonClick(false);
+          } else {
+            if (myTurn) {
+              setIsTurnEnd(true);
+            }
+          }
         }}
         land={landList[seletedLandId]}
         player={playerList[nowPalyerIdx]}
@@ -623,6 +826,14 @@ const GameRoom = () => {
         isOpen={isOpenNews}
         handleNews={() => {
           setIsOpenNews(false);
+        }}
+      />
+      <GoldenKeyModal
+        cardImg={황금열쇠이미지}
+        isOpen={isOpenGoldenKey}
+        handleGoldenKey={() => {
+          console.log('황금열쇠 끝~~~');
+          setIsOpenGoldenKey(false);
         }}
       />
       <div
@@ -765,7 +976,7 @@ const GameRoom = () => {
               </div>
               <div className='scroll-container overflow-hidden flex-1 font-medium text-[16px]'>
                 <motion.div
-                  className='ml-[8px]'
+                  className='ml-[8px] whitespace-nowrap flex gap-12px'
                   initial={{ x: '100%' }} // 시작 위치 - 화면 오른쪽 밖
                   animate={{ x: '-100%' }} // 최종 위치 - 화면 왼쪽 밖
                   transition={{
@@ -775,9 +986,14 @@ const GameRoom = () => {
                     ease: 'linear', // 선형 이동
                   }}
                 >
-                  {news.length === 0
-                    ? '현재 적용중인 뉴스가 없습니다.'
-                    : effectNewsToString(news)}
+                  {
+                    news.length === 0
+                      ? '현재 적용중인 뉴스가 없습니다.'
+                      : news.map((item) => (
+                          <div key={item.newsId}>{item.content}</div>
+                        ))
+                    // effectNewsToString(news)
+                  }
                 </motion.div>
               </div>
             </div>
@@ -1064,7 +1280,6 @@ const GameRoom = () => {
         {/* 게임맵 */}
         <GameMap
           playerList={playerList}
-          onClickLand={() => console.log(1)}
           controls1={controls1}
           controls2={controls2}
           controls3={controls3}

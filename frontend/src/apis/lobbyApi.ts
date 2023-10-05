@@ -18,3 +18,7 @@ export async function createRoom(
 export async function getRooms(): Promise<{ waitingRooms: RoomType[] }> {
   return gameHttp.get(`maeng/lobby`);
 }
+
+export async function validateInviteCode(roomCode: string): Promise<boolean> {
+  return gameHttp.get(`maeng/lobby/validation/${roomCode}`);
+}

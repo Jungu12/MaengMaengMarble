@@ -21,6 +21,8 @@ type Props = {
       y: number;
     };
   };
+  index: number;
+  handleEmptyPlace: (index: number) => void;
 };
 
 const WaitingRoomCharaterCard = ({
@@ -32,6 +34,8 @@ const WaitingRoomCharaterCard = ({
   isClose,
   handleKick,
   animation,
+  index,
+  handleEmptyPlace,
 }: Props) => {
   const backgroundImageStyle = isClose
     ? 'linear-gradient(180deg, rgba(0, 0, 0, 0.70) 25.52%, rgba(0, 0, 0, 0.43) 82.73%, rgba(0, 0, 0, 0.00) 100%)'
@@ -39,7 +43,11 @@ const WaitingRoomCharaterCard = ({
   const user = useRecoilValue(userState);
 
   return (
-    <motion.div className='flex flex-col' variants={animation}>
+    <motion.div
+      className='flex flex-col'
+      variants={animation}
+      onClick={name ? () => {} : () => handleEmptyPlace(index)}
+    >
       <div
         className='w-[320px] flex flex-col items-center relative'
         style={{

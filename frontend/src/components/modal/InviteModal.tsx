@@ -6,6 +6,8 @@ import CButton from '@components/common/CButton';
 import useToastList from '@hooks/useToastList';
 import { useSetRecoilState } from 'recoil';
 import { ToastMessageState } from '@atom/toastAtom';
+import { useNavigate } from 'react-router-dom';
+import { validateInviteCode } from '@apis/lobbyApi';
 
 type InviteModalProps = {
   isOpenInviteModal: boolean;
@@ -16,7 +18,7 @@ const InviteModal = ({
   isOpenInviteModal,
   handleInviteModalClose,
 }: InviteModalProps) => {
-  const inviteCodeConfirm = false;
+  const navigation = useNavigate();
   const [inviteCode, setInviteCode] = useState('');
   const { show } = useToastList();
   const setToastMessage = useSetRecoilState(ToastMessageState);
@@ -31,11 +33,12 @@ const InviteModal = ({
     setInviteCode('');
   }, [handleInviteModalClose]);
 
-  const onClickEnterRoom = useCallback(() => {
-    console.log(inviteCode);
-    handleClose();
+  const onClickEnterRoom = useCallback(async () => {
+    const inviteCodeConfirm = await validateInviteCode(inviteCode);
+    console.log(inviteCodeConfirm);
+
     if (inviteCodeConfirm) {
-      show('success');
+      navigation(`/waiting-room/${inviteCode}`);
     } else {
       setToastMessage((prev) => {
         return {
@@ -45,7 +48,7 @@ const InviteModal = ({
       });
       show('error');
     }
-  }, [inviteCode, handleClose, inviteCodeConfirm, show, setToastMessage]);
+  }, [inviteCode, navigation, show, setToastMessage]);
 
   return (
     <CModal isOpen={isOpenInviteModal} handleClose={handleClose}>
