@@ -43,12 +43,14 @@ import {
   landListState,
   newsState,
   playersState,
+  stockListState,
 } from '@atom/gameAtom';
 import SlotMachineModal from '@components/gameRoom/SlotMachineModal';
 import NewsCardModal from '@components/gameRoom/NewsCardModal';
 import GoldenKeyModal from '@components/gameRoom/GoldenKeyModal';
 import TakeOverModal from '@components/gameRoom/TakeOverModal';
 import MapArea from '@components/gameRoom/MapArea';
+import InvestmentModal from '@components/gameRoom/InvestmentModal';
 
 const GameRoom = () => {
   const location = useLocation();
@@ -62,6 +64,7 @@ const GameRoom = () => {
   const [playerList, setPlayerList] = useRecoilState(playersState);
   const [currentPlayer, setCurrentPlayer] = useRecoilState(currentPlayerState);
   const [landList, setLandList] = useRecoilState(landListState);
+  const [stockList, setStockList] = useRecoilState(stockListState);
   const [news, setNews] = useRecoilState(newsState);
   const [info, setInfo] = useRecoilState(infoState);
   const [isGameStart, setIsGameStart] = useState(false);
@@ -88,6 +91,7 @@ const GameRoom = () => {
   const [isOepnContrunction, setIsOepnContrunction] = useState(false);
   const [isOpenSlot, setIsOpenSlot] = useState(false);
   const [isOpenNews, setIsOpenNews] = useState(false);
+  const [isOpenInvestment, setIsOpenInvestment] = useState(false);
   const [뉴스카드목록, set뉴스카드목록] = useState<NewsType[]>([]);
   const [뉴스타입, set뉴스타입] = useState('');
   const [isOpenGoldenKey, setIsOpenGoldenKey] = useState(false);
@@ -149,9 +153,10 @@ const GameRoom = () => {
       setPlayerList(data.players);
       setNews(data.info.effectNews);
       setLandList(data.lands);
+      setStockList(data.stocks);
       // TODO: 주식도 최신화 해야함
     },
-    [locationUpdate, setLandList, setNews, setPlayerList]
+    [locationUpdate, setLandList, setNews, setPlayerList, setStockList]
   );
 
   useEffect(() => {
@@ -495,6 +500,22 @@ const GameRoom = () => {
               // 인수 할지 안할지 정하기
               else {
                 set인수중(true);
+              }
+            }
+          }
+
+          if (response.type === '거래장') {
+            // 거래 시 모달 띄우기
+            if (myTurn) {
+              setIsOpenInvestment(true);
+            }
+            // 턴 종료 시 로직 구현
+            if (reDice) {
+              setIsDiceRoll(false);
+              setIsDiceRollButtonClick(false);
+            } else {
+              if (myTurn) {
+                setIsTurnEnd(true);
               }
             }
           }
@@ -908,6 +929,21 @@ const GameRoom = () => {
         handleGoldenKey={() => {
           console.log('황금열쇠 끝~~~');
           setIsOpenGoldenKey(false);
+        }}
+      />
+      <InvestmentModal
+        stockList={stockList ? stockList : null}
+        isOpen={isOpenInvestment}
+        handleInvestment={() => {
+          setIsOpenInvestment(false);
+          if (reDice) {
+            setIsDiceRoll(false);
+            setIsDiceRollButtonClick(false);
+          } else {
+            if (myTurn) {
+              setIsTurnEnd(true);
+            }
+          }
         }}
       />
       <div
