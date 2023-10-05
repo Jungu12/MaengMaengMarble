@@ -535,7 +535,8 @@ public class GameRoomService {
 
 		//Player 객체 안의 보유 땅 정보 업데이트
 		List<Integer> curPlayerLands = players[currentIdx].getLands();
-		curPlayerLands.remove(currentLand.getLandId());
+		curPlayerLands.add(currentLand.getLandId());
+		players[owner].getLands().remove((Integer) currentLand.getLandId());
 		players[currentIdx].setLands(curPlayerLands);
 
 		//gameInfo에 바뀐 정보 최신화
@@ -1079,7 +1080,7 @@ public class GameRoomService {
 					responseDto = ResponseDto.builder().type("건물구매").build();
 				} else {
 					// 다른 플레이어의 소유 일 때
-					// 통행료 계산
+					// 통행료 계산매
 					long fees = lands.get(currentLocation).getCurrentFees()[0];
 					for (int i = 0; i < lands.get(currentLocation).getBuildings().length; i++) {
 						if (lands.get(currentLocation).getBuildings()[i]) {
