@@ -57,6 +57,7 @@ const GameRoom = () => {
   const [isTurnEnd, setIsTurnEnd] = useState(false);
   const [isStopTrade, setIsStopTrade] = useState(false); // 거래 정지 칸에 위치하는지
   const [이동중, set이동중] = useState(false);
+  const [소켓연결, set소켓연결] = useState(false);
 
   const [dice1, setDice1] = useState<1 | 2 | 3 | 4 | 5 | 6>(1);
   const [dice2, setDice2] = useState<1 | 2 | 3 | 4 | 5 | 6>(1);
@@ -155,6 +156,7 @@ const GameRoom = () => {
     client.current = getClient();
     activateClient(client.current);
     client.current.onConnect = () => {
+      set소켓연결(true);
       if (client.current) {
         if (!client.current) return;
         subTemp = client.current.subscribe(
@@ -398,7 +400,7 @@ const GameRoom = () => {
     let subTemp: StompJs.StompSubscription;
 
     if (!client.current) return;
-    if (client.current.connected) {
+    if (client.current.connected && 소켓연결) {
       subTemp = client.current.subscribe(`/sub/game-rooms/${gameId}`, (res) => {
         const response: WSResponseType<unknown> = JSON.parse(res.body);
 
@@ -465,7 +467,7 @@ const GameRoom = () => {
         subTemp.unsubscribe();
       }
     };
-  }, [gameId]);
+  }, [gameId, 소켓연결]);
 
   useEffect(() => {
     if (이동중) return;
@@ -577,6 +579,7 @@ const GameRoom = () => {
         }}
       />
       <NewsCardModal
+        isMyTurn={myTurn}
         newsList={뉴스카드목록}
         isOpen={isOpenNews}
         handleNews={() => {

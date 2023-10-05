@@ -3,12 +3,13 @@ import CMovingCard from '@components/common/CMovingCard';
 import { motion, AnimatePresence } from 'framer-motion';
 
 type Props = {
+  isMyTurn: boolean;
   newsList: NewsType[];
   isOpen: boolean;
   handleNews: () => void;
 };
 
-const NewsCardModal = ({ newsList, isOpen, handleNews }: Props) => {
+const NewsCardModal = ({ isMyTurn, newsList, isOpen, handleNews }: Props) => {
   return (
     <AnimatePresence>
       {isOpen && (
@@ -37,6 +38,7 @@ const NewsCardModal = ({ newsList, isOpen, handleNews }: Props) => {
                     handleNews();
                   }}
                   key={news.newsId}
+                  disabled={isMyTurn ? false : true}
                 >
                   <img
                     className='w-[410px] h-[570px]'
