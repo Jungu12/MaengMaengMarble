@@ -25,6 +25,7 @@ import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.xml.transform.Result;
 import java.util.List;
@@ -32,7 +33,7 @@ import java.util.Map;
 
 
 @Slf4j
-@Controller
+@RestController
 @RequiredArgsConstructor
 public class WaitingRoomController {
     private final Logger logger = LoggerFactory.getLogger(getClass());
