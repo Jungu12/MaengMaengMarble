@@ -134,7 +134,7 @@ const LandInfoModal = ({ landInfo, isOpen, handleLandInfo }: Props) => {
                     alt='주사위 아이콘'
                   />
                   <p className='text-primary-light100 font-bold text-[22px] py-[10px]'>
-                    여기까지 4칸
+                    여기까지 맹맹
                   </p>
                 </div>
               </div>
