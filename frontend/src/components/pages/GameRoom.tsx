@@ -186,7 +186,9 @@ const GameRoom = () => {
               setIsGameStart(true);
               const temp = response as WSResponseType<FullGameDataType>;
               console.log('[게임시작데이터]', temp);
+              console.log('[현재 플레이어]', temp.data.info.currentPlayer);
               setCurrentPlayer(temp.data.info.currentPlayer);
+              setInfo(temp.data.info);
               updateInfo(temp.data);
             }
           }
@@ -202,7 +204,14 @@ const GameRoom = () => {
         }
       }
     };
-  }, [gameId, setCurrentPlayer, state.userList, updateInfo, user?.userId]);
+  }, [
+    gameId,
+    setCurrentPlayer,
+    setInfo,
+    state.userList,
+    updateInfo,
+    user?.userId,
+  ]);
 
   // 구독
   useEffect(() => {
