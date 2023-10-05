@@ -6,6 +6,7 @@ import maengmaeng.gamelogicservice.exception.PackJinHoException;
 import maengmaeng.gamelogicservice.gameRoom.domain.GameInfo;
 import maengmaeng.gamelogicservice.gameRoom.domain.Player;
 import maengmaeng.gamelogicservice.gameRoom.domain.dto.PackJinHoRequest;
+import maengmaeng.gamelogicservice.gameRoom.domain.dto.ParkJinHoResponse;
 import maengmaeng.gamelogicservice.gameRoom.repository.GameInfoRepository;
 import maengmaeng.gamelogicservice.global.dto.ResponseDto;
 import org.slf4j.Logger;
@@ -56,7 +57,6 @@ public class PackJinHoService {
             players[currentIdx].setAsset(players[currentIdx].getAsset() + winnings);
         }
         else if (num1 == 7 && num2 == 7 && num3 == 7) {
-            //
             return ResponseDto.builder().type("게임종료").build();
         }
         else if (num1 == num2 || num2 == num3 || num3 == num1) {
@@ -73,6 +73,6 @@ public class PackJinHoService {
 
         gameInfoRepository.createGameRoom(gameInfo);
 
-        return ResponseDto.builder().type("박진호").data(players).build();
+        return ResponseDto.builder().type("박진호 끝").data(ParkJinHoResponse.builder().players(players).num(new int[] {num1, num2, num3}).build()).build();
     }
 }
