@@ -16,6 +16,7 @@ import { ParticipantsType, WSResponseType } from '@/types/common/common.type';
 import {
   DiceResultType,
   FullGameDataType,
+  SlotType,
   TurnEndResponseType,
   TurnListType,
 } from '@/types/gameRoom/game.type';
@@ -199,19 +200,6 @@ const GameRoom = () => {
   //     subTemp = client.current.subscribe(`/sub/game-rooms/${gameId}`, (res) => {
   //       const response: WSResponseType<unknown> = JSON.parse(res.body);
 
-  //       if (response.type === '박진호 끝') {
-  //         const parkResult = response as WSResponseType<SlotType>;
-  //         console.log('[박진호데이터]', parkResult);
-  //         setPlayerList(parkResult.data.players);
-  //         if (myTurn) {
-  //           if (reDice) {
-  //             setIsDiceRoll(false);
-  //             setIsDiceRollButtonClick(false);
-  //           } else {
-  //             setIsTurnEnd(true);
-  //           }
-  //         }
-  //       }
   //     });
   //   }
 
@@ -313,6 +301,20 @@ const GameRoom = () => {
             console.log('자유시간~~~');
           }
 
+          if (response.type === '박진호 끝') {
+            const parkResult = response as WSResponseType<SlotType>;
+            console.log('[박진호데이터]', parkResult);
+            setPlayerList(parkResult.data.players);
+            if (myTurn) {
+              if (reDice) {
+                setIsDiceRoll(false);
+                setIsDiceRollButtonClick(false);
+              } else {
+                setIsTurnEnd(true);
+              }
+            }
+          }
+
           if (response.type === '턴종료끝') {
             const temp = response as WSResponseType<TurnEndResponseType>;
             const players = temp.data.players;
@@ -381,6 +383,7 @@ const GameRoom = () => {
     reDice,
     seletedLandId,
     setCurrentPlayer,
+    setPlayerList,
     updateInfo,
     user?.nickname,
   ]);
