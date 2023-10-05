@@ -869,7 +869,7 @@ public class GameRoomService {
 			gameInfo.setPlayers(players);
 			gameInfoRepository.createGameRoom(gameInfo);
 			logger.info("type= 맹맹지급이동후로직");
-			return ResponseDto.builder().type("맹맹지급이동후로직").data(players).build();
+			return ResponseDto.builder().type("맹맹지급이동후로직").data(gameInfo).build();
 		} else {
 			// 맹맹이 음수일 때
 			// 맹맹이 보유자산 보다 많을 때?
@@ -886,7 +886,7 @@ public class GameRoomService {
 					gameInfoRepository.createGameRoom(gameInfo);
 					logger.info("type=맹맹지급이동후로직");
 
-					return ResponseDto.builder().type("맹맹지급이동후로직").data(players).build();
+					return ResponseDto.builder().type("맹맹지급이동후로직").data(gameInfo).build();
 				} else {
 					logger.info("type=매각");
 
