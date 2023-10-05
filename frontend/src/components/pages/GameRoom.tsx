@@ -369,8 +369,16 @@ const GameRoom = () => {
             console.log('[플레이어 정보]', playerList);
 
             // 현재 플레이어만 보이게
-            if (currentPlayer === user?.nickname) {
+            if (myTurn) {
               console.log(seletedLandId);
+              setIsOepnContrunction(true);
+            }
+          }
+
+          if (response.type === '구매') {
+            const result = response as WSResponseType<FullGameDataType>;
+            updateInfo(result.data);
+            if (myTurn) {
               setIsOepnContrunction(true);
             }
           }
