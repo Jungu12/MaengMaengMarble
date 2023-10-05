@@ -315,7 +315,7 @@ export const formatAsset = (asset: number): string => {
 export const effectNewsToString = (curNews: NewsType[]): string => {
   let result = '';
   curNews.forEach((news) => {
-    result += news.content + ' ';
+    result += news.content + '            ';
   });
 
   return result;

@@ -272,6 +272,7 @@ const GameRoom = () => {
             locationUpdate();
             set이동가능(false);
             const diceResult = response as WSResponseType<DiceResultType>;
+            setIsDiceRollButtonClick(true);
             setDice1(diceResult.data.dice1);
             setDice2(diceResult.data.dice2);
             const idx = getPlayerIndex(playerList, currentPlayer);
