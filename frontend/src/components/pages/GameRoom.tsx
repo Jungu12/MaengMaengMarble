@@ -536,6 +536,12 @@ const GameRoom = () => {
             }
           }
 
+          if (response.type === '대출') {
+            if (myTurn) {
+              setIsTurnEnd(true);
+            }
+          }
+
           if (response.type === '턴종료끝') {
             const temp = response as WSResponseType<TurnEndResponseType>;
             const players = temp.data.players;
@@ -1444,14 +1450,21 @@ const GameRoom = () => {
                 background: 'rgba(255, 255, 255, 0.25)',
               }}
             >
-              <div className='w-full h-[56px] bg-white rounded-[8px] opacity-[0.9] flex items-center'>
-                <p className='text-[18px] font-semibold mx-[12px]'>LG 화학</p>
-                <p className='text-[16px] font-medium'>3억 12만원</p>
-                <div className='flex flex-col ml-auto justify-center text-[#2F50FF] text-[14px] font-medium mr-[12px]'>
-                  <p className='ml-auto'>-1억 215만원</p>
-                  <p className='ml-auto'>-45%</p>
+              {/* {playerList[
+                getPlayerIndex(playerList, user!.nickname)
+              ]?.stocks.map((stock, index) => (
+                <div
+                  key={index}
+                  className='w-full h-[56px] bg-white rounded-[8px] opacity-[0.9] flex items-center'
+                >
+                  <p className='text-[18px] font-semibold mx-[12px]'>stokc</p>
+                  <p className='text-[16px] font-medium'>3억 12만원</p>
+                  <div className='flex flex-col ml-auto justify-center text-[#2F50FF] text-[14px] font-medium mr-[12px]'>
+                    <p className='ml-auto'>-1억 215만원</p>
+                    <p className='ml-auto'>-45%</p>
+                  </div>
                 </div>
-              </div>
+              ))} */}
             </div>
           </div>
           <div className='flex justify-between mt-auto'>
