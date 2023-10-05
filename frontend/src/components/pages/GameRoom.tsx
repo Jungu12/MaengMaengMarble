@@ -16,6 +16,7 @@ import { ParticipantsType, WSResponseType } from '@/types/common/common.type';
 import {
   DiceResultType,
   FullGameDataType,
+  GoldenKeyKangsResponseType,
   GoldenKeyLandsResponseType,
   GoldenKeyNewsResponseType,
   GoldenKeyPlayerResponseType,
@@ -37,6 +38,7 @@ import Dice from 'react-dice-roll';
 import ConstructionModal from '@components/gameRoom/ConstructionModal';
 import {
   currentPlayerState,
+  infoState,
   landListState,
   newsState,
   playersState,
@@ -56,6 +58,7 @@ const GameRoom = () => {
   const [currentPlayer, setCurrentPlayer] = useRecoilState(currentPlayerState);
   const [landList, setLandList] = useRecoilState(landListState);
   const [news, setNews] = useRecoilState(newsState);
+  const [info, setInfo] = useRecoilState(infoState);
   const [isGameStart, setIsGameStart] = useState(false);
   const [orderList, setOrderList] = useState<TurnListType[]>([]);
   const [isTurnEnd, setIsTurnEnd] = useState(false);
@@ -492,7 +495,6 @@ const GameRoom = () => {
         if (
           response.type === '천사' ||
           response.type === '언론통제' ||
-          response.type === '강준구의 문단속' ||
           response.type === '복권 당첨' ||
           response.type === '어디로든 문 초대권' ||
           response.type === '언론통제'
@@ -505,6 +507,17 @@ const GameRoom = () => {
             setIsOpenGoldenKey(true);
           }
         }
+
+        if (response.type === '강준구의 문단속') {
+          const 결과 = response as WSResponseType<GoldenKeyKangsResponseType>;
+          set황금열쇠이미지(결과.data.imgUrl);
+          setInfo(결과.data.info);
+          console.log(info);
+
+          if (myTurn) {
+            setIsOpenGoldenKey(true);
+          }
+        }
       });
     }
 
@@ -513,7 +526,16 @@ const GameRoom = () => {
         subTemp.unsubscribe();
       }
     };
-  }, [gameId, locationUpdate, myTurn, setLandList, setPlayerList, 소켓연결]);
+  }, [
+    gameId,
+    info,
+    locationUpdate,
+    myTurn,
+    setInfo,
+    setLandList,
+    setPlayerList,
+    소켓연결,
+  ]);
 
   useEffect(() => {
     if (이동중) return;

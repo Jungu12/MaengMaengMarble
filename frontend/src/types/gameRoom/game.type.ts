@@ -134,3 +134,9 @@ export type GoldenKeyLandsResponseType = {
   lands: LandType[];
   goldenKeys: GoldKeyType;
 };
+
+export type GoldenKeyKangsResponseType = {
+  imgUrl: string;
+  info: InfoType;
+  goldenKeys: GoldKeyType;
+};
