@@ -406,9 +406,11 @@ const GameRoom = () => {
 
         if (response.type === '황금열쇠') {
           // 황금열쇠 뽑기
-          client.current?.publish({
-            destination: `/pub/game-rooms/golden-keys/${gameId}`,
-          });
+          if (myTurn) {
+            client.current?.publish({
+              destination: `/pub/game-rooms/golden-keys/${gameId}`,
+            });
+          }
         }
 
         if (response.type === '브론즈') {
@@ -467,7 +469,7 @@ const GameRoom = () => {
         subTemp.unsubscribe();
       }
     };
-  }, [gameId, 소켓연결]);
+  }, [gameId, myTurn, 소켓연결]);
 
   useEffect(() => {
     if (이동중) return;
