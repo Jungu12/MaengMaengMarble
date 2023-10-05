@@ -301,7 +301,6 @@ const GameRoom = () => {
 
           // 한 바퀴 돈 경우 서버에 알려주기
           if (response.type === '주사위맹맹지급') {
-            locationUpdate();
             set이동가능(true);
             const diceResult = response as WSResponseType<DiceResultType>;
             setIsDiceRollButtonClick(true);
@@ -326,6 +325,8 @@ const GameRoom = () => {
             const result = response as WSResponseType<{
               players: (PlayerType | null)[];
             }>;
+            console.log('[맹맹지급이동후로직] 반환값', result);
+
             setPlayerList(result.data.players);
           }
 
@@ -579,6 +580,7 @@ const GameRoom = () => {
   ]);
 
   useEffect(() => {
+    setReDice(false);
     if (!이동가능) {
       if (isDiceRollButtonClick && !isDiceRoll) {
         const diceRef = document.querySelectorAll('._space3d');
