@@ -550,22 +550,20 @@ const GameRoom = () => {
   ]);
 
   useEffect(() => {
+    const diceRef = document.querySelectorAll('._space3d');
+    const clickEvent = new MouseEvent('click', {
+      bubbles: true, // 이벤트가 버블링되도록 설정합니다.
+      cancelable: true, // 이벤트가 취소 가능하도록 설정합니다.
+      view: window, // 이벤트의 관련 뷰를 설정합니다.
+    });
+    diceRef[0].dispatchEvent(clickEvent);
+    setTimeout(() => {
+      diceRef[1].dispatchEvent(clickEvent);
+    }, 50);
     if (!이동가능) return;
     if (이동중) return;
     if (isDiceRollButtonClick && !isDiceRoll) {
-      const diceRef = document.querySelectorAll('._space3d');
-      const clickEvent = new MouseEvent('click', {
-        bubbles: true, // 이벤트가 버블링되도록 설정합니다.
-        cancelable: true, // 이벤트가 취소 가능하도록 설정합니다.
-        view: window, // 이벤트의 관련 뷰를 설정합니다.
-      });
       set이동중(true);
-
-      diceRef[0].dispatchEvent(clickEvent);
-      setTimeout(() => {
-        diceRef[1].dispatchEvent(clickEvent);
-      }, 50);
-
       setTimeout(() => {
         setIsDiceRoll(true);
         const idx = getPlayerIndex(playerList, currentPlayer);
@@ -677,12 +675,7 @@ const GameRoom = () => {
         handleGoldenKey={() => {
           // 주사위에서 더블이 나온 경우
           if (myTurn) {
-            if (reDice) {
-              setIsDiceRoll(false);
-              setIsDiceRollButtonClick(false);
-            } else {
-              setIsTurnEnd(true);
-            }
+            setIsTurnEnd(true);
           }
 
           console.log('황금열쇠 끝~~~');
