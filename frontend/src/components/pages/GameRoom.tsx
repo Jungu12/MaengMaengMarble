@@ -53,6 +53,8 @@ const GameRoom = () => {
   const user = useRecoilValue(userState);
   const client = useRef<StompJs.Client>();
   const gameSub = useRef<StompJs.StompSubscription>();
+  const keySub = useRef<StompJs.StompSubscription>();
+  const initSub = useRef<StompJs.StompSubscription>();
   const { gameId } = useParams();
   const [playerList, setPlayerList] = useRecoilState(playersState);
   const [currentPlayer, setCurrentPlayer] = useRecoilState(currentPlayerState);
@@ -159,14 +161,14 @@ const GameRoom = () => {
   }, [gameId]);
 
   useEffect(() => {
-    let subTemp: StompJs.StompSubscription;
     client.current = getClient();
     activateClient(client.current);
     client.current.onConnect = () => {
       set소켓연결(true);
       if (client.current) {
         if (!client.current) return;
-        subTemp = client.current.subscribe(
+        if (initSub.current) return;
+        initSub.current = client.current.subscribe(
           `/sub/game-rooms/${gameId}`,
           (res) => {
             const response: WSResponseType<unknown> = JSON.parse(res.body);
@@ -200,31 +202,12 @@ const GameRoom = () => {
         }
       }
     };
-
-    return () => {
-      subTemp.unsubscribe();
-    };
   }, [gameId, setCurrentPlayer, state.userList, updateInfo, user?.userId]);
-
-  // 소켓 연결
-  // useEffect(() => {
-  //   let subTemp: StompJs.StompSubscription;
-
-  //   if (client.current?.connected) {
-  //     subTemp = client.current.subscribe(`/sub/game-rooms/${gameId}`, (res) => {
-  //       const response: WSResponseType<unknown> = JSON.parse(res.body);
-
-  //     });
-  //   }
-
-  //   return () => {
-  //     subTemp.unsubscribe();
-  //   };
-  // }, [gameId, myTurn, reDice, setPlayerList]);
 
   // 구독
   useEffect(() => {
     if (!client.current) return;
+    if (gameSub.current) return;
     if (client.current.connected) {
       gameSub.current = client.current.subscribe(
         `/sub/game-rooms/${gameId}`,
@@ -441,10 +424,6 @@ const GameRoom = () => {
         }
       );
     }
-
-    return () => {
-      gameSub.current?.unsubscribe();
-    };
   }, [
     currentPlayer,
     doubleCnt,
@@ -463,115 +442,112 @@ const GameRoom = () => {
 
   // 황금 열쇠 구독
   useEffect(() => {
-    let subTemp: StompJs.StompSubscription;
-
     if (!client.current) return;
+    if (keySub.current) return;
     if (client.current.connected && 소켓연결) {
-      subTemp = client.current.subscribe(`/sub/game-rooms/${gameId}`, (res) => {
-        const response: WSResponseType<unknown> = JSON.parse(res.body);
+      keySub.current = client.current.subscribe(
+        `/sub/game-rooms/${gameId}`,
+        (res) => {
+          const response: WSResponseType<unknown> = JSON.parse(res.body);
 
-        console.log('[열쇠로직 response]', response);
+          console.log('[열쇠로직 response]', response);
 
-        if (response.type === '황금열쇠') {
-          // 황금열쇠 뽑기
-          if (myTurn) {
-            client.current?.publish({
-              destination: `/pub/game-rooms/golden-keys/${gameId}`,
-            });
-          }
-        }
-
-        if (response.type === '브론즈') {
-          const 브론즈결과 =
-            response as WSResponseType<GoldenKeyNewsResponseType>;
-          set뉴스카드목록(브론즈결과.data.choosed);
-          set뉴스타입('브론즈');
-          setIsOpenNews(true);
-        }
-
-        if (response.type === '플레티넘') {
-          const 플레티넘결과 =
-            response as WSResponseType<GoldenKeyNewsResponseType>;
-          set뉴스카드목록(플레티넘결과.data.choosed);
-          set뉴스타입('플레티넘');
-          setIsOpenNews(true);
-        }
-
-        if (response.type === '다이아몬드') {
-          const 다이아몬드결과 =
-            response as WSResponseType<GoldenKeyNewsResponseType>;
-          set뉴스카드목록(다이아몬드결과.data.choosed);
-          set뉴스타입('다이아몬드');
-          setIsOpenNews(true);
-        }
-
-        if (response.type === '허리케인' || response.type === '지진') {
-          const 결과 = response as WSResponseType<GoldenKeyLandsResponseType>;
-          locationUpdate();
-          set황금열쇠이미지(결과.data.imgUrl);
-          setLandList(결과.data.lands);
-          if (reDice) {
-            setIsDiceRoll(false);
-            setIsDiceRollButtonClick(false);
-          } else {
+          if (response.type === '황금열쇠') {
+            // 황금열쇠 뽑기
             if (myTurn) {
-              setIsTurnEnd(true);
+              client.current?.publish({
+                destination: `/pub/game-rooms/golden-keys/${gameId}`,
+              });
             }
           }
-          if (myTurn) {
-            setIsOpenGoldenKey(true);
-          }
-        }
 
-        if (
-          response.type === '천사' ||
-          response.type === '언론통제' ||
-          response.type === '복권 당첨' ||
-          response.type === '어디로든 문 초대권' ||
-          response.type === '언론통제'
-        ) {
-          const 결과 = response as WSResponseType<GoldenKeyPlayerResponseType>;
-          set황금열쇠이미지(결과.data.imgUrl);
-          locationUpdate();
-          setPlayerList(결과.data.players);
-          if (reDice) {
-            setIsDiceRoll(false);
-            setIsDiceRollButtonClick(false);
-          } else {
+          if (response.type === '브론즈') {
+            const 브론즈결과 =
+              response as WSResponseType<GoldenKeyNewsResponseType>;
+            set뉴스카드목록(브론즈결과.data.choosed);
+            set뉴스타입('브론즈');
+            setIsOpenNews(true);
+          }
+
+          if (response.type === '플레티넘') {
+            const 플레티넘결과 =
+              response as WSResponseType<GoldenKeyNewsResponseType>;
+            set뉴스카드목록(플레티넘결과.data.choosed);
+            set뉴스타입('플레티넘');
+            setIsOpenNews(true);
+          }
+
+          if (response.type === '다이아몬드') {
+            const 다이아몬드결과 =
+              response as WSResponseType<GoldenKeyNewsResponseType>;
+            set뉴스카드목록(다이아몬드결과.data.choosed);
+            set뉴스타입('다이아몬드');
+            setIsOpenNews(true);
+          }
+
+          if (response.type === '허리케인' || response.type === '지진') {
+            const 결과 = response as WSResponseType<GoldenKeyLandsResponseType>;
+            locationUpdate();
+            set황금열쇠이미지(결과.data.imgUrl);
+            setLandList(결과.data.lands);
+            if (reDice) {
+              setIsDiceRoll(false);
+              setIsDiceRollButtonClick(false);
+            } else {
+              if (myTurn) {
+                setIsTurnEnd(true);
+              }
+            }
             if (myTurn) {
-              setIsTurnEnd(true);
+              setIsOpenGoldenKey(true);
             }
           }
-          if (myTurn) {
-            setIsOpenGoldenKey(true);
-          }
-        }
 
-        if (response.type === '강준구의 문단속') {
-          const 결과 = response as WSResponseType<GoldenKeyKangsResponseType>;
-          set황금열쇠이미지(결과.data.imgUrl);
-          setInfo(결과.data.info);
-          console.log(info);
-          if (reDice) {
-            setIsDiceRoll(false);
-            setIsDiceRollButtonClick(false);
-          } else {
+          if (
+            response.type === '천사' ||
+            response.type === '언론통제' ||
+            response.type === '복권 당첨' ||
+            response.type === '어디로든 문 초대권' ||
+            response.type === '언론통제'
+          ) {
+            const 결과 =
+              response as WSResponseType<GoldenKeyPlayerResponseType>;
+            set황금열쇠이미지(결과.data.imgUrl);
+            locationUpdate();
+            setPlayerList(결과.data.players);
+            if (reDice) {
+              setIsDiceRoll(false);
+              setIsDiceRollButtonClick(false);
+            } else {
+              if (myTurn) {
+                setIsTurnEnd(true);
+              }
+            }
             if (myTurn) {
-              setIsTurnEnd(true);
+              setIsOpenGoldenKey(true);
             }
           }
-          if (myTurn) {
-            setIsOpenGoldenKey(true);
+
+          if (response.type === '강준구의 문단속') {
+            const 결과 = response as WSResponseType<GoldenKeyKangsResponseType>;
+            set황금열쇠이미지(결과.data.imgUrl);
+            setInfo(결과.data.info);
+            console.log(info);
+            if (reDice) {
+              setIsDiceRoll(false);
+              setIsDiceRollButtonClick(false);
+            } else {
+              if (myTurn) {
+                setIsTurnEnd(true);
+              }
+            }
+            if (myTurn) {
+              setIsOpenGoldenKey(true);
+            }
           }
         }
-      });
+      );
     }
-
-    return () => {
-      if (client.current?.connected && 소켓연결) {
-        subTemp.unsubscribe();
-      }
-    };
   }, [
     gameId,
     info,
