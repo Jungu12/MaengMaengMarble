@@ -78,6 +78,16 @@
   border-radius: 10px;
 }
 
+.scrollbar-invest::-webkit-scrollbar {
+  width: 10px;
+}
+
+.scrollbar-invest::-webkit-scrollbar-thumb {
+  height: 30%; /* 스크롤바의 길이 */
+  background: #000000; /* 스크롤바의 색상 */
+  border-radius: 10px;
+}
+
 #toast-root {
   position: fixed;
   right: 10px;

@@ -1,24 +1,24 @@
-// import SlotMachineModal from '@components/gameRoom/SlotMachineModal';
+// import InvestmentMachineModal from '@components/gameRoom/InvestmentMachineModal';
 // import { useCallback, useState } from 'react';
 import { images } from '@constants/images';
+// import InvestmentModal from '@components/gameRoom/InvestmentModal';
 
 const ModalTest = () => {
-  // const [isOpenSlot, setIsOpenSlot] = useState(true);
-  // const handleSlot = useCallback(() => {
-  //   setIsOpenSlot((prev) => !prev);
+  // const [isOpenInvestment, setIsOpenInvestment] = useState(true);
+  // const handleInvestment = useCallback(() => {
+  //   setIsOpenInvestment((prev) => !prev);
   // }, []);
 
   return (
     <>
-      {/* <SlotMachineModal
-        // slotResult={[7, 5, 7]}
-        isOpen={isOpenSlot}
-        handleSlot={handleSlot}
+      {/* <InvestmentModal
+        isOpen={isOpenInvestment}
+        handleInvestment={handleInvestment}
       /> */}
       <div
         className='flex flex-col w-full h-full relative p-[45px] overflow-auto'
         style={{
-          backgroundImage: `url(${images.lobby.background})`,
+          backgroundImage: `url(${images.gameRoom.background})`,
           backgroundSize: 'cover',
         }}
       ></div>
