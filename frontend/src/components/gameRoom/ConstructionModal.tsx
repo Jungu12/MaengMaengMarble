@@ -21,25 +21,25 @@ const ConstructionModal = ({
   handleConstruction,
   handleClose,
 }: Props) => {
-  const [isCheckedPension, setIsCheckedPension] = useState(land.buildings[1]);
-  const [isCheckedBuilding, setIsCheckedBuilding] = useState(land.buildings[2]);
-  const [isCheckedHotel, setIsCheckedHotel] = useState(land.buildings[3]);
+  const [isCheckedPension, setIsCheckedPension] = useState(land.buildings[0]);
+  const [isCheckedBuilding, setIsCheckedBuilding] = useState(land.buildings[1]);
+  const [isCheckedHotel, setIsCheckedHotel] = useState(land.buildings[2]);
   const totalPurchasePrice = useMemo(
     () =>
-      land.buildings[0]
+      land.owner != -1
         ? 0
         : land.currentLandPrice +
-          (land.buildings[1]
+          (land.buildings[0]
             ? 0
             : isCheckedPension
             ? land.currentBuildingPrices[0]
             : 0) +
-          (land.buildings[2]
+          (land.buildings[1]
             ? 0
             : isCheckedBuilding
             ? land.currentBuildingPrices[1]
             : 0) +
-          (land.buildings[3]
+          (land.buildings[2]
             ? 0
             : isCheckedHotel
             ? land.currentBuildingPrices[2]
@@ -51,6 +51,7 @@ const ConstructionModal = ({
       land.buildings,
       land.currentBuildingPrices,
       land.currentLandPrice,
+      land.owner,
     ]
   );
 
@@ -68,9 +69,9 @@ const ConstructionModal = ({
 
   const onClickPurchase = useCallback(() => {
     handleConstruction([
-      land.buildings[1] ? false : isCheckedPension,
-      land.buildings[2] ? false : isCheckedBuilding,
-      land.buildings[3] ? false : isCheckedHotel,
+      land.buildings[0] ? false : isCheckedPension,
+      land.buildings[1] ? false : isCheckedBuilding,
+      land.buildings[2] ? false : isCheckedHotel,
     ]);
     setIsCheckedPension(false);
     setIsCheckedBuilding(false);
@@ -161,16 +162,16 @@ const ConstructionModal = ({
                 price={land.currentBuildingPrices[0]}
                 width={150}
                 height={190}
-                isChecked={land.buildings[1] ? null : isCheckedPension}
-                handleCheck={land.buildings[1] ? null : handleCheckPension}
+                isChecked={land.buildings[0] ? null : isCheckedPension}
+                handleCheck={land.buildings[0] ? null : handleCheckPension}
               />
               <BuildingCard
                 type='빌딩'
                 price={land.currentBuildingPrices[1]}
                 width={150}
                 height={190}
-                isChecked={land.buildings[2] ? null : isCheckedBuilding}
-                handleCheck={land.buildings[2] ? null : handleCheckBuilding}
+                isChecked={land.buildings[1] ? null : isCheckedBuilding}
+                handleCheck={land.buildings[1] ? null : handleCheckBuilding}
                 leftTurn={player ? 1 - player.currentLap : 0}
               />
               <BuildingCard
@@ -178,23 +179,36 @@ const ConstructionModal = ({
                 price={land.currentBuildingPrices[2]}
                 width={150}
                 height={190}
-                isChecked={land.buildings[3] ? null : isCheckedHotel}
-                handleCheck={land.buildings[3] ? null : handleCheckHotel}
+                isChecked={land.buildings[2] ? null : isCheckedHotel}
+                handleCheck={land.buildings[2] ? null : handleCheckHotel}
                 leftTurn={player ? 2 - player.currentLap : 0}
               />
             </div>
 
-            <div className='flex flex-col w-full h-fit px-[30px]  relative'>
-              <div className='flex flex-row justify-center bg-primary-200 w-full h-full py-[15px] items-center my-[20px] rounded-[20px]'>
-                <p className='text-text-100 font-bold text-[22px]'>건설 비용</p>
-                <p className='text-text-100 font-bold text-[22px] mx-[20px]'>
-                  →
-                </p>
-                <p className='text-text-100 font-bold text-[22px]'>
-                  {addAmountUnit(totalPurchasePrice)}
-                </p>
+            {totalPurchasePrice == 0 && (
+              <div className='flex flex-col w-full h-fit px-[30px]  relative'>
+                <div className='flex flex-row justify-center bg-primary-200 w-full h-full py-[15px] items-center my-[20px] rounded-[20px]'>
+                  <p className='text-text-100 font-bold text-[22px] mx-[20px]'>
+                    더이상 지을 건물이 없습니다.
+                  </p>
+                </div>
               </div>
-            </div>
+            )}
+            {totalPurchasePrice > 0 && (
+              <div className='flex flex-col w-full h-fit px-[30px]  relative'>
+                <div className='flex flex-row justify-center bg-primary-200 w-full h-full py-[15px] items-center my-[20px] rounded-[20px]'>
+                  <p className='text-text-100 font-bold text-[22px]'>
+                    건설 비용
+                  </p>
+                  <p className='text-text-100 font-bold text-[22px] mx-[20px]'>
+                    →
+                  </p>
+                  <p className='text-text-100 font-bold text-[22px]'>
+                    {addAmountUnit(totalPurchasePrice)}
+                  </p>
+                </div>
+              </div>
+            )}
 
             <motion.div
               className='w-full flex flex-row justify-center items-center mb-[40px]'
