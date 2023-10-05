@@ -505,7 +505,7 @@ const GameRoom = () => {
         subTemp.unsubscribe();
       }
     };
-  }, [gameId, myTurn, 소켓연결]);
+  }, [gameId, myTurn, setLandList, setPlayerList, 소켓연결]);
 
   useEffect(() => {
     if (이동중) return;
@@ -631,6 +631,17 @@ const GameRoom = () => {
         cardImg={황금열쇠이미지}
         isOpen={isOpenGoldenKey}
         handleGoldenKey={() => {
+          // 주사위에서 더블이 나온 경우
+          if (myTurn) {
+            if (reDice) {
+              setIsDiceRoll(false);
+              setIsDiceRollButtonClick(false);
+            } else {
+              setIsTurnEnd(true);
+            }
+          }
+
+          console.log('황금열쇠 끝~~~');
           setIsOpenGoldenKey(false);
         }}
       />
