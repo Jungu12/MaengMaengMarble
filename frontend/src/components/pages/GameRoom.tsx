@@ -156,6 +156,14 @@ const GameRoom = () => {
           const parkResult = response as WSResponseType<SlotType>;
           console.log('[박진호데이터]', parkResult);
           setPlayerList(parkResult.data.players);
+          if (myTurn) {
+            if (reDice) {
+              setIsDiceRoll(false);
+              setIsDiceRollButtonClick(false);
+            } else {
+              setIsTurnEnd(true);
+            }
+          }
         }
       });
     };
