@@ -71,6 +71,7 @@ const GameRoom = () => {
   const [이동가능, set이동가능] = useState(false);
   const [소켓연결, set소켓연결] = useState(false);
   const [인수중, set인수중] = useState(false);
+  const [어디로든문_이용중, set어디로든문_이용중] = useState(false);
 
   const [dice1, setDice1] = useState<1 | 2 | 3 | 4 | 5 | 6>(1);
   const [dice2, setDice2] = useState<1 | 2 | 3 | 4 | 5 | 6>(1);
@@ -182,6 +183,24 @@ const GameRoom = () => {
       destination: `/pub/game-rooms/take-over/${gameId}`,
     });
   }, [gameId]);
+
+  const 어디로든이동 = useCallback(
+    (value: number) => {
+      set어디로든문_이용중(false);
+      // 강준구가 문단속 중
+      if (info!.doorCheck > 0) {
+        console.log('문단속중');
+      } else {
+        client.current?.publish({
+          destination: `/pub/game-rooms/door/${gameId}`,
+          body: JSON.stringify({
+            landId: value,
+          }),
+        });
+      }
+    },
+    [gameId, info]
+  );
 
   useEffect(() => {
     client.current = getClient();
@@ -485,6 +504,29 @@ const GameRoom = () => {
             }
           }
 
+          if (response.type === '어디로든문맹맹지급') {
+            const result = response as WSResponseType<(PlayerType | null)[]>;
+            locationUpdate();
+            setPlayerList(result.data);
+            if (myTurn) {
+              client.current?.publish({
+                destination: `/pub/game-rooms/maengmaeng/${gameId}`,
+              });
+              setIsTurnEnd(true);
+            }
+          }
+
+          if (response.type === '어디로든문이동후로직') {
+            const result = response as WSResponseType<(PlayerType | null)[]>;
+            locationUpdate();
+            setPlayerList(result.data);
+            if (myTurn) {
+              client.current?.publish({
+                destination: `/pub/game-rooms/after-move/${gameId}`,
+              });
+            }
+          }
+
           if (response.type === '턴종료끝') {
             const temp = response as WSResponseType<TurnEndResponseType>;
             const players = temp.data.players;
@@ -508,6 +550,9 @@ const GameRoom = () => {
             // 2.어디로든 문인 경우
             else if (nextPlayerLocation === 24) {
               console.log('어디로든 문');
+              if (myTurn) {
+                set어디로든문_이용중(true);
+              }
               // 이동 위치 선택 화면 보여주기
             }
             // 3. 거래정지칸인 경우
@@ -1291,6 +1336,8 @@ const GameRoom = () => {
           controls2={controls2}
           controls3={controls3}
           controls4={controls4}
+          isDoorUse={어디로든문_이용중}
+          handleDoor={어디로든이동}
         />
       </div>
     </>

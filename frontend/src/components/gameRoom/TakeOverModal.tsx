@@ -24,10 +24,10 @@ const TakeOverModal = ({
         <div className='text-4xl text-text-100 mb-[32px] font-bold'>
           인수하시겠습니까?
         </div>
-        <div className='my-auto text-3xl text-text-50 mb-[40px] font-semibold'>{`${formatAsset(
+        <div className='mt-[60px] text-3xl text-text-50 mb-[40px] font-semibold'>{`${formatAsset(
           calCurrentFees(land)
-        )}원`}</div>
-        <div className='flex w-full h-[60px] gap-[12px] justify-center items-center'>
+        )}`}</div>
+        <div className='mt-[60px] flex w-full h-[60px] gap-[12px] justify-center items-center'>
           <CButton
             type={'green'}
             onClick={handleTakeOver}
