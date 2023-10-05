@@ -27,8 +27,7 @@
   </br>
   
   
-## 🧑🏻‍🦯 프로젝트에 대한 설명
-### 프로젝트 목적
+## 🧑🏻‍🦯 프로젝트 목적
 "문맹은 생활을 불편하게 하지만, ‘금융 문맹’은 생존을 불가능하게 만들기 때문에 문맹보다 더 무섭다."
 미국 경제학자이자 연방준비제도이사회 의장이었던 앨런 그린스펀이 한 말입니다. 
 금융 문맹이란 돈을 어떻게 관리해야 할지 모르는 것을 뜻합니다.
@@ -36,11 +35,33 @@
 우리나라 청소년의 금융 이해력 수준이 계속 낮아지고 있습니다. 청소년금융교육협의회(청교협)의 ‘청소년 금융이해력조사 결과’ 발표에 따르면, 2023년 우리나라 학생들의 금융 이해력 평균 점수는 
 낙제 점수 60점에 한참 못 미치는 수준인 46.8점으로 나타났습니다.
 
+이러한 금융 문맹을 해결하기 위해 맹맹마블(Money Management Game)을 기획하게 되었습니다.
+ 
+ 
+  </br>
+  </br>
+ 
+## 🛠 기술 스택
+`공통` - OAuth 2.0
+
+`Front` - React, TypeScript, React-Query, tailwind, npm, Recoil, vite
+
+`Back` - Java, Springboot, Spring Security, Swagger, JUnit, Gradle, Python
+
+`DB` - MySQL
+
+`채팅` - Socket.io, Redis
+
+`Deploy` - AWS EC2, RDS, S3, Nginx, Jenkins, Docker
+
+`Cooperation` - Figma, Jira, GitLab, Mattermost, Notion 
+ 
 
   </br>
   </br>
-
-### 아키텍처
+ 
+## 🔌 아키텍처
+<img src="https://lab.ssafy.com/s09-fintech-finance-sub2/S09P22D207/-/raw/master/images/architecture.png" height="400">
 맹맹마블의 서비스 아키텍쳐 구성도입니다.
 
 네이버 소셜 로그인으로 로그인 기능을 구현하였습니다.
@@ -59,6 +80,33 @@ game server는 유저들에게 실시간성 보장과, 데이터 전달을 위�
 
 그리고 게임 플레이 데이터와, 유저별 게임 플레이 스타일을 분석한 정보는 RDBMS에 저장 됩니다.
 
+
+  </br>
+  </br>
+  
+## 🔌 맹맹마블 기능
+#### 네이버 소셜 로그인 지원
+<img src="https://lab.ssafy.com/s09-fintech-finance-sub2/S09P22D207/-/raw/master/images/login.png" height="400">
+ 
+ 
+#### 로비에서 대기방 입장 및 생성
+<img src="https://lab.ssafy.com/s09-fintech-finance-sub2/S09P22D207/-/raw/master/images/lobby.png" height="400">
+ 
+ 
+#### 여러가지 캐릭터 구매
+<img src="https://lab.ssafy.com/s09-fintech-finance-sub2/S09P22D207/-/raw/master/images/store.png" height="400">
+ 
+ 
+#### 채팅이 가능한 대기방
+<img src="https://lab.ssafy.com/s09-fintech-finance-sub2/S09P22D207/-/raw/master/images/waiting-room.png" height="400">
+ 
+ 
+#### 랜덤으로 정해지는 순서
+<img src="https://lab.ssafy.com/s09-fintech-finance-sub2/S09P22D207/-/raw/master/images/start-game.png" height="400">
+ 
+ 
+#### 신나는 게임 화면
+<img src="https://lab.ssafy.com/s09-fintech-finance-sub2/S09P22D207/-/raw/master/images/in-game.png" height="400">
 
   </br>
   </br>
