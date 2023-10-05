@@ -369,6 +369,21 @@ const GameRoom = () => {
             console.log('자유시간~~~');
           }
 
+          if (response.type === '세금징수') {
+            client.current?.publish({
+              destination: `/pub/game-rooms/tax/${gameId}`,
+            });
+          }
+
+          if (response.type === '세금 징수') {
+            const result = response as WSResponseType<(PlayerType | null)[]>;
+            locationUpdate();
+            setPlayerList(result.data);
+            if (myTurn) {
+              setIsTurnEnd(true);
+            }
+          }
+
           if (response.type === '박진호 끝') {
             const parkResult = response as WSResponseType<SlotType>;
             console.log('[박진호데이터]', parkResult);
