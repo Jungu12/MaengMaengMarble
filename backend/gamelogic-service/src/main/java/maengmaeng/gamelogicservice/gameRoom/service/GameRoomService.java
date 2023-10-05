@@ -1079,7 +1079,7 @@ public class GameRoomService {
 					// 내땅 일 때
 					logger.info("type=건물구매");
 
-					responseDto = ResponseDto.builder().type("건물구매").build();
+					responseDto = ResponseDto.builder().type("구매").build();
 				} else {
 					// 다른 플레이어의 소유 일 때
 					// 통행료 계산매
