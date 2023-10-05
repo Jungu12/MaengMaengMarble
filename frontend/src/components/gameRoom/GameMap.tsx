@@ -248,7 +248,6 @@ const GameMap = ({
             value={10}
             width={90}
             height={60}
-            onClickArea={onClickLand}
           />
           <MapArea
             src={images.map.argentina}

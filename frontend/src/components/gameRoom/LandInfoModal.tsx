@@ -109,8 +109,7 @@ const LandInfoModal = ({ landInfo, isOpen, handleLandInfo }: Props) => {
                   alt='국기 사진'
                 />
                 <p className='text-primary-light100 font-bold text-[30px] '>
-                  {/* {landInfo.name} */}
-                  베트남
+                  {landInfo.name}
                 </p>
                 <button onClick={handleLandInfo}>
                   <img
