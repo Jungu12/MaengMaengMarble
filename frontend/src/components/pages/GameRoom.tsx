@@ -106,24 +106,32 @@ const GameRoom = () => {
       setNews(data.info.effectNews);
       setLandList(data.lands);
       // TODO: 주식도 최신화 해야함
-      // controls1.set({
-      //   x: 0,
-      //   y: 0,
-      // });
-      // controls2.set({
-      //   x: 0,
-      //   y: 0,
-      // });
-      // controls3.set({
-      //   x: 0,
-      //   y: 0,
-      // });
-      // controls4.set({
-      //   x: 0,
-      //   y: 0,
-      // });
+      controls1.set({
+        x: 0,
+        y: 0,
+      });
+      controls2.set({
+        x: 0,
+        y: 0,
+      });
+      controls3.set({
+        x: 0,
+        y: 0,
+      });
+      controls4.set({
+        x: 0,
+        y: 0,
+      });
     },
-    [setLandList, setNews, setPlayerList]
+    [
+      controls1,
+      controls2,
+      controls3,
+      controls4,
+      setLandList,
+      setNews,
+      setPlayerList,
+    ]
   );
 
   useEffect(() => {
@@ -137,12 +145,33 @@ const GameRoom = () => {
     });
   }, [gameId]);
 
-  // 소켓 연결
   useEffect(() => {
     let subTemp: StompJs.StompSubscription;
     client.current = getClient();
     activateClient(client.current);
     client.current.onConnect = () => {
+      // 방장인 경우 게임 시작 알리기
+      if (!client.current) return;
+      if (user?.userId === state.userList[0].userId) {
+        client.current.publish({
+          destination: `/pub/game-rooms/start/${gameId}`,
+          body: JSON.stringify({
+            cnt: currentParticipantsNum(state.userList).toString(),
+          }),
+        });
+      }
+    };
+
+    return () => {
+      subTemp.unsubscribe();
+    };
+  }, [gameId, state.userList, user?.userId]);
+
+  // 소켓 연결
+  useEffect(() => {
+    let subTemp: StompJs.StompSubscription;
+
+    if (client.current?.connected) {
       // 방장인 경우 게임 시작 알리기
       if (!client.current) return;
       if (user?.userId === state.userList[0].userId) {
@@ -185,7 +214,7 @@ const GameRoom = () => {
           }
         }
       });
-    };
+    }
 
     return () => {
       subTemp.unsubscribe();
