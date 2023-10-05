@@ -167,7 +167,6 @@ const GameRoom = () => {
       set소켓연결(true);
       if (client.current) {
         if (!client.current) return;
-        if (initSub.current) return;
         initSub.current = client.current.subscribe(
           `/sub/game-rooms/${gameId}`,
           (res) => {
@@ -216,7 +215,6 @@ const GameRoom = () => {
   // 구독
   useEffect(() => {
     if (!client.current) return;
-    if (gameSub.current) return;
     if (client.current.connected) {
       gameSub.current = client.current.subscribe(
         `/sub/game-rooms/${gameId}`,
@@ -452,7 +450,6 @@ const GameRoom = () => {
   // 황금 열쇠 구독
   useEffect(() => {
     if (!client.current) return;
-    if (keySub.current) return;
     if (client.current.connected && 소켓연결) {
       keySub.current = client.current.subscribe(
         `/sub/game-rooms/${gameId}`,
