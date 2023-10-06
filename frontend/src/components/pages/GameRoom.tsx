@@ -1543,7 +1543,7 @@ const GameRoom = () => {
             {/* 채팅창 */}
             <div className='flex flex-col h-full w-[320px]'>
               <div
-                className='flex-1 mb-[12px] text-white p-[12px] overflow-y-auto scrollbar-chat'
+                className='flex-1 mb-[12px] text-white p-[12px] overflow-y-auto scrollbar-chat h-[600px]'
                 style={{
                   borderRadius: '16px',
                   border: '1px solid rgba(0, 0, 0, 0.30)',
@@ -1560,7 +1560,7 @@ const GameRoom = () => {
                 </div>
               </div>
               <input
-                className='h-[36px] px-[16px] text-white outline-none font-medium'
+                className='h-[36px] px-[16px] text-white outline-none font-medium mb-auto'
                 style={{
                   borderRadius: '16px',
                   border: '1px solid rgba(0, 0, 0, 0.30)',
