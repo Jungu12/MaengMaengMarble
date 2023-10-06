@@ -1,5 +1,5 @@
 import GameRoom from '@pages/GameRoom';
-import HomePage from '@pages/HomePage';
+// import HomePage from '@pages/HomePage';
 import Lobby from '@pages/Lobby';
 import Store from '@pages/Store';
 import LoginCallBackPage from '@pages/LoginCallBackPage';
@@ -7,20 +7,23 @@ import LoginPage from '@pages/LoginPage';
 import NotFound from '@pages/NotFound';
 import WaitingRoom from '@pages/WaitingRoom';
 import { AnimatePresence } from 'framer-motion';
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import PrivateRoutes from './PrivateRouter';
-import Test from '@pages/Test';
-import ModalTest from '@pages/ModalTest';
+// import Test from '@pages/Test';
+// import ModalTest from '@pages/ModalTest';
 
 const RootRouter = () => {
   return (
     <BrowserRouter>
       <AnimatePresence>
         <Routes>
-          <Route path='/' element={<HomePage />}></Route>
-          <Route path='/test2' element={<ModalTest />}></Route>
+          <Route
+            path='/'
+            element={<Navigate to='/lobby' replace={true} />}
+          ></Route>
+          {/* <Route path='/test2' element={<ModalTest />}></Route> */}
           <Route path='/login' element={<LoginPage />}></Route>
-          <Route path='/test' element={<Test />} />
+          {/* <Route path='/test' element={<Test />} /> */}
           <Route element={<PrivateRoutes />}>
             <Route
               path='/login/oauth/naver/callback'

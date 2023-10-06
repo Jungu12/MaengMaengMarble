@@ -12,7 +12,7 @@ import { motion, useAnimation } from 'framer-motion';
 import { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import * as StompJs from '@stomp/stompjs';
 import { activateClient, getClient } from '@utils/socket';
-import { useLocation, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { ParticipantsType, WSResponseType } from '@/types/common/common.type';
 import Confetti from 'react-confetti';
 import {
@@ -54,6 +54,7 @@ import MapArea from '@components/gameRoom/MapArea';
 import InvestmentModal from '@components/gameRoom/InvestmentModal';
 
 const GameRoom = () => {
+  const navigation = useNavigate();
   const location = useLocation();
   const state = location.state as { userList: ParticipantsType[] };
   const user = useRecoilValue(userState);
@@ -881,9 +882,15 @@ const GameRoom = () => {
 
   if (게임종료) {
     return (
-      <div className='w-full h-full bg-black flex items-center justify-center'>
+      <div className='w-full h-full bg-black flex items-center justify-center relative'>
         <Confetti width={window.innerWidth} height={window.innerHeight} />
         <div className='text-white font-bold text-[80px]'>{`${winner}님이 승리하였습니다`}</div>
+        <button
+          className='absolute bottom-[24px] right-[24px] text-white font-bold text-[32px]'
+          onClick={() => navigation('/lobby')}
+        >
+          로비로 돌아가기 →
+        </button>
       </div>
     );
   }
