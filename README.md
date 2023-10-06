@@ -102,7 +102,7 @@ game server는 유저들에게 실시간성 보장과, 데이터 전달을 위�
  
  
 #### 랜덤으로 정해지는 순서
-<img src="https://lab.ssafy.com/s09-fintech-finance-sub2/S09P22D207/-/raw/master/images/start-game.png" height="400">
+<img src="./images/start-game.png" height="400">
  
  
 #### 신나는 게임 화면
