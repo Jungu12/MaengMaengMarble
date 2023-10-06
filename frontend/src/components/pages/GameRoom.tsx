@@ -13,7 +13,11 @@ import { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import * as StompJs from '@stomp/stompjs';
 import { activateClient, getClient } from '@utils/socket';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
-import { ParticipantsType, WSResponseType } from '@/types/common/common.type';
+import {
+  ChatMessageType,
+  ParticipantsType,
+  WSResponseType,
+} from '@/types/common/common.type';
 import Confetti from 'react-confetti';
 import {
   DiceResultType,
@@ -62,6 +66,7 @@ const GameRoom = () => {
   const gameSub = useRef<StompJs.StompSubscription>();
   const keySub = useRef<StompJs.StompSubscription>();
   const initSub = useRef<StompJs.StompSubscription>();
+  const chatSub = useRef<StompJs.StompSubscription>();
   const { gameId } = useParams();
   const [playerList, setPlayerList] = useRecoilState(playersState);
   const [currentPlayer, setCurrentPlayer] = useRecoilState(currentPlayerState);
@@ -81,6 +86,10 @@ const GameRoom = () => {
   const [맹맹지급, set맹맹지급] = useState(false);
   const [게임종료, set게임종료] = useState(false);
   const [winner, setWinner] = useState('');
+
+  const [input, setInput] = useState('');
+  const [chatList, setChatList] = useState<ChatMessageType[]>([]);
+  const scrollRef = useRef<HTMLDivElement>(null);
 
   const [dice1, setDice1] = useState<1 | 2 | 3 | 4 | 5 | 6>(1);
   const [dice2, setDice2] = useState<1 | 2 | 3 | 4 | 5 | 6>(1);
@@ -112,6 +121,32 @@ const GameRoom = () => {
     }
     return false;
   }, [currentPlayer, user?.nickname]);
+
+  const sendChatMessage = useCallback(
+    (msg: string) => {
+      console.log(msg);
+
+      client.current?.publish({
+        destination: `/pub/chats`,
+        body: JSON.stringify({
+          roomCode: gameId,
+          sender: user?.nickname,
+          message: msg,
+        }),
+      });
+    },
+    [gameId, user?.nickname]
+  );
+
+  const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setInput(e.target.value);
+  }, []);
+
+  const scrollToBottom = useCallback(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    }
+  }, []);
 
   // 주사위 던지기
   const handleDiceRoll = useCallback(() => {
@@ -169,8 +204,8 @@ const GameRoom = () => {
   );
 
   useEffect(() => {
-    console.log(reDice);
-  }, [reDice]);
+    scrollToBottom();
+  }, [chatList, scrollToBottom]);
 
   // 턴 종료
   const handleTurnEnd = useCallback(() => {
@@ -245,6 +280,20 @@ const GameRoom = () => {
             }
           }
         );
+
+        // 채팅 연결
+        chatSub.current = client.current.subscribe(
+          `/sub/chats/${gameId}`,
+          (res) => {
+            const response: WSResponseType<ChatMessageType> = JSON.parse(
+              res.body
+            );
+            // 채팅 리스트 추가
+            setChatList((prev) => [...prev, response.data]);
+            console.log(JSON.parse(res.body));
+          }
+        );
+
         // 방장인 경우 게임 시작 알리기
         if (user?.userId === state.userList[0].userId) {
           client.current.publish({
@@ -1501,7 +1550,13 @@ const GameRoom = () => {
                   background: 'rgba(0, 0, 0, 0.25)',
                 }}
               >
-                {/* 채팅 내용 */}
+                <div className='flex flex-col justify-end gap-[4px] font-[500]'>
+                  {chatList.map((chat, index) => (
+                    <span
+                      key={index}
+                    >{`${chat.sender} : ${chat.message}`}</span>
+                  ))}
+                </div>
               </div>
               <input
                 className='h-[36px] px-[16px] text-white outline-none font-medium'
@@ -1510,6 +1565,17 @@ const GameRoom = () => {
                   border: '1px solid rgba(0, 0, 0, 0.30)',
                   background: 'rgba(0, 0, 0, 0.25)',
                 }}
+                placeholder='플레이어들에게 하고 싶은 말을 적어주세요!'
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && !e.nativeEvent.isComposing) {
+                    if (input === '') return;
+                    e.preventDefault();
+                    sendChatMessage(input);
+                    setInput('');
+                  }
+                }}
+                value={input}
+                onChange={handleChange}
               />
             </div>
 
