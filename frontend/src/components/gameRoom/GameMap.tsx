@@ -402,9 +402,7 @@ const GameMap = ({
               src={playerList[0].avatarImage}
               alt='캐릭터'
               style={{
-                filter:
-                  'blur(5px) brightness(1.5) saturate(150%) hue-rotate(10deg)',
-                boxShadow: '1px 1px 1px #ff0000',
+                filter: 'drop-shadow(10px 10px 10px #ff0000)',
               }}
             />
           </motion.div>
@@ -423,9 +421,7 @@ const GameMap = ({
               src={playerList[1].avatarImage}
               alt='캐릭터'
               style={{
-                filter:
-                  'blur(5px) brightness(1.5) saturate(150%) hue-rotate(10deg)',
-                boxShadow: '1px 1px 1px #4c00ff',
+                filter: 'drop-shadow(10px 10px 10px #0022ff)',
               }}
             />
           </motion.div>
@@ -444,9 +440,7 @@ const GameMap = ({
               src={playerList[2].avatarImage}
               alt='캐릭터'
               style={{
-                filter:
-                  'blur(5px) brightness(1.5) saturate(150%) hue-rotate(10deg)',
-                boxShadow: '1px 1px 1px #00a344',
+                filter: 'drop-shadow(10px 10px 10px #019f33)',
               }}
             />
           </motion.div>
@@ -465,9 +459,7 @@ const GameMap = ({
               src={playerList[3].avatarImage}
               alt='캐릭터'
               style={{
-                filter:
-                  'blur(5px) brightness(1.5) saturate(150%) hue-rotate(10deg)',
-                boxShadow: '1px 1px 1px #b600e3',
+                filter: 'drop-shadow(10px 10px 10px #ab00d1)',
               }}
             />
           </motion.div>

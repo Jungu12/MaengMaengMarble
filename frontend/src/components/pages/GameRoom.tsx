@@ -1543,12 +1543,13 @@ const GameRoom = () => {
             {/* 채팅창 */}
             <div className='flex flex-col h-full w-[320px]'>
               <div
-                className='flex-1 mb-[12px] text-white p-[12px]'
+                className='flex-1 mb-[12px] text-white p-[12px] overflow-y-auto scrollbar-chat'
                 style={{
                   borderRadius: '16px',
                   border: '1px solid rgba(0, 0, 0, 0.30)',
                   background: 'rgba(0, 0, 0, 0.25)',
                 }}
+                ref={scrollRef}
               >
                 <div className='flex flex-col justify-end gap-[4px] font-[500]'>
                   {chatList.map((chat, index) => (
