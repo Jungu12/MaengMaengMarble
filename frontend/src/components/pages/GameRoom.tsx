@@ -401,6 +401,14 @@ const GameRoom = () => {
             }
           }
 
+          if (response.type === '구매') {
+            const result = response as WSResponseType<FullGameDataType>;
+            updateInfo(result.data);
+            if (myTurn) {
+              setIsOepnContrunction(true);
+            }
+          }
+
           if (response.type === '박진호') {
             console.log('박진호가 왔어요~~');
 
