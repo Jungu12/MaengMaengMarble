@@ -1245,7 +1245,16 @@ public class GameRoomService {
 			int turnCount = info.getTurnCount() + 1;
 			// 종료 조건 체크
 			if (turnCount == 6) {
-				return ResponseDto.builder().type("게임종료").build();
+				int winner = -1;
+				long maxValue = 0;
+				for(int i=0;i<4;i++){
+					if(players[i] !=null){
+						if(maxValue < calculateAsset(players[i], gameInfo.getStocks(),gameInfo.getLands())){
+							maxValue =calculateAsset(players[i], gameInfo.getStocks(),gameInfo.getLands());
+							winner = i;
+						}
+					}
+				return ResponseDto.builder().type("게임종료").data(players[winner].getNickname()).build();
 			}
 			int doorCheck = info.getDoorCheck();
 			if (doorCheck > 1) {
