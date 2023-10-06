@@ -1420,7 +1420,7 @@ public class GameRoomService {
 		}
 
 		logger.info("endGame() , winner = {}", players[winner].getNickname());
-		return ResponseDto.builder().type("게임결과").data(players[winner]).build();
+		return ResponseDto.builder().type("게임결과").data(players[winner].getNickname()).build();
 
 	}
 
