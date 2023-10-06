@@ -92,9 +92,13 @@ const MapArea = ({ height, width, src, alt, value, onClickArea }: Props) => {
                 className='h-[32px]'
                 src={ground}
                 alt='땅'
-                initial={{ scale: 2.0 }}
+                initial={{ scale: 10.0 }}
                 animate={{ scale: 1.0 }}
                 exit={{ opacity: 0 }}
+                transition={{
+                  scale: { duration: 1 },
+                  opacity: { duration: 0.5 },
+                }}
               />
             </AnimatePresence>
           ) : (
@@ -105,9 +109,13 @@ const MapArea = ({ height, width, src, alt, value, onClickArea }: Props) => {
                     className='h-[32px] ml-[2px]'
                     src={pension}
                     alt='펜션'
-                    initial={{ scale: 2.0 }}
+                    initial={{ scale: 10.0 }}
                     animate={{ scale: 1.0 }}
                     exit={{ opacity: 0 }}
+                    transition={{
+                      scale: { duration: 1 },
+                      opacity: { duration: 0.5 },
+                    }}
                   />
                 )}
               </AnimatePresence>
@@ -117,9 +125,13 @@ const MapArea = ({ height, width, src, alt, value, onClickArea }: Props) => {
                     className='h-[32px] ml-[-8px]'
                     src={building}
                     alt='빌딩'
-                    initial={{ scale: 2.0 }}
+                    initial={{ scale: 10.0 }}
                     animate={{ scale: 1.0 }}
                     exit={{ opacity: 0 }}
+                    transition={{
+                      scale: { duration: 1 },
+                      opacity: { duration: 0.5 },
+                    }}
                   />
                 )}
               </AnimatePresence>
@@ -129,9 +141,13 @@ const MapArea = ({ height, width, src, alt, value, onClickArea }: Props) => {
                     className='h-[32px] ml-[-8px]'
                     src={hotel}
                     alt='호텔'
-                    initial={{ scale: 2.0 }}
+                    initial={{ scale: 10.0 }}
                     animate={{ scale: 1.0 }}
                     exit={{ opacity: 0 }}
+                    transition={{
+                      scale: { duration: 1 },
+                      opacity: { duration: 0.5 },
+                    }}
                   />
                 )}
               </AnimatePresence>

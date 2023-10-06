@@ -131,18 +131,22 @@ const GameRoom = () => {
     controls1.start({
       x: 0,
       y: 0,
+      transition: { duration: 0 },
     });
     controls2.start({
       x: 0,
       y: 0,
+      transition: { duration: 0 },
     });
     controls3.start({
       x: 0,
       y: 0,
+      transition: { duration: 0 },
     });
     controls4.start({
       x: 0,
       y: 0,
+      transition: { duration: 0 },
     });
   }, [controls1, controls2, controls3, controls4]);
 
@@ -523,6 +527,7 @@ const GameRoom = () => {
           if (response.type === '박진호 끝') {
             const parkResult = response as WSResponseType<SlotType>;
             console.log('[박진호데이터]', parkResult);
+            locationUpdate();
             setPlayerList(parkResult.data.players);
             if (myTurn) {
               if (reDice) {
