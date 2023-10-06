@@ -61,7 +61,7 @@
   </br>
  
 ## 🔌 아키텍처
-<img src="https://lab.ssafy.com/s09-fintech-finance-sub2/S09P22D207/-/raw/master/images/architecture.png" height="400">
+<img src="./images/architecture.png" height="400">
 맹맹마블의 서비스 아키텍쳐 구성도입니다.
 
 네이버 소셜 로그인으로 로그인 기능을 구현하였습니다.
@@ -86,19 +86,19 @@ game server는 유저들에게 실시간성 보장과, 데이터 전달을 위�
   
 ## 🔌 맹맹마블 기능
 #### 네이버 소셜 로그인 지원
-<img src="https://lab.ssafy.com/s09-fintech-finance-sub2/S09P22D207/-/raw/master/images/login.png" height="400">
+<img src="./images/login.png" height="400">
  
  
 #### 로비에서 대기방 입장 및 생성
-<img src="https://lab.ssafy.com/s09-fintech-finance-sub2/S09P22D207/-/raw/master/images/lobby.png" height="400">
+<img src="./images/lobby.png" height="400">
  
  
 #### 여러가지 캐릭터 구매
-<img src="https://lab.ssafy.com/s09-fintech-finance-sub2/S09P22D207/-/raw/master/images/store.png" height="400">
+<img src="./images/store.png" height="400">
  
  
 #### 채팅이 가능한 대기방
-<img src="https://lab.ssafy.com/s09-fintech-finance-sub2/S09P22D207/-/raw/master/images/waiting-room.png" height="400">
+<img src="./images/waiting-room.png" height="400">
  
  
 #### 랜덤으로 정해지는 순서
@@ -106,7 +106,7 @@ game server는 유저들에게 실시간성 보장과, 데이터 전달을 위�
  
  
 #### 신나는 게임 화면
-<img src="https://lab.ssafy.com/s09-fintech-finance-sub2/S09P22D207/-/raw/master/images/in-game.png" height="400">
+<img src="./images/in-game.png" height="400">
 
   </br>
   </br>
