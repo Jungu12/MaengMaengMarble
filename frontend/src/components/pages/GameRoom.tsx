@@ -76,6 +76,7 @@ const GameRoom = () => {
   const [소켓연결, set소켓연결] = useState(false);
   const [인수중, set인수중] = useState(false);
   const [어디로든문_이용중, set어디로든문_이용중] = useState(false);
+  const [맹맹지급, set맹맹지급] = useState(false);
 
   const [dice1, setDice1] = useState<1 | 2 | 3 | 4 | 5 | 6>(1);
   const [dice2, setDice2] = useState<1 | 2 | 3 | 4 | 5 | 6>(1);
@@ -355,6 +356,9 @@ const GameRoom = () => {
           // 한 바퀴 돈 경우 서버에 알려주기
           if (response.type === '주사위맹맹지급') {
             set이동가능(true);
+            if (myTurn) {
+              set맹맹지급(true);
+            }
             const diceResult = response as WSResponseType<DiceResultType>;
             setIsDiceRollButtonClick(true);
             console.log('주사위 결과 나왔어요');
@@ -368,11 +372,6 @@ const GameRoom = () => {
               setDoubleCnt(diceResult.data.doubleCount);
             } else {
               setReDice(false);
-            }
-            if (myTurn) {
-              client.current?.publish({
-                destination: `/pub/game-rooms/maengmaeng/${gameId}`,
-              });
             }
           }
 
@@ -834,7 +833,14 @@ const GameRoom = () => {
               set이동가능(false);
               console.log('이동 완료!!!');
 
-              if (myTurn) {
+              if (맹맹지급) {
+                if (myTurn) {
+                  client.current?.publish({
+                    destination: `/pub/game-rooms/maengmaeng/${gameId}`,
+                  });
+                  set맹맹지급(false);
+                }
+              } else if (myTurn) {
                 client.current?.publish({
                   destination: `/pub/game-rooms/after-move/${gameId}`,
                 });
