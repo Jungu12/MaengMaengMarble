@@ -570,7 +570,7 @@ const GameRoom = () => {
             }
           }
 
-          if (response.type === '게임결과') {
+          if (response.type === '게임종료') {
             const temp = response as WSResponseType<string>;
             set게임종료(true);
             setWinner(temp.data);
@@ -711,7 +711,6 @@ const GameRoom = () => {
 
           if (response.type === '허리케인' || response.type === '지진') {
             const 결과 = response as WSResponseType<GoldenKeyLandsResponseType>;
-            locationUpdate();
             set황금열쇠이미지(결과.data.imgUrl);
             setLandList(결과.data.lands);
             if (reDice) {
