@@ -1244,7 +1244,7 @@ public class GameRoomService {
 			//턴이 바뀔 때 수행되어야하는 로직
 			int turnCount = info.getTurnCount() + 1;
 			// 종료 조건 체크
-			if (turnCount == 31) {
+			if (turnCount == 6) {
 				return ResponseDto.builder().type("게임종료").build();
 			}
 			int doorCheck = info.getDoorCheck();
@@ -1406,8 +1406,21 @@ public class GameRoomService {
 	 * */
 	public ResponseDto endGame(String roomCode) {
 		//TODO: 게임 종료시 데이터 전송
+		GameInfo gameInfo = gameInfoRepository.getGameInfo(roomCode);
+		Player[] players = gameInfo.getPlayers();
+		int winner = -1;
+		long maxValue = 0;
+		for(int i=0;i<4;i++){
+			if(players[i] !=null){
+				if(maxValue < calculateAsset(players[i], gameInfo.getStocks(),gameInfo.getLands())){
+					maxValue =calculateAsset(players[i], gameInfo.getStocks(),gameInfo.getLands());
+					winner = i;
+				}
+			}
+		}
 
-		return ResponseDto.builder().type("게임결과").build();
+		logger.info("endGame() , winner = {}", players[winner].getNickname());
+		return ResponseDto.builder().type("게임결과").data(players[winner]).build();
 
 	}
 
