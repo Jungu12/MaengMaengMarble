@@ -1252,8 +1252,8 @@ public class GameRoomService {
 				long maxValue = 0;
 				for (int i = 0; i < 4; i++) {
 					if (players[i] != null) {
-						if (maxValue < calculateAsset(players[i], gameInfo.getStocks(), gameInfo.getLands())) {
-							maxValue = calculateAsset(players[i], gameInfo.getStocks(), gameInfo.getLands());
+						if (maxValue < players[i].getAsset()) {
+							maxValue = players[i].getAsset();
 							winner = i;
 						}
 					}
