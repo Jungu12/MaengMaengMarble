@@ -14,6 +14,7 @@ import * as StompJs from '@stomp/stompjs';
 import { activateClient, getClient } from '@utils/socket';
 import { useLocation, useParams } from 'react-router-dom';
 import { ParticipantsType, WSResponseType } from '@/types/common/common.type';
+import Confetti from 'react-confetti';
 import {
   DiceResultType,
   FullGameDataType,
@@ -77,6 +78,8 @@ const GameRoom = () => {
   const [인수중, set인수중] = useState(false);
   const [어디로든문_이용중, set어디로든문_이용중] = useState(false);
   const [맹맹지급, set맹맹지급] = useState(false);
+  const [게임종료, set게임종료] = useState(false);
+  const [winner, setWinner] = useState('');
 
   const [dice1, setDice1] = useState<1 | 2 | 3 | 4 | 5 | 6>(1);
   const [dice2, setDice2] = useState<1 | 2 | 3 | 4 | 5 | 6>(1);
@@ -567,6 +570,12 @@ const GameRoom = () => {
             }
           }
 
+          if (response.type === '게임결과') {
+            const temp = response as WSResponseType<string>;
+            set게임종료(true);
+            setWinner(temp.data);
+          }
+
           if (response.type === '턴종료끝') {
             const temp = response as WSResponseType<TurnEndResponseType>;
             const players = temp.data.players;
@@ -864,11 +873,21 @@ const GameRoom = () => {
     myTurn,
     playerList,
     user,
+    맹맹지급,
     이동가능,
     이동중,
   ]);
 
   if (!gameId || !client.current) return;
+
+  if (게임종료) {
+    return (
+      <div className='w-full h-full bg-black flex items-center justify-center'>
+        <Confetti width={window.innerWidth} height={window.innerHeight} />
+        <div className='text-white font-bold text-[80px]'>{`${winner}님이 승리하였습니다`}</div>
+      </div>
+    );
+  }
 
   if (!isGameStart) {
     return (
