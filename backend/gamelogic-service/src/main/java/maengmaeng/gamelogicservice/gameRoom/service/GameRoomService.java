@@ -36,7 +36,7 @@ public class GameRoomService {
 	 * 게임 정보  가져오기
 	 * Params: roomCode
 	 * return GameInfo
-	 * */
+	 */
 	public GameInfo getInfo(String roomCode) {
 		return gameInfoRepository.getGameInfo(roomCode);
 
@@ -44,7 +44,7 @@ public class GameRoomService {
 
 	/**
 	 * 처음 시작 카드 선택
-	 * */
+	 */
 	public synchronized GameStart setStart(String roomCode, int playerCnt) {
 
 		StartCard[] cards = new StartCard[playerCnt];
@@ -63,39 +63,39 @@ public class GameRoomService {
 		List<DbCountry> dbCountryList = dbCountryRespository.findAll();
 
 		List<News> platinumNews = dbNewsRepository.findByNewsType("Platinum")
-			.stream()
-			.map(gameInfoMapper::toRedisNews)
-			.collect(Collectors.toList());
+				.stream()
+				.map(gameInfoMapper::toRedisNews)
+				.collect(Collectors.toList());
 		Collections.shuffle(platinumNews);
 		List<News> diamondNews = dbNewsRepository.findByNewsType("Diamond")
-			.stream()
-			.map(gameInfoMapper::toRedisNews)
-			.collect(Collectors.toList());
+				.stream()
+				.map(gameInfoMapper::toRedisNews)
+				.collect(Collectors.toList());
 		Collections.shuffle(diamondNews);
 		List<News> bronzeNews = dbNewsRepository.findByNewsType("Bronze")
-			.stream()
-			.map(gameInfoMapper::toRedisNews)
-			.collect(Collectors.toList());
+				.stream()
+				.map(gameInfoMapper::toRedisNews)
+				.collect(Collectors.toList());
 		Collections.shuffle(bronzeNews);
 		int bronze = bronzeNews.size();
 		int diamond = diamondNews.size();
 		int platinum = platinumNews.size();
 		List<Land> landList = dbCountryList.stream().map(gameInfoMapper::toRedisLand).collect(Collectors.toList());
 		List<Stock> stockList = dbStockRepository.findAll()
-			.stream()
-			.map(gameInfoMapper::toRedisStock)
-			.collect(Collectors.toList());
+				.stream()
+				.map(gameInfoMapper::toRedisStock)
+				.collect(Collectors.toList());
 
 		GameInfo gameInfo = GameInfo.builder()
-			.roomCode(roomCode)
-			.players(new Player[4])
-			.lands(landList)
-			.info(Info.builder().playerCnt(playerCnt).build())
-			.goldenKeys(gameInfoMapper.toRedisGoldenKeys(bronze, diamond, platinum))
-			.stocks(stockList)
-			.newsInfo(NewsInfo.builder().bronze(bronzeNews).diamond(diamondNews).platinum(platinumNews).build())
-			.seqCards(cards)
-			.build();
+				.roomCode(roomCode)
+				.players(new Player[4])
+				.lands(landList)
+				.info(Info.builder().playerCnt(playerCnt).build())
+				.goldenKeys(gameInfoMapper.toRedisGoldenKeys(bronze, diamond, platinum))
+				.stocks(stockList)
+				.newsInfo(NewsInfo.builder().bronze(bronzeNews).diamond(diamondNews).platinum(platinumNews).build())
+				.seqCards(cards)
+				.build();
 
 		gameInfoRepository.createGameRoom(gameInfo);
 
@@ -104,7 +104,8 @@ public class GameRoomService {
 	}
 
 	/**
-	 * 플레이어 게임 순서 세팅*/
+	 * 플레이어 게임 순서 세팅
+	 */
 	@Transactional
 	public StartCard[] setPlayer(String roomCode, PlayerSeq playerSeq) {
 
@@ -114,7 +115,7 @@ public class GameRoomService {
 		int playerNum = gameInfo.getInfo().getPlayerCnt();
 		Avatar avatar = avatarRepository.getReferenceById(playerSeq.getCharacterId());
 		Player player = gameInfoMapper.toReidsPlayer(playerSeq.getUserId(), playerSeq.getNickname(),
-			playerSeq.getCharacterId(), avatar.getAvatarImageNoBg());
+				playerSeq.getCharacterId(), avatar.getAvatarImageNoBg());
 		int seq = startCards[playerSeq.getPlayerCnt()].getSeq();
 		if (players[seq - 1] == null && !startCards[playerSeq.getPlayerCnt()].isSelected()) {
 			players[seq - 1] = player;
@@ -122,12 +123,12 @@ public class GameRoomService {
 
 			if (seq == 1) {
 				Info info = Info.builder()
-					.currentPlayer(players[seq-1].getNickname())
-					.playerCnt(playerNum)
-					.turnCount(1)
-					.effectNews(new LinkedList<>())
-					.waitingNews(new PriorityQueue<WaitingNews>(new WaitingNewsComparator()))
-					.build();
+						.currentPlayer(players[seq - 1].getNickname())
+						.playerCnt(playerNum)
+						.turnCount(1)
+						.effectNews(new LinkedList<>())
+						.waitingNews(new PriorityQueue<WaitingNews>(new WaitingNewsComparator()))
+						.build();
 				gameInfo.setInfo(info);
 			}
 			gameInfo.setSeqCards(startCards);
@@ -136,14 +137,12 @@ public class GameRoomService {
 		gameInfoRepository.createGameRoom(gameInfo);
 
 
-
 		return gameInfo.getSeqCards();
 	}
 
 	/**
 	 * 현재 플레이어 인덱스 가져오기
-	 *
-	 * */
+	 */
 	public int getPlayerIdx(Player[] players, String currentPlayer) {
 		int currentIdx = -1;
 		for (int i = 0; i < players.length; i++) {
@@ -156,15 +155,15 @@ public class GameRoomService {
 
 	/**
 	 * 주사위 눈 반환
-	 * */
+	 */
 	public Dice getDice() {
 		Random random = new Random();
 
-		 // 주사위 1 던지기 (1부터 6까지)
-		 int dice1 = random.nextInt(6) + 1;
+		// 주사위 1 던지기 (1부터 6까지)
+		int dice1 = random.nextInt(6) + 1;
 
-		 // 주사위 2 던지기 (1부터 6까지)
-		 int dice2 = random.nextInt(6) + 1;
+		// 주사위 2 던지기 (1부터 6까지)
+		int dice2 = random.nextInt(6) + 1;
 
 
 		return Dice.builder().dice1(dice1).dice2(dice2).build();
@@ -172,7 +171,7 @@ public class GameRoomService {
 
 	/**
 	 * 주사위 굴리기.
-	 * */
+	 */
 	public ResponseDto rollDice(String roomCode) {
 		// 게임 정보 가져오기
 		GameInfo gameInfo = gameInfoRepository.getGameInfo(roomCode);
@@ -213,7 +212,7 @@ public class GameRoomService {
 		int curLocation = curPlayer.getCurrentLocation();
 
 		if (checkTrade) {
-			logger.info("doubleCount = {}",curPlayer.getDoubleCount());
+			logger.info("doubleCount = {}", curPlayer.getDoubleCount());
 			curPlayer.setCurrentLocation(stopTrade);
 			players[currentIdx] = curPlayer;
 			gameInfo.setPlayers(players);
@@ -244,7 +243,7 @@ public class GameRoomService {
 				logger.info("주사위 맹맹지급");
 				responseDto = ResponseDto.builder().type("주사위맹맹지급").data(dice).build();
 
-			} else{
+			} else {
 				players[currentIdx] = player;
 				gameInfo.setPlayers(players);
 
@@ -257,15 +256,14 @@ public class GameRoomService {
 			}
 
 
-
 		}
 
 		return responseDto;
 	}
 
 	/**
-	 *  현재 칸이 거래 정지에 있고 player의 doubleCount가 3이 아닐 때 주사위 굴리기
-	 * */
+	 * 현재 칸이 거래 정지에 있고 player의 doubleCount가 3이 아닐 때 주사위 굴리기
+	 */
 	public ResponseDto stopTrade(String roomCode) {
 		// 더블이면 탈출 or stopTradeCount 값이 3이면 탈출
 		GameInfo gameInfo = getInfo(roomCode);
@@ -281,7 +279,7 @@ public class GameRoomService {
 			}
 		}
 		Player curPlayer = players[currentIdx];
-		logger.info("stopTrade(),roomCode = {}, currentPlayer = {} ",roomCode,players[currentIdx].getNickname());
+		logger.info("stopTrade(),roomCode = {}, currentPlayer = {} ", roomCode, players[currentIdx].getNickname());
 		// 현재 위치가 stopTrade 위치가 아니면
 		if (curPlayer.getCurrentLocation() != stopTrade) {
 			// 예외 처리
@@ -329,6 +327,7 @@ public class GameRoomService {
 
 	/**
 	 * 토지 및 건물 구매
+	 *
 	 * @param roomCode
 	 * @param purchasedBuildings : 길이 4의 boolean 배열, 순서대로 토지, 건물1, 건물2, 건물 3의 구매 여부를 담은 배열
 	 */
@@ -382,15 +381,16 @@ public class GameRoomService {
 		gameInfoRepository.createGameRoom(gameInfo);
 
 		return ResponseDto.builder()
-			.type("자유")
-			.data(gameInfo)
-			.build();
+				.type("자유")
+				.data(gameInfo)
+				.build();
 	}
 
 	/**
 	 * 매각. 매각은 건물 단위가 아닌 토지 단위로 이루어진다.
+	 *
 	 * @param roomCode
-	 * @param landId 매각하는 토지 ID
+	 * @param landId   매각하는 토지 ID
 	 */
 	public ResponseDto forSale(String roomCode, int landId) {
 		// 게임 정보 가져오기
@@ -418,14 +418,14 @@ public class GameRoomService {
 		}
 
 		saledLand.setOwner(-1);
-		saledLand.setBuildings(new boolean[] {false, false, false});
+		saledLand.setBuildings(new boolean[]{false, false, false});
 
 		//Player 객체 안의 보유 땅 정보 업데이트
 		List<Integer> curPlayerLands = players[currentIdx].getLands();
 		curPlayerLands.remove(saledLand.getLandId());
 		players[currentIdx].setLands(curPlayerLands);
 
-		players[currentIdx].setMoney(players[currentIdx].getMoney() + (long)(currentLandPrice * 0.7));
+		players[currentIdx].setMoney(players[currentIdx].getMoney() + (long) (currentLandPrice * 0.7));
 
 		//gameInfo에 바뀐 정보 최신화
 		gameInfo.getLands().set(landId, saledLand);
@@ -435,13 +435,14 @@ public class GameRoomService {
 		gameInfoRepository.createGameRoom(gameInfo);
 
 		return ResponseDto.builder()
-			.type("자유")
-			.data(gameInfo)
-			.build();
+				.type("자유")
+				.data(gameInfo)
+				.build();
 	}
 
 	/**
 	 * 통행료 지불
+	 *
 	 * @param roomCode
 	 */
 	public ResponseDto payFee(String roomCode) {
@@ -489,8 +490,10 @@ public class GameRoomService {
 		return ResponseDto.builder().type("인수").data(players).build();
 	}
 
-	/**료
+	/**
+	 * 료
 	 * 인수
+	 *
 	 * @param roomCode
 	 */
 	public ResponseDto takeOver(String roomCode) {
@@ -550,9 +553,9 @@ public class GameRoomService {
 
 		// 바뀐 정보 return
 		return ResponseDto.builder()
-			.type("구매")
-			.data(gameInfo)
-			.build();
+				.type("구매")
+				.data(gameInfo)
+				.build();
 	}
 
 	public ResponseDto chooseGoldenKeys(String roomCode) {
@@ -576,8 +579,8 @@ public class GameRoomService {
 		Random random = new Random();
 		GoldenKeys goldenKeys = gameInfo.getGoldenKeys();
 		int totalProbability = goldenKeys.getBronze() + goldenKeys.getDiamond() + goldenKeys.getPlatinum() +
-			goldenKeys.getNewsBan() + goldenKeys.getHurricane() + goldenKeys.getAngel() +
-			goldenKeys.getKangJunGu() + goldenKeys.getLotto() + goldenKeys.getDoor() + goldenKeys.getEarthquake();
+				goldenKeys.getNewsBan() + goldenKeys.getHurricane() + goldenKeys.getAngel() +
+				goldenKeys.getKangJunGu() + goldenKeys.getLotto() + goldenKeys.getDoor() + goldenKeys.getEarthquake();
 
 		int randomValue = random.nextInt(totalProbability);
 		//황금 열쇠 종류
@@ -603,9 +606,9 @@ public class GameRoomService {
 			gameInfo.getNewsInfo().setBronze(bronzes);
 
 			responseDto = ResponseDto.builder()
-				.type(cardType)
-				.data(NewsResponse.builder().choosed(choosed).goldenKeys(goldenKeys).build())
-				.build();
+					.type(cardType)
+					.data(NewsResponse.builder().choosed(choosed).goldenKeys(goldenKeys).build())
+					.build();
 
 		} else if (randomValue < goldenKeys.getBronze() + goldenKeys.getPlatinum()) {
 			cardType = "플레티넘";
@@ -627,9 +630,9 @@ public class GameRoomService {
 			gameInfo.getNewsInfo().setPlatinum(platinums);
 
 			responseDto = ResponseDto.builder()
-				.type(cardType)
-				.data(NewsResponse.builder().choosed(choosed).goldenKeys(goldenKeys).build())
-				.build();
+					.type(cardType)
+					.data(NewsResponse.builder().choosed(choosed).goldenKeys(goldenKeys).build())
+					.build();
 
 		} else if (randomValue < goldenKeys.getBronze() + goldenKeys.getPlatinum() + goldenKeys.getDiamond()) {
 			cardType = "다이아몬드";
@@ -651,12 +654,12 @@ public class GameRoomService {
 			gameInfo.getNewsInfo().setDiamond(diamonds);
 
 			responseDto = ResponseDto.builder()
-				.type(cardType)
-				.data(NewsResponse.builder().choosed(choosed).goldenKeys(goldenKeys).build())
-				.build();
+					.type(cardType)
+					.data(NewsResponse.builder().choosed(choosed).goldenKeys(goldenKeys).build())
+					.build();
 
 		} else if (randomValue
-			< goldenKeys.getBronze() + goldenKeys.getPlatinum() + goldenKeys.getDiamond() + goldenKeys.getNewsBan()) {
+				< goldenKeys.getBronze() + goldenKeys.getPlatinum() + goldenKeys.getDiamond() + goldenKeys.getNewsBan()) {
 			cardType = "언론통제";
 			goldenKeys.setNewsBan(goldenKeys.getNewsBan() - 1);
 
@@ -672,14 +675,14 @@ public class GameRoomService {
 			gameInfo.setPlayers(players);
 
 			responseDto = ResponseDto.builder()
-				.type(cardType)
-				.data(GoldenKeysPlayersResponse.builder().players(players).goldenKeys(goldenKeys).imgUrl(
-					goldenKeys.getNewsBanImgUrl()).build())
-				.build();
+					.type(cardType)
+					.data(GoldenKeysPlayersResponse.builder().players(players).goldenKeys(goldenKeys).imgUrl(
+							goldenKeys.getNewsBanImgUrl()).build())
+					.build();
 
 		} else if (randomValue
-			< goldenKeys.getBronze() + goldenKeys.getPlatinum() + goldenKeys.getDiamond() + goldenKeys.getNewsBan()
-			+ goldenKeys.getHurricane()) {
+				< goldenKeys.getBronze() + goldenKeys.getPlatinum() + goldenKeys.getDiamond() + goldenKeys.getNewsBan()
+				+ goldenKeys.getHurricane()) {
 			cardType = "허리케인";
 			goldenKeys.setHurricane(goldenKeys.getHurricane() - 1);
 
@@ -711,14 +714,14 @@ public class GameRoomService {
 			gameInfo.setLands(lands);
 
 			responseDto = ResponseDto.builder()
-				.type(cardType)
-				.data(GoldenKeysLandsResponse.builder().Lands(lands).goldenKeys(goldenKeys).imgUrl(
-					goldenKeys.getHurricaneImgUrl()).build())
-				.build();
+					.type(cardType)
+					.data(GoldenKeysLandsResponse.builder().Lands(lands).goldenKeys(goldenKeys).imgUrl(
+							goldenKeys.getHurricaneImgUrl()).build())
+					.build();
 
 		} else if (randomValue
-			< goldenKeys.getBronze() + goldenKeys.getPlatinum() + goldenKeys.getDiamond() + goldenKeys.getNewsBan()
-			+ goldenKeys.getHurricane() + goldenKeys.getAngel()) {
+				< goldenKeys.getBronze() + goldenKeys.getPlatinum() + goldenKeys.getDiamond() + goldenKeys.getNewsBan()
+				+ goldenKeys.getHurricane() + goldenKeys.getAngel()) {
 			cardType = "천사";
 			goldenKeys.setAngel(goldenKeys.getAngel() - 1);
 
@@ -734,14 +737,14 @@ public class GameRoomService {
 			gameInfo.setPlayers(players);
 
 			responseDto = ResponseDto.builder()
-				.type(cardType)
-				.data(GoldenKeysPlayersResponse.builder().players(players).goldenKeys(goldenKeys).imgUrl(
-					goldenKeys.getAngelImgUrl()).build())
-				.build();
+					.type(cardType)
+					.data(GoldenKeysPlayersResponse.builder().players(players).goldenKeys(goldenKeys).imgUrl(
+							goldenKeys.getAngelImgUrl()).build())
+					.build();
 
 		} else if (randomValue
-			< goldenKeys.getBronze() + goldenKeys.getPlatinum() + goldenKeys.getDiamond() + goldenKeys.getNewsBan()
-			+ goldenKeys.getHurricane() + goldenKeys.getAngel() + goldenKeys.getKangJunGu()) {
+				< goldenKeys.getBronze() + goldenKeys.getPlatinum() + goldenKeys.getDiamond() + goldenKeys.getNewsBan()
+				+ goldenKeys.getHurricane() + goldenKeys.getAngel() + goldenKeys.getKangJunGu()) {
 			cardType = "강준구의 문단속";
 			goldenKeys.setKangJunGu(goldenKeys.getKangJunGu() - 1);
 			gameInfo.getInfo().setDoorCheck(5);
@@ -751,13 +754,13 @@ public class GameRoomService {
 			gameInfo.setPlayers(players);
 
 			responseDto = ResponseDto.builder()
-				.type(cardType)
-				.data(GoldenKeysInfoResponse.builder().info(gameInfo.getInfo()).goldenKeys(goldenKeys).imgUrl(goldenKeys.getKangJunGuImgUrl()).build())
-				.build();
+					.type(cardType)
+					.data(GoldenKeysInfoResponse.builder().info(gameInfo.getInfo()).goldenKeys(goldenKeys).imgUrl(goldenKeys.getKangJunGuImgUrl()).build())
+					.build();
 		} else if (randomValue
-			< goldenKeys.getBronze() + goldenKeys.getPlatinum() + goldenKeys.getDiamond() + goldenKeys.getNewsBan()
-			+ goldenKeys.getHurricane() + goldenKeys.getAngel() +
-			goldenKeys.getKangJunGu() + goldenKeys.getLotto()) {
+				< goldenKeys.getBronze() + goldenKeys.getPlatinum() + goldenKeys.getDiamond() + goldenKeys.getNewsBan()
+				+ goldenKeys.getHurricane() + goldenKeys.getAngel() +
+				goldenKeys.getKangJunGu() + goldenKeys.getLotto()) {
 			cardType = "복권 당첨";
 			goldenKeys.setLotto(goldenKeys.getLotto() - 1);
 
@@ -770,14 +773,14 @@ public class GameRoomService {
 			gameInfo.setPlayers(players);
 
 			responseDto = ResponseDto.builder()
-				.type(cardType)
-				.data(GoldenKeysPlayersResponse.builder().players(players).goldenKeys(goldenKeys).imgUrl(
-					goldenKeys.getLottoImgUrl()).build())
-				.build();
+					.type(cardType)
+					.data(GoldenKeysPlayersResponse.builder().players(players).goldenKeys(goldenKeys).imgUrl(
+							goldenKeys.getLottoImgUrl()).build())
+					.build();
 		} else if (randomValue
-			< goldenKeys.getBronze() + goldenKeys.getPlatinum() + goldenKeys.getDiamond() + goldenKeys.getNewsBan()
-			+ goldenKeys.getHurricane() + goldenKeys.getAngel() +
-			goldenKeys.getKangJunGu() + goldenKeys.getLotto() + goldenKeys.getDoor()) {
+				< goldenKeys.getBronze() + goldenKeys.getPlatinum() + goldenKeys.getDiamond() + goldenKeys.getNewsBan()
+				+ goldenKeys.getHurricane() + goldenKeys.getAngel() +
+				goldenKeys.getKangJunGu() + goldenKeys.getLotto() + goldenKeys.getDoor()) {
 			cardType = "어디로든 문 초대권";
 			goldenKeys.setDoor(goldenKeys.getDoor() - 1);
 
@@ -789,9 +792,9 @@ public class GameRoomService {
 			gameInfo.setPlayers(players);
 
 			responseDto = ResponseDto.builder()
-				.type(cardType)
-				.data(GoldenKeysPlayersResponse.builder().players(players).goldenKeys(goldenKeys).imgUrl(goldenKeys.getDoorImgUrl()).build())
-				.build();
+					.type(cardType)
+					.data(GoldenKeysPlayersResponse.builder().players(players).goldenKeys(goldenKeys).imgUrl(goldenKeys.getDoorImgUrl()).build())
+					.build();
 		} else {
 			cardType = "지진";
 			goldenKeys.setEarthquake(goldenKeys.getEarthquake() - 1);
@@ -824,10 +827,10 @@ public class GameRoomService {
 			gameInfo.setLands(lands);
 
 			responseDto = ResponseDto.builder()
-				.type(cardType)
-				.data(GoldenKeysLandsResponse.builder().Lands(lands).goldenKeys(goldenKeys).imgUrl(
-					goldenKeys.getEarthquakeImgUrl()).build())
-				.build();
+					.type(cardType)
+					.data(GoldenKeysLandsResponse.builder().Lands(lands).goldenKeys(goldenKeys).imgUrl(
+							goldenKeys.getEarthquakeImgUrl()).build())
+					.build();
 		}
 
 		//Redis에 바뀐 정보 업데이트
@@ -839,12 +842,12 @@ public class GameRoomService {
 
 	/**
 	 * 맹맹 지급
-	 * */
+	 */
 	public ResponseDto maengMaeng(GameInfo gameInfo) {
 		// 맹맹: 보유 현금 * 0.15 + 배당금 - 대출 원금 * 0.24)
 		Player[] players = gameInfo.getPlayers();
 		int playerIdx = getPlayerIdx(players, gameInfo.getInfo().getCurrentPlayer());
-		logger.info("maengMaeng(), currentPlayer ={}",players[playerIdx].getNickname());
+		logger.info("maengMaeng(), currentPlayer ={}", players[playerIdx].getNickname());
 		Player player = players[playerIdx];
 		List<Land> lands = gameInfo.getLands();
 		List<Stock> stocks = gameInfo.getStocks();
@@ -899,8 +902,8 @@ public class GameRoomService {
 	}
 
 	/**
-	 *  플레이어 화면에 보여줄 총자산 계산
-	 * */
+	 * 플레이어 화면에 보여줄 총자산 계산
+	 */
 	public Long calculateAsset(Player player, List<Stock> stocks, List<Land> lands) {
 		//TODO: asset 계산
 		long asset = 0;
@@ -992,7 +995,7 @@ public class GameRoomService {
 
 	/**
 	 * 이동 로직
-	 * */
+	 */
 	public Player move(Player player, int move) {
 		int currentLocation = player.getCurrentLocation();
 		int nextLocation = (currentLocation + move) % 32;
@@ -1004,14 +1007,14 @@ public class GameRoomService {
 
 	/**
 	 * 이동 후 로직
-	 * */
+	 */
 	public ResponseDto afterMove(String roomCode) {
 		GameInfo gameInfo = getInfo(roomCode);
 		Player[] players = gameInfo.getPlayers();
 		int playerIdx = getPlayerIdx(players, gameInfo.getInfo().getCurrentPlayer());
 		// 현재 플레이어
 		Player curPlayer = players[playerIdx];
-		logger.info("afterMove(), currentPlayer={}, currentLocation = {}",curPlayer.getNickname(),curPlayer.getCurrentLocation());
+		logger.info("afterMove(), currentPlayer={}, currentLocation = {}", curPlayer.getNickname(), curPlayer.getCurrentLocation());
 		int currentLocation = curPlayer.getCurrentLocation();
 		/* 이동 후에 위치에 따라서 로직...*/
 		/**/
@@ -1117,7 +1120,7 @@ public class GameRoomService {
 
 	/**
 	 * 어디로든 문 (강준구의 문단속 적용 X)
-	 * */
+	 */
 	public ResponseDto door(String roomCode, Door door) {
 		GameInfo gameInfo = gameInfoRepository.getGameInfo(roomCode);
 		Player[] players = gameInfo.getPlayers();
@@ -1138,9 +1141,9 @@ public class GameRoomService {
 			gameInfo.setPlayers(players);
 			gameInfoRepository.createGameRoom(gameInfo);
 			return ResponseDto.builder()
-				.type("어디로든문맹맹지급")
-				.data(players)
-				.build();
+					.type("어디로든문맹맹지급")
+					.data(players)
+					.build();
 
 		} else {
 			currentPlayer.setCurrentLocation(nextLocation);
@@ -1148,16 +1151,16 @@ public class GameRoomService {
 			gameInfo.setPlayers(players);
 			gameInfoRepository.createGameRoom(gameInfo);
 			return ResponseDto.builder()
-				.type("어디로든문이동후로직")
-				.data(players)
-				.build();
+					.type("어디로든문이동후로직")
+					.data(players)
+					.build();
 
 		}
 	}
 
 	/**
 	 * 어디로든 문 (강준구의 문단속 적용 O)
-	 * */
+	 */
 	public ResponseDto junguDoor(String roomCode) {
 		GameInfo gameInfo = gameInfoRepository.getGameInfo(roomCode);
 		Player[] players = gameInfo.getPlayers();
@@ -1187,9 +1190,9 @@ public class GameRoomService {
 			gameInfo.setPlayers(players);
 			gameInfoRepository.createGameRoom(gameInfo);
 			return ResponseDto.builder()
-				.type("어디로든문맹맹지급")
-				.data(players)
-				.build();
+					.type("어디로든문맹맹지급")
+					.data(players)
+					.build();
 
 		} else {
 			currentPlayer.setCurrentLocation(nextLocation);
@@ -1197,9 +1200,9 @@ public class GameRoomService {
 			gameInfo.setPlayers(players);
 			gameInfoRepository.createGameRoom(gameInfo);
 			return ResponseDto.builder()
-				.type("어디로든문이동후로직")
-				.data(players)
-				.build();
+					.type("어디로든문이동후로직")
+					.data(players)
+					.build();
 
 		}
 	}
@@ -1210,7 +1213,7 @@ public class GameRoomService {
 	 * 2. 다음 플레이어 확인 for 문 순회
 	 * 3. waiting news 확인해서 effect news 적용
 	 * 4.
-	 * */
+	 */
 	public ResponseDto endTurn(String roomCode) {
 		GameInfo gameInfo = gameInfoRepository.getGameInfo(roomCode);
 		Player[] players = gameInfo.getPlayers();
@@ -1218,7 +1221,7 @@ public class GameRoomService {
 		List<Stock> stocks = gameInfo.getStocks();
 		int playerIdx = getPlayerIdx(players, gameInfo.getInfo().getCurrentPlayer());
 		Player currentPlayer = players[playerIdx];
-		logger.info("endTurn(), currentPlayer= {}, currentTurn = {}",currentPlayer.getNickname(),currentPlayer.getCurrentTurn());
+		logger.info("endTurn(), currentPlayer= {}, currentTurn = {}", currentPlayer.getNickname(), currentPlayer.getCurrentTurn());
 		// 현재 플레이어의 turnCount++
 		int currentTurn = currentPlayer.getCurrentTurn() + 1;
 		currentPlayer.setCurrentTurn(currentTurn);
@@ -1247,374 +1250,375 @@ public class GameRoomService {
 			if (turnCount == 6) {
 				int winner = -1;
 				long maxValue = 0;
-				for(int i=0;i<4;i++){
-					if(players[i] !=null){
-						if(maxValue < calculateAsset(players[i], gameInfo.getStocks(),gameInfo.getLands())){
-							maxValue =calculateAsset(players[i], gameInfo.getStocks(),gameInfo.getLands());
+				for (int i = 0; i < 4; i++) {
+					if (players[i] != null) {
+						if (maxValue < calculateAsset(players[i], gameInfo.getStocks(), gameInfo.getLands())) {
+							maxValue = calculateAsset(players[i], gameInfo.getStocks(), gameInfo.getLands());
 							winner = i;
 						}
 					}
+				}
 				return ResponseDto.builder().type("게임종료").data(players[winner].getNickname()).build();
 			}
-			int doorCheck = info.getDoorCheck();
-			if (doorCheck > 1) {
-				doorCheck--;
-			}
-			// waitingNews가 비어있지 않을 때
-			Queue<News> effectNews = info.getEffectNews();
-			Queue<WaitingNews> waitingNews = info.getWaitingNews();
-			while (!waitingNews.isEmpty()) {
-				// 적용 시킬 뉴스가 있으면
-				if (turnCount == waitingNews.peek().getTurn()) {
-					// 이미 적용중인 뉴스가 3개라면 뉴스 한개 제거
-					if (effectNews.size() == 3) {
-						//TODO: 적용중인 뉴스 효과 제거도 해야함
-						// TODO: 뉴스효과 뺄 때 뉴스 효과 빼고 나서 asset
-						effectNews.poll();
+				int doorCheck = info.getDoorCheck();
+				if (doorCheck > 1) {
+					doorCheck--;
+				}
+				// waitingNews가 비어있지 않을 때
+				Queue<News> effectNews = info.getEffectNews();
+				Queue<WaitingNews> waitingNews = info.getWaitingNews();
+				while (!waitingNews.isEmpty()) {
+					// 적용 시킬 뉴스가 있으면
+					if (turnCount == waitingNews.peek().getTurn()) {
+						// 이미 적용중인 뉴스가 3개라면 뉴스 한개 제거
+						if (effectNews.size() == 3) {
+							//TODO: 적용중인 뉴스 효과 제거도 해야함
+							// TODO: 뉴스효과 뺄 때 뉴스 효과 빼고 나서 asset
+							effectNews.poll();
 
-					}
-					effectNews.offer(waitingNews.poll().getNews());
+						}
+						effectNews.offer(waitingNews.poll().getNews());
 
-					Map<Integer, Integer> effectedCountries = new HashMap<>();
-					Map<Integer, Integer> effectedStocks = new HashMap<>();
-					for (News curNews : effectNews) {
-						effectedCountries.putAll(curNews.getCountryEffects());
-						effectedStocks.putAll(curNews.getStockEffects());
-					}
+						Map<Integer, Integer> effectedCountries = new HashMap<>();
+						Map<Integer, Integer> effectedStocks = new HashMap<>();
+						for (News curNews : effectNews) {
+							effectedCountries.putAll(curNews.getCountryEffects());
+							effectedStocks.putAll(curNews.getStockEffects());
+						}
 
-					//뉴스에 의해 변동 된 땅 값 초기화
-					for (Map.Entry<Integer, Integer> entry : effectedCountries.entrySet()) {
-						Land curLand = lands.get(entry.getKey());
-						curLand.setCurrentBuildingPrices(curLand.getBuildingPrices());
-						curLand.setCurrentLandPrice(curLand.getLandPrice());
-						curLand.setCurrentFees(curLand.getFees());
-					}
-
-					//뉴스에 의해 변동 된 주식 가격 초기화
-					for (Map.Entry<Integer, Integer> entry : effectedStocks.entrySet()) {
-						Stock curStock = stocks.get(entry.getKey());
-						curStock.setCurrentCost(curStock.getCost());
-					}
-
-					//현재 적용중인 뉴스 List를 돌면서 해당 뉴스가 끼치는 영향을 적용
-					for (News curNews : effectNews) {
-						Map<Integer, Integer> curEffectedCountries = curNews.getCountryEffects();
-						Map<Integer, Integer> curEffectedStocks = curNews.getStockEffects();
-
-						for (Map.Entry<Integer, Integer> entry : curEffectedCountries.entrySet()) {
+						//뉴스에 의해 변동 된 땅 값 초기화
+						for (Map.Entry<Integer, Integer> entry : effectedCountries.entrySet()) {
 							Land curLand = lands.get(entry.getKey());
-							int curEffect = entry.getValue();
-
-							int currentLandPrice = 0;
-							int[] currentBuildingPrices = new int[3];
-							int[] currentFees = new int[4];
-
-							//좋은 효과
-							if (curEffect >= 0) {
-								currentLandPrice =
-										curLand.getCurrentLandPrice() * ((100 + curEffect) / 100);
-								for (int i = 0; i < currentBuildingPrices.length; i++) {
-									currentBuildingPrices[i] =
-											curLand.getCurrentBuildingPrices()[i] * ((100 + curEffect) / 100);
-								}
-								for (int i = 0; i < currentFees.length; i++) {
-									currentFees[i] =
-											curLand.getCurrentFees()[i] * ((100 + curEffect) / 100);
-								}
-							}
-							//나쁜 효과
-							else {
-								currentLandPrice =
-										curLand.getCurrentLandPrice() * ((100 + curEffect) / 100);
-								for (int i = 0; i < currentBuildingPrices.length; i++) {
-									currentBuildingPrices[i] =
-											curLand.getCurrentBuildingPrices()[i] * ((100 + curEffect) / 100);
-								}
-								for (int i = 0; i < currentFees.length; i++) {
-									currentFees[i] =
-											curLand.getCurrentFees()[i] * ((100 + curEffect) / 100);
-								}
-							}
-							//바뀐 정보 해당 땅에 업데이트
-							curLand.setCurrentLandPrice(currentLandPrice);
-							curLand.setCurrentBuildingPrices(currentBuildingPrices);
-							curLand.setCurrentFees(currentFees);
-							lands.set(entry.getKey(), curLand);
+							curLand.setCurrentBuildingPrices(curLand.getBuildingPrices());
+							curLand.setCurrentLandPrice(curLand.getLandPrice());
+							curLand.setCurrentFees(curLand.getFees());
 						}
 
-						for (Map.Entry<Integer, Integer> entry : curEffectedStocks.entrySet()) {
-							Stock curStocks = stocks.get(entry.getKey());
-							int curEffect = entry.getValue();
-
-							int currentCost = 0;
-
-							//좋은 효과
-							if (curEffect >= 0) {
-								currentCost = curStocks.getCurrentCost() * ((100 + curEffect) / 100);
-							}
-							//나쁜 효과
-							else {
-								currentCost = curStocks.getCurrentCost() * ((100 + curEffect) / 100);
-							}
-							//바뀐 정보 해당 땅에 업데이트
-							curStocks.setCurrentCost(currentCost);
-							stocks.set(entry.getKey(), curStocks);
+						//뉴스에 의해 변동 된 주식 가격 초기화
+						for (Map.Entry<Integer, Integer> entry : effectedStocks.entrySet()) {
+							Stock curStock = stocks.get(entry.getKey());
+							curStock.setCurrentCost(curStock.getCost());
 						}
+
+						//현재 적용중인 뉴스 List를 돌면서 해당 뉴스가 끼치는 영향을 적용
+						for (News curNews : effectNews) {
+							Map<Integer, Integer> curEffectedCountries = curNews.getCountryEffects();
+							Map<Integer, Integer> curEffectedStocks = curNews.getStockEffects();
+
+							for (Map.Entry<Integer, Integer> entry : curEffectedCountries.entrySet()) {
+								Land curLand = lands.get(entry.getKey());
+								int curEffect = entry.getValue();
+
+								int currentLandPrice = 0;
+								int[] currentBuildingPrices = new int[3];
+								int[] currentFees = new int[4];
+
+								//좋은 효과
+								if (curEffect >= 0) {
+									currentLandPrice =
+											curLand.getCurrentLandPrice() * ((100 + curEffect) / 100);
+									for (int i = 0; i < currentBuildingPrices.length; i++) {
+										currentBuildingPrices[i] =
+												curLand.getCurrentBuildingPrices()[i] * ((100 + curEffect) / 100);
+									}
+									for (int i = 0; i < currentFees.length; i++) {
+										currentFees[i] =
+												curLand.getCurrentFees()[i] * ((100 + curEffect) / 100);
+									}
+								}
+								//나쁜 효과
+								else {
+									currentLandPrice =
+											curLand.getCurrentLandPrice() * ((100 + curEffect) / 100);
+									for (int i = 0; i < currentBuildingPrices.length; i++) {
+										currentBuildingPrices[i] =
+												curLand.getCurrentBuildingPrices()[i] * ((100 + curEffect) / 100);
+									}
+									for (int i = 0; i < currentFees.length; i++) {
+										currentFees[i] =
+												curLand.getCurrentFees()[i] * ((100 + curEffect) / 100);
+									}
+								}
+								//바뀐 정보 해당 땅에 업데이트
+								curLand.setCurrentLandPrice(currentLandPrice);
+								curLand.setCurrentBuildingPrices(currentBuildingPrices);
+								curLand.setCurrentFees(currentFees);
+								lands.set(entry.getKey(), curLand);
+							}
+
+							for (Map.Entry<Integer, Integer> entry : curEffectedStocks.entrySet()) {
+								Stock curStocks = stocks.get(entry.getKey());
+								int curEffect = entry.getValue();
+
+								int currentCost = 0;
+
+								//좋은 효과
+								if (curEffect >= 0) {
+									currentCost = curStocks.getCurrentCost() * ((100 + curEffect) / 100);
+								}
+								//나쁜 효과
+								else {
+									currentCost = curStocks.getCurrentCost() * ((100 + curEffect) / 100);
+								}
+								//바뀐 정보 해당 땅에 업데이트
+								curStocks.setCurrentCost(currentCost);
+								stocks.set(entry.getKey(), curStocks);
+							}
+						}
+
+					} else {
+						// 적용 시킬 뉴스 없으면
+						break;
 					}
+				}
+				info.setDoorCheck(doorCheck);
+				info.setTurnCount(turnCount);
+				info.setEffectNews(effectNews);
+				info.setWaitingNews(waitingNews);
 
-				} else {
-					// 적용 시킬 뉴스 없으면
+				logger.info("다음턴={}, 문단속 적용={}", turnCount, doorCheck);
+
+			}
+
+			// 다음 플레이어
+			int nextPlayerIdx = -1;
+			// 다음 플레이어 idx 구하는 로직
+			for (int i = 1; i < 4; i++) {
+				int idx = (playerIdx + i) % 4;
+				if (players[idx] != null && players[idx].isAlive()) {
+					nextPlayerIdx = idx;
 					break;
 				}
+
 			}
-			info.setDoorCheck(doorCheck);
-			info.setTurnCount(turnCount);
+			if (nextPlayerIdx != -1) {
+				// 다음 플레이어 순서를 설정
+				info.setCurrentPlayer(players[nextPlayerIdx].getNickname());
+			}
+			gameInfo.setLands(lands);
+			gameInfo.setStocks(stocks);
+			gameInfo.setPlayers(players);
+			gameInfo.setInfo(info);
+			gameInfoRepository.createGameRoom(gameInfo);
+
+			logger.info("다음플레이어={}", players[nextPlayerIdx].getNickname());
+			logger.info("type=턴종료끝");
+
+			return ResponseDto.builder().type("턴종료끝")
+					.data(EndTurnResponse.builder()
+							.info(info)
+							.stocks(gameInfo.getStocks())
+							.players(players)
+							.lands(gameInfo.getLands())
+							.build())
+					.build();
+
+	}
+		/**
+		 * 게임 종료
+		 * */
+		public ResponseDto endGame(String roomCode){
+			//TODO: 게임 종료시 데이터 전송
+			GameInfo gameInfo = gameInfoRepository.getGameInfo(roomCode);
+			Player[] players = gameInfo.getPlayers();
+			int winner = -1;
+			long maxValue = 0;
+			for (int i = 0; i < 4; i++) {
+				if (players[i] != null) {
+					if (maxValue < calculateAsset(players[i], gameInfo.getStocks(), gameInfo.getLands())) {
+						maxValue = calculateAsset(players[i], gameInfo.getStocks(), gameInfo.getLands());
+						winner = i;
+					}
+				}
+			}
+
+			logger.info("endGame() , winner = {}", players[winner].getNickname());
+			return ResponseDto.builder().type("게임결과").data(players[winner].getNickname()).build();
+
+		}
+
+		/**
+		 * 선택한 뉴스 적용
+		 */
+		public ResponseDto applyNews (String roomCode, News news, String type){
+			// 게임 정보 가져오기
+			GameInfo gameInfo = gameInfoRepository.getGameInfo(roomCode);
+			List<Land> lands = gameInfo.getLands();
+			List<Stock> stocks = gameInfo.getStocks();
+			Info info = gameInfo.getInfo();
+
+			Queue<News> effectNews = info.getEffectNews();
+			Queue<WaitingNews> waitingNews = info.getWaitingNews();
+
+			if (!type.equals("다이아몬드")) {
+				if (effectNews.size() == 3) {
+					effectNews.poll();
+				}
+				effectNews.add(news);
+				//땅 값 바뀌면 주식과 플레이어 총 자산이 변경
+
+				Map<Integer, Integer> effectedCountries = new HashMap<>();
+				Map<Integer, Integer> effectedStocks = new HashMap<>();
+				for (News curNews : effectNews) {
+					effectedCountries.putAll(curNews.getCountryEffects());
+					effectedStocks.putAll(curNews.getStockEffects());
+				}
+
+				//뉴스에 의해 변동 된 땅 값 초기화
+				for (Map.Entry<Integer, Integer> entry : effectedCountries.entrySet()) {
+					Land curLand = lands.get(entry.getKey());
+					curLand.setCurrentBuildingPrices(curLand.getBuildingPrices());
+					curLand.setCurrentLandPrice(curLand.getLandPrice());
+					curLand.setCurrentFees(curLand.getFees());
+				}
+
+				//뉴스에 의해 변동 된 주식 가격 초기화
+				for (Map.Entry<Integer, Integer> entry : effectedStocks.entrySet()) {
+					Stock curStock = stocks.get(entry.getKey());
+					curStock.setCurrentCost(curStock.getCost());
+				}
+
+				//현재 적용중인 뉴스 List를 돌면서 해당 뉴스가 끼치는 영향을 적용
+				for (News curNews : effectNews) {
+					Map<Integer, Integer> curEffectedCountries = curNews.getCountryEffects();
+					Map<Integer, Integer> curEffectedStocks = curNews.getStockEffects();
+
+					for (Map.Entry<Integer, Integer> entry : curEffectedCountries.entrySet()) {
+						Land curLand = lands.get(entry.getKey());
+						int curEffect = entry.getValue();
+
+						int currentLandPrice = 0;
+						int[] currentBuildingPrices = new int[3];
+						int[] currentFees = new int[4];
+
+						//좋은 효과
+						if (curEffect >= 0) {
+							currentLandPrice =
+									curLand.getCurrentLandPrice() * ((100 + curEffect) / 100);
+							for (int i = 0; i < currentBuildingPrices.length; i++) {
+								currentBuildingPrices[i] =
+										curLand.getCurrentBuildingPrices()[i] * ((100 + curEffect) / 100);
+							}
+							for (int i = 0; i < currentFees.length; i++) {
+								currentFees[i] =
+										curLand.getCurrentFees()[i] * ((100 + curEffect) / 100);
+							}
+						}
+						//나쁜 효과
+						else {
+							currentLandPrice =
+									curLand.getCurrentLandPrice() * ((100 + curEffect) / 100);
+							for (int i = 0; i < currentBuildingPrices.length; i++) {
+								currentBuildingPrices[i] =
+										curLand.getCurrentBuildingPrices()[i] * ((100 + curEffect) / 100);
+							}
+							for (int i = 0; i < currentFees.length; i++) {
+								currentFees[i] =
+										curLand.getCurrentFees()[i] * ((100 + curEffect) / 100);
+							}
+						}
+						//바뀐 정보 해당 땅에 업데이트
+						curLand.setCurrentLandPrice(currentLandPrice);
+						curLand.setCurrentBuildingPrices(currentBuildingPrices);
+						curLand.setCurrentFees(currentFees);
+						lands.set(entry.getKey(), curLand);
+					}
+
+					for (Map.Entry<Integer, Integer> entry : curEffectedStocks.entrySet()) {
+						Stock curStocks = stocks.get(entry.getKey());
+						int curEffect = entry.getValue();
+
+						int currentCost = 0;
+
+						//좋은 효과
+						if (curEffect >= 0) {
+							currentCost = curStocks.getCurrentCost() * ((100 + curEffect) / 100);
+						}
+						//나쁜 효과
+						else {
+							currentCost = curStocks.getCurrentCost() * ((100 + curEffect) / 100);
+						}
+						//바뀐 정보 해당 땅에 업데이트
+						curStocks.setCurrentCost(currentCost);
+						stocks.set(entry.getKey(), curStocks);
+					}
+				}
+			} else {
+				waitingNews.add(
+						WaitingNews.builder().news(news).turn(info.getTurnCount() + 3).build());
+			}
+
 			info.setEffectNews(effectNews);
 			info.setWaitingNews(waitingNews);
 
-			logger.info("다음턴={}, 문단속 적용={}",turnCount,doorCheck);
+			gameInfo.setLands(lands);
+			gameInfo.setStocks(stocks);
+			gameInfo.setInfo(info);
 
+			gameInfoRepository.createGameRoom(gameInfo);
+
+			return ResponseDto.builder()
+					.type("자유")
+					.data(gameInfo)
+					.build();
 		}
 
-		// 다음 플레이어
-		int nextPlayerIdx = -1;
-		// 다음 플레이어 idx 구하는 로직
-		for (int i = 1; i < 4; i++) {
-			int idx = (playerIdx + i) % 4;
-			if (players[idx] != null && players[idx].isAlive()) {
-				nextPlayerIdx = idx;
-				break;
-			}
+		/**
+		 * 파산
+		 */
+		public ResponseDto bankruptcy (String roomCode){
+			GameInfo gameInfo = getInfo(roomCode);
+			Player[] players = gameInfo.getPlayers();
+			List<Land> lands = gameInfo.getLands();
 
-		}
-		if (nextPlayerIdx != -1) {
-			// 다음 플레이어 순서를 설정
-			info.setCurrentPlayer(players[nextPlayerIdx].getNickname());
-		}
-		gameInfo.setLands(lands);
-		gameInfo.setStocks(stocks);
-		gameInfo.setPlayers(players);
-		gameInfo.setInfo(info);
-		gameInfoRepository.createGameRoom(gameInfo);
-
-		logger.info("다음플레이어={}",players[nextPlayerIdx].getNickname());
-		logger.info("type=턴종료끝");
-
-		return ResponseDto.builder().type("턴종료끝")
-			.data(EndTurnResponse.builder()
-				.info(info)
-				.stocks(gameInfo.getStocks())
-				.players(players)
-				.lands(gameInfo.getLands())
-				.build())
-			.build();
-	}
-
-	/**
-	 * 게임 종료
-	 * */
-	public ResponseDto endGame(String roomCode) {
-		//TODO: 게임 종료시 데이터 전송
-		GameInfo gameInfo = gameInfoRepository.getGameInfo(roomCode);
-		Player[] players = gameInfo.getPlayers();
-		int winner = -1;
-		long maxValue = 0;
-		for(int i=0;i<4;i++){
-			if(players[i] !=null){
-				if(maxValue < calculateAsset(players[i], gameInfo.getStocks(),gameInfo.getLands())){
-					maxValue =calculateAsset(players[i], gameInfo.getStocks(),gameInfo.getLands());
-					winner = i;
+			String currentPlayer = gameInfo.getInfo().getCurrentPlayer();
+			int currentIdx = -1;
+			// 현재 플레이어 인덱스 찾기
+			for (int i = 0; i < players.length; i++) {
+				if (players[i] != null && players[i].isAlive() && players[i].getNickname().equals(currentPlayer)) {
+					currentIdx = i;
 				}
 			}
-		}
+			Player curPlayer = players[currentIdx];
 
-		logger.info("endGame() , winner = {}", players[winner].getNickname());
-		return ResponseDto.builder().type("게임결과").data(players[winner].getNickname()).build();
+			//플레이어 사망 처리
+			curPlayer.setAlive(false);
+			players[currentIdx] = curPlayer;
 
-	}
+			for (Land land : lands) {
+				if (land.getOwner() == currentIdx) {
+					land.setCurrentFees(land.getFees());
+					land.setCurrentBuildingPrices(land.getBuildingPrices());
+					land.setCurrentLandPrice(land.getLandPrice());
+					land.setBuildings(new boolean[]{false, false, false});
+					land.setOwner(-1);
 
-	/**
-	 * 선택한 뉴스 적용
-	 */
-	public ResponseDto applyNews(String roomCode, News news, String type) {
-		// 게임 정보 가져오기
-		GameInfo gameInfo = gameInfoRepository.getGameInfo(roomCode);
-		List<Land> lands = gameInfo.getLands();
-		List<Stock> stocks = gameInfo.getStocks();
-		Info info = gameInfo.getInfo();
-
-		Queue<News> effectNews = info.getEffectNews();
-		Queue<WaitingNews> waitingNews = info.getWaitingNews();
-
-		if (!type.equals("다이아몬드")) {
-			if (effectNews.size() == 3) {
-				effectNews.poll();
-			}
-			effectNews.add(news);
-			//땅 값 바뀌면 주식과 플레이어 총 자산이 변경
-
-			Map<Integer, Integer> effectedCountries = new HashMap<>();
-			Map<Integer, Integer> effectedStocks = new HashMap<>();
-			for (News curNews : effectNews) {
-				effectedCountries.putAll(curNews.getCountryEffects());
-				effectedStocks.putAll(curNews.getStockEffects());
-			}
-
-			//뉴스에 의해 변동 된 땅 값 초기화
-			for (Map.Entry<Integer, Integer> entry : effectedCountries.entrySet()) {
-				Land curLand = lands.get(entry.getKey());
-				curLand.setCurrentBuildingPrices(curLand.getBuildingPrices());
-				curLand.setCurrentLandPrice(curLand.getLandPrice());
-				curLand.setCurrentFees(curLand.getFees());
-			}
-
-			//뉴스에 의해 변동 된 주식 가격 초기화
-			for (Map.Entry<Integer, Integer> entry : effectedStocks.entrySet()) {
-				Stock curStock = stocks.get(entry.getKey());
-				curStock.setCurrentCost(curStock.getCost());
-			}
-
-			//현재 적용중인 뉴스 List를 돌면서 해당 뉴스가 끼치는 영향을 적용
-			for (News curNews : effectNews) {
-				Map<Integer, Integer> curEffectedCountries = curNews.getCountryEffects();
-				Map<Integer, Integer> curEffectedStocks = curNews.getStockEffects();
-
-				for (Map.Entry<Integer, Integer> entry : curEffectedCountries.entrySet()) {
-					Land curLand = lands.get(entry.getKey());
-					int curEffect = entry.getValue();
-
-					int currentLandPrice = 0;
-					int[] currentBuildingPrices = new int[3];
-					int[] currentFees = new int[4];
-
-					//좋은 효과
-					if (curEffect >= 0) {
-						currentLandPrice =
-							curLand.getCurrentLandPrice() * ((100 + curEffect) / 100);
-						for (int i = 0; i < currentBuildingPrices.length; i++) {
-							currentBuildingPrices[i] =
-								curLand.getCurrentBuildingPrices()[i] * ((100 + curEffect) / 100);
-						}
-						for (int i = 0; i < currentFees.length; i++) {
-							currentFees[i] =
-								curLand.getCurrentFees()[i] * ((100 + curEffect) / 100);
-						}
-					}
-					//나쁜 효과
-					else {
-						currentLandPrice =
-							curLand.getCurrentLandPrice() * ((100 + curEffect) / 100);
-						for (int i = 0; i < currentBuildingPrices.length; i++) {
-							currentBuildingPrices[i] =
-								curLand.getCurrentBuildingPrices()[i] * ((100 + curEffect) / 100);
-						}
-						for (int i = 0; i < currentFees.length; i++) {
-							currentFees[i] =
-								curLand.getCurrentFees()[i] * ((100 + curEffect) / 100);
-						}
-					}
-					//바뀐 정보 해당 땅에 업데이트
-					curLand.setCurrentLandPrice(currentLandPrice);
-					curLand.setCurrentBuildingPrices(currentBuildingPrices);
-					curLand.setCurrentFees(currentFees);
-					lands.set(entry.getKey(), curLand);
-				}
-
-				for (Map.Entry<Integer, Integer> entry : curEffectedStocks.entrySet()) {
-					Stock curStocks = stocks.get(entry.getKey());
-					int curEffect = entry.getValue();
-
-					int currentCost = 0;
-
-					//좋은 효과
-					if (curEffect >= 0) {
-						currentCost = curStocks.getCurrentCost() * ((100 + curEffect) / 100);
-					}
-					//나쁜 효과
-					else {
-						currentCost = curStocks.getCurrentCost() * ((100 + curEffect) / 100);
-					}
-					//바뀐 정보 해당 땅에 업데이트
-					curStocks.setCurrentCost(currentCost);
-					stocks.set(entry.getKey(), curStocks);
+					lands.set(land.getLandId(), land);
 				}
 			}
-		} else {
-			waitingNews.add(
-				WaitingNews.builder().news(news).turn(info.getTurnCount() + 3).build());
+
+			curPlayer.setLands(new ArrayList<>());
+
+			int aliveCnt = 0;
+			for (int i = 0; i < players.length; i++) {
+				if (players[i].isAlive()) {
+					aliveCnt++;
+				}
+			}
+
+			gameInfo.setPlayers(players);
+			gameInfo.setLands(lands);
+
+			gameInfoRepository.createGameRoom(gameInfo);
+
+			ResponseDto responseDto = ResponseDto.builder().build();
+
+			if (aliveCnt == 1) {
+				responseDto = ResponseDto.builder().type("게임종료").build();
+			} else {
+				responseDto = ResponseDto.builder().type("파산턴종료").data(BankruptcyResponse.builder().lands(lands).players(players).build()).build();
+			}
+
+			return responseDto;
 		}
-
-		info.setEffectNews(effectNews);
-		info.setWaitingNews(waitingNews);
-
-		gameInfo.setLands(lands);
-		gameInfo.setStocks(stocks);
-		gameInfo.setInfo(info);
-
-		gameInfoRepository.createGameRoom(gameInfo);
-
-		return ResponseDto.builder()
-			.type("자유")
-			.data(gameInfo)
-			.build();
 	}
-
-	/**
-	 * 파산
-	 */
-	public ResponseDto bankruptcy(String roomCode) {
-		GameInfo gameInfo = getInfo(roomCode);
-		Player[] players = gameInfo.getPlayers();
-		List<Land> lands = gameInfo.getLands();
-
-		String currentPlayer = gameInfo.getInfo().getCurrentPlayer();
-		int currentIdx = -1;
-		// 현재 플레이어 인덱스 찾기
-		for (int i = 0; i < players.length; i++) {
-			if (players[i] != null && players[i].isAlive() && players[i].getNickname().equals(currentPlayer)) {
-				currentIdx = i;
-			}
-		}
-		Player curPlayer = players[currentIdx];
-
-		//플레이어 사망 처리
-		curPlayer.setAlive(false);
-		players[currentIdx] = curPlayer;
-
-		for (Land land : lands) {
-			if (land.getOwner() == currentIdx) {
-				land.setCurrentFees(land.getFees());
-				land.setCurrentBuildingPrices(land.getBuildingPrices());
-				land.setCurrentLandPrice(land.getLandPrice());
-				land.setBuildings(new boolean[] {false, false, false});
-				land.setOwner(-1);
-
-				lands.set(land.getLandId(), land);
-			}
-		}
-
-		curPlayer.setLands(new ArrayList<>());
-
-		int aliveCnt = 0;
-		for (int i = 0; i < players.length; i++) {
-			if (players[i].isAlive()) {
-				aliveCnt++;
-			}
-		}
-
-		gameInfo.setPlayers(players);
-		gameInfo.setLands(lands);
-
-		gameInfoRepository.createGameRoom(gameInfo);
-
-		ResponseDto responseDto = ResponseDto.builder().build();
-
-		if(aliveCnt == 1) {
-			responseDto = ResponseDto.builder().type("게임종료").build();
-		} else {
-			responseDto = ResponseDto.builder().type("파산턴종료").data(BankruptcyResponse.builder().lands(lands).players(players).build()).build();
-		}
-
-		return responseDto;
-	}
-}
