@@ -1543,7 +1543,7 @@ const GameRoom = () => {
             {/* 채팅창 */}
             <div className='flex flex-col h-full w-[320px]'>
               <div
-                className='flex-1 mb-[12px] text-white p-[12px] overflow-y-auto scrollbar-chat h-[600px]'
+                className='mb-[12px] text-white p-[12px] overflow-y-auto scrollbar-chat h-[200px]'
                 style={{
                   borderRadius: '16px',
                   border: '1px solid rgba(0, 0, 0, 0.30)',
