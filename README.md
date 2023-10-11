@@ -108,6 +108,14 @@ game server는 유저들에게 실시간성 보장과, 데이터 전달을 위�
 #### 신나는 게임 화면
 <img src="./images/in-game.png" height="400">
 
+![image](https://github.com/Jungu12/MaengMaengMarble/assets/45422827/3bcd7e9e-e449-4d9d-8be4-2e50cef9b6f2)
+
+![image](https://github.com/Jungu12/MaengMaengMarble/assets/45422827/edc2257d-f19a-4f1d-9bb4-ef27a1a60f07)
+
+![image](https://github.com/Jungu12/MaengMaengMarble/assets/45422827/92fcbaa3-1269-4416-92c1-75357e90303e)
+
+
+
   </br>
   </br>
   
